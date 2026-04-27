@@ -94,7 +94,7 @@ export async function validateAccessToken(
       signal,
     });
 
-    if (response.status === 401 || response.status === 403) {
+    if (response.status === 401 || response.status === 403 || response.status === 404) {
       return { status: "invalid", user: null };
     }
 
