@@ -1,0 +1,55 @@
+{
+  "scenario_name": "Press Vibration Cascade",
+  "description": "Manufacturing press P-001 reports abnormal vibration. Sensor event is ingested, scored by Astraea, and routed to mechanical team.",
+  "events": [
+    {
+      "event_id": "EVT-PVC-001",
+      "source": "machine_telemetry",
+      "event_type": "sensor_alert",
+      "severity": "critical",
+      "payload": {
+        "machine_id": "P-001",
+        "line": "Line 3",
+        "sensor": "vibration_rms",
+        "value": 12.4,
+        "threshold": 8.0,
+        "unit": "mm/s"
+      },
+      "occurred_at": "2024-01-15T08:30:00Z"
+    },
+    {
+      "event_id": "EVT-PVC-002",
+      "source": "operator_ticket",
+      "event_type": "manual_report",
+      "severity": "high",
+      "payload": {
+        "machine_id": "P-001",
+        "description": "Press vibrating, unusual noise",
+        "reporter": "operator_joe"
+      },
+      "occurred_at": "2024-01-15T08:31:15Z"
+    }
+  ],
+  "expected_decision": {
+    "priority_score": 87,
+    "confidence_score": 0.92,
+    "root_cause_hypothesis": "Bearing degradation causing vibration cascade. Similar to INC-2023-089.",
+    "requires_human_review": true,
+    "recommendation": "Route to mechanical team immediately. Schedule bearing replacement within 2 hours."
+  },
+  "expected_incident": {
+    "incident_key": "INC-2024-001",
+    "title": "Press P-001 Vibration Cascade",
+    "severity": "critical",
+    "status": "open"
+  },
+  "expected_feedback": {
+    "actor": "alice",
+    "feedback_type": "accept",
+    "note": "Correct priority. Bearing was indeed degraded."
+  },
+  "resolution": {
+    "resolved_at": "2024-01-15T09:15:00Z",
+    "summary": "Bearing replaced. Vibration returned to normal (RMS 4.2)."
+  }
+}

@@ -109,7 +109,6 @@ export default function LoginPage() {
           --text-muted: #52525b;
           --accent: #f59e0b;
           --accent-dim: rgba(245, 158, 11, 0.08);
-          --cyan: #06b6d4;
           --emerald: #22c55e;
           --rose: #f43f5e;
         }
@@ -189,7 +188,7 @@ export default function LoginPage() {
           height: 260px;
           bottom: 20%;
           right: 25%;
-          background: radial-gradient(circle, rgba(6, 182, 212, 0.06) 0%, transparent 70%);
+          background: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%);
           animation-delay: 0.6s;
         }
         @keyframes orbFloat {

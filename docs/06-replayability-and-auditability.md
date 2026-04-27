@@ -1,0 +1,109 @@
+# Replayability and Auditability
+
+## The Audit Question
+
+After an incident, the system must answer:
+
+1. What did we know?
+2. When did we know it?
+3. What did we recommend?
+4. Who acted?
+5. Why?
+
+Aether Sentinel answers all five questions from a single incident record.
+
+## Replay Inputs
+
+To reconstruct an incident, the system needs:
+
+| Input | Source | Purpose |
+|-------|--------|---------|
+| Raw event | Event store | Original signal |
+| Normalized payload | Event store | Canonical representation |
+| Feature snapshot | Decision record | What the engine saw |
+| Decision version | Decision record | Which rules were active |
+| Recommendation | Decision record | What was suggested |
+| Operator feedback | Feedback record | What the human decided |
+| Platform evidence | Evidence store | Infrastructure context |
+| Timeline | Event store | Sequence of actions |
+
+## Replay Output
+
+A replay produces:
+
+```python
+class ReplayBundle:
+    incident_id: str
+    events: List[OperationalEvent]
+    decisions: List[DecisionRecord]
+    recommendations: List[Recommendation]
+    feedback: List[HumanFeedback]
+    evidence: List[EvidenceArtifact]
+    timeline: List[TimelineEvent]
+    resolution: ResolutionRecord
+    audit_hash: str
+```
+
+## Timeline Reconstruction
+
+The timeline is reconstructed from:
+- Event timestamps
+- Decision timestamps
+- Workflow action timestamps
+- Feedback timestamps
+- Evidence attachment timestamps
+
+This creates a complete chronological record of the incident lifecycle.
+
+## Audit Export
+
+The audit export produces a structured document:
+
+```json
+{
+  "incident_id": "INC-2024-001",
+  "summary": "Press vibration cascade",
+  "timeline": [
+    {"timestamp": "2024-01-15T08:30:00Z", "event": "Sensor alert", "source": "machine"},
+    {"timestamp": "2024-01-15T08:31:00Z", "event": "Decision scored", "priority": 87},
+    {"timestamp": "2024-01-15T08:32:00Z", "event": "Ticket created", "assignee": "ops-team"},
+    {"timestamp": "2024-01-15T08:45:00Z", "event": "Operator accepted recommendation"},
+    {"timestamp": "2024-01-15T09:15:00Z", "event": "Resolution confirmed"}
+  ],
+  "decisions": [
+    {"decision_id": "DEC-001", "priority_score": 87, "confidence": 0.92, "replay_hash": "abc123..."}
+  ],
+  "feedback": [
+    {"operator": "alice", "feedback_type": "accept", "note": "Correct priority"}
+  ],
+  "evidence": [
+    {"type": "slo_snapshot", "availability": 0.95, "p95_latency_ms": 120}
+  ]
+}
+```
+
+## Why This Matters
+
+Replayability turns the project from a dashboard into an **accountable operational system**.
+
+Without replay:
+- Post-mortems are based on memory and incomplete logs
+- Regulatory audits require manual document collection
+- Similar incidents are handled inconsistently
+- Operator training lacks concrete examples
+
+With replay:
+- Post-mortems are data-driven
+- Regulatory audits are one-click exports
+- Similar incidents share context automatically
+- Operator training uses real historical decisions
+
+## Immutable Records
+
+All replay inputs are immutable:
+- Raw events are never modified
+- Decision records are append-only
+- Feedback is timestamped and attributed
+- Evidence artifacts are checksummed
+
+This immutability guarantee means that a replay from today will produce the same result as a replay from next year.

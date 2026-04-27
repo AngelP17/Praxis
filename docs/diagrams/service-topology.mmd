@@ -1,0 +1,36 @@
+flowchart TB
+    subgraph Client["Client Layer"]
+        Web["Next.js Web App"]
+    end
+
+    subgraph Gateway["API Gateway"]
+        FastAPI["FastAPI Gateway"]
+        Auth["Auth Middleware"]
+        RateLimit["Rate Limiting"]
+    end
+
+    subgraph Services["Core Services"]
+        DecisionService["Decision Service"]
+        PlatformService["Platform Service"]
+    end
+
+    subgraph Engine["Decision Engine"]
+        Astraea["Astraea Core"]
+        Pipeline["Pipeline Rules"]
+        Domain["Domain Models"]
+    end
+
+    subgraph Storage["Storage"]
+        Postgres[(PostgreSQL)]
+    end
+
+    Web --> FastAPI
+    FastAPI --> Auth
+    Auth --> DecisionService
+    Auth --> PlatformService
+    DecisionService --> Astraea
+    Astraea --> Pipeline
+    Pipeline --> Domain
+    DecisionService --> Postgres
+    PlatformService --> Postgres
+    FastAPI --> Postgres

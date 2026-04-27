@@ -25,7 +25,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
       case "success": return <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />;
       case "failure": return <XCircle className="h-3.5 w-3.5 text-rose-400" />;
       case "override": return <UserCircle className="h-3.5 w-3.5 text-amber-400" />;
-      default: return <Clock className="h-3.5 w-3.5 text-cyan-400" />;
+      default: return <Clock className="h-3.5 w-3.5 text-slate-400" />;
     }
   }
 
@@ -34,7 +34,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
       case "success": return "bg-emerald-500";
       case "failure": return "bg-rose-500";
       case "override": return "bg-amber-500";
-      default: return "bg-cyan-500";
+      default: return "bg-slate-500";
     }
   }
 

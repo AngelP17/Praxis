@@ -25,11 +25,11 @@ export function AuditBundlePanel({
   function typeBadge(type: AuditItem["type"]) {
     switch (type) {
       case "event":
-        return "bg-cyan-500/10 text-cyan-300 border-cyan-500/20";
+        return "bg-slate-500/10 text-slate-300 border-slate-500/20";
       case "decision":
         return "bg-amber-500/10 text-amber-300 border-amber-500/20";
       case "feedback":
-        return "bg-violet-500/10 text-violet-300 border-violet-500/20";
+        return "bg-amber-500/10 text-amber-300 border-amber-500/20";
       case "resolution":
         return "bg-emerald-500/10 text-emerald-300 border-emerald-500/20";
     }

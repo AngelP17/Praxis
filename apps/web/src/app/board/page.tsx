@@ -47,8 +47,8 @@ const columns: BoardColumn[] = [
     key: "IN REVIEW",
     label: "In Review",
     description: "Awaiting customer confirmation or final validation.",
-    accent: "#06b6d4",
-    tone: "border-cyan-500/20 bg-cyan-500/8 text-cyan-200",
+    accent: "#64748b",
+    tone: "border-slate-500/20 bg-slate-500/8 text-slate-200",
   },
   {
     key: "DONE",
@@ -152,9 +152,9 @@ export default function BoardPage() {
   const throughputCount = grouped["DONE"].length;
 
   const stats = [
-    { label: "Open Queue", value: openCount, note: "Cases requiring active handling", icon: Ticket, color: "#06b6d4" },
+    { label: "Open Queue", value: openCount, note: "Cases requiring active handling", icon: Ticket, color: "#f59e0b" },
     { label: "In Progress", value: activeCount, note: "Cases in execution now", icon: SquaresFour, color: "#f59e0b" },
-    { label: "Awaiting Review", value: reviewCount, note: "Waiting on detail or validation", icon: Scan, color: "#8b5cf6" },
+    { label: "Awaiting Review", value: reviewCount, note: "Waiting on detail or validation", icon: Scan, color: "#f59e0b" },
     { label: "Throughput", value: throughputCount, note: "Resolved or closed work", icon: ArrowRight, color: "#22c55e" },
   ];
 

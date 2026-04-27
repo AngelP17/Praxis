@@ -1,0 +1,20 @@
+sequenceDiagram
+    participant Source as Signal Source
+    participant Gateway as API Gateway
+    participant Store as Event Store
+    participant Astraea as Astraea Engine
+    participant Incident as Incident Service
+    participant Aether as Aether Workflow
+    participant UI as Command Room UI
+
+    Source->>Gateway: POST /api/events/ingest
+    Gateway->>Gateway: Validate schema
+    Gateway->>Store: Persist raw event
+    Gateway->>Astraea: Evaluate normalized event
+    Astraea->>Astraea: Extract features
+    Astraea->>Astraea: Score risk and priority
+    Astraea->>Astraea: Generate explanation and replay hash
+    Astraea->>Store: Persist decision record
+    Store->>Incident: Link related events
+    Incident->>Aether: Create or update ticket
+    Aether->>UI: Expose ranked queue and decision context

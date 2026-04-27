@@ -1,0 +1,64 @@
+erDiagram
+    OPERATIONAL_EVENT ||--o{ DECISION_RECORD : produces
+    OPERATIONAL_EVENT }o--o{ INCIDENT : correlates_into
+    INCIDENT ||--o{ TICKET : owns
+    DECISION_RECORD ||--o{ RECOMMENDATION : emits
+    DECISION_RECORD ||--o{ HUMAN_FEEDBACK : receives
+    INCIDENT ||--o{ EVIDENCE_ARTIFACT : contains
+    INCIDENT ||--o{ REPLAY_EVENT : reconstructs
+
+    OPERATIONAL_EVENT {
+        uuid id
+        string event_id
+        string source
+        string event_type
+        string severity
+        json payload
+        json normalized_payload
+        datetime occurred_at
+    }
+
+    DECISION_RECORD {
+        uuid id
+        string decision_id
+        float priority_score
+        float confidence_score
+        string root_cause_hypothesis
+        string replay_hash
+        json explanation
+        json feature_snapshot
+    }
+
+    INCIDENT {
+        uuid id
+        string incident_key
+        string title
+        string status
+        string severity
+        datetime opened_at
+        datetime resolved_at
+    }
+
+    TICKET {
+        uuid id
+        string ticket_id
+        string status
+        string priority
+        string assignee
+        datetime created_at
+    }
+
+    HUMAN_FEEDBACK {
+        uuid id
+        string actor
+        string feedback_type
+        string note
+        datetime created_at
+    }
+
+    EVIDENCE_ARTIFACT {
+        uuid id
+        string artifact_type
+        string path
+        string checksum
+    }

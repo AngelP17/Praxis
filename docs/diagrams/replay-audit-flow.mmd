@@ -1,0 +1,10 @@
+flowchart LR
+    Raw["Raw Event"] --> Norm["Normalized Payload"]
+    Norm --> Feature["Feature Snapshot"]
+    Feature --> Decision["Decision Record"]
+    Decision --> Recommendation["Recommendation"]
+    Recommendation --> Ticket["Ticket Action"]
+    Ticket --> Feedback["Human Feedback"]
+    Feedback --> Evidence["Platform Evidence"]
+    Evidence --> Replay["Replay Timeline"]
+    Replay --> Export["Audit Export"]

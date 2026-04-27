@@ -824,7 +824,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   type="button"
                   onClick={handleSubmitComment}
                   disabled={isSubmittingComment}
-                  className="inline-flex items-center gap-2 rounded-full bg-cyan-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-70"
+                  className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-70"
                 >
                   <Plus className="h-4 w-4" />
                   {isSubmittingComment ? "Posting..." : "Add comment"}
@@ -902,7 +902,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                                     href={attachmentLink(attachment)}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="truncate text-sm font-medium text-cyan-100 hover:text-cyan-200"
+                                    className="truncate text-sm font-medium text-amber-100 hover:text-amber-200"
                                   >
                                     {attachment.original_name}
                                   </a>

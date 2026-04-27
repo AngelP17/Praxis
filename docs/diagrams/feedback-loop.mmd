@@ -1,0 +1,16 @@
+flowchart TD
+    Decision["Astraea Recommendation"] --> Review{"Human Review Required?"}
+    Review -->|Yes| Operator["Operator Reviews Context"]
+    Review -->|No| Action["Workflow Action Suggested"]
+
+    Operator --> Accept["Accept"]
+    Operator --> Reject["Reject"]
+    Operator --> Override["Override"]
+
+    Accept --> Feedback["Persist Feedback Event"]
+    Reject --> Feedback
+    Override --> Feedback
+
+    Feedback --> EventStore["Operational Event Store"]
+    EventStore --> FutureDecision["Future Decision Context"]
+    FutureDecision --> Decision

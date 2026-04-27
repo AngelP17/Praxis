@@ -1,0 +1,59 @@
+flowchart LR
+    subgraph Sources["Operational Signal Sources"]
+        Tickets["Tickets"]
+        MachineEvents["Machine Events"]
+        K8sAlerts["Kubernetes Alerts"]
+        OperatorNotes["Operator Notes"]
+    end
+
+    subgraph Ingestion["Ingestion and Normalization"]
+        Ingest["Ingest Event"]
+        Normalize["Normalize Payload"]
+        Validate["Validate Contract"]
+        StoreEvent["Store Operational Event"]
+    end
+
+    subgraph Decision["Astraea Decision Engine"]
+        Features["Extract Features"]
+        Score["Score Priority and Risk"]
+        Explain["Generate Explanation"]
+        Hash["Create Replay Hash"]
+    end
+
+    subgraph Workflow["Aether Workflow Layer"]
+        Correlate["Correlate Incident"]
+        Ticket["Create or Update Ticket"]
+        Route["Route Ownership"]
+        Feedback["Capture Human Feedback"]
+    end
+
+    subgraph Evidence["Platform Evidence Layer"]
+        SLO["SLO Metrics"]
+        Runbook["Runbook Mapping"]
+        Chaos["Chaos Result"]
+        Snapshot["Incident Snapshot"]
+    end
+
+    subgraph Audit["Replay and Audit"]
+        Timeline["Replay Timeline"]
+        Export["Audit Export"]
+        Report["Post-Incident Report"]
+    end
+
+    Sources --> Ingest
+    Ingest --> Normalize
+    Normalize --> Validate
+    Validate --> StoreEvent
+    StoreEvent --> Features
+    Features --> Score
+    Score --> Explain
+    Explain --> Hash
+    Hash --> Correlate
+    Correlate --> Ticket
+    Ticket --> Route
+    Route --> Feedback
+    Feedback --> StoreEvent
+    Evidence --> StoreEvent
+    StoreEvent --> Timeline
+    Timeline --> Export
+    Export --> Report

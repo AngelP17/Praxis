@@ -78,7 +78,7 @@ function ReplayErrorState({ id, message }: { id: string; message: string }) {
             </Link>
             <Link
               href="/command-center"
-              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-300 hover:text-cyan-200"
+              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-amber-300 hover:text-amber-200"
             >
               Command center
             </Link>
@@ -107,19 +107,19 @@ export default async function ReplayPage({ params }: { params: { id: string } })
       <div className="mx-auto max-w-5xl rounded-2xl border border-slate-800 bg-slate-900/80 p-8 shadow-xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">Replay & Audit</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-amber-300">Replay & Audit</p>
             <h1 className="mt-2 text-2xl font-semibold">Audit Replay {params.id}</h1>
           </div>
           <div className="flex gap-3">
             <Link
               href={`/tickets/${params.id}`}
-              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-300 hover:text-cyan-200"
+              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-amber-300 hover:text-amber-200"
             >
               Ticket case
             </Link>
             <Link
               href="/command-center"
-              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-cyan-300 hover:text-cyan-200"
+              className="rounded-full border border-slate-700 px-4 py-2 text-sm text-slate-300 transition hover:border-amber-300 hover:text-amber-200"
             >
               Command center
             </Link>
@@ -130,7 +130,7 @@ export default async function ReplayPage({ params }: { params: { id: string } })
           <div className="grid gap-4 md:grid-cols-3">
             <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-4">
               <div className="text-xs uppercase tracking-[0.2em] text-slate-500">Latest Score</div>
-              <div className="mt-2 text-lg font-medium text-cyan-300">
+              <div className="mt-2 text-lg font-medium text-amber-300">
                 {payload.latest_decision?.priority_score ?? "-"}
               </div>
             </div>
@@ -158,7 +158,7 @@ export default async function ReplayPage({ params }: { params: { id: string } })
                   <div key={decision.id} className="rounded-xl border border-slate-800 p-4">
                     <div className="flex items-center justify-between gap-3">
                       <div className="font-medium text-slate-100">{decision.root_cause_hypothesis}</div>
-                      <div className="text-xs text-cyan-300">{formatScore(decision.priority_score)}</div>
+                      <div className="text-xs text-amber-300">{formatScore(decision.priority_score)}</div>
                     </div>
                     <div className="mt-2 text-xs text-slate-500">{decision.decision_ts}</div>
                     <div className="mt-2 text-sm text-slate-400">
@@ -224,7 +224,7 @@ export default async function ReplayPage({ params }: { params: { id: string } })
                     <Link
                       key={ticket.ticket_id}
                       href={`/tickets/${ticket.ticket_id}`}
-                      className="block rounded-xl border border-slate-800 p-4 transition hover:border-cyan-300/50"
+                      className="block rounded-xl border border-slate-800 p-4 transition hover:border-amber-300/50"
                     >
                       <div className="font-medium text-slate-100">{ticket.ticket_id}</div>
                       <div className="mt-1 text-sm text-slate-400">{ticket.title}</div>

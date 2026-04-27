@@ -187,14 +187,14 @@ const typeStyles: Record<NotificationType, { bg: string; border: string; icon: t
   success: { bg: "bg-emerald-500/10", border: "border-emerald-500/30", icon: CheckCircle },
   error: { bg: "bg-rose-500/10", border: "border-rose-500/30", icon: WarningCircle },
   warning: { bg: "bg-amber-500/10", border: "border-amber-500/30", icon: WarningCircle },
-  info: { bg: "bg-cyan-500/10", border: "border-cyan-500/30", icon: Info },
+  info: { bg: "bg-slate-500/10", border: "border-slate-500/30", icon: Info },
 };
 
 const typeColors: Record<NotificationType, string> = {
   success: "text-emerald-400",
   error: "text-rose-400",
   warning: "text-amber-400",
-  info: "text-cyan-400",
+  info: "text-slate-400",
 };
 
 function formatTime(date: Date): string {

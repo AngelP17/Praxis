@@ -1,0 +1,63 @@
+{
+  "scenario_name": "ERP Authentication Outage",
+  "description": "Users cannot authenticate to ERP system. Ticket correlated with previous auth incident from two weeks ago, triggering high recurrence score.",
+  "events": [
+    {
+      "event_id": "EVT-ERPA-001",
+      "source": "user_report",
+      "event_type": "authentication_failure",
+      "severity": "high",
+      "payload": {
+        "system": "ERP-Prod",
+        "affected_users": 450,
+        "error_message": "LDAP connection timeout",
+        "first_reported_by": "helpdesk"
+      },
+      "occurred_at": "2024-01-15T09:00:00Z"
+    },
+    {
+      "event_id": "EVT-ERPA-002",
+      "source": "monitoring",
+      "event_type": "ldap_health_check_fail",
+      "severity": "critical",
+      "payload": {
+        "ldap_server": "dc01.corp.internal",
+        "response_time_ms": 30000,
+        "timeout_threshold_ms": 5000,
+        "concurrent_connections": 512,
+        "connection_limit": 512
+      },
+      "occurred_at": "2024-01-15T09:01:00Z"
+    }
+  ],
+  "expected_decision": {
+    "priority_score": 85,
+    "confidence_score": 0.88,
+    "root_cause_hypothesis": "LDAP connection pool exhaustion. Recurrence of INC-2023-156 (same server, same symptom).",
+    "requires_human_review": true,
+    "recommendation": "Restart LDAP connection pool. Schedule capacity review. Route to identity team."
+  },
+  "expected_incident": {
+    "incident_key": "INC-2024-003",
+    "title": "ERP Authentication Outage",
+    "severity": "high",
+    "status": "open"
+  },
+  "correlation": {
+    "related_incident": "INC-2023-156",
+    "correlation_reason": "Same LDAP server, same connection pool exhaustion symptom, 14 days apart",
+    "recurrence_score": 0.85
+  },
+  "expected_feedback": {
+    "actor": "identity_carol",
+    "feedback_type": "override",
+    "note": "Priority increased to critical. This is the third recurrence. We need to migrate to new LDAP cluster.",
+    "override_fields": {
+      "priority": "critical"
+    }
+  },
+  "resolution": {
+    "resolved_at": "2024-01-15T10:30:00Z",
+    "summary": "Connection pool restarted. Users can authenticate. Migration to LDAP cluster scheduled for next maintenance window."
+  }
+}

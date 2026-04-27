@@ -88,7 +88,7 @@ function IncidentErrorState({ id, message }: { id: string; message: string }) {
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
               href="/command-center"
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-cyan-300/40 hover:bg-cyan-400/10 hover:text-white"
+              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-amber-300/40 hover:bg-amber-400/10 hover:text-white"
             >
               Back to queue
             </Link>
@@ -125,7 +125,7 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
           <div className="border-b border-white/6 px-5 py-5 sm:px-7">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
               <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.28em] text-cyan-200">
+                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.28em] text-amber-200">
                   <span>Incident Detail</span>
                   <span className="h-1 w-1 rounded-full bg-slate-600" />
                   <span>{params.id}</span>
@@ -142,7 +142,7 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
               <div className="flex flex-wrap gap-3">
                 <Link
                   href="/command-center"
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-cyan-300/40 hover:bg-cyan-400/10 hover:text-white"
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-amber-300/40 hover:bg-amber-400/10 hover:text-white"
                 >
                   Back to queue
                 </Link>
@@ -168,9 +168,9 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
                 <div className="mt-3 text-3xl font-semibold text-white">{payload.incident.ticket_count}</div>
                 <div className="mt-2 text-sm text-slate-400">Cases currently grouped into this incident.</div>
               </div>
-              <div className="rounded-[1.5rem] border border-white/8 bg-gradient-to-br from-cyan-500/10 to-slate-950/80 p-5">
+              <div className="rounded-[1.5rem] border border-white/8 bg-gradient-to-br from-amber-500/10 to-slate-950/80 p-5">
                 <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Confidence</div>
-                <div className="mt-3 text-3xl font-semibold text-cyan-200">
+                <div className="mt-3 text-3xl font-semibold text-amber-200">
                   {formatPercent(payload.incident.confidence)}
                 </div>
                 <div className="mt-2 text-sm text-slate-400">Strength of the current grouping hypothesis.</div>
@@ -188,7 +188,7 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
               <section className="rounded-[1.75rem] border border-white/8 bg-white/[0.03] p-6 shadow-xl shadow-black/20">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-cyan-200">Operational Assessment</p>
+                    <p className="text-xs uppercase tracking-[0.24em] text-amber-200">Operational Assessment</p>
                     <h2 className="mt-2 text-2xl font-semibold text-white">{payload.incident.title}</h2>
                   </div>
                   <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
@@ -201,21 +201,21 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
                   <p className="mt-3 text-sm leading-7 text-slate-300">{payload.common_cause}</p>
                 </div>
 
-                <div className="mt-5 rounded-[1.25rem] border border-cyan-400/20 bg-cyan-400/10 p-5">
-                  <div className="text-xs uppercase tracking-[0.22em] text-cyan-200">Recommended Action</div>
-                  <p className="mt-3 text-sm leading-7 text-cyan-50">{payload.recommended_action}</p>
+                <div className="mt-5 rounded-[1.25rem] border border-amber-400/20 bg-amber-400/10 p-5">
+                  <div className="text-xs uppercase tracking-[0.22em] text-amber-200">Recommended Action</div>
+                  <p className="mt-3 text-sm leading-7 text-amber-50">{payload.recommended_action}</p>
                 </div>
               </section>
 
               <section className="rounded-[1.75rem] border border-white/8 bg-white/[0.03] p-6 shadow-xl shadow-black/20">
-                <p className="text-xs uppercase tracking-[0.24em] text-cyan-200">Operator Actions</p>
+                <p className="text-xs uppercase tracking-[0.24em] text-amber-200">Operator Actions</p>
                 <div className="mt-5 space-y-3">
                   <Link
                     href="/command-center"
-                    className="flex min-h-11 items-center justify-between rounded-[1.15rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:border-cyan-300/40 hover:bg-cyan-400/10"
+                    className="flex min-h-11 items-center justify-between rounded-[1.15rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:border-amber-300/40 hover:bg-amber-400/10"
                   >
                     <span>Return to ranked queue</span>
-                    <span className="text-cyan-200">Open</span>
+                    <span className="text-amber-200">Open</span>
                   </Link>
                   <Link
                     href={`/api/reports/excel?incident_id=${params.id}`}
@@ -255,7 +255,7 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
             <section className="rounded-[1.75rem] border border-white/8 bg-white/[0.03] p-6 shadow-xl shadow-black/20">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-cyan-200">Related Tickets</p>
+                  <p className="text-xs uppercase tracking-[0.24em] text-amber-200">Related Tickets</p>
                   <h2 className="mt-2 text-xl font-semibold text-white">Cases inside this incident</h2>
                 </div>
                 <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
@@ -273,7 +273,7 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
                     <Link
                       key={ticket.ticket_id}
                       href={`/tickets/${ticket.ticket_id}`}
-                      className="block rounded-[1.15rem] border border-white/8 bg-slate-950/45 p-4 transition hover:border-cyan-300/40 hover:bg-cyan-400/5"
+                      className="block rounded-[1.15rem] border border-white/8 bg-slate-950/45 p-4 transition hover:border-amber-300/40 hover:bg-amber-400/5"
                     >
                       <div className="flex flex-col gap-3 md:grid md:grid-cols-[auto,minmax(0,1fr),auto] md:items-center">
                         <div className="min-w-[7rem] text-sm font-semibold text-white">{ticket.ticket_id}</div>
@@ -282,7 +282,7 @@ export default async function IncidentDetailPage({ params }: { params: { id: str
                           <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-300">
                             {ticket.status}
                           </span>
-                          <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-[11px] text-cyan-100">
+                          <span className="rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-[11px] text-amber-100">
                             Score {formatScore(ticket.priority_score)}
                           </span>
                         </div>

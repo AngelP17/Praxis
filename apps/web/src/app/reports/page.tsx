@@ -17,12 +17,12 @@ const workbookTabs = [
   {
     name: "Operational Queue",
     description: "Ranked ticket sheet with priority bands, confidence, assignment, and recommended action.",
-    accent: "#06b6d4",
+    accent: "#64748b",
   },
   {
     name: "Incident Clusters",
     description: "Grouped operational patterns with common cause, scope, and impact summary.",
-    accent: "#8b5cf6",
+    accent: "#f59e0b",
   },
   {
     name: "Decision Intelligence",
@@ -52,7 +52,7 @@ const reportHighlights = [
   {
     label: "Ops Handoff",
     note: "Designed for queue review and decision review",
-    color: "#06b6d4",
+    color: "#f59e0b",
     icon: Scan,
   },
 ];
@@ -111,7 +111,7 @@ export default function ReportsPage() {
       <SystemStatusRail activeLabel="Reports" />
       <div className="flex-1 overflow-auto relative">
         <div className="absolute right-[-8rem] top-[-8rem] h-[26rem] w-[26rem] rounded-full bg-amber-500/10 blur-[120px]" />
-        <div className="absolute bottom-[-10rem] left-[6%] h-[22rem] w-[22rem] rounded-full bg-cyan-500/10 blur-[120px]" />
+        <div className="absolute bottom-[-10rem] left-[6%] h-[22rem] w-[22rem] rounded-full bg-amber-500/8 blur-[120px]" />
 
         <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-5 sm:px-6 lg:px-8">
           <div className="ops-glass rounded-[2rem] overflow-hidden">

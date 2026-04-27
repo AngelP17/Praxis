@@ -16,11 +16,10 @@
   --color-text-muted: #52525b;
   --color-accent: #f59e0b;
   --color-accent-dim: rgba(245, 158, 11, 0.08);
-  --color-cyan: #06b6d4;
+  --color-slate: #64748b;
   --color-emerald: #22c55e;
   --color-rose: #f43f5e;
   --color-orange: #f97316;
-  --color-violet: #8b5cf6;
 }
 
 @font-face {
@@ -52,7 +51,7 @@ body {
   min-height: 100%;
   background:
     radial-gradient(circle at top right, rgba(245, 158, 11, 0.06), transparent 26%),
-    radial-gradient(circle at bottom left, rgba(6, 182, 212, 0.04), transparent 30%),
+    radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.03), transparent 30%),
     var(--color-bg-deep);
 }
 
