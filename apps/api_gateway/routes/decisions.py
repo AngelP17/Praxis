@@ -9,6 +9,12 @@ from apps.api_gateway.services.decision_service import DecisionService
 router = APIRouter()
 
 
+@router.post("/evaluate")
+def evaluate_decision(payload: dict[str, Any], db: Session = Depends(get_db)):
+    service = DecisionService(db)
+    return service.evaluate_event(payload)
+
+
 @router.get("/tickets/{ticket_id}", response_model=DecisionResponse)
 def get_decision_for_ticket(ticket_id: str, db: Session = Depends(get_db)):
     service = DecisionService(db)
@@ -24,10 +30,13 @@ def recompute_decision(ticket_id: str, db: Session = Depends(get_db)):
     return service.recompute_decision(ticket_id)
 
 
-@router.post("/evaluate")
-def evaluate_decision(payload: dict[str, Any], db: Session = Depends(get_db)):
+@router.get("/event/{event_id}")
+def get_decision_for_event(event_id: str, db: Session = Depends(get_db)):
     service = DecisionService(db)
-    return service.evaluate_event(payload)
+    decision = service.get_latest_decision_for_event(event_id)
+    if not decision:
+        raise HTTPException(status_code=404, detail="Decision not found for event")
+    return decision
 
 
 @router.get("/{decision_id}")
@@ -42,15 +51,6 @@ def get_decision_by_id(decision_id: int, db: Session = Depends(get_db)):
 @router.get("/{decision_id}/detail")
 def get_decision_detail(decision_id: int, db: Session = Depends(get_db)):
     return get_decision_by_id(decision_id, db)
-
-
-@router.get("/event/{event_id}")
-def get_decision_for_event(event_id: str, db: Session = Depends(get_db)):
-    service = DecisionService(db)
-    decision = service.get_latest_decision_for_event(event_id)
-    if not decision:
-        raise HTTPException(status_code=404, detail="Decision not found for event")
-    return decision
 
 
 @router.post("/{decision_id}/replay")

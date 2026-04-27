@@ -7,17 +7,28 @@ set -e
 echo "=== Aether Sentinel One-Command Demo ==="
 echo ""
 
-# 1. Kill anything on our ports
-echo "[1/5] Cleaning up old processes..."
+# 1. Kill anything on our ports (aggressive)
+echo "[1/6] Cleaning up old processes..."
 for port in 8000 8001 8080 3000; do
-    lsof -ti:$port | xargs kill -9 2>/dev/null || true
+    pid=$(lsof -ti:$port 2>/dev/null || true)
+    if [ -n "$pid" ]; then
+        echo "    Killing PID $pid on port $port"
+        kill -9 $pid 2>/dev/null || true
+    fi
 done
-pkill -f "uvicorn" 2>/dev/null || true
-pkill -f "next-dev" 2>/dev/null || true
-sleep 2
+# Also kill any leftover uvicorn/next processes
+pkill -9 -f "uvicorn" 2>/dev/null || true
+pkill -9 -f "next-dev" 2>/dev/null || true
+pkill -9 -f "next server" 2>/dev/null || true
+sleep 3
 
-# 2. Start backend services in background
-echo "[2/5] Starting backend services..."
+# 2. Clear Python cache to ensure fresh code loads
+echo "[2/6] Clearing Python cache..."
+find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+find . -name "*.pyc" -delete 2>/dev/null || true
+
+# 3. Start backend services in background
+echo "[3/6] Starting backend services..."
 .venv/bin/uvicorn apps.api_gateway.main:app --host 0.0.0.0 --port 8000 > /tmp/aether-api.log 2>&1 &
 API_PID=$!
 .venv/bin/uvicorn services.platform-service.src.main:app --host 0.0.0.0 --port 8080 > /tmp/aether-platform.log 2>&1 &
@@ -25,25 +36,25 @@ PLATFORM_PID=$!
 .venv/bin/uvicorn services.decision-service.main:app --host 0.0.0.0 --port 8001 > /tmp/aether-decision.log 2>&1 &
 DECISION_PID=$!
 
-# 3. Wait for API to be ready
-echo "[3/5] Waiting for API gateway..."
+# 4. Wait for API to be ready
+echo "[4/6] Waiting for API gateway..."
 for i in {1..30}; do
-    if curl -s http://localhost:8000/health > /dev/null 2>&1; then
-        echo "    API ready!"
+    if curl -sf http://localhost:8000/health > /dev/null 2>&1; then
+        echo "    API ready on port 8000!"
         break
     fi
     sleep 1
 done
 
-# 4. Start web app
-echo "[4/5] Starting web app..."
+# 5. Start web app
+echo "[5/6] Starting web app..."
 cd apps/web
 pnpm dev > /tmp/aether-web.log 2>&1 &
 WEB_PID=$!
 cd ../..
 
-# 5. Seed scenario
-echo "[5/5] Seeding Press Vibration Cascade scenario..."
+# 6. Seed scenario
+echo "[6/6] Seeding Press Vibration Cascade scenario..."
 .venv/bin/python scripts/demo/seed_scenario.py sample-data/scenarios/press-vibration-cascade.json
 
 echo ""
@@ -54,7 +65,7 @@ echo "  API Gateway:    http://localhost:8000"
 echo "  Decision Svc:   http://localhost:8001"
 echo "  Platform Svc:   http://localhost:8080"
 echo ""
-echo "  Login: operator / operator"
+echo "  Open http://localhost:3000/command-center (no login needed)"
 echo ""
 echo "  PIDs: API=$API_PID Platform=$PLATFORM_PID Decision=$DECISION_PID Web=$WEB_PID"
 echo ""

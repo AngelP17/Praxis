@@ -34,7 +34,7 @@ def evaluate_decision(event_id: str, scenario: dict) -> str:
     resp = requests.post(f"{BASE_URL}/api/decisions/evaluate", json=payload, timeout=10)
     resp.raise_for_status()
     data = resp.json()
-    return data["decision_id"]
+    return data.get("decision_id") or str(data.get("id", ""))
 
 
 def capture_feedback(decision_id: str, scenario: dict) -> None:

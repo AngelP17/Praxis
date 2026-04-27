@@ -8,6 +8,8 @@ from apps.api_gateway.config import settings
 
 
 def clean_database_url(url: str) -> str:
+    if url.startswith("sqlite"):
+        return url
     from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
     parsed = urlparse(url)
@@ -29,14 +31,22 @@ def clean_database_url(url: str) -> str:
     )
 
 
-engine = create_engine(
-    clean_database_url(settings.DATABASE_URL),
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
-    pool_use_lifo=True,
-    pool_recycle=1800,
-)
+is_sqlite = settings.DATABASE_URL.startswith("sqlite")
+
+if is_sqlite:
+    engine = create_engine(
+        clean_database_url(settings.DATABASE_URL),
+        connect_args={"check_same_thread": False},
+    )
+else:
+    engine = create_engine(
+        clean_database_url(settings.DATABASE_URL),
+        pool_pre_ping=True,
+        pool_size=5,
+        max_overflow=10,
+        pool_use_lifo=True,
+        pool_recycle=1800,
+    )
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -64,7 +74,8 @@ def init_db() -> None:
     from infrastructure.db.base import Base
 
     Base.metadata.create_all(bind=engine)
-    _ensure_legacy_compatibility()
+    if not is_sqlite:
+        _ensure_legacy_compatibility()
 
 
 def _import_models() -> None:
