@@ -25,8 +25,8 @@ export function MotionPriorityStack({ items }: { items: PriorityItem[] }) {
             key={item.label}
             initial={{ opacity: 0, y: 20 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ type: "spring", stiffness: 300, damping: 24, delay: index * 0.08 }}
-            className="ops-card rounded-[1.25rem] p-5"
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.08 }}
+            className="legacy-card rounded-[1.25rem] p-5"
           >
             <div className="flex items-center justify-between">
               <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">{item.label}</div>
@@ -38,7 +38,7 @@ export function MotionPriorityStack({ items }: { items: PriorityItem[] }) {
               className="mono-data mt-4 text-4xl font-bold tracking-tight text-white"
               initial={{ opacity: 0, scale: 0.9 }}
               animate={isInView ? { opacity: 1, scale: 1 } : {}}
-              transition={{ type: "spring", stiffness: 300, damping: 24, delay: index * 0.08 + 0.1 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.08 + 0.1 }}
             >
               {item.value}
             </motion.div>

@@ -8,8 +8,17 @@ export const getServerApiUrl = async (path: string) => {
     process.env.NEXT_PUBLIC_API_URL ||
     DEFAULT_INTERNAL_API_URL;
 
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const appendPath = (base: string) => {
+    const cleanBase = base.replace(/\/$/, "");
+    if (cleanBase.endsWith("/api") && normalizedPath.startsWith("/api/")) {
+      return `${cleanBase}${normalizedPath.slice(4)}`;
+    }
+    return `${cleanBase}${normalizedPath}`;
+  };
+
   if (configuredBase.startsWith("http://") || configuredBase.startsWith("https://")) {
-    return `${configuredBase.replace(/\/$/, "")}${path}`;
+    return appendPath(configuredBase);
   }
 
   const requestHeaders = await headers();
@@ -18,8 +27,8 @@ export const getServerApiUrl = async (path: string) => {
   const protocol = requestHeaders.get("x-forwarded-proto") || "http";
 
   if (host) {
-    return `${protocol}://${host}${configuredBase}${path}`;
+    return appendPath(`${protocol}://${host}${configuredBase}`);
   }
 
-  return `${DEFAULT_INTERNAL_API_URL}${path}`;
+  return appendPath(DEFAULT_INTERNAL_API_URL);
 };

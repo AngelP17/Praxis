@@ -17,7 +17,7 @@ export function DecisionExplanationPanel({
 }) {
   if (!decision) {
     return (
-      <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Decision Intelligence</div>
         <div className="mt-8 text-center text-sm text-zinc-500">No decision record available for this case.</div>
       </div>
@@ -60,7 +60,7 @@ export function DecisionExplanationPanel({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 350, damping: 28, delay: 0.05 }}
-      className="ops-card rounded-[1.5rem] p-5 sm:p-6"
+      className="legacy-card rounded-[1.5rem] p-5 sm:p-6"
     >
       <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
         <Brain className="h-4 w-4 text-amber-300" />

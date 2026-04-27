@@ -17,7 +17,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
   const isInView = useInView(ref, { once: true, margin: "-20px" });
 
   return (
-    <div ref={ref} className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+    <div ref={ref} className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
       <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500 mb-5">Replay Navigation</div>
       <div className="relative flex items-center gap-2">
         <div className="absolute left-0 right-0 top-1/2 h-px bg-zinc-800 -translate-y-1/2" />

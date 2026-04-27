@@ -7,7 +7,7 @@ import type { Ticket } from "@/types";
 export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {
   if (!ticket) {
     return (
-      <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Incident Detail</div>
         <div className="mt-8 text-center text-sm text-zinc-500">Select a ticket to inspect details.</div>
       </div>
@@ -19,7 +19,7 @@ export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 350, damping: 28 }}
-      className="ops-card rounded-[1.5rem] p-5 sm:p-6"
+      className="legacy-card rounded-[1.5rem] p-5 sm:p-6"
     >
       <div className="flex items-start justify-between gap-4 border-b border-zinc-800/70 pb-4">
         <div>

@@ -4,7 +4,7 @@ import { Warning, Pulse } from "@phosphor-icons/react";
 
 export function ErrorState({ message, onRetry }: { message: string | null; onRetry: () => void }) {
   return (
-    <div className="mt-6 ops-card rounded-[26px] p-6">
+    <div className="mt-6 legacy-card rounded-[26px] p-6">
       <div className="flex flex-col gap-4 border-b border-zinc-800/50 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-rose-300">Command center offline</div>

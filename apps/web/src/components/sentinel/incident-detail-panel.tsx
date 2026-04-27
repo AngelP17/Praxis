@@ -8,13 +8,41 @@ import type { QueueTicket } from "@/lib/hooks/use-command-feed";
 export function IncidentDetailPanel({
   ticket,
   linkedIncident,
+  mode = "live",
+  panelState = "ready",
+  message,
 }: {
   ticket?: QueueTicket;
   linkedIncident?: { id: string; title: string; rootCause: string; ticketCount: number; confidence: number };
+  mode?: "live" | "demo" | "stale";
+  panelState?: "loading" | "ready" | "error";
+  message?: string;
 }) {
+  if (panelState === "loading") {
+    return (
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+        <div className="h-4 w-32 animate-pulse rounded bg-zinc-800/80" />
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-16 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/50" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (panelState === "error") {
+    return (
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+        <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-rose-300">Incident Detail</div>
+        <p className="mt-3 text-sm text-rose-100">{message || "Incident detail panel failed to load."}</p>
+      </div>
+    );
+  }
+
   if (!ticket) {
     return (
-      <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Case Inspector</div>
         <div className="mt-8 flex flex-col items-center gap-3 text-center">
           <WarningCircle className="h-8 w-8 text-zinc-700" />
@@ -29,9 +57,14 @@ export function IncidentDetailPanel({
       key={ticket.ticketId}
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 350, damping: 28 }}
-      className="ops-card rounded-[1.5rem] p-5 sm:p-6"
+      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+      className="legacy-card rounded-[1.5rem] p-5 sm:p-6"
     >
+      {(mode === "demo" || mode === "stale") && (
+        <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+          {mode === "demo" ? "Demo scenario active" : "Using stale live detail"}
+        </div>
+      )}
       <div className="flex items-start justify-between gap-4 border-b border-zinc-800/70 pb-4">
         <div>
           <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-amber-300">Case Inspector</div>

@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   Plus,
-  Download,
   Table,
   SquaresFour,
   Pulse,
@@ -17,10 +16,12 @@ import {
 
 import { NotificationBell } from "@/components/notifications";
 import { MagneticActionButton } from "@/components/motion/magnetic-action-button";
-import type { FeedStatus } from "@/lib/hooks/use-command-feed";
+import { MotionStatusPulse } from "@/components/motion/motion-status-pulse";
+import type { FeedMode, FeedStatus } from "@/lib/hooks/use-command-feed";
 
 export function CommandTopBar({
   feedStatus,
+  feedMode,
   lastSyncSeconds,
   warnings,
   search,
@@ -31,6 +32,7 @@ export function CommandTopBar({
   isSigningOut,
 }: {
   feedStatus: FeedStatus;
+  feedMode: FeedMode;
   lastSyncSeconds: number;
   warnings: string[];
   search: string;
@@ -53,7 +55,14 @@ export function CommandTopBar({
         <div className="max-w-4xl">
           <div className="flex flex-wrap items-center gap-3">
             <p className="mono-data text-[10px] uppercase tracking-[0.32em] text-amber-300">Aether Sentinel</p>
-            <StatusBadge status={feedStatus} />
+            <StatusBadge status={feedStatus} mode={feedMode} />
+            <MotionStatusPulse
+              points={[
+                { id: "live", label: "Live", intensity: feedMode === "live" ? 1 : 0.4 },
+                { id: "demo", label: "Demo", intensity: feedMode === "demo" ? 1 : 0.35 },
+                { id: "stale", label: "Stale", intensity: feedMode === "stale" ? 1 : 0.35 },
+              ]}
+            />
           </div>
         </div>
 
@@ -125,10 +134,14 @@ export function CommandTopBar({
   );
 }
 
-function StatusBadge({ status }: { status: FeedStatus }) {
+function StatusBadge({ status, mode }: { status: FeedStatus; mode: FeedMode }) {
   const config =
-    status === "ready"
+    status === "ready" && mode === "live"
       ? { dot: "#22c55e", border: "border-emerald-500/20", bg: "bg-emerald-500/8", text: "text-emerald-200", label: "Live data active" }
+      : status === "ready" && mode === "demo"
+      ? { dot: "#f59e0b", border: "border-amber-500/25", bg: "bg-amber-500/12", text: "text-amber-100", label: "Demo scenario active" }
+      : status === "ready" && mode === "stale"
+      ? { dot: "#f59e0b", border: "border-amber-500/20", bg: "bg-amber-500/8", text: "text-amber-100", label: "Live data partially stale" }
       : status === "loading"
       ? { dot: "#f59e0b", border: "border-amber-500/20", bg: "bg-amber-500/8", text: "text-amber-100", label: "Syncing live data" }
       : { dot: "#f43f5e", border: "border-rose-500/20", bg: "bg-rose-500/10", text: "text-rose-100", label: "Live data unavailable" };

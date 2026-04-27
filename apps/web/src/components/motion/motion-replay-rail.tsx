@@ -17,7 +17,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
   const isInView = useInView(ref, { once: true, margin: "-20px" });
 
   return (
-    <div ref={ref} className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+    <div ref={ref} className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
       <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500 mb-5">Replay Navigation</div>
       <div className="relative flex items-center gap-2">
         <div className="absolute left-0 right-0 top-1/2 h-px bg-zinc-800 -translate-y-1/2" />
@@ -29,7 +29,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
               <motion.div
                 initial={{ scale: 0 }}
                 animate={isInView ? { scale: 1 } : {}}
-                transition={{ type: "spring", stiffness: 400, damping: 20, delay: index * 0.1 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 }}
                 className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border-2 z-10 relative"
                 style={{
                   borderColor: isComplete ? "#22c55e" : isActive ? "#f59e0b" : "#3f3f46",
@@ -41,7 +41,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: index * 0.1 + 0.05, type: "spring", stiffness: 400, damping: 24 }}
+                transition={{ delay: index * 0.1 + 0.05, type: "spring", stiffness: 100, damping: 20 }}
                 className="mt-3 text-center"
               >
                 <Link href={node.href} className={`inline-flex items-center gap-1 text-[11px] font-medium transition ${isActive ? "text-amber-300" : "text-zinc-500 hover:text-zinc-300"}`}>

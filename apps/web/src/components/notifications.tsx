@@ -391,11 +391,22 @@ export function ToastContainer({ toasts, onRemove }: ToastContainerProps) {
   const [now, setNow] = useState(() => Date.now());
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
+    let active = true;
+    let timer: number | undefined;
+    const tick = () => {
       setNow(Date.now());
-    }, 1000);
+      if (active) {
+        timer = window.setTimeout(tick, 1000);
+      }
+    };
+    timer = window.setTimeout(tick, 1000);
 
-    return () => window.clearInterval(interval);
+    return () => {
+      active = false;
+      if (timer !== undefined) {
+        window.clearTimeout(timer);
+      }
+    };
   }, []);
 
   const visibleToasts = toasts.filter((toast) => now - toast.timestamp.getTime() < TOAST_LIFETIME_MS);

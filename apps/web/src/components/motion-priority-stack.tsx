@@ -31,7 +31,7 @@ export function MotionPriorityStack({ items }: { items: PriorityItem[] }) {
               damping: 24,
               delay: index * 0.08,
             }}
-            className="ops-card rounded-[1.25rem] p-5"
+            className="legacy-card rounded-[1.25rem] p-5"
           >
             <div className="flex items-center justify-between">
               <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">{item.label}</div>

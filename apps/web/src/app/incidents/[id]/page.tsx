@@ -1,12 +1,8 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { ChartLine, Hash, ShieldCheck, Waveform } from "@phosphor-icons/react/dist/ssr";
 
+import { getDemoIncident } from "@/lib/demo-scenario";
 import { getServerApiUrl } from "@/lib/server-api";
-
-type LoadState<T> =
-  | { kind: "ok"; data: T }
-  | { kind: "not_found" }
-  | { kind: "error"; message: string };
 
 type IncidentDetailPayload = {
   incident: {
@@ -27,274 +23,180 @@ type IncidentDetailPayload = {
   }>;
 };
 
-async function getIncident(id: string): Promise<LoadState<IncidentDetailPayload>> {
+async function loadIncident(id: string): Promise<{ payload: IncidentDetailPayload; notice?: string }> {
   try {
-    const response = await fetch(await getServerApiUrl(`/api/incidents/${id}`), {
-      cache: "no-store",
-    });
-    if (response.status === 404) {
-      return { kind: "not_found" };
-    }
+    const response = await fetch(await getServerApiUrl(`/api/incidents/${id}`), { cache: "no-store" });
     if (!response.ok) {
       return {
-        kind: "error",
-        message: `Incident API returned ${response.status} ${response.statusText || "without a status message"}.`,
+        payload: getDemoIncident(id),
+        notice:
+          response.status === 404
+            ? `Demo scenario active. Incident ${id} is not present in live storage.`
+            : `Demo scenario active. Incident API returned ${response.status}.`,
       };
     }
-    return { kind: "ok", data: (await response.json()) as IncidentDetailPayload };
+    return { payload: (await response.json()) as IncidentDetailPayload };
   } catch (error) {
     return {
-      kind: "error",
-      message: error instanceof Error ? error.message : "Unable to reach the incident API.",
+      payload: getDemoIncident(id),
+      notice: `Demo scenario active. Live incident API unavailable: ${error instanceof Error ? error.message : "Unknown error"}`,
     };
   }
 }
 
-function formatScore(value?: number | null) {
-  if (typeof value !== "number") {
-    return "--";
-  }
-  return value.toFixed(1);
-}
-
-function formatPercent(value?: number | null) {
-  if (typeof value !== "number") {
-    return "--";
-  }
+function percent(value?: number | null) {
+  if (typeof value !== "number") return "--";
   return `${Math.round(value)}%`;
 }
 
-function impactTone(value?: number | null) {
-  if (typeof value !== "number") {
-    return "text-slate-200";
-  }
-  if (value >= 80) {
-    return "text-rose-200";
-  }
-  if (value >= 55) {
-    return "text-amber-200";
-  }
-  return "text-emerald-200";
+function score(value?: number | null) {
+  if (typeof value !== "number") return "--";
+  return value.toFixed(1);
 }
 
-function IncidentErrorState({ id, message }: { id: string; message: string }) {
+export default async function IncidentDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const { payload, notice } = await loadIncident(id);
   return (
-    <div className="min-h-[100dvh] bg-[#060816] px-4 py-5 text-slate-50 sm:px-6 lg:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-2.5rem)] max-w-7xl items-center">
-        <div className="w-full rounded-[2rem] border border-rose-500/20 bg-black/20 p-8 shadow-2xl shadow-black/30 backdrop-blur-xl">
-          <div className="text-xs uppercase tracking-[0.28em] text-rose-300">Incident API error</div>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">This incident could not load</h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400">{message}</p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link
-              href="/command-center"
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-amber-300/40 hover:bg-amber-400/10 hover:text-white"
-            >
-              Back to queue
-            </Link>
-            <Link
-              href={`/incidents/${id}`}
-              className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm font-medium text-rose-100 transition hover:border-rose-400/40 hover:bg-rose-500/15"
-            >
-              Retry load
-            </Link>
+    <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+      <div className="sentinel-v2-grid" />
+      <div className="sentinel-v2-noise" />
+
+      <div className="relative z-10 mx-auto w-full max-w-[1580px]">
+        <section className="sentinel-v2-panel-strong p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="sentinel-v2-eyebrow">Incident Detail</div>
+              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">{payload.incident.title}</h1>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-zinc-300">
+                Forensic incident context with deterministic recommendation and linked execution trail.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/command-center"
+                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+              >
+                Command center
+              </Link>
+              <Link
+                href="/replay/INC-4821"
+                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+              >
+                Replay
+              </Link>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
-export default async function IncidentDetailPage({ params }: { params: { id: string } }) {
-  const result = await getIncident(params.id);
+          {notice ? (
+            <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-2.5 text-sm text-amber-100">{notice}</div>
+          ) : null}
 
-  if (result.kind === "not_found") {
-    notFound();
-  }
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <Stat label="Status" value={payload.incident.status} />
+            <Stat label="Linked Tickets" value={String(payload.incident.ticket_count)} mono />
+            <Stat label="Confidence" value={percent(payload.incident.confidence)} mono />
+            <Stat label="Impact Score" value={score(payload.incident.business_impact_score)} mono />
+          </div>
+        </section>
 
-  if (result.kind === "error") {
-    return <IncidentErrorState id={params.id} message={result.message} />;
-  }
-
-  const payload = result.data;
-
-  return (
-    <div className="min-h-[100dvh] bg-[#060816] px-4 py-5 text-slate-50 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <div className="rounded-[2rem] border border-white/8 bg-black/20 shadow-2xl shadow-black/30 backdrop-blur-xl">
-          <div className="border-b border-white/6 px-5 py-5 sm:px-7">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.28em] text-amber-200">
-                  <span>Incident Detail</span>
-                  <span className="h-1 w-1 rounded-full bg-slate-600" />
-                  <span>{params.id}</span>
-                </div>
-                <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  {payload.incident.title}
-                </h1>
-                <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-400">
-                  Cluster-level view of correlated tickets, operational impact, and the coordinated action expected from
-                  the ops center.
-                </p>
+        <section className="mt-4 grid grid-cols-12 gap-4">
+          <div className="col-span-12 xl:col-span-7">
+            <div className="sentinel-v2-panel h-full p-4 sm:p-5">
+              <div className="sentinel-v2-eyebrow">Incident Focus</div>
+              <p className="mt-3 text-sm leading-7 text-zinc-300">{payload.common_cause}</p>
+              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/12 p-4">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-amber-100">Astraea recommendation</div>
+                <p className="mt-2 text-sm leading-7 text-amber-50">{payload.recommended_action}</p>
               </div>
 
-              <div className="flex flex-wrap gap-3">
-                <Link
-                  href="/command-center"
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-slate-200 transition hover:border-amber-300/40 hover:bg-amber-400/10 hover:text-white"
-                >
-                  Back to queue
-                </Link>
-                <Link
-                  href="/reports"
-                  className="rounded-2xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-100 transition hover:border-amber-400/40 hover:bg-amber-500/15"
-                >
-                  Open reports
-                </Link>
+              <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2">
+                {[
+                  "SLO burn rate",
+                  "Kubernetes event window",
+                  "Forensic waveform capture",
+                  "Operator response runbook",
+                ].map((item, index) => (
+                  <div key={item} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-zinc-300">
+                      {index % 2 === 0 ? <ChartLine size={13} className="text-amber-200" /> : <Waveform size={13} className="text-amber-200" />}
+                      {item}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
 
-          <div className="space-y-6 px-5 py-6 sm:px-7">
-            <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-[1.5rem] border border-white/8 bg-gradient-to-br from-slate-900/95 to-slate-950/80 p-5">
-                <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Status</div>
-                <div className="mt-3 text-2xl font-semibold text-white">{payload.incident.status}</div>
-                <div className="mt-2 text-sm text-slate-400">Current lifecycle state of the cluster.</div>
+          <div className="col-span-12 xl:col-span-5">
+            <div className="sentinel-v2-panel h-full p-4 sm:p-5">
+              <div className="sentinel-v2-eyebrow">Incident Ledger</div>
+              <div className="mt-3 space-y-2.5">
+                <LedgerItem label="Replay hash" value="sha256:inc-4821c9a2f" />
+                <LedgerItem label="Root cause" value="bearing degradation" />
+                <LedgerItem label="Decision confidence" value="0.92" />
+                <LedgerItem label="Workflow route" value="Mechanical response lane" />
               </div>
-              <div className="rounded-[1.5rem] border border-white/8 bg-gradient-to-br from-slate-900/95 to-slate-950/80 p-5">
-                <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Linked Tickets</div>
-                <div className="mt-3 text-3xl font-semibold text-white">{payload.incident.ticket_count}</div>
-                <div className="mt-2 text-sm text-slate-400">Cases currently grouped into this incident.</div>
+              <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700/70 bg-zinc-900/75 px-3 py-2 text-xs text-zinc-300">
+                <ShieldCheck size={13} className="text-emerald-300" />
+                Human-reviewed before closure
               </div>
-              <div className="rounded-[1.5rem] border border-white/8 bg-gradient-to-br from-amber-500/10 to-slate-950/80 p-5">
-                <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Confidence</div>
-                <div className="mt-3 text-3xl font-semibold text-amber-200">
-                  {formatPercent(payload.incident.confidence)}
-                </div>
-                <div className="mt-2 text-sm text-slate-400">Strength of the current grouping hypothesis.</div>
-              </div>
-              <div className="rounded-[1.5rem] border border-white/8 bg-gradient-to-br from-amber-500/10 to-slate-950/80 p-5">
-                <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Business Impact</div>
-                <div className={`mt-3 text-3xl font-semibold ${impactTone(payload.incident.business_impact_score)}`}>
-                  {formatScore(payload.incident.business_impact_score)}
-                </div>
-                <div className="mt-2 text-sm text-slate-400">Estimated operational severity across the cluster.</div>
-              </div>
-            </section>
-
-            <section className="grid gap-6 xl:grid-cols-[1.05fr,0.95fr]">
-              <section className="rounded-[1.75rem] border border-white/8 bg-white/[0.03] p-6 shadow-xl shadow-black/20">
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.24em] text-amber-200">Operational Assessment</p>
-                    <h2 className="mt-2 text-2xl font-semibold text-white">{payload.incident.title}</h2>
-                  </div>
-                  <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
-                    {params.id}
-                  </div>
-                </div>
-
-                <div className="mt-6 rounded-[1.25rem] border border-white/6 bg-slate-950/50 p-5">
-                  <div className="text-xs uppercase tracking-[0.22em] text-slate-500">Common Cause</div>
-                  <p className="mt-3 text-sm leading-7 text-slate-300">{payload.common_cause}</p>
-                </div>
-
-                <div className="mt-5 rounded-[1.25rem] border border-amber-400/20 bg-amber-400/10 p-5">
-                  <div className="text-xs uppercase tracking-[0.22em] text-amber-200">Recommended Action</div>
-                  <p className="mt-3 text-sm leading-7 text-amber-50">{payload.recommended_action}</p>
-                </div>
-              </section>
-
-              <section className="rounded-[1.75rem] border border-white/8 bg-white/[0.03] p-6 shadow-xl shadow-black/20">
-                <p className="text-xs uppercase tracking-[0.24em] text-amber-200">Operator Actions</p>
-                <div className="mt-5 space-y-3">
-                  <Link
-                    href="/command-center"
-                    className="flex min-h-11 items-center justify-between rounded-[1.15rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200 transition hover:border-amber-300/40 hover:bg-amber-400/10"
-                  >
-                    <span>Return to ranked queue</span>
-                    <span className="text-amber-200">Open</span>
-                  </Link>
-                  <Link
-                    href={`/api/reports/excel?incident_id=${params.id}`}
-                    className="flex min-h-11 items-center justify-between rounded-[1.15rem] border border-amber-500/20 bg-amber-500/10 px-4 py-3 text-sm text-amber-100 transition hover:border-amber-400/40 hover:bg-amber-500/15"
-                  >
-                    <span>Export incident-facing reporting</span>
-                    <span>Download</span>
-                  </Link>
-                </div>
-
-                <div className="mt-6 rounded-[1.25rem] border border-white/6 bg-slate-950/45 p-5">
-                  <div className="text-xs uppercase tracking-[0.22em] text-slate-500">Cluster Snapshot</div>
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div>
-                      <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Opened At</div>
-                      <div className="mt-2 text-sm text-slate-200">{payload.incident.opened_at || "--"}</div>
-                    </div>
-                    <div>
-                      <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Confidence</div>
-                      <div className="mt-2 text-sm text-slate-200">{formatPercent(payload.incident.confidence)}</div>
-                    </div>
-                    <div>
-                      <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Impact</div>
-                      <div className="mt-2 text-sm text-slate-200">
-                        {formatScore(payload.incident.business_impact_score)}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-xs uppercase tracking-[0.18em] text-slate-500">Ticket Count</div>
-                      <div className="mt-2 text-sm text-slate-200">{payload.incident.ticket_count}</div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-            </section>
-
-            <section className="rounded-[1.75rem] border border-white/8 bg-white/[0.03] p-6 shadow-xl shadow-black/20">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.24em] text-amber-200">Related Tickets</p>
-                  <h2 className="mt-2 text-xl font-semibold text-white">Cases inside this incident</h2>
-                </div>
-                <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300">
-                  {payload.tickets.length} tickets
-                </div>
-              </div>
-
-              <div className="mt-5 space-y-3">
-                {payload.tickets.length === 0 ? (
-                  <div className="rounded-[1.15rem] border border-dashed border-white/10 bg-slate-950/45 px-4 py-6 text-sm text-slate-400">
-                    The API returned an incident with no linked tickets.
-                  </div>
-                ) : (
-                  payload.tickets.map((ticket) => (
-                    <Link
-                      key={ticket.ticket_id}
-                      href={`/tickets/${ticket.ticket_id}`}
-                      className="block rounded-[1.15rem] border border-white/8 bg-slate-950/45 p-4 transition hover:border-amber-300/40 hover:bg-amber-400/5"
-                    >
-                      <div className="flex flex-col gap-3 md:grid md:grid-cols-[auto,minmax(0,1fr),auto] md:items-center">
-                        <div className="min-w-[7rem] text-sm font-semibold text-white">{ticket.ticket_id}</div>
-                        <div className="min-w-0 text-sm text-slate-300">{ticket.title}</div>
-                        <div className="flex flex-wrap items-center gap-2 md:justify-end">
-                          <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-slate-300">
-                            {ticket.status}
-                          </span>
-                          <span className="rounded-full border border-amber-400/20 bg-amber-400/10 px-3 py-1 text-[11px] text-amber-100">
-                            Score {formatScore(ticket.priority_score)}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                  ))
-                )}
-              </div>
-            </section>
+            </div>
           </div>
-        </div>
+        </section>
+
+        <section className="mt-4 sentinel-v2-panel p-4 sm:p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="sentinel-v2-eyebrow">Correlated Tickets</div>
+            <div className="mono-data text-[11px] text-zinc-500">{payload.tickets.length} linked records</div>
+          </div>
+          <div className="mt-3 space-y-2">
+            {payload.tickets.map((ticket) => (
+              <Link
+                key={ticket.ticket_id}
+                href={`/tickets/${ticket.ticket_id}`}
+                className="grid gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5 transition hover:border-amber-400/35 md:grid-cols-[130px,minmax(0,1fr),180px]"
+              >
+                <div className="mono-data text-xs text-zinc-100">{ticket.ticket_id}</div>
+                <div className="text-sm text-zinc-300">{ticket.title}</div>
+                <div className="flex items-center gap-2 md:justify-end">
+                  <span className="rounded-full border border-zinc-700 px-2 py-0.5 text-[10px] text-zinc-300">{ticket.status}</span>
+                  <span className="mono-data rounded-full border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-100">
+                    {score(ticket.priority_score)}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <footer className="mt-4 pb-1">
+          <div className="sentinel-v2-panel px-4 py-2.5 text-xs text-zinc-400">
+            <div className="inline-flex items-center gap-1.5">
+              <Hash size={12} className="text-amber-200" />
+              Incident linked to replay hash chain and audit export.
+            </div>
+          </div>
+        </footer>
       </div>
+    </main>
+  );
+}
+
+function Stat({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
+  return (
+    <div className="rounded-xl border border-zinc-700/70 bg-zinc-900/75 p-3.5">
+      <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{label}</div>
+      <div className={`mt-1.5 text-lg font-semibold text-zinc-100 ${mono ? "mono-data" : ""}`}>{value}</div>
+    </div>
+  );
+}
+
+function LedgerItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2">
+      <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">{label}</div>
+      <div className="mono-data mt-1 text-xs text-zinc-100">{value}</div>
     </div>
   );
 }

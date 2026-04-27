@@ -105,20 +105,109 @@ body {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.3);
 }
 
-.ops-card {
+.legacy-card {
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border-subtle);
   backdrop-filter: blur(14px);
 }
 
-.ops-card-strong {
+.legacy-card-strong {
   background: var(--color-bg-elevated);
   border: 1px solid var(--color-border-strong);
   backdrop-filter: blur(14px);
 }
 
+/* Sentinel V2 */
+.sentinel-v2-root {
+  position: relative;
+  background:
+    radial-gradient(58% 46% at 76% 20%, rgba(245, 158, 11, 0.12), transparent 72%),
+    radial-gradient(40% 38% at 18% 78%, rgba(245, 158, 11, 0.08), transparent 74%),
+    linear-gradient(180deg, #070809 0%, #0b0d10 56%, #08090b 100%);
+}
+
+.sentinel-v2-grid {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(245, 158, 11, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 158, 11, 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at center, black 20%, transparent 100%);
+}
+
+.sentinel-v2-noise {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.014),
+    rgba(255, 255, 255, 0.014) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  opacity: 0.4;
+}
+
+.sentinel-v2-panel {
+  border-radius: 1.15rem;
+  border: 1px solid rgba(82, 82, 91, 0.42);
+  background:
+    linear-gradient(180deg, rgba(12, 13, 17, 0.86), rgba(10, 10, 13, 0.9)),
+    rgba(12, 13, 17, 0.85);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 25px 70px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(18px);
+}
+
+.sentinel-v2-panel-strong {
+  border-radius: 1.3rem;
+  border: 1px solid rgba(113, 113, 122, 0.46);
+  background:
+    linear-gradient(180deg, rgba(14, 15, 19, 0.94), rgba(9, 10, 13, 0.94)),
+    rgba(10, 10, 13, 0.88);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 26px 80px rgba(0, 0, 0, 0.44);
+  backdrop-filter: blur(20px);
+}
+
+.sentinel-v2-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+  color: #a1a1aa;
+}
+
+.sentinel-v2-shell-preview {
+  position: relative;
+  border-radius: 1.45rem;
+  border: 1px solid rgba(113, 113, 122, 0.48);
+  padding: 1rem;
+  background:
+    linear-gradient(180deg, rgba(13, 14, 18, 0.95), rgba(9, 10, 12, 0.96)),
+    rgba(10, 10, 13, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 35px 95px rgba(0, 0, 0, 0.5);
+}
+
+.sentinel-v2-shell-preview-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background:
+    radial-gradient(65% 52% at 74% 14%, rgba(245, 158, 11, 0.16), transparent 72%),
+    radial-gradient(36% 34% at 12% 86%, rgba(245, 158, 11, 0.09), transparent 70%);
+}
+
 /* Grid background */
-.ops-grid {
+.legacy-grid {
   background-image:
     linear-gradient(rgba(245, 158, 11, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(245, 158, 11, 0.02) 1px, transparent 1px);

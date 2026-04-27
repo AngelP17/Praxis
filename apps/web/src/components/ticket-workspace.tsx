@@ -538,7 +538,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
 
         <div className="grid gap-6 xl:grid-cols-[1.15fr,0.85fr]">
           <section className="space-y-6">
-            <div className="ops-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6">
               <div className="flex items-center gap-3">
                 <FileText className="h-5 w-5 text-amber-300" />
                 <div>
@@ -744,7 +744,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
               </div>
             </div>
 
-            <div className="ops-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6">
               <div className="flex items-center gap-3">
                 <Paperclip className="h-5 w-5 text-amber-300" />
                 <div>
@@ -803,7 +803,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
           </section>
 
           <section className="space-y-6">
-            <div className="ops-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6">
               <div className="flex items-center gap-3">
                 <Chat className="h-5 w-5 text-amber-300" />
                 <div>
@@ -945,7 +945,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
             </div>
 
             {detail ? (
-              <div className="ops-card rounded-[1.75rem] p-6">
+              <div className="legacy-card rounded-[1.75rem] p-6">
                 <div className="flex items-center gap-3">
                   <Shield className="h-5 w-5 text-amber-300" />
                   <div>

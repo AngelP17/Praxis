@@ -213,7 +213,7 @@ export default function BoardPage() {
               ) : (
                 <div className="grid gap-5 xl:grid-cols-4">
                   {columns.map((column) => (
-                    <section key={column.key} className="ops-card rounded-[1.5rem] p-4 sm:p-5">
+                    <section key={column.key} className="legacy-card rounded-[1.5rem] p-4 sm:p-5">
                       <div className="border-b border-zinc-800/70 pb-4">
                         <div className="flex items-start justify-between gap-4">
                           <div>

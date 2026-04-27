@@ -36,7 +36,7 @@ export function AuditBundlePanel({
   }
 
   return (
-    <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
       <div className="flex items-center justify-between border-b border-zinc-800/70 pb-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-amber-300" />

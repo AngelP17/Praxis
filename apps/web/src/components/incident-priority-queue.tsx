@@ -44,7 +44,7 @@ export function IncidentPriorityQueue({
   const sorted = [...filtered].sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
 
   return (
-    <div className="ops-card rounded-[1.5rem] p-4 sm:p-5">
+    <div className="legacy-card rounded-[1.5rem] p-4 sm:p-5">
       <div className="flex items-center justify-between border-b border-zinc-800/70 pb-4">
         <div>
           <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Priority Queue</div>

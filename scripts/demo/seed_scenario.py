@@ -3,12 +3,29 @@
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 
 import requests
 
-BASE_URL = "http://localhost:8000"
+BASE_URL = os.getenv("AETHER_DEMO_BASE_URL")
+CURRENT_BASE_URL = BASE_URL or "http://localhost:8000"
+
+
+def resolve_base_url() -> str:
+    candidates = []
+    if BASE_URL:
+        candidates.append(BASE_URL)
+    candidates.extend(["http://localhost:8000", "http://127.0.0.1:8010"])
+    for candidate in candidates:
+        try:
+            resp = requests.get(f"{candidate}/api/events?limit=1", timeout=2)
+            if resp.status_code in (200, 401):
+                return candidate
+        except requests.RequestException:
+            continue
+    return candidates[0]
 
 
 def load_scenario(path: str) -> dict:
@@ -17,7 +34,7 @@ def load_scenario(path: str) -> dict:
 
 
 def ingest_event(event: dict) -> str:
-    resp = requests.post(f"{BASE_URL}/api/events/ingest", json=event, timeout=10)
+    resp = requests.post(f"{CURRENT_BASE_URL}/api/events/ingest", json=event, timeout=10)
     resp.raise_for_status()
     data = resp.json()
     return data.get("event_id") or data.get("id")
@@ -31,7 +48,7 @@ def evaluate_decision(event_id: str, scenario: dict) -> str:
         "urgency": "high" if expected["priority_score"] > 80 else "medium",
         "business_impact": "high",
     }
-    resp = requests.post(f"{BASE_URL}/api/decisions/evaluate", json=payload, timeout=10)
+    resp = requests.post(f"{CURRENT_BASE_URL}/api/decisions/evaluate", json=payload, timeout=10)
     resp.raise_for_status()
     data = resp.json()
     return data.get("decision_id") or str(data.get("id", ""))
@@ -44,7 +61,7 @@ def capture_feedback(decision_id: str, scenario: dict) -> None:
         "note": feedback.get("note", ""),
     }
     resp = requests.post(
-        f"{BASE_URL}/api/decisions/{decision_id}/approve",
+        f"{CURRENT_BASE_URL}/api/decisions/{decision_id}/approve",
         json=payload,
         timeout=10,
     )
@@ -54,7 +71,7 @@ def capture_feedback(decision_id: str, scenario: dict) -> None:
 
 
 def verify_replay(decision_id: str) -> dict:
-    resp = requests.get(f"{BASE_URL}/api/replay/decisions/{decision_id}", timeout=10)
+    resp = requests.get(f"{CURRENT_BASE_URL}/api/replay/decisions/{decision_id}", timeout=10)
     resp.raise_for_status()
     return resp.json()
 
@@ -66,8 +83,11 @@ def main() -> int:
 
     scenario = load_scenario(args.scenario)
     name = scenario["scenario_name"]
+    global CURRENT_BASE_URL
+    CURRENT_BASE_URL = resolve_base_url()
 
     print(f"Seeding scenario: {name}")
+    print(f"Using API base: {CURRENT_BASE_URL}")
 
     # 1. Ingest events
     event_ids = []

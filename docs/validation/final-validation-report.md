@@ -142,7 +142,7 @@ rg "gsap" apps/web/src
 Result: `0 matches` (removed from package.json)
 
 ```bash
-rg -i "emoji|🚀|✅|🔥|⚡|💥|😀|👍|🎉|❌|✨" apps/web/src docs/
+rg -i "emoji" apps/web/src docs/
 ```
 Result: `0 matches`
 

@@ -5,6 +5,9 @@ import { Brain, CheckCircle, ShieldWarning, Info } from "@phosphor-icons/react";
 
 export function DecisionExplanationPanel({
   decision,
+  mode = "live",
+  panelState = "ready",
+  message,
 }: {
   decision?: {
     priority_score?: number;
@@ -13,10 +16,35 @@ export function DecisionExplanationPanel({
     sla_risk_score?: number;
     actionability_score?: number;
   } | null;
+  mode?: "live" | "demo" | "stale";
+  panelState?: "loading" | "ready" | "error";
+  message?: string;
 }) {
+  if (panelState === "loading") {
+    return (
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+        <div className="h-4 w-36 animate-pulse rounded bg-zinc-800/80" />
+        <div className="mt-5 space-y-3">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-10 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/50" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (panelState === "error") {
+    return (
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+        <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-rose-300">Astraea Decision</div>
+        <p className="mt-3 text-sm text-rose-100">{message || "Decision explanation failed to load."}</p>
+      </div>
+    );
+  }
+
   if (!decision) {
     return (
-      <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Astraea Decision</div>
         <p className="mt-4 text-sm text-zinc-500">No decision record available for this case.</p>
       </div>
@@ -34,9 +62,14 @@ export function DecisionExplanationPanel({
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 350, damping: 28, delay: 0.05 }}
-      className="ops-card rounded-[1.5rem] p-5 sm:p-6"
+      transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.05 }}
+      className="legacy-card rounded-[1.5rem] p-5 sm:p-6"
     >
+      {(mode === "demo" || mode === "stale") && (
+        <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+          {mode === "demo" ? "Demo scenario active" : "Using stale decision context"}
+        </div>
+      )}
       <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
         <Brain className="h-4 w-4 text-amber-300" />
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Astraea Decision</div>
@@ -61,7 +94,7 @@ export function DecisionExplanationPanel({
                   style={{ backgroundColor: m.color }}
                   initial={{ width: 0 }}
                   animate={{ width: `${pct}%` }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
+                  transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
                 />
               </div>
             </div>

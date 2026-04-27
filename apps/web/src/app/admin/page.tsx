@@ -323,7 +323,7 @@ export default function AdminPage() {
         ) : null}
 
         <div className="grid gap-6 xl:grid-cols-2">
-          <section className="ops-card rounded-[1.75rem] p-6">
+          <section className="legacy-card rounded-[1.75rem] p-6">
             <div className="flex items-center gap-3">
               <Users className="h-5 w-5 text-amber-300" />
               <div>
@@ -427,7 +427,7 @@ export default function AdminPage() {
           </section>
 
           <section className="space-y-6">
-            <div className="ops-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6">
               <div className="flex items-center gap-3">
                 <SlidersHorizontal className="h-5 w-5 text-amber-300" />
                 <div>
@@ -500,7 +500,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="ops-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6">
               <div className="flex items-center gap-3">
                 <Users className="h-5 w-5 text-amber-300" />
                 <div>
@@ -541,7 +541,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="ops-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6">
               <div className="flex items-center gap-3">
                 <Tag className="h-5 w-5 text-amber-300" />
                 <div>
@@ -589,7 +589,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="ops-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6">
               <div className="flex items-center gap-3">
                 <Key className="h-5 w-5 text-amber-300" />
                 <div>

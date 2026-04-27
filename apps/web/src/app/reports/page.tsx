@@ -120,7 +120,7 @@ export default function ReportsPage() {
               <div className="max-w-4xl">
                 <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-amber-300">Reports & Export</div>
                 <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                  Reporting that feels like part of the ops platform
+                  Reporting integrated with the operational platform
                 </h1>
                 <p className="mt-3 text-sm leading-7 text-zinc-400">
                   The export surface should feel like a deliberate intelligence handoff, not a forgotten utility page.
@@ -154,7 +154,7 @@ export default function ReportsPage() {
             {reportHighlights.map((item) => {
               const Icon = item.icon;
               return (
-                <div key={item.label} className="ops-card rounded-[1.25rem] p-5">
+                <div key={item.label} className="legacy-card rounded-[1.25rem] p-5">
                   <div className="flex items-center justify-between">
                     <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">{item.label}</div>
                     <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/5 bg-black/20">
@@ -171,7 +171,7 @@ export default function ReportsPage() {
           </div>
 
           <div className="grid gap-6 px-5 py-5 sm:px-8 xl:grid-cols-[1.1fr,0.9fr]">
-            <section className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+            <section className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
               <div className="flex items-center justify-between gap-4 border-b border-zinc-800/70 pb-4">
                 <div>
                   <h2 className="text-xl font-semibold text-white">Workbook Contents</h2>
@@ -209,7 +209,7 @@ export default function ReportsPage() {
             </section>
 
             <section className="space-y-5">
-              <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+              <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
                 <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">Why This Matters</div>
                 <div className="mt-5 space-y-4 text-sm leading-7 text-zinc-300">
                   <p>Executives get a readable top line instead of a raw operational worksheet.</p>
@@ -218,7 +218,7 @@ export default function ReportsPage() {
                 </div>
               </div>
 
-              <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+              <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
                 <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">Follow-On Surfaces</div>
               <div className="mt-5 grid gap-3">
                   <Link

@@ -24,14 +24,42 @@ export function SignalQueue({
   selectedId,
   onSelect,
   searchTerm,
+  mode = "live",
+  panelState = "ready",
+  message,
 }: {
   tickets: QueueTicket[];
   selectedId: string | null;
   onSelect: (id: string) => void;
   searchTerm: string;
+  mode?: "live" | "demo" | "stale";
+  panelState?: "loading" | "ready" | "error";
+  message?: string;
 }) {
+  if (panelState === "loading") {
+    return (
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+        <div className="h-4 w-28 animate-pulse rounded bg-zinc-800/80" />
+        <div className="mt-4 space-y-2">
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="h-20 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/50" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (panelState === "error") {
+    return (
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+        <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-rose-300">Signal Queue</div>
+        <p className="mt-3 text-sm text-rose-100">{message || "Signal queue failed to load."}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="ops-card rounded-[1.5rem] p-5 sm:p-6">
+    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
       <div className="flex flex-col gap-3 border-b border-zinc-800/50 pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Signal Queue</div>
@@ -40,6 +68,12 @@ export function SignalQueue({
         </div>
         <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-amber-300">{tickets.length} visible</span>
       </div>
+
+      {(mode === "demo" || mode === "stale") && (
+        <div className="mt-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+          {mode === "demo" ? "Demo scenario active" : "Live feed is partially stale"}
+        </div>
+      )}
 
       <div className="mt-4 space-y-2">
         <AnimatePresence mode="popLayout">
@@ -50,7 +84,7 @@ export function SignalQueue({
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.98 }}
-              transition={{ type: "spring", stiffness: 400, damping: 30, delay: index * 0.02 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.02 }}
               type="button"
               onClick={() => onSelect(ticket.ticketId)}
               className={`block w-full rounded-[1.1rem] border px-4 py-4 text-left transition ${

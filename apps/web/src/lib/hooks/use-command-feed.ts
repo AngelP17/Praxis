@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Incident, Ticket } from "@/types";
+import { DEMO_INCIDENTS, DEMO_METRICS, DEMO_TICKETS } from "@/lib/demo-scenario";
 
 export type QueueMetrics = {
   total_open: number;
@@ -11,12 +12,14 @@ export type QueueMetrics = {
 };
 
 export type FeedStatus = "loading" | "ready" | "error";
+export type FeedMode = "live" | "demo" | "stale" | "offline";
 
 export type FeedState = {
   tickets: Ticket[];
   incidents: Incident[];
   metrics: QueueMetrics | null;
   status: FeedStatus;
+  mode: FeedMode;
   syncedAt: number;
   errorMessage: string | null;
   warnings: string[];
@@ -42,6 +45,7 @@ const initialFeed: FeedState = {
   incidents: [],
   metrics: null,
   status: "loading",
+  mode: "offline",
   syncedAt: Date.now(),
   errorMessage: null,
   warnings: [],
@@ -71,6 +75,24 @@ function describeAction(ticket: QueueTicket | undefined): string {
 }
 
 function toQueueTicket(ticket: Ticket): QueueTicket {
+  const mappedRecommendation =
+    ticket.ticket_id === "INC-4821"
+      ? "Route to mechanical team and schedule bearing replacement."
+      : ticket.resolution_notes?.trim() ||
+        describeAction({
+          ticketId: ticket.ticket_id,
+          title: ticket.title,
+          status: ticket.status,
+          priority: ticket.priority_raw,
+          score: ticket.priority_score ?? 0,
+          assignee: ticket.assignee || "Unassigned",
+          category: ticket.category || ticket.root_cause_hypothesis || "Unknown",
+          daysOpen: ticket.days_open,
+          createdAt: ticket.created_at,
+          incidentId: ticket.incident_id,
+          recommendation: "Validate ownership, root cause, and next concrete action.",
+        });
+
   return {
     ticketId: ticket.ticket_id,
     title: ticket.title,
@@ -82,28 +104,30 @@ function toQueueTicket(ticket: Ticket): QueueTicket {
     daysOpen: ticket.days_open,
     createdAt: ticket.created_at,
     incidentId: ticket.incident_id,
-    recommendation: describeAction({
-      ticketId: ticket.ticket_id,
-      title: ticket.title,
-      status: ticket.status,
-      priority: ticket.priority_raw,
-      score: ticket.priority_score ?? 0,
-      assignee: ticket.assignee || "Unassigned",
-      category: ticket.category || ticket.root_cause_hypothesis || "Unknown",
-      daysOpen: ticket.days_open,
-      createdAt: ticket.created_at,
-      incidentId: ticket.incident_id,
-      recommendation: "Validate ownership, root cause, and next concrete action.",
-    }),
+    requester: ticket.requester,
+    recommendation: mappedRecommendation,
   };
+}
+
+function resolveApiPath(path: string) {
+  const apiBase = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiBase || apiBase === "/api") {
+    return path;
+  }
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  if (apiBase.startsWith("http://") || apiBase.startsWith("https://")) {
+    return `${apiBase.replace(/\/$/, "")}${normalizedPath}`;
+  }
+  return `${apiBase.replace(/\/$/, "")}${normalizedPath}`;
 }
 
 async function fetchJsonWithTimeout<T>(path: string, timeoutMs = 5000): Promise<T> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(path, { signal: controller.signal, cache: "no-store" });
-    if (!response.ok) throw new Error(`${path}: ${response.status}`);
+    const resolvedPath = resolveApiPath(path);
+    const response = await fetch(resolvedPath, { signal: controller.signal, cache: "no-store" });
+    if (!response.ok) throw new Error(`${resolvedPath}: ${response.status}`);
     return (await response.json()) as T;
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
@@ -135,20 +159,73 @@ export function useCommandFeed() {
           fetchJsonWithTimeout<Incident[]>("/api/incidents", 5000),
         ]);
         if (ticketsR.status === "rejected") throw ticketsR.reason;
+        const liveTickets = ticketsR.value;
+        const openSignals = liveTickets.filter((ticket) => !isClosedStatus(ticket.status));
+        if (openSignals.length === 0 && DEMO_TICKETS.length > 0) {
+          const syncedAt = Date.now();
+          syncStart.current = syncedAt;
+          setFeed({
+            tickets: DEMO_TICKETS,
+            incidents: DEMO_INCIDENTS,
+            metrics: DEMO_METRICS,
+            status: "ready",
+            mode: "demo",
+            syncedAt,
+            errorMessage: null,
+            warnings: ["Demo scenario active", "Live API returned no open signals; loaded seeded scenario."],
+          });
+          setLastSyncSeconds(0);
+          return;
+        }
 
         const warnings: string[] = [];
         const metrics = metricsR.status === "fulfilled" ? metricsR.value : (warnings.push("Metrics unavailable"), null);
         const incidents = incidentsR.status === "fulfilled" ? incidentsR.value : (warnings.push("Incident clustering unavailable"), []);
+        const mode: FeedMode = warnings.length > 0 ? "stale" : "live";
 
         if (!mountedRef.current) return;
         const syncedAt = Date.now();
         syncStart.current = syncedAt;
-        setFeed({ tickets: ticketsR.value, incidents, metrics, status: "ready", syncedAt, errorMessage: null, warnings });
+        setFeed({
+          tickets: liveTickets,
+          incidents,
+          metrics,
+          status: "ready",
+          mode,
+          syncedAt,
+          errorMessage: null,
+          warnings,
+        });
         setLastSyncSeconds(0);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Command center could not load live API.";
         if (!mountedRef.current) return;
-        setFeed({ tickets: [], incidents: [], metrics: null, status: "error", syncedAt: Date.now(), errorMessage: message, warnings: [] });
+        if (DEMO_TICKETS.length > 0) {
+          const syncedAt = Date.now();
+          syncStart.current = syncedAt;
+          setFeed({
+            tickets: DEMO_TICKETS,
+            incidents: DEMO_INCIDENTS,
+            metrics: DEMO_METRICS,
+            status: "ready",
+            mode: "demo",
+            syncedAt,
+            errorMessage: null,
+            warnings: ["Demo scenario active", `Live API unavailable: ${message}`],
+          });
+          setLastSyncSeconds(0);
+          return;
+        }
+        setFeed({
+          tickets: [],
+          incidents: [],
+          metrics: null,
+          status: "error",
+          mode: "offline",
+          syncedAt: Date.now(),
+          errorMessage: message,
+          warnings: [],
+        });
       }
     },
     []
@@ -157,12 +234,21 @@ export function useCommandFeed() {
   useEffect(() => {
     mountedRef.current = true;
     void hydrate();
-    const timer = window.setInterval(() => {
+    let active = true;
+    let timer: number | undefined;
+    const tick = () => {
       setLastSyncSeconds(Math.floor((Date.now() - syncStart.current) / 1000));
-    }, 1000);
+      if (active) {
+        timer = window.setTimeout(tick, 1000);
+      }
+    };
+    timer = window.setTimeout(tick, 1000);
     return () => {
+      active = false;
       mountedRef.current = false;
-      window.clearInterval(timer);
+      if (timer !== undefined) {
+        window.clearTimeout(timer);
+      }
     };
   }, [hydrate]);
 
