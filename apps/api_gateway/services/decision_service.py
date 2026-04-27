@@ -270,7 +270,6 @@ class DecisionService:
 
     def evaluate_event(self, payload: dict[str, object]) -> dict[str, object]:
         import uuid
-        from datetime import datetime
 
         event_id = payload.get("event_id") or f"evt_{uuid.uuid4().hex[:12]}"
         payload = {**payload, "event_id": event_id}
@@ -522,7 +521,8 @@ class DecisionService:
         return round(sum(scores) / len(scores) - penalty, 4)
 
     def _compute_replay_hash(self, payload: dict[str, object]) -> str:
-        import hashlib, json
+        import hashlib
+        import json
 
         canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
         return f"sha256:{hashlib.sha256(canonical.encode()).hexdigest()[:32]}"

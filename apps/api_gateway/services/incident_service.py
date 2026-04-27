@@ -40,7 +40,11 @@ class IncidentService:
                     "root_cause_hypothesis": row["root_cause_hypothesis"],
                     "confidence": row["confidence"],
                     "business_impact_score": row["business_impact_score"],
-                    "opened_at": row["opened_at"].isoformat() if hasattr(row["opened_at"], "isoformat") else row["opened_at"] if row["opened_at"] else None,
+                    "opened_at": row["opened_at"].isoformat()
+                    if hasattr(row["opened_at"], "isoformat")
+                    else row["opened_at"]
+                    if row["opened_at"]
+                    else None,
                 }
                 for row in rows
             ]
@@ -116,7 +120,11 @@ class IncidentService:
                     "root_cause_hypothesis": row["root_cause_hypothesis"],
                     "confidence": row["confidence"],
                     "business_impact_score": row["business_impact_score"],
-                    "opened_at": row["opened_at"].isoformat() if hasattr(row["opened_at"], "isoformat") else row["opened_at"] if row["opened_at"] else None,
+                    "opened_at": row["opened_at"].isoformat()
+                    if hasattr(row["opened_at"], "isoformat")
+                    else row["opened_at"]
+                    if row["opened_at"]
+                    else None,
                     "summary": row["summary"],
                 },
                 "metadata": row["metadata_json"] or {},
@@ -287,7 +295,9 @@ class IncidentService:
             timeline.append(
                 {
                     "phase": "closed",
-                    "timestamp": incident_row["closed_at"].isoformat() if hasattr(row["closed_at"], "isoformat") else row["closed_at"],
+                    "timestamp": incident_row["closed_at"].isoformat()
+                    if hasattr(incident_row["closed_at"], "isoformat")
+                    else incident_row["closed_at"],
                     "detail": "Incident closed",
                 }
             )
