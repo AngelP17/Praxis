@@ -13,12 +13,12 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    DATABASE_URL: str = "postgresql://user:password@localhost/aether"
+    DATABASE_URL: str = "sqlite:///./aether-sentinel.db"
     SECRET_KEY: str = "change-me-in-production"
     ENV: str = "development"
     DEBUG: bool = True
     ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
-    AUTO_INIT_DB: bool = False
+    AUTO_INIT_DB: bool = True
     USERS_FILE: str | None = None
 
     @property
