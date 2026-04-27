@@ -107,6 +107,38 @@ Every list has a meaningful empty state:
 - Suggested action to populate
 - Link to documentation
 
+## Frontend State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Loading: Open Command Room
+    Loading --> Empty: No data
+    Loading --> Error: API failure
+    Loading --> Ready: Data loaded
+
+    Empty --> Loading: Refresh
+    Error --> Loading: Retry
+
+    Ready --> Selecting: Click signal
+    Selecting --> Ready: Selection changed
+
+    Ready --> Filtering: Type search
+    Filtering --> Ready: Search applied
+
+    Ready --> Exporting: Click export
+    Exporting --> Ready: Export complete
+    Exporting --> Error: Export failed
+
+    Ready --> Feedbacking: Submit feedback
+    Feedbacking --> Ready: Feedback saved
+
+    Ready --> Replaying: Request replay
+    Replaying --> Ready: Replay loaded
+
+    Ready --> Stale: Sync expired
+    Stale --> Loading: Refresh
+```
+
 ## Why This Approach
 
 Traditional dashboard UIs optimize for information density. Control room UIs optimize for decision velocity.

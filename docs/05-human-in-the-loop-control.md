@@ -63,6 +63,41 @@ Some decisions require mandatory human review:
 
 These rules are configurable per deployment.
 
+## Feedback Loop Diagram
+
+```mermaid
+flowchart TD
+    Decision["Astraea Recommendation"] --> Review{"Human Review Required?"}
+    Review -->|Yes| Operator["Operator Reviews Context"]
+    Review -->|No| Action["Workflow Action Suggested"]
+
+    Operator --> Accept["Accept"]
+    Operator --> Reject["Reject"]
+    Operator --> Override["Override"]
+
+    Accept --> Feedback["Persist Feedback Event"]
+    Reject --> Feedback
+    Override --> Feedback
+
+    Feedback --> EventStore["Operational Event Store"]
+    EventStore --> FutureDecision["Future Decision Context"]
+    FutureDecision --> Decision
+```
+
+## Why It Matters
+
+Human-in-the-loop control prevents automated secondary failures and builds operator trust. Every piece of feedback improves future recommendations.
+
+## Failure Modes
+
+- **Operator override without note**: System requires optional note but does not enforce it
+- **Feedback loop delay**: Feedback may take hours to enter the system. Real-time decisions use stale context.
+- **False positive fatigue**: Too many low-value alerts cause operators to bulk-reject. Threshold tuning addresses this.
+
+## Verification
+
+- Integration test: `test_feedback_approve` - feedback is persisted and retrievable
+
 ## Metrics
 
 The system tracks:

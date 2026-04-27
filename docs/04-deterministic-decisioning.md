@@ -90,6 +90,47 @@ Some components are intentionally non-deterministic:
 
 These components are tracked separately and do not affect the core decision hash.
 
+## Signal-to-Decision Flow
+
+```mermaid
+sequenceDiagram
+    participant Source as Signal Source
+    participant Gateway as API Gateway
+    participant Store as Event Store
+    participant Astraea as Astraea Engine
+    participant Incident as Incident Service
+    participant Aether as Aether Workflow
+    participant UI as Command Room UI
+
+    Source->>Gateway: POST /api/events/ingest
+    Gateway->>Gateway: Validate schema
+    Gateway->>Store: Persist raw event
+    Gateway->>Astraea: Evaluate normalized event
+    Astraea->>Astraea: Extract features
+    Astraea->>Astraea: Score risk and priority
+    Astraea->>Astraea: Generate explanation and replay hash
+    Astraea->>Store: Persist decision record
+    Store->>Incident: Link related events
+    Incident->>Aether: Create or update ticket
+    Aether->>UI: Expose ranked queue and decision context
+```
+
+## Why It Matters
+
+Deterministic decisioning turns incident prioritization from guesswork into engineering. Operators can verify decisions. Auditors can reconstruct them. Post-mortems can reference them.
+
+## Failure Modes
+
+- **Hash collision**: SHA-256 collision is cryptographically negligible but documented
+- **Version drift**: Old decisions reference outdated rule versions. Migration scripts handle re-evaluation.
+- **Feature snapshot corruption**: Stored as immutable JSONB. Corruption would be detected by hash mismatch.
+
+## Verification
+
+- Unit test: `test_replay_hash_stability` - same input produces same hash
+- Unit test: `test_replay_hash_sensitivity` - different input produces different hash
+- Integration test: `test_replay_decision` - replay returns identical decision
+
 ## Versioning
 
 Decision rules are versioned. When rules change:

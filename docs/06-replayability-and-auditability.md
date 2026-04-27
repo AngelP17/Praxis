@@ -98,6 +98,47 @@ With replay:
 - Similar incidents share context automatically
 - Operator training uses real historical decisions
 
+## Replay and Audit Flow
+
+```mermaid
+flowchart LR
+    Raw["Raw Event"] --> Norm["Normalized Payload"]
+    Norm --> Feature["Feature Snapshot"]
+    Feature --> Decision["Decision Record"]
+    Decision --> Recommendation["Recommendation"]
+    Recommendation --> Ticket["Ticket Action"]
+    Ticket --> Feedback["Human Feedback"]
+    Feedback --> Evidence["Platform Evidence"]
+    Evidence --> Replay["Replay Timeline"]
+    Replay --> Export["Audit Export"]
+```
+
+## Why It Matters
+
+Replayability turns the project from a dashboard into an **accountable operational system**.
+
+Without replay:
+- Post-mortems are based on memory and incomplete logs
+- Regulatory audits require manual document collection
+- Similar incidents are handled inconsistently
+- Operator training lacks concrete examples
+
+With replay:
+- Post-mortems are data-driven
+- Regulatory audits are one-click exports
+- Similar incidents share context automatically
+- Operator training uses real historical decisions
+
+## Failure Modes
+
+- **Missing evidence**: Platform service downtime may leave gaps in SLO evidence
+- **Timeline reconstruction error**: Clock skew across services can distort ordering. NTP sync is required.
+- **Audit export size**: Large incidents produce large exports. Streaming export handles this.
+
+## Verification
+
+- Integration test: `test_audit_export` - audit export returns structured document
+
 ## Immutable Records
 
 All replay inputs are immutable:
