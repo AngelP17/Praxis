@@ -113,6 +113,13 @@ make demo
 
 Then open `http://localhost:3000` for the command center.
 
+**Demo login credentials:**
+| Username | Password | Role |
+|----------|----------|------|
+| `admin` | `admin` | Administrator |
+| `operator` | `operator` | Agent (recommended for demo) |
+| `viewer` | `viewer` | Read-only |
+
 ### Manual service start
 
 ```bash

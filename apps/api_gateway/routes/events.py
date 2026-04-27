@@ -9,12 +9,6 @@ from apps.api_gateway.services.event_service import EventService
 router = APIRouter()
 
 
-@router.get("/tickets/{ticket_id}")
-def get_ticket_events(ticket_id: str, db: Session = Depends(get_db)):
-    service = EventService(db)
-    return service.get_ticket_event_stream(ticket_id)
-
-
 @router.post("/ingest")
 def ingest_event(payload: dict[str, Any], db: Session = Depends(get_db)):
     service = EventService(db)
@@ -25,6 +19,12 @@ def ingest_event(payload: dict[str, Any], db: Session = Depends(get_db)):
 def ingest_batch(payloads: list[dict[str, Any]], db: Session = Depends(get_db)):
     service = EventService(db)
     return {"events": [service.ingest_event(p) for p in payloads]}
+
+
+@router.get("/tickets/{ticket_id}")
+def get_ticket_events(ticket_id: str, db: Session = Depends(get_db)):
+    service = EventService(db)
+    return service.get_ticket_event_stream(ticket_id)
 
 
 @router.get("")
