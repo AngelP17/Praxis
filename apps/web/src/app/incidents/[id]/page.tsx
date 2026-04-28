@@ -3,6 +3,7 @@ import { ChartLine, Hash, ShieldCheck, Waveform } from "@phosphor-icons/react/di
 
 import { getDemoIncident } from "@/lib/demo-scenario";
 import { getServerApiUrl } from "@/lib/server-api";
+import { SignalMarquee } from "@/components/sentinel-v2/motion/signal-marquee";
 
 type IncidentDetailPayload = {
   incident: {
@@ -61,6 +62,7 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
     <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
       <div className="sentinel-v2-grid" />
       <div className="sentinel-v2-noise" />
+      <div className="sentinel-v2-amber-field" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
         <section className="sentinel-v2-panel-strong p-5 sm:p-6">
@@ -168,6 +170,18 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
               </Link>
             ))}
           </div>
+        </section>
+
+        <section className="mt-4">
+          <SignalMarquee
+            items={[
+              payload.incident.title,
+              "priority 96 / confidence 0.92",
+              "root cause bearing degradation",
+              "route mechanical team",
+              "replay hash sha256:inc-4821c9a2f",
+            ]}
+          />
         </section>
 
         <footer className="mt-4 pb-1">

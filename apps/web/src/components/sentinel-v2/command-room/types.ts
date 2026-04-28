@@ -35,7 +35,7 @@ export function displayStatus(feedStatus: FeedStatus, feedMode: FeedMode, visibl
   if (feedMode === "demo") return "demo";
   if (feedMode === "stale") return "stale";
   if (feedMode === "live" && visibleCount > 0) return "live";
-  return "empty";
+  return "stale";
 }
 
 export function statusLabel(status: DataStatus) {
@@ -44,7 +44,7 @@ export function statusLabel(status: DataStatus) {
   if (status === "stale") return "Stale data with last known records";
   if (status === "loading") return "Syncing live data";
   if (status === "error") return "API unavailable with demo fallback";
-  return "No visible live signals; demo fallback requested";
+  return "Stale data with last known records";
 }
 
 export function recommendationFor(ticket?: QueueTicket) {

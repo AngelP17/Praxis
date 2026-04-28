@@ -2,8 +2,16 @@ import axios from "axios";
 
 import { ACCESS_TOKEN_KEY } from "@/lib/auth";
 
+function resolveBaseUrl() {
+  const configured = process.env.NEXT_PUBLIC_API_URL || "/api";
+  const clean = configured.replace(/\/$/, "");
+  if (clean === "/api") return clean;
+  if (clean.endsWith("/api")) return clean.slice(0, -4) + "/api";
+  return clean;
+}
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+  baseURL: resolveBaseUrl(),
 });
 
 api.interceptors.request.use((config) => {

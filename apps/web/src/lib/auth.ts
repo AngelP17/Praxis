@@ -68,11 +68,17 @@ export type SessionValidationResult =
   | { status: "error"; user: null; message: string };
 
 function getApiBaseUrl() {
-  return (process.env.NEXT_PUBLIC_API_URL || "/api").replace(/\/$/, "");
+  const raw = (process.env.NEXT_PUBLIC_API_URL || "/api").replace(/\/$/, "");
+  if (raw.endsWith("/api")) return raw;
+  return `${raw}/api`;
 }
 
 function buildAuthUrl(pathname: string) {
-  return `${getApiBaseUrl()}${pathname.startsWith("/") ? pathname : `/${pathname}`}`;
+  const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  if (normalizedPath.startsWith("/api/")) {
+    return `${getApiBaseUrl()}${normalizedPath.slice(4)}`;
+  }
+  return `${getApiBaseUrl()}${normalizedPath}`;
 }
 
 export async function validateAccessToken(
@@ -94,8 +100,16 @@ export async function validateAccessToken(
       signal,
     });
 
-    if (response.status === 401 || response.status === 403 || response.status === 404) {
+    if (response.status === 401 || response.status === 403) {
       return { status: "invalid", user: null };
+    }
+
+    if (response.status === 404) {
+      return {
+        status: "error",
+        user: null,
+        message: "Auth verification endpoint unavailable (404)",
+      };
     }
 
     if (!response.ok) {

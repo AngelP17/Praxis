@@ -1,7 +1,9 @@
 import {
   ChartLine,
   ClockCounterClockwise,
+  DotsThree,
   Gauge,
+  Pulse,
   ShieldCheck,
   TrendUp,
   Waveform,
@@ -18,11 +20,28 @@ const evidence = ["SLO burn rate", "Kubernetes event window", "Forensic waveform
 
 export function ProductShellPreview() {
   return (
-    <div className="sentinel-v2-shell-preview">
+    <div className="sentinel-v2-shell-preview sentinel-v2-shell-preview-floating">
       <div className="sentinel-v2-shell-preview-glow" />
+      <div className="sentinel-v2-shell-preview-rail" />
       <div className="relative z-10 grid grid-cols-12 gap-3.5">
+        <div className="col-span-12 rounded-xl border border-zinc-800/70 bg-zinc-950/85 px-3 py-2">
+          <div className="flex items-center justify-between gap-2">
+            <div className="inline-flex items-center gap-2">
+              <Pulse size={12} className="text-emerald-300" />
+              <span className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-300">Replay + Decision Context</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
+              <ClockCounterClockwise size={11} className="text-amber-200" />
+              26:27 UTC
+            </div>
+          </div>
+        </div>
+
         <section className="col-span-12 xl:col-span-4 rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5">
-          <div className="sentinel-v2-eyebrow">Signal Queue</div>
+          <div className="flex items-center justify-between gap-2">
+            <div className="sentinel-v2-eyebrow">Signal Queue</div>
+            <span className="mono-data text-[10px] text-zinc-500">4 visible</span>
+          </div>
           <div className="mt-2.5 space-y-2">
             {queue.map((item, index) => (
               <div
@@ -31,7 +50,7 @@ export function ProductShellPreview() {
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="mono-data text-[11px] text-zinc-100">{item.id}</span>
-                  <span className="mono-data text-[11px] text-amber-200">{item.score}</span>
+                  <span className="mono-data text-[11px] text-amber-200">P{item.score}</span>
                 </div>
                 <div className="mt-1 text-[11px] leading-5 text-zinc-300">{item.title}</div>
                 <div className="mt-1 text-[10px] text-zinc-500">{item.source}</div>
@@ -44,6 +63,7 @@ export function ProductShellPreview() {
           <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5">
             <div className="sentinel-v2-eyebrow">Selected Incident</div>
             <h3 className="mt-1.5 text-sm font-medium text-zinc-100">Press Line 3 vibration cascade</h3>
+            <div className="mt-1 text-[10px] text-zinc-500">INC-4821 · machine telemetry + operator ticket</div>
             <div className="mt-2 grid grid-cols-3 gap-2">
               <MiniMetric icon={TrendUp} label="Priority score" value="96" />
               <MiniMetric icon={ShieldCheck} label="Confidence" value="0.92" />
@@ -56,6 +76,10 @@ export function ProductShellPreview() {
               <div className="sentinel-v2-eyebrow">Astraea Decision</div>
               <p className="mt-1.5 text-xs leading-5 text-zinc-200">Route to mechanical team and schedule bearing replacement.</p>
               <div className="mt-2 text-[11px] text-zinc-500">Root cause: bearing degradation</div>
+              <div className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-zinc-700/70 bg-zinc-900/75 px-2 py-1 text-[10px] text-zinc-300">
+                <DotsThree size={12} className="text-amber-200" />
+                operator checkpoint pending
+              </div>
             </div>
             <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5">
               <div className="sentinel-v2-eyebrow">Replay Hash</div>
@@ -88,7 +112,7 @@ export function ProductShellPreview() {
                       {index % 2 === 0 ? <Waveform size={11} className="text-amber-200" /> : <ChartLine size={11} className="text-amber-200" />}
                       {item}
                     </div>
-                    <span className="mono-data text-[9px] text-zinc-500">ok</span>
+                    <span className="mono-data text-[9px] text-zinc-500">{index === 2 ? "captured" : "ok"}</span>
                   </div>
                 ))}
               </div>

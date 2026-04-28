@@ -17,6 +17,16 @@ export function ReplayHashRail({
   ticket?: QueueTicket;
   dataStatus: DataStatus;
 }) {
+  const chainState =
+    dataStatus === "live"
+      ? "Live chain"
+      : dataStatus === "demo"
+        ? "Demo chain"
+        : dataStatus === "stale"
+          ? "Stale chain"
+          : dataStatus === "loading"
+            ? "Syncing chain"
+            : "Fallback chain";
   return (
     <section className="sentinel-v2-panel p-3.5">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -44,7 +54,7 @@ export function ReplayHashRail({
 
       <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg border border-zinc-700/70 bg-zinc-900/75 px-3 py-1.5 text-xs text-zinc-300">
         <Path size={13} className="text-emerald-300" />
-        Mini replay timeline ready for forensic export.
+        {chainState} · mini replay timeline ready for forensic export.
       </div>
     </section>
   );

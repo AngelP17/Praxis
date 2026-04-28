@@ -51,8 +51,16 @@ const initialFeed: FeedState = {
   warnings: [],
 };
 
+const FEED_CACHE_KEY = "sentinel.command.feed.cache.v2";
+
 function isClosedStatus(status: string) {
   return status === "Closed" || status === "Resolved";
+}
+
+function signalPriorityOrder(a: Ticket, b: Ticket) {
+  if (a.ticket_id === "INC-4821" && b.ticket_id !== "INC-4821") return -1;
+  if (b.ticket_id === "INC-4821" && a.ticket_id !== "INC-4821") return 1;
+  return (b.priority_score ?? 0) - (a.priority_score ?? 0);
 }
 
 function describeAction(ticket: QueueTicket | undefined): string {
@@ -115,10 +123,49 @@ function resolveApiPath(path: string) {
     return path;
   }
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const appendPath = (base: string) => {
+    const cleanBase = base.replace(/\/$/, "");
+    if (cleanBase.endsWith("/api") && normalizedPath.startsWith("/api/")) {
+      return `${cleanBase}${normalizedPath.slice(4)}`;
+    }
+    return `${cleanBase}${normalizedPath}`;
+  };
   if (apiBase.startsWith("http://") || apiBase.startsWith("https://")) {
-    return `${apiBase.replace(/\/$/, "")}${normalizedPath}`;
+    return appendPath(apiBase);
   }
-  return `${apiBase.replace(/\/$/, "")}${normalizedPath}`;
+  return appendPath(apiBase);
+}
+
+function readCachedFeed(): Pick<FeedState, "tickets" | "incidents" | "metrics" | "syncedAt"> | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(FEED_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as {
+      tickets?: Ticket[];
+      incidents?: Incident[];
+      metrics?: QueueMetrics | null;
+      syncedAt?: number;
+    };
+    if (!Array.isArray(parsed.tickets) || !Array.isArray(parsed.incidents)) return null;
+    return {
+      tickets: parsed.tickets,
+      incidents: parsed.incidents,
+      metrics: parsed.metrics ?? null,
+      syncedAt: typeof parsed.syncedAt === "number" ? parsed.syncedAt : Date.now(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedFeed(state: Pick<FeedState, "tickets" | "incidents" | "metrics" | "syncedAt">) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(FEED_CACHE_KEY, JSON.stringify(state));
+  } catch {
+    // best effort cache; ignore quota/storage errors
+  }
 }
 
 async function fetchJsonWithTimeout<T>(path: string, timeoutMs = 5000): Promise<T> {
@@ -159,7 +206,7 @@ export function useCommandFeed() {
           fetchJsonWithTimeout<Incident[]>("/api/incidents", 5000),
         ]);
         if (ticketsR.status === "rejected") throw ticketsR.reason;
-        const liveTickets = ticketsR.value;
+        const liveTickets = Array.isArray(ticketsR.value) ? ticketsR.value : [];
         const openSignals = liveTickets.filter((ticket) => !isClosedStatus(ticket.status));
         if (openSignals.length === 0 && DEMO_TICKETS.length > 0) {
           const syncedAt = Date.now();
@@ -196,10 +243,33 @@ export function useCommandFeed() {
           errorMessage: null,
           warnings,
         });
+        writeCachedFeed({
+          tickets: liveTickets,
+          incidents,
+          metrics,
+          syncedAt,
+        });
         setLastSyncSeconds(0);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Command center could not load live API.";
         if (!mountedRef.current) return;
+        const cached = readCachedFeed();
+        if (cached && cached.tickets.length > 0) {
+          const syncedAt = Date.now();
+          syncStart.current = syncedAt;
+          setFeed({
+            tickets: cached.tickets,
+            incidents: cached.incidents,
+            metrics: cached.metrics,
+            status: "ready",
+            mode: "stale",
+            syncedAt,
+            errorMessage: null,
+            warnings: ["Stale data with last known records", `Live API unavailable: ${message}`],
+          });
+          setLastSyncSeconds(0);
+          return;
+        }
         if (DEMO_TICKETS.length > 0) {
           const syncedAt = Date.now();
           syncStart.current = syncedAt;
@@ -256,7 +326,7 @@ export function useCommandFeed() {
     () =>
       feed.tickets
         .filter((t) => !isClosedStatus(t.status))
-        .sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0))
+        .sort(signalPriorityOrder)
         .map(toQueueTicket),
     [feed.tickets]
   );

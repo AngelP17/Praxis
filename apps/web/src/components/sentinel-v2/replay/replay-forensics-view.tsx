@@ -9,6 +9,8 @@ import {
   Path,
   ShieldCheck,
 } from "@phosphor-icons/react/dist/ssr";
+import { MotionReplayRail } from "@/components/sentinel-v2/motion/motion-replay-rail";
+import { SignalMarquee } from "@/components/sentinel-v2/motion/signal-marquee";
 
 type ReplayPayload = {
   ticket_id: string;
@@ -59,32 +61,58 @@ export function ReplayForensicsView({
     <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
       <div className="sentinel-v2-grid" />
       <div className="sentinel-v2-noise" />
+      <div className="sentinel-v2-amber-field" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
         <section className="sentinel-v2-panel-strong p-5 sm:p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="grid gap-4 xl:grid-cols-[1.2fr,0.8fr]">
             <div>
               <div className="sentinel-v2-eyebrow">Replay Forensics</div>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">Replay {id || payload.ticket_id}</h1>
               <p className="mt-2 max-w-3xl text-sm leading-7 text-zinc-300">
                 Deterministic incident reconstruction with hash-linked decisions, event chain evidence, and operator feedback checkpoints.
               </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link
+                  href="/command-center"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+                >
+                  Command center
+                </Link>
+                <Link
+                  href={`/incidents/${payload.ticket_id === "INC-4821" ? "IR-2026-041" : "IR-2026-040"}`}
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+                >
+                  Incident detail
+                </Link>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Link
-                href="/command-center"
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
-              >
-                Command center
-              </Link>
-              <Link
-                href={`/incidents/${payload.ticket_id === "INC-4821" ? "IR-2026-041" : "IR-2026-040"}`}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
-              >
-                Incident detail
-              </Link>
+            <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/75 p-3.5">
+              <div className="sentinel-v2-eyebrow">Replay Path</div>
+              <div className="mt-2">
+                <MotionReplayRail
+                  nodes={[
+                    { id: "signal", label: "Signal", state: "complete" },
+                    { id: "decision", label: "Decision", state: "complete" },
+                    { id: "workflow", label: "Workflow", state: "complete" },
+                    { id: "feedback", label: "Feedback", state: "active" },
+                    { id: "replay", label: "Replay", state: "pending" },
+                  ]}
+                />
+              </div>
             </div>
           </div>
+
+          <SignalMarquee
+            className="mt-3"
+            items={[
+              `replay ${id || payload.ticket_id}`,
+              `hash ${replayHash}`,
+              "signal -> decision -> workflow -> feedback -> replay",
+              "operator checkpoint preserved",
+              "audit bundle export ready",
+            ]}
+          />
 
           {notice ? (
             <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/12 px-4 py-2.5 text-sm text-amber-100">{notice}</div>

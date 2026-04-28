@@ -22,15 +22,28 @@ export function AstraeaDecisionPanel({
   ticket?: QueueTicket;
   dataStatus: DataStatus;
 }) {
+  const stateBadge =
+    dataStatus === "live"
+      ? "Live decision trace"
+      : dataStatus === "demo"
+        ? "Demo decision trace"
+        : dataStatus === "stale"
+          ? "Stale decision trace"
+          : dataStatus === "loading"
+            ? "Scoring signals"
+            : "Fallback mode";
   return (
-    <section className="sentinel-v2-panel h-full max-h-[470px] overflow-y-auto p-4 sm:p-5">
+    <section className="sentinel-v2-panel h-full max-h-[390px] overflow-y-auto p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Astraea Decision</div>
           <p className="mt-1 text-xs text-zinc-400">Deterministic rationale and route recommendation</p>
         </div>
-        <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
-          <Brain size={15} />
+        <div className="inline-flex items-center gap-2">
+          <span className="rounded-md border border-zinc-700/70 bg-zinc-900/75 px-2 py-1 text-[10px] text-zinc-300">{stateBadge}</span>
+          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
+            <Brain size={15} />
+          </div>
         </div>
       </div>
 
@@ -58,6 +71,28 @@ export function AstraeaDecisionPanel({
           <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
             <WarningDiamond size={13} />
             Decision trace persists through replay and audit export.
+          </div>
+
+          <div className="mt-2.5 rounded-xl border border-zinc-800/80 bg-zinc-950/75 p-3">
+            <div className="sentinel-v2-eyebrow">Rationale Weights</div>
+            <div className="mt-2 space-y-2">
+              {[
+                ["vibration_rms", 41],
+                ["operator_ticket_corr", 27],
+                ["bearing_temp_drift", 18],
+                ["historical_match", 14],
+              ].map(([token, weight]) => (
+                <div key={token as string}>
+                  <div className="flex items-center justify-between gap-2 text-[11px] text-zinc-300">
+                    <span className="mono-data">{token as string}</span>
+                    <span className="mono-data text-zinc-500">{weight}%</span>
+                  </div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-zinc-800/80">
+                    <div className="h-full rounded-full bg-amber-300/80" style={{ width: `${weight}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}

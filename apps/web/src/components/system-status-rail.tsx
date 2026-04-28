@@ -16,11 +16,12 @@ import {
 import { clearStoredSession } from "@/lib/auth";
 
 const navItems = [
-  { label: "Overview", href: "/command-center", icon: Gauge },
+  { label: "Dashboard", href: "/dashboard", icon: Gauge },
+  { label: "Command", href: "/command-center", icon: Scan },
   { label: "Board", href: "/board", icon: SquaresFour },
+  { label: "Incidents", href: "/incidents", icon: Shield },
   { label: "Tickets", href: "/tickets/new", icon: Ticket },
   { label: "Reports", href: "/reports", icon: Table },
-  { label: "Admin", href: "/admin", icon: Shield },
 ];
 
 export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {

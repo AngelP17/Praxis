@@ -12,7 +12,11 @@ function resolveApi(path: string) {
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base || base === "/api") return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${base.replace(/\/$/, "")}${normalized}`;
+  const cleanBase = base.replace(/\/$/, "");
+  if (cleanBase.endsWith("/api") && normalized.startsWith("/api/")) {
+    return `${cleanBase}${normalized.slice(4)}`;
+  }
+  return `${cleanBase}${normalized}`;
 }
 
 export default function LoginPage() {
@@ -59,9 +63,10 @@ export default function LoginPage() {
     <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
       <div className="sentinel-v2-grid" />
       <div className="sentinel-v2-noise" />
+      <div className="sentinel-v2-amber-field" />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1580px] items-stretch gap-6 lg:grid-cols-[1.1fr,0.9fr]">
-        <section className="sentinel-v2-panel-strong p-6 sm:p-8">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1580px] items-stretch gap-5 lg:grid-cols-[52%_48%]">
+        <section className="sentinel-v2-panel-strong p-6 sm:p-7">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-700/80 bg-zinc-950/75 px-3 py-1.5">
             <ShieldChevron size={14} className="text-amber-300" />
             <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-200">Aether Sentinel Access</span>
@@ -88,9 +93,27 @@ export default function LoginPage() {
               </div>
             ))}
           </div>
+
+          <div className="mt-4 rounded-xl border border-zinc-700/75 bg-zinc-950/75 p-3.5">
+            <div className="sentinel-v2-eyebrow">Session Preview</div>
+            <div className="mt-2 grid grid-cols-[1fr,1fr,1fr] gap-2">
+              <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-2.5 py-2">
+                <div className="text-[10px] text-zinc-500">Queue</div>
+                <div className="mono-data mt-1 text-xs text-zinc-100">INC-4821 selected</div>
+              </div>
+              <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-2.5 py-2">
+                <div className="text-[10px] text-zinc-500">Decision</div>
+                <div className="mono-data mt-1 text-xs text-zinc-100">confidence 0.92</div>
+              </div>
+              <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-2.5 py-2">
+                <div className="text-[10px] text-zinc-500">Replay</div>
+                <div className="mono-data mt-1 text-xs text-zinc-100">sha256 linked</div>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <section className="sentinel-v2-panel p-6 sm:p-8">
+        <section className="sentinel-v2-panel p-6 sm:p-7">
           <div className="sentinel-v2-eyebrow">Operator Authentication</div>
           <h2 className="mt-2 text-2xl font-semibold text-zinc-50">Sign In</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-400">

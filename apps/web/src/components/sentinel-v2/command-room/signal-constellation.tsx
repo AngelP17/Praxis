@@ -26,15 +26,29 @@ export function SignalConstellation({
   onSelect: (id: string) => void;
   dataStatus: DataStatus;
 }) {
+  const stateBadge =
+    dataStatus === "live"
+      ? "Verified live queue"
+      : dataStatus === "demo"
+        ? "Demo scenario active"
+        : dataStatus === "stale"
+          ? "Stale queue snapshot"
+          : dataStatus === "loading"
+            ? "Loading signals"
+            : "Fallback mode";
+
   return (
-    <section className="sentinel-v2-panel h-full max-h-[470px] overflow-y-auto p-4 sm:p-5">
+    <section className="sentinel-v2-panel h-full max-h-[390px] overflow-y-auto p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Signal Queue</div>
           <p className="mt-1 text-xs text-zinc-400">Ranked machine and operator incidents</p>
         </div>
-        <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
-          <Broadcast size={15} />
+        <div className="inline-flex items-center gap-2">
+          <span className="rounded-md border border-zinc-700/70 bg-zinc-900/75 px-2 py-1 text-[10px] text-zinc-300">{stateBadge}</span>
+          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
+            <Broadcast size={15} />
+          </div>
         </div>
       </div>
 

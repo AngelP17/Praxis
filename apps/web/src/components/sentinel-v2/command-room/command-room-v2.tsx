@@ -80,21 +80,24 @@ export function CommandRoomV2({
 }) {
   const state = displayStatus(feedStatus, feedMode, visibleCountForStatus);
   const stateLabel = statusLabel(state);
+  const pulseMode = state === "live" ? "live" : state === "demo" ? "demo" : state === "stale" ? "stale" : "offline";
 
   useEffect(() => {
     if (tickets.length === 0) return;
     const currentExists = selectedTicketId ? tickets.some((ticket) => ticket.ticketId === selectedTicketId) : false;
     if (!currentExists) {
-      onSelectTicket(tickets[0].ticketId);
+      const preferred = tickets.find((ticket) => ticket.ticketId === "INC-4821") ?? tickets[0];
+      onSelectTicket(preferred.ticketId);
     }
   }, [tickets, selectedTicketId, onSelectTicket]);
 
   return (
-    <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-4 sm:px-6 lg:px-8">
+    <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-3 sm:px-6 lg:px-8">
       <div className="sentinel-v2-grid" />
       <div className="sentinel-v2-noise" />
+      <div className="sentinel-v2-amber-field" />
       <div className="relative z-10 mx-auto w-full max-w-[1600px]">
-        <header className="sentinel-v2-panel mb-4 p-4 sm:p-5">
+        <header className="sentinel-v2-panel mb-3 p-3.5 sm:p-4">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -102,13 +105,13 @@ export function CommandRoomV2({
                   <ShieldChevron size={15} />
                 </div>
                 <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-300">Aether Sentinel</span>
-                <StatusPulse mode={feedMode} label={stateLabel} />
+                <StatusPulse mode={pulseMode} label={stateLabel} />
               </div>
-              <h1 className="mt-2 text-xl font-semibold leading-tight text-zinc-100 sm:text-2xl">
-                Industrial command room for deterministic incident decisions
+              <h1 className="mt-1.5 text-lg font-semibold leading-tight text-zinc-100 sm:text-xl">
+                Signal → Decision → Workflow → Feedback → Replay
               </h1>
-              <div className="mt-1.5 text-xs text-zinc-500">
-                Last sync {formatSync(lastSyncSeconds)} | {clockText()} UTC
+              <div className="mt-1 text-xs text-zinc-500">
+                Last sync {formatSync(lastSyncSeconds)} | {clockText()} UTC | queue {tickets.length > 0 ? tickets.length : 0} visible
               </div>
             </div>
 
@@ -136,7 +139,7 @@ export function CommandRoomV2({
             </div>
           </div>
 
-          <div className="mt-3 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
+          <div className="mt-2.5 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
             <label className="relative block w-full max-w-[540px]">
               <MagnifyingGlass className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={14} />
               <input
@@ -156,7 +159,7 @@ export function CommandRoomV2({
           </div>
         </header>
 
-        <section className="grid grid-cols-12 items-stretch gap-4">
+        <section className="sentinel-v2-ops-path grid grid-cols-12 items-stretch gap-3 rounded-2xl p-0.5">
           <div className="col-span-12 xl:col-span-3">
             <SignalConstellation tickets={tickets} selectedId={selectedTicketId} onSelect={onSelectTicket} dataStatus={state} />
           </div>
@@ -168,11 +171,11 @@ export function CommandRoomV2({
           </div>
         </section>
 
-        <section className="mt-3.5">
+        <section className="mt-3 sentinel-v2-ops-path rounded-2xl p-0.5">
           <ReplayHashRail ticket={selectedTicket} dataStatus={state} />
         </section>
 
-        <section className="mt-3.5 grid grid-cols-1 gap-4 xl:grid-cols-[1.35fr,1fr,1fr]">
+        <section className="sentinel-v2-ops-path mt-3 grid grid-cols-1 gap-3 rounded-2xl p-0.5 xl:grid-cols-[1.45fr,1fr,1fr]">
           <EvidenceRibbon
             dataStatus={state}
             items={[
@@ -234,7 +237,7 @@ export function CommandRoomV2({
           />
         </section>
 
-        <footer className="mt-5 pb-1">
+        <footer className="mt-3 pb-1">
           <div className="sentinel-v2-panel px-4 py-3 text-xs text-zinc-400">
             Signal → Decision → Workflow → Feedback → Replay is active for{" "}
             <span className="mono-data text-amber-100">{selectedTicket?.ticketId || "INC-4821"}</span> with confidence{" "}

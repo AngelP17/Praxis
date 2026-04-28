@@ -32,16 +32,29 @@ export function IncidentFocusPanel({
   linkedIncident?: LinkedIncident;
   dataStatus: DataStatus;
 }) {
+  const stateBadge =
+    dataStatus === "live"
+      ? "Live incident context"
+      : dataStatus === "demo"
+        ? "Demo incident context"
+        : dataStatus === "stale"
+          ? "Stale incident snapshot"
+          : dataStatus === "loading"
+            ? "Loading context"
+            : "Fallback mode";
   const title = ticket?.ticketId === "INC-4821" ? "Press Line 3 vibration cascade" : ticket?.title;
   return (
-    <section className="sentinel-v2-panel-strong h-full max-h-[470px] overflow-y-auto p-4 sm:p-5">
+    <section className="sentinel-v2-panel-strong h-full max-h-[390px] overflow-y-auto p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Case Inspector</div>
           <p className="mt-1 text-xs text-zinc-400">Selected operational incident context</p>
         </div>
-        <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
-          <FileMagnifyingGlass size={15} />
+        <div className="inline-flex items-center gap-2">
+          <span className="rounded-md border border-zinc-700/70 bg-zinc-900/75 px-2 py-1 text-[10px] text-zinc-300">{stateBadge}</span>
+          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
+            <FileMagnifyingGlass size={15} />
+          </div>
         </div>
       </div>
 
@@ -74,6 +87,23 @@ export function IncidentFocusPanel({
           <div className="mt-2.5 inline-flex items-center gap-2 rounded-lg border border-zinc-700/70 bg-zinc-900/75 px-3 py-2 text-xs text-zinc-300">
             <Waveform size={14} className="text-emerald-300" />
             Replay trail is hash-linked and operator-reviewable.
+          </div>
+
+          <div className="mt-2.5 rounded-xl border border-zinc-800/80 bg-zinc-950/75 p-3">
+            <div className="sentinel-v2-eyebrow">Event Chain Snapshot</div>
+            <div className="mt-2 space-y-2">
+              {[
+                "signal ingested",
+                "operator ticket correlated",
+                "cluster linked",
+                "workflow routed",
+              ].map((step, index) => (
+                <div key={step} className="flex items-center gap-2">
+                  <span className={`h-1.5 w-1.5 rounded-full ${index < 3 ? "bg-amber-300" : "bg-zinc-500"}`} />
+                  <span className="text-xs text-zinc-300">{step}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </>
       )}

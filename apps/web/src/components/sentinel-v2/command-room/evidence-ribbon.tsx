@@ -23,11 +23,11 @@ export function EvidenceRibbon({
         </div>
       </div>
 
-      <div className="mt-3 space-y-2">
+      <div className="mt-3 divide-y divide-zinc-800/80 rounded-lg border border-zinc-800/80 bg-zinc-950/72">
         {items.map((item, index) => {
           const Icon = iconMap[index % iconMap.length];
           return (
-            <div key={item.id} className="rounded-lg border border-zinc-800/80 bg-zinc-900/70 px-3 py-2.5">
+            <div key={item.id} className="px-3 py-2.5">
               <div className="flex items-center justify-between gap-2">
                 <div className="inline-flex items-center gap-2 text-sm text-zinc-200">
                   <Icon size={14} className="text-amber-200" />
