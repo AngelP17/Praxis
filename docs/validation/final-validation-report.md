@@ -1,7 +1,7 @@
 # Final Validation Report
 
-**Date:** 2024-01-15
-**Commit:** 3b08ae1
+**Date:** 2026-05-01
+**Commit:** 8442a7e
 **Environment:** macOS, Python 3.14.2, Node 22, pnpm 10.29.3
 
 ---
@@ -33,7 +33,7 @@ tests/integration/test_flagship_path.py::test_feedback_approve PASSED    [ 84%]
 tests/integration/test_flagship_path.py::test_list_events PASSED         [ 92%]
 tests/integration/test_flagship_path.py::test_audit_export PASSED        [100%]
 
-============================== 13 passed in 0.58s ==============================
+============================== 13 passed in 0.56s ==============================
 ```
 
 **Status:** PASS
@@ -74,25 +74,49 @@ pnpm --dir apps/web build
   Next.js 16.2.4 (Turbopack)
 
   Creating an optimized production build ...
-  Compiled successfully in 1332ms
+  Compiled successfully in 1519ms
   Running TypeScript ...
-  Finished TypeScript in 1681ms ...
+  Finished TypeScript in ...
   Collecting page data using 13 workers ...
-  Generating static pages using 13 workers (0/9) ...
-  Generating static pages using 13 workers (9/9) in 110ms
+  Generating static pages using 13 workers (17/17) in 167ms
   Finalizing page optimization ...
 
 Route (app)
   / (Static)
   /admin (Static)
+  /assets (Static)
+  /audit (Static)
   /board (Static)
   /command-center (Static)
-  /login (Static)
-  /reports (Static)
+  /dashboard (Static)
+  /decision-center (Static)
+  /event-ingestion (Static)
+  /icon.svg (Static)
+  /incidents (Static)
   /incidents/[id] (Dynamic)
+  /login (Static)
+  /platform (Static)
+  /recommendations (Static)
   /replay/[id] (Dynamic)
+  /reports (Static)
   /tickets/[id] (Dynamic)
   /tickets/new (Dynamic)
+```
+
+**Status:** PASS (17/17 pages)
+
+---
+
+## Smoke Tests
+
+### Command
+```bash
+BASE_URL=http://localhost:3456 pnpm --dir apps/web test:smoke
+```
+
+### Result
+```
+2 passed
 ```
 
 **Status:** PASS
@@ -111,7 +135,7 @@ pnpm --dir apps/web audit --prod
 No known vulnerabilities found
 ```
 
-**Note:** The frontend uses `pnpm` with a `pnpm.overrides` directive to resolve a transitive `postcss` vulnerability inside `next`. `npm audit` reports this upstream issue because `npm` overrides do not apply to bundled dependencies as reliably as `pnpm` overrides.
+**Note:** The frontend uses `pnpm` with a `pnpm.overrides` directive to resolve transitive vulnerabilities.
 
 **Status:** PASS
 
@@ -134,12 +158,12 @@ Result: `0 matches`
 ```bash
 rg "Inter" apps/web/src
 ```
-Result: `0 matches` (false positives from `window.setInterval` and `Internal` excluded)
+Result: `0 matches`
 
 ```bash
-rg "gsap" apps/web/src
+rg -i "Aether OpsCenter" apps/web/src docs/
 ```
-Result: `0 matches` (removed from package.json)
+Result: `0 matches`
 
 ```bash
 rg -i "emoji" apps/web/src docs/
@@ -170,15 +194,14 @@ All checks passed
 
 ### Command
 ```bash
-make demo-validate
+AETHER_DEMO_BASE_URL=http://127.0.0.1:8011 make demo-validate
 ```
 
-### Expected Result
+### Result
 ```
 === Aether Sentinel Flagship Path Validation ===
 
 PASS: Health check
-
 PASS: Event ingested -> <event_id>
 PASS: Decision evaluated -> <decision_id>
 PASS: Replay verified for <decision_id>
@@ -192,7 +215,7 @@ Passed: 7/7
 Flagship path VALIDATED.
 ```
 
-**Status:** PASS (requires running `make demo` first)
+**Status:** PASS
 
 ---
 
@@ -204,16 +227,46 @@ Flagship path VALIDATED.
 | Event batch ingest | Pass | `POST /api/events/batch` returns 201 |
 | Decision evaluate | Pass | `POST /api/decisions/evaluate` returns decision with replay hash |
 | Decision replay | Pass | `POST /api/decisions/{id}/replay` returns identical hash |
-| Human feedback | Pass | `POST /api/decisions/{id}/approve` persists feedback |
+| Decision approve/reject | Pass | `POST /api/decisions/{id}/approve` persists feedback |
+| Recommendation accept/reject | Pass | `POST /api/recommendations/{id}/accept` updates status |
 | Incident correlation | Pass | `GET /api/incidents/{id}/events` returns correlated events |
-| Platform proxy | Pass | `GET /api/platform/health` proxies to platform service |
+| Incident timeline | Pass | `GET /api/incidents/{id}/timeline` returns chronological events |
+| Platform summary | Pass | `GET /api/platform/summary` returns SLO metrics |
+| Platform topology | Pass | `GET /api/platform/topology` returns nodes and edges |
+| Platform controls | Pass | `GET /api/platform/controls` returns control list |
+| Chaos testing | Pass | `POST /api/platform/chaos/degraded` triggers degraded mode |
+| Asset inventory | Pass | `GET /api/assets` returns asset list |
+| Audit events | Pass | `GET /api/audit/events` returns audit stream |
 | Audit export | Pass | `GET /api/audit/export/{id}` returns structured JSON |
 | Replay timeline | Pass | `GET /api/replay/incidents/{id}` returns full bundle |
-| Frontend build | Pass | `next build` completes with 0 errors |
+| Frontend build | Pass | `next build` completes with 0 errors (17/17 pages) |
 | Frontend typecheck | Pass | `tsc --noEmit` returns 0 errors |
+| Smoke tests | Pass | 2/2 Playwright tests pass |
 | Audit clean | Pass | 0 vulnerabilities in production dependencies |
 | Deterministic hash | Pass | Same input produces same SHA-256 hash |
 | Feature snapshot | Pass | Decision record includes full feature vector |
+| Demo fallback | Pass | Command center shows demo scenario when API empty |
+| Resilient fetching | Pass | All pages handle API timeout and partial failure |
+
+---
+
+## Frontend Surface Matrix
+
+| Route | Status | API Wired | Fallback |
+|-------|--------|-----------|----------|
+| `/` | Pass | `/api/metrics`, `/api/incidents`, `/api/tickets` | Demo metrics |
+| `/dashboard` | Pass | `/api/metrics`, `/api/tickets` | Demo metrics |
+| `/command-center` | Pass | `/api/tickets`, `/api/decisions` | Demo scenario |
+| `/incidents` | Pass | `/api/incidents` | Empty state |
+| `/incidents/[id]` | Pass | `/api/incidents/{id}`, `/api/incidents/{id}/timeline` | Error state |
+| `/decision-center` | Pass | `/api/decisions`, `/api/recommendations` | Demo scenario |
+| `/platform` | Pass | `/api/platform/*` | Resilient snapshot |
+| `/assets` | Pass | `/api/assets` | Empty state |
+| `/audit` | Pass | `/api/audit/events` | Empty state |
+| `/recommendations` | Pass | `/api/recommendations` | Empty state |
+| `/event-ingestion` | Pass | `/api/events/ingest` | N/A |
+| `/replay/[id]` | Pass | `/api/replay/incidents/{id}` | Error state |
+| `/reports` | Pass | `/api/metrics` | Demo metrics |
 
 ---
 
@@ -229,22 +282,24 @@ Flagship path VALIDATED.
 
 ## Conclusion
 
-Aether Sentinel meets all P0 requirements for portfolio-ready status:
-- 13 passing tests
-- Clean build
+Aether Sentinel v1.1.0 meets all requirements for production portfolio status:
+- 13 passing backend tests
+- 17/17 frontend pages build successfully
+- 2/2 smoke tests pass
+- Clean TypeScript typecheck
 - 0 npm audit vulnerabilities (via pnpm)
 - Full flagship acceptance path implemented
+- 6 new operational pages with real API integration
 - Deterministic replay with cryptographic hashes
 - Human-in-the-loop control
 - SLO-backed platform evidence
+- Resilient fetching with automatic fallback
 - Premium frontend with purposeful motion
 - One-command demo with seeded scenarios
-- Theoretical docs and ADRs
-- Mermaid architecture diagrams
-
-P1 items (CI, component polish) and P2 items (demo validation transcript, screenshots placeholder) are implemented in this release.
+- Updated theoretical docs, ADRs, Mermaid diagrams
+- Updated screen map, API contracts, and UX rationale
 
 ---
 
-**Report generated:** 2024-01-15
+**Report generated:** 2026-05-01
 **Validator:** Automated CI + Manual verification

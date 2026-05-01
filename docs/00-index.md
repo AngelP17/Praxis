@@ -32,6 +32,14 @@ This documentation set explains the theory, architecture, and operational model 
 | [ADR-0005](adr/0005-kubernetes-slo-evidence-layer.md) | Kubernetes SLO evidence layer |
 | [ADR-0006](adr/0006-frontend-control-room-ux.md) | Control room UX over dashboard |
 
+## Product Documentation
+
+| Doc | Purpose | Read Time |
+|-----|---------|-----------|
+| [product/screen-map.md](product/screen-map.md) | All 14 frontend screens | 5 min |
+| [product/operator-workflows.md](product/operator-workflows.md) | How operators use the system | 4 min |
+| [product/portfolio-positioning.md](product/portfolio-positioning.md) | How this project positions in a portfolio | 3 min |
+
 ## Diagrams
 
 | Diagram | File | Type |
