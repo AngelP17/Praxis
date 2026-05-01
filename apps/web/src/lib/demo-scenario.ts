@@ -6,6 +6,39 @@ function isoMinutesAgo(minutes: number) {
   return new Date(NOW.getTime() - minutes * 60_000).toISOString();
 }
 
+type RationaleToken = { token: string; value: string; weight: number };
+type EvidenceArtifact = { id: string; label: string; path: string; size: string; hash: string; severity: "crit" | "warn" | "ok" | "info" };
+type FeedbackEntry = { actor: string; kind: "APPROVE" | "REJECT" | "REVIEW" | "ACK"; ts: string; note: string };
+type AuditEntry = { ts: string; actor: string; action: string; hash: string };
+
+export const DEMO_RATIONALE: RationaleToken[] = [
+  { token: "vibration_rms", value: "12.4 mm/s", weight: 0.41 },
+  { token: "operator_ticket_corr", value: "0.91", weight: 0.27 },
+  { token: "bearing_temp_drift", value: "+18C", weight: 0.18 },
+  { token: "historical_match", value: "INC-2023-089", weight: 0.14 },
+];
+
+export const DEMO_EVIDENCE: EvidenceArtifact[] = [
+  { id: "slo", label: "SLO burn rate", path: "slo_burn_rate.csv", size: "2.1 KB", hash: "9f1e-c2", severity: "warn" },
+  { id: "k8s", label: "K8s event window", path: "k8s_event_window.json", size: "14.6 KB", hash: "a4d2-77", severity: "ok" },
+  { id: "wave", label: "Forensic waveform", path: "forensic_waveform.bin", size: "1.8 MB", hash: "5b07-91", severity: "crit" },
+  { id: "runbook", label: "Operator runbook", path: "runbook.bearing.md", size: "3.4 KB", hash: "0c9a-2f", severity: "info" },
+];
+
+export const DEMO_FEEDBACK: FeedbackEntry[] = [
+  { actor: "Ops Lead / M. Santos", kind: "APPROVE", ts: isoMinutesAgo(22), note: "Correct routing. Bearing temp drift confirms degradation." },
+  { actor: "Reliability / A. Rahman", kind: "REVIEW", ts: isoMinutesAgo(12), note: "Request one more vibration sampling window before final closure." },
+  { actor: "Mechanical / L. Okafor", kind: "ACK", ts: isoMinutesAgo(6), note: "Crew dispatched to Press Line 3. ETA 18 minutes." },
+];
+
+export const DEMO_AUDIT: AuditEntry[] = [
+  { ts: "10:20:14Z", actor: "ops.lead.santos", action: "feedback.approve", hash: "0c9a-2f" },
+  { ts: "10:05:41Z", actor: "orchestrator.v3", action: "workflow.route", hash: "5b07-91" },
+  { ts: "09:18:22Z", actor: "astraea.core", action: "decision.commit", hash: "a4d2-77" },
+  { ts: "08:31:15Z", actor: "operator_joe", action: "ticket.open", hash: "9f1e-c2" },
+  { ts: "08:30:00Z", actor: "sensor_gateway", action: "signal.ingest", hash: "3a11-04" },
+];
+
 export const DEMO_TICKETS: Ticket[] = [
   {
     ticket_id: "INC-4821",

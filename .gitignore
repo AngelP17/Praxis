@@ -24,3 +24,7 @@ coverage/
 .terraform.lock.hcl
 
 .DS_Store
+
+# Standalone demo artifacts (data ported to TypeScript)
+AetherSentinel.html
+seed.js

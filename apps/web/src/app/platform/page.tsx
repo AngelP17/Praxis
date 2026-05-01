@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { ArrowsClockwise, Network, ShieldCheck, Siren, WarningDiamond } from "@phosphor-icons/react";
+import { ArrowsClockwise, Network, ShieldCheck, Siren, WarningDiamond, FileText } from "@phosphor-icons/react";
 
 import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { DEMO_EVIDENCE } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 
 type PlatformSummary = {
@@ -196,12 +197,30 @@ export default function PlatformOverviewPage() {
 
             <div className="sentinel-v2-panel p-5 sm:p-6">
               <div className="flex items-center justify-between">
-                <div className="sentinel-v2-eyebrow">Controls</div>
+                <div className="sentinel-v2-eyebrow">Controls & Evidence</div>
                 <Siren size={14} className="text-amber-200" />
               </div>
               {controls.length === 0 ? (
-                <div className="mt-4">
-                  <EmptyState title="No controls listed" message="No control data returned from /api/platform/controls." />
+                <div className="mt-4 space-y-2.5">
+                  {DEMO_EVIDENCE.map((artifact) => (
+                    <div key={artifact.id} className="group flex items-start gap-3 rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-3.5 py-3 transition hover:border-zinc-600/60 hover:bg-zinc-800/60">
+                      <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md border border-zinc-700/50 bg-zinc-900/60">
+                        <FileText size={13} className="text-zinc-400" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="truncate text-sm font-medium text-zinc-100">{artifact.label}</div>
+                          <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[10px] ${artifact.severity === "crit" ? "border-rose-500/30 bg-rose-500/12 text-rose-100" : artifact.severity === "warn" ? "border-amber-500/30 bg-amber-500/12 text-amber-100" : artifact.severity === "ok" ? "border-emerald-500/30 bg-emerald-500/12 text-emerald-100" : "border-zinc-600/50 bg-zinc-800/50 text-zinc-400"}`}>{artifact.severity}</span>
+                        </div>
+                        <div className="mt-1 flex items-center gap-2 text-[11px] text-zinc-500">
+                          <span className="mono-data">{artifact.path}</span>
+                          <span>·</span>
+                          <span>{artifact.size}</span>
+                        </div>
+                        <div className="mt-1 text-[10px] text-zinc-600">hash: {artifact.hash}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ) : (
                 <div className="mt-4 space-y-2.5">

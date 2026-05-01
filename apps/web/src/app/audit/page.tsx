@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { FileArrowDown, MagnifyingGlass } from "@phosphor-icons/react";
+import { FileArrowDown, MagnifyingGlass, ShieldCheck } from "@phosphor-icons/react";
 
 import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
+import { DEMO_AUDIT } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout } from "@/lib/client-api";
 
 type AuditEvent = {
@@ -20,9 +21,11 @@ type AuditEvent = {
 };
 
 const FALLBACK_AUDIT: AuditEvent[] = [
-  { event_id: "evt_inc4821_1", source: "sensor_gateway", event_type: "signal_ingested", severity: "high", occurred_at: "2026-04-27T13:32:00.000Z", created_at: "2026-04-27T13:32:01.000Z" },
-  { event_id: "evt_inc4821_2", source: "astraea", event_type: "decision_generated", severity: "high", occurred_at: "2026-04-27T13:33:15.000Z", created_at: "2026-04-27T13:33:16.000Z" },
-  { event_id: "evt_inc4821_3", source: "operator", event_type: "feedback_recorded", severity: "medium", occurred_at: "2026-04-27T13:40:20.000Z", created_at: "2026-04-27T13:40:21.000Z" },
+  { event_id: "evt_signal_ingest", source: "sensor_gateway", event_type: "signal_ingested", severity: "high", occurred_at: "2026-04-27T13:30:00.000Z", created_at: "2026-04-27T13:30:01.000Z" },
+  { event_id: "evt_ticket_open", source: "operator_joe", event_type: "ticket_open", severity: "high", occurred_at: "2026-04-27T13:31:15.000Z", created_at: "2026-04-27T13:31:16.000Z" },
+  { event_id: "evt_decision_commit", source: "astraea", event_type: "decision_commit", severity: "high", occurred_at: "2026-04-27T13:33:15.000Z", created_at: "2026-04-27T13:33:16.000Z" },
+  { event_id: "evt_workflow_route", source: "orchestrator", event_type: "workflow_route", severity: "medium", occurred_at: "2026-04-27T13:40:20.000Z", created_at: "2026-04-27T13:40:21.000Z" },
+  { event_id: "evt_feedback_approve", source: "ops.lead.santos", event_type: "feedback_approve", severity: "medium", occurred_at: "2026-04-27T13:42:00.000Z", created_at: "2026-04-27T13:42:01.000Z" },
 ];
 
 export default function AuditTrailPage() {
@@ -129,21 +132,40 @@ export default function AuditTrailPage() {
             ) : (
               <div className="space-y-2">
                 {filtered.slice(0, 120).map((event) => (
-                  <div key={event.event_id} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
+                  <div key={event.event_id} className="rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-3.5 py-3 transition hover:border-zinc-600/60">
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div className="inline-flex items-center gap-2">
-                        <span className="mono-data text-xs text-zinc-100">{event.event_id}</span>
-                        <span className="rounded-full border border-zinc-700/70 bg-zinc-900/60 px-2 py-0.5 text-[10px] text-zinc-400">{event.source}</span>
+                        <span className="mono-data text-xs font-medium text-zinc-100">{event.event_id}</span>
+                        <span className="rounded-full border border-zinc-600/50 bg-zinc-800/60 px-2 py-0.5 text-[10px] text-zinc-400">{event.source}</span>
                       </div>
                       <span className="mono-data text-[11px] text-zinc-500">{event.created_at}</span>
                     </div>
-                    <div className="mt-1 text-sm text-zinc-300">{event.event_type.replace(/_/g, " ")}</div>
+                    <div className="mt-1.5 text-sm text-zinc-300">{event.event_type.replace(/_/g, " ")}</div>
                     <div className="mt-1 text-xs text-zinc-500">severity: {event.severity} · occurred: {event.occurred_at}</div>
                   </div>
                 ))}
               </div>
             )}
           </section>
+
+          {notice && notice.includes("Seeded") ? (
+            <section className="sentinel-v2-panel p-4 sm:p-5">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={14} className="text-emerald-300" />
+                <div className="sentinel-v2-eyebrow">Immutable Audit Chain</div>
+              </div>
+              <div className="mt-3 space-y-2">
+                {DEMO_AUDIT.map((entry, index) => (
+                  <div key={index} className="flex items-center gap-3 rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-3.5 py-2.5">
+                    <span className="mono-data w-20 text-[11px] text-zinc-500">{entry.ts}</span>
+                    <span className="mono-data w-32 text-[11px] text-zinc-400">{entry.actor}</span>
+                    <span className="text-xs text-zinc-300">{entry.action}</span>
+                    <span className="mono-data ml-auto text-[10px] text-zinc-600">{entry.hash}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {exportPayload ? (
             <section className="sentinel-v2-panel p-4 sm:p-5">

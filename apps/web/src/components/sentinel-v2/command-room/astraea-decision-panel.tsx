@@ -1,5 +1,6 @@
 import { Brain, ShieldCheck, WarningDiamond } from "@phosphor-icons/react";
 import type { QueueTicket } from "@/lib/hooks/use-command-feed";
+import { DEMO_RATIONALE, DEMO_FEEDBACK } from "@/lib/demo-scenario";
 
 import { normalizeRootCause, recommendationFor, type DataStatus } from "@/components/sentinel-v2/command-room/types";
 
@@ -73,23 +74,36 @@ export function AstraeaDecisionPanel({
             Decision trace persists through replay and audit export.
           </div>
 
-          <div className="mt-2.5 rounded-xl border border-zinc-800/80 bg-zinc-950/75 p-3">
+          <div className="mt-2.5 rounded-xl border border-zinc-700/50 bg-zinc-950/75 p-3.5">
             <div className="sentinel-v2-eyebrow">Rationale Weights</div>
-            <div className="mt-2 space-y-2">
-              {[
-                ["vibration_rms", 41],
-                ["operator_ticket_corr", 27],
-                ["bearing_temp_drift", 18],
-                ["historical_match", 14],
-              ].map(([token, weight]) => (
-                <div key={token as string}>
+            <div className="mt-2 space-y-2.5">
+              {DEMO_RATIONALE.map((item) => (
+                <div key={item.token}>
                   <div className="flex items-center justify-between gap-2 text-[11px] text-zinc-300">
-                    <span className="mono-data">{token as string}</span>
-                    <span className="mono-data text-zinc-500">{weight}%</span>
+                    <span className="mono-data">{item.token}</span>
+                    <span className="mono-data text-zinc-400">{item.value}</span>
                   </div>
-                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-zinc-800/80">
-                    <div className="h-full rounded-full bg-amber-300/80" style={{ width: `${weight}%` }} />
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-zinc-800/80">
+                      <div className="h-full rounded-full bg-amber-300/80" style={{ width: `${Math.round(item.weight * 100)}%` }} />
+                    </div>
+                    <span className="mono-data w-8 text-right text-[10px] text-zinc-500">{Math.round(item.weight * 100)}%</span>
                   </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-2.5 rounded-xl border border-zinc-700/50 bg-zinc-950/75 p-3.5">
+            <div className="sentinel-v2-eyebrow">Human Feedback</div>
+            <div className="mt-2 space-y-2">
+              {DEMO_FEEDBACK.map((entry, index) => (
+                <div key={index} className="rounded-lg border border-zinc-800/60 bg-zinc-900/60 px-3 py-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[11px] font-medium text-zinc-200">{entry.actor}</span>
+                    <span className={`rounded-full border px-2 py-0.5 text-[10px] ${entry.kind === "APPROVE" ? "border-emerald-500/30 bg-emerald-500/12 text-emerald-100" : entry.kind === "REVIEW" ? "border-amber-500/30 bg-amber-500/12 text-amber-100" : "border-zinc-600/50 bg-zinc-800/50 text-zinc-300"}`}>{entry.kind}</span>
+                  </div>
+                  <p className="mt-1 text-[11px] leading-relaxed text-zinc-400">{entry.note}</p>
                 </div>
               ))}
             </div>
