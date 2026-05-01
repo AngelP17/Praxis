@@ -110,21 +110,26 @@ export default function IncidentsPage() {
           {/* Status Filters */}
           {statuses.length > 0 && (
             <div className="mb-6 flex flex-wrap items-center gap-2">
-              <button
-                onClick={() => setFiltered(incidents)}
-                className={`rounded-full border px-3 py-1.5 text-[11px] transition ${
-                  filtered.length === incidents.length
-                    ? "border-amber-500/30 bg-amber-500/10 text-amber-200"
-                    : "border-zinc-700 bg-zinc-900/70 text-zinc-400 hover:border-zinc-600"
-                }`}
-              >
-                All
-              </button>
+              {filtered.length === incidents.length ? (
+                <button
+                  onClick={() => setFiltered(incidents)}
+                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-amber-500/30 bg-amber-500/10 text-amber-200 hover:scale-105 transition-transform duration-500"
+                >
+                  All
+                </button>
+              ) : (
+                <button
+                  onClick={() => setFiltered(incidents)}
+                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-zinc-700 bg-zinc-900/70 text-zinc-400 hover:border-zinc-600 hover:scale-105 transition-transform duration-500"
+                >
+                  All
+                </button>
+              )}
               {statuses.map((s) => (
                 <button
                   key={s}
                   onClick={() => setFiltered(incidents.filter((i) => i.status === s))}
-                  className="rounded-full border border-zinc-700 bg-zinc-900/70 px-3 py-1.5 text-[11px] text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-300"
+                  className="rounded-full border border-zinc-700 bg-zinc-900/70 px-3 py-1.5 text-[11px] text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-300 hover:scale-105 transition-transform duration-500"
                 >
                   {s}
                 </button>
@@ -141,7 +146,7 @@ export default function IncidentsPage() {
                 <Link
                   key={incident.id}
                   href={`/incidents/${incident.id}`}
-                  className="group flex flex-col gap-3 rounded-xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-amber-500/20 hover:bg-zinc-900/80 sm:flex-row sm:items-center sm:justify-between"
+                  className="group flex flex-col gap-3 rounded-xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3">

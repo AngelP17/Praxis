@@ -65,8 +65,8 @@ export default function LoginPage() {
       <div className="sentinel-v2-noise" />
       <div className="sentinel-v2-amber-field" />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1580px] items-stretch gap-5 lg:grid-cols-[52%_48%]">
-        <section className="sentinel-v2-panel-strong p-6 sm:p-7">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1580px] items-stretch gap-5 lg:grid-cols-[52%_48%] grid-flow-dense">
+        <section className="sentinel-v2-panel-strong p-6 sm:p-7 py-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-700/80 bg-zinc-950/75 px-3 py-1.5">
             <ShieldChevron size={14} className="text-amber-300" />
             <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-200">Aether Sentinel Access</span>
@@ -80,7 +80,7 @@ export default function LoginPage() {
             audit-ready human feedback.
           </p>
 
-          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 grid-flow-dense">
             {[
               ["Signal intake", "Machine telemetry and operator tickets merged"],
               ["Deterministic scoring", "Priority, confidence, and root cause trace"],
@@ -96,7 +96,7 @@ export default function LoginPage() {
 
           <div className="mt-4 rounded-xl border border-zinc-700/75 bg-zinc-950/75 p-3.5">
             <div className="sentinel-v2-eyebrow">Session Preview</div>
-            <div className="mt-2 grid grid-cols-[1fr,1fr,1fr] gap-2">
+            <div className="mt-2 grid grid-cols-[1fr,1fr,1fr] gap-2 grid-flow-dense">
               <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-2.5 py-2">
                 <div className="text-[10px] text-zinc-500">Queue</div>
                 <div className="mono-data mt-1 text-xs text-zinc-100">INC-4821 selected</div>
@@ -113,7 +113,7 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <section className="sentinel-v2-panel p-6 sm:p-7">
+        <section className="sentinel-v2-panel p-6 sm:p-7 py-20">
           <div className="sentinel-v2-eyebrow">Operator Authentication</div>
           <h2 className="mt-2 text-2xl font-semibold text-zinc-50">Sign In</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-400">
@@ -153,7 +153,7 @@ export default function LoginPage() {
                   type="button"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setShowPassword((previous) => !previous)}
-                  className="absolute right-1.5 top-1.5 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/75 bg-zinc-900/75 text-zinc-300 transition hover:border-zinc-500"
+                  className="absolute right-1.5 top-1.5 inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/75 bg-zinc-900/75 text-zinc-300 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
                 >
                   {showPassword ? <EyeSlash size={15} /> : <Eye size={15} />}
                 </button>

@@ -197,16 +197,16 @@ export function BentoSection({
           <div className="mt-8">
             <div className="mb-4 flex items-center justify-between">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">Recent Incidents</div>
-              <Link href="/incidents" className="text-[11px] text-amber-300 transition hover:text-amber-200">
+              <Link href="/incidents" className="text-[11px] text-amber-300 transition hover:text-amber-200 hover:scale-105 transition-transform duration-500">
                 View all incidents
               </Link>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid grid-flow-dense gap-3 sm:grid-cols-2">
               {recentIncidents.slice(0, 4).map((incident) => (
                 <Link
                   key={incident.id}
                   href={`/incidents/${incident.id}`}
-                  className="group flex items-center justify-between rounded-xl border border-zinc-600/40 bg-zinc-800/50 px-5 py-4 transition hover:border-amber-500/40 hover:bg-zinc-700/40"
+                  className="group flex items-center justify-between rounded-xl border border-zinc-600/40 bg-zinc-800/50 px-5 py-4 transition hover:border-amber-500/40 hover:bg-zinc-700/40 hover:scale-105 transition-transform duration-500"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">

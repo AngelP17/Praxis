@@ -34,7 +34,7 @@ export function AstraeaDecisionPanel({
             ? "Scoring signals"
             : "Fallback mode";
   return (
-    <section className="sentinel-v2-panel h-full max-h-[340px] overflow-y-auto p-4 sm:p-5">
+    <section className="sentinel-v2-panel h-full max-h-[340px] overflow-y-auto p-4 sm:p-5 py-20">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Astraea Decision</div>
@@ -54,7 +54,7 @@ export function AstraeaDecisionPanel({
         </div>
       ) : (
         <>
-          <div className="mt-3 grid grid-cols-2 gap-2">
+          <div className="mt-3 grid grid-flow-dense grid-cols-2 gap-2">
             <Metric label="Priority score" value={String(ticket.score)} tone="amber" />
             <Metric label="Confidence" value={confidenceFor(ticket)} tone="emerald" />
             <Metric label="Root cause" value={ticket.ticketId === "INC-4821" ? "bearing degradation" : normalizeRootCause(ticket.category)} />

@@ -8,7 +8,7 @@ export function HeroSection() {
   const proofCapsules = ["Deterministic replay", "Human reviewed", "SLO backed", "Audit export ready"];
 
   return (
-    <section className="relative px-4 pb-20 pt-28 sm:px-6 lg:px-8">
+    <section className="relative px-4 py-28 sm:px-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-x-[4%] top-[16%] h-px bg-gradient-to-r from-transparent via-amber-400/45 to-transparent" />
         <div className="absolute bottom-[16%] left-[8%] right-[8%] h-px bg-gradient-to-r from-transparent via-amber-400/20 to-transparent" />
@@ -16,8 +16,8 @@ export function HeroSection() {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
-        <div className="grid items-center gap-8 lg:grid-cols-[48%_52%]">
-          <section className="sentinel-v2-panel-strong p-6 sm:p-8">
+        <div className="grid grid-flow-dense items-center gap-8 lg:grid-cols-[48%_52%]">
+          <section className="sentinel-v2-panel-strong p-6 sm:p-8 py-20">
             <div className="inline-flex items-center gap-2 rounded-full border border-zinc-700/80 bg-zinc-950/75 px-3 py-1.5">
               <ShieldChevron size={14} className="text-amber-300" />
               <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-200">Aether Sentinel</span>
@@ -58,7 +58,7 @@ export function HeroSection() {
             </div>
           </section>
 
-          <section className="relative">
+          <section className="relative py-20">
             <ProductShellPreview />
           </section>
         </div>

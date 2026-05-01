@@ -86,7 +86,7 @@ export default function EventIngestionPage() {
       <SystemStatusRail activeLabel="Ingestion" />
       <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
-          <section className="grid grid-cols-1 gap-3 xl:grid-cols-[0.95fr,1.05fr]">
+          <section className="grid grid-cols-1 gap-3 xl:grid-cols-[0.95fr,1.05fr] grid-flow-dense py-20">
             <form onSubmit={ingest} className="sentinel-v2-panel-strong p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -99,19 +99,19 @@ export default function EventIngestionPage() {
               </div>
               <p className="mt-2 text-sm text-zinc-400">Submit synthetic operations events directly into <span className="mono-data">/api/events/ingest</span>.</p>
               {notice ? <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">{notice}</div> : null}
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div className="mt-4 grid gap-3 sm:grid-cols-2 grid-flow-dense">
                 <Field label="Source" value={source} onChange={setSource} />
                 <Field label="Event Type" value={eventType} onChange={setEventType} />
                 <Field label="Severity" value={severity} onChange={setSeverity} />
                 <Field label="Site" value={site} onChange={setSite} />
               </div>
-              <button type="submit" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-zinc-950 hover:bg-amber-400">
+              <button type="submit" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-zinc-950 hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
                 <Pulse size={14} />
                 Ingest Event
               </button>
             </form>
 
-            <section className="sentinel-v2-panel p-5 sm:p-6">
+            <section className="sentinel-v2-panel p-5 sm:p-6 py-20">
               <div className="sentinel-v2-eyebrow">Live Event Feed</div>
               <div className="mt-3 space-y-2">
                 {events.length === 0 ? (

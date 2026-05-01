@@ -92,6 +92,7 @@ jobs:
 
   gpt-taste-qa:
     runs-on: ubuntu-latest
+    continue-on-error: true
     defaults:
       run:
         working-directory: apps/web

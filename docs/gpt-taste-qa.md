@@ -17,7 +17,7 @@ The gate is implemented as a **static ESLint plugin** (`eslint-plugin-gpt-taste`
 
 ## Rules
 
-### 1. `no-meta-labels` (Error)
+### 1. `no-meta-labels` (Warning → Error)
 
 Detects cheap meta-labels like `SECTION 01`, `QUESTION 05`, `ABOUT US` in JSX.
 
@@ -34,7 +34,7 @@ Detects cheap meta-labels like `SECTION 01`, `QUESTION 05`, `ABOUT US` in JSX.
 </section>
 ```
 
-### 2. `no-narrow-hero-containers` (Error)
+### 2. `no-narrow-hero-containers` (Warning → Error)
 
 Detects `max-w-3xl` or narrower containers on `h1` elements.
 
@@ -50,7 +50,7 @@ Detects `max-w-3xl` or narrower containers on `h1` elements.
 </div>
 ```
 
-### 3. `require-grid-flow-dense` (Error)
+### 3. `require-grid-flow-dense` (Warning → Error)
 
 Requires `grid-flow-dense` on grid layouts to prevent empty gaps in bento grids.
 
@@ -68,7 +68,7 @@ Requires `grid-flow-dense` on grid layouts to prevent empty gaps in bento grids.
 </div>
 ```
 
-### 4. `no-emoji-in-code` (Error)
+### 4. `no-emoji-in-code` (Warning → Error)
 
 Prohibits emoji characters in JSX/TSX. Use `@phosphor-icons/react` instead.
 
@@ -80,7 +80,7 @@ Prohibits emoji characters in JSX/TSX. Use `@phosphor-icons/react` instead.
 <Button><Rocket className="mr-2" />Get Started</Button>
 ```
 
-### 5. `require-minimal-section-spacing` (Error)
+### 5. `require-minimal-section-spacing` (Warning → Error)
 
 Requires `py-20` or larger vertical padding on `<section>` elements.
 
@@ -96,7 +96,7 @@ Requires `py-20` or larger vertical padding on `<section>` elements.
 </section>
 ```
 
-### 6. `invisible-button-text-check` (Error)
+### 6. `invisible-button-text-check` (Warning → Error)
 
 Detects poor button contrast combinations (dark-on-dark or light-on-light).
 
@@ -108,7 +108,7 @@ Detects poor button contrast combinations (dark-on-dark or light-on-light).
 <button className="bg-zinc-900 text-white">Click me</button>
 ```
 
-### 7. `require-hover-physics` (Error)
+### 7. `require-hover-physics` (Warning → Error)
 
 Requires hover effects on interactive elements (cards, links, buttons).
 
@@ -147,22 +147,22 @@ pnpm lint:gpt-taste:ci
 
 ## CI/CD Integration
 
-The `gpt-taste-qa` job runs in parallel with other CI jobs. All rules are configured as `error` severity and the job **blocks merges** on violations. There is no override mechanism.
+The `gpt-taste-qa` job runs in parallel with other CI jobs. All rules are currently configured as `warn` severity with `continue-on-error: true` in CI to collect baseline violations before hardening.
 
 ## Phase Rollout
 
-### Phase 1: Warnings Only (Completed)
+### Phase 1: Warnings Only (Current - Active)
 
 - All rules configured as `warn` severity
-- CI job ran but did not block merges (`continue-on-error: true`)
-- Baseline violations collected across the existing codebase
-- Rule patterns fine-tuned to minimize false positives
+- CI job runs but does not block merges (`continue-on-error: true`)
+- Collect baseline violations across existing codebase
+- Fine-tune rule patterns to minimize false positives
 
-### Phase 2: Harden to Errors (Active)
+### Phase 2: Harden to Errors (After 2 weeks)
 
-- All rules promoted to `error` severity
-- Merges blocked on violations
-- `continue-on-error` removed from CI job
+- Promote all rules to `error` severity
+- Remove `continue-on-error` from CI job
+- Block merges on violations
 - Strict enforcement (no override mechanism)
 
 ## File Structure

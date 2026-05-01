@@ -17,7 +17,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
   const isInView = useInView(ref, { once: true, margin: "-20px" });
 
   return (
-    <div ref={ref} className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+    <div ref={ref} className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500 mb-5">Replay Navigation</div>
       <div className="relative flex items-center gap-2">
         <div className="absolute left-0 right-0 top-1/2 h-px bg-zinc-800 -translate-y-1/2" />
@@ -44,7 +44,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
                 transition={{ delay: index * 0.1 + 0.05, type: "spring", stiffness: 100, damping: 20 }}
                 className="mt-3 text-center"
               >
-                <Link href={node.href} className={`inline-flex items-center gap-1 text-[11px] font-medium transition ${isActive ? "text-amber-300" : "text-zinc-500 hover:text-zinc-300"}`}>
+                <Link href={node.href} className={`inline-flex items-center gap-1 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${isActive ? "text-amber-300" : "text-zinc-500 hover:text-zinc-300"}`}>
                   {node.label}
                   {isActive && <ArrowRight className="h-3 w-3" />}
                 </Link>

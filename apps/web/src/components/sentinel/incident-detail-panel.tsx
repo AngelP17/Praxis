@@ -20,9 +20,9 @@ export function IncidentDetailPanel({
 }) {
   if (panelState === "loading") {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="h-4 w-32 animate-pulse rounded bg-zinc-800/80" />
-        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        <div className="mt-5 grid grid-flow-dense gap-3 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, index) => (
             <div key={index} className="h-16 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/50" />
           ))}
@@ -33,7 +33,7 @@ export function IncidentDetailPanel({
 
   if (panelState === "error") {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-rose-300">Incident Detail</div>
         <p className="mt-3 text-sm text-rose-100">{message || "Incident detail panel failed to load."}</p>
       </div>
@@ -42,7 +42,7 @@ export function IncidentDetailPanel({
 
   if (!ticket) {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Case Inspector</div>
         <div className="mt-8 flex flex-col items-center gap-3 text-center">
           <WarningCircle className="h-8 w-8 text-zinc-700" />
@@ -72,14 +72,14 @@ export function IncidentDetailPanel({
         </div>
         <Link
           href={`/tickets/${ticket.ticketId}`}
-          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-amber-400/30"
+          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-amber-400/30 hover:scale-105 transition-transform duration-500"
         >
           <ArrowUpRight className="h-3.5 w-3.5" />
           Open
         </Link>
       </div>
 
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid grid-flow-dense gap-3 sm:grid-cols-2">
         <MetricTile icon={Hash} label="Ticket ID" value={ticket.ticketId} />
         <MetricTile icon={User} label="Assignee" value={ticket.assignee} />
         <MetricTile icon={Clock} label="Days Open" value={`${ticket.daysOpen}d`} />

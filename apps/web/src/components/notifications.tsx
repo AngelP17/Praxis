@@ -223,7 +223,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-black/20 text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200"
+        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-black/20 text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200 hover:scale-105 transition-transform duration-500"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
       >
         <Bell className="h-4 w-4" />
@@ -248,7 +248,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
                   <button
                     type="button"
                     onClick={markAllAsRead}
-                    className="text-xs text-amber-400 hover:text-amber-300"
+                    className="text-xs text-amber-400 hover:text-amber-300 hover:scale-105 transition-transform duration-500"
                   >
                     Mark all read
                   </button>
@@ -256,7 +256,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="text-zinc-500 hover:text-zinc-300"
+                  className="text-zinc-500 hover:text-zinc-300 hover:scale-105 transition-transform duration-500"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -311,7 +311,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
                           e.stopPropagation();
                           clearNotification(notif.id);
                         }}
-                        className="absolute right-2 top-2 text-zinc-600 hover:text-zinc-400"
+                        className="absolute right-2 top-2 text-zinc-600 hover:text-zinc-400 hover:scale-105 transition-transform duration-500"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -332,7 +332,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
                     markAllAsRead();
                     setIsOpen(false);
                   }}
-                  className="w-full text-center text-xs text-zinc-500 hover:text-zinc-300"
+                  className="w-full text-center text-xs text-zinc-500 hover:text-zinc-300 hover:scale-105 transition-transform duration-500"
                 >
                   Clear all after reading
                 </button>
@@ -374,7 +374,7 @@ function Toast({ id, type, title, message, onClose }: ToastProps) {
       </div>
       <button
         onClick={() => onClose(id)}
-        className="text-zinc-500 hover:text-zinc-300"
+        className="text-zinc-500 hover:text-zinc-300 hover:scale-105 transition-transform duration-500"
       >
         <X className="h-4 w-4" />
       </button>

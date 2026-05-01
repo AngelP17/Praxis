@@ -125,7 +125,7 @@ export function CommandRoomV2({
               <button
                 type="button"
                 onClick={onRefresh}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 <ArrowClockwise size={15} />
                 Refresh
@@ -137,7 +137,7 @@ export function CommandRoomV2({
                 type="button"
                 onClick={onLogout}
                 disabled={isSigningOut}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-rose-400/40 hover:text-rose-100 disabled:cursor-not-allowed disabled:opacity-70"
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-rose-400/40 hover:text-rose-100 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
               >
                 <SignOut size={15} />
                 {isSigningOut ? "Signing out..." : "Logout"}
@@ -165,7 +165,7 @@ export function CommandRoomV2({
           </div>
         </header>
 
-        <section className="sentinel-v2-ops-path grid grid-cols-12 items-stretch gap-3 rounded-2xl p-0.5">
+        <section className="sentinel-v2-ops-path grid grid-flow-dense grid-cols-12 items-stretch gap-3 rounded-2xl p-0.5 py-20">
           <div className="col-span-12 xl:col-span-3">
             <SignalConstellation tickets={tickets} selectedId={selectedTicketId} onSelect={onSelectTicket} dataStatus={state} />
           </div>
@@ -177,11 +177,11 @@ export function CommandRoomV2({
           </div>
         </section>
 
-        <section className="mt-2 sentinel-v2-ops-path rounded-2xl p-0.5">
+        <section className="mt-2 sentinel-v2-ops-path rounded-2xl p-0.5 py-20">
           <ReplayHashRail ticket={selectedTicket} dataStatus={state} />
         </section>
 
-        <section className="sentinel-v2-ops-path mt-2 grid grid-cols-1 gap-3 rounded-2xl p-0.5 xl:grid-cols-[1.45fr,1fr,1fr]">
+        <section className="sentinel-v2-ops-path mt-2 grid grid-flow-dense grid-cols-1 gap-3 rounded-2xl p-0.5 py-20 xl:grid-cols-[1.45fr,1fr,1fr]">
           <EvidenceRibbon
             dataStatus={state}
             items={[

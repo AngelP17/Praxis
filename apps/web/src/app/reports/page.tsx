@@ -176,7 +176,7 @@ export default function ReportsPage() {
           <div className="ops-glass rounded-[2rem] overflow-hidden">
             <div className="border-b border-zinc-800/70 bg-black/20 px-5 py-5 sm:px-8">
               <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-                <div className="max-w-4xl">
+                <div className="max-w-5xl">
                   <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-amber-300">Reports & Export</div>
                   <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                     Reporting integrated with the operational platform
@@ -191,12 +191,12 @@ export default function ReportsPage() {
                     type="button"
                     onClick={handleWorkbookDownload}
                     disabled={isDownloading}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
                   >
                     <Table size={16} />
                     {isDownloading ? "Preparing workbook..." : "Download Workbook"}
                   </button>
-                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10">
+                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10 hover:scale-105 transition-transform duration-500">
                     <Scan size={16} />
                     Command Center
                   </Link>
@@ -205,11 +205,11 @@ export default function ReportsPage() {
             </div>
 
             {/* Real Metrics */}
-            <div className="grid gap-4 border-b border-zinc-800/70 px-5 py-5 sm:grid-cols-3 sm:px-8">
+            <div className="grid gap-4 border-b border-zinc-800/70 px-5 py-5 sm:grid-cols-3 sm:px-8 grid-flow-dense">
               {reportHighlights.map((item) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.label} className="legacy-card rounded-[1.25rem] p-5 group transition-colors hover:border-zinc-600/50">
+                  <div key={item.label} className="legacy-card rounded-[1.25rem] p-5 group transition-colors hover:border-zinc-600/50 hover:scale-105 transition-transform duration-500">
                     <div className="flex items-center justify-between">
                       <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">{item.label}</div>
                       <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/5 bg-black/20 transition-colors group-hover:bg-white/5">
@@ -223,8 +223,8 @@ export default function ReportsPage() {
               })}
             </div>
 
-            <div className="grid gap-6 px-5 py-5 sm:px-8 xl:grid-cols-[1.1fr,0.9fr]">
-              <section className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+            <div className="grid gap-6 px-5 py-5 sm:px-8 xl:grid-cols-[1.1fr,0.9fr] grid-flow-dense">
+              <section className="legacy-card rounded-[1.5rem] p-5 sm:p-6 py-20 hover:scale-105 transition-transform duration-500">
                 <div className="flex items-center justify-between gap-4 border-b border-zinc-800/70 pb-4">
                   <div>
                     <h2 className="text-xl font-semibold text-white">Workbook Contents</h2>
@@ -257,8 +257,8 @@ export default function ReportsPage() {
                 </div>
               </section>
 
-              <section className="space-y-5">
-                <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+              <section className="space-y-5 py-20">
+                <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
                   <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">Live Metrics</div>
                   <div className="mt-5 space-y-4">
                     <div className="flex items-center justify-between">
@@ -276,18 +276,18 @@ export default function ReportsPage() {
                   </div>
                 </div>
 
-                <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+                <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
                   <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">Follow-On Surfaces</div>
                   <div className="mt-5 grid gap-3">
-                    <Link href="/dashboard" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80">
+                    <Link href="/dashboard" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
                       <span>System Dashboard</span>
                       <ArrowRight size={16} className="text-zinc-500" />
                     </Link>
-                    <Link href="/command-center" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80">
+                    <Link href="/command-center" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
                       <span>Return to live queue</span>
                       <ArrowRight size={16} className="text-zinc-500" />
                     </Link>
-                    <Link href="/board" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80">
+                    <Link href="/board" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
                       <span>Open workflow board</span>
                       <ArrowRight size={16} className="text-zinc-500" />
                     </Link>

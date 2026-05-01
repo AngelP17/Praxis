@@ -42,7 +42,7 @@ export function MotionSignalQueue({
             <button
               type="button"
               onClick={() => onSelect(item.id)}
-              className={`w-full rounded-xl border px-3.5 py-3 text-left transition ${toneClass(item.tone, selected)}`}
+              className={"w-full rounded-xl border px-3.5 py-3 text-left transition hover:scale-105 transition-transform duration-500 " + toneClass(item.tone, selected)}
               aria-pressed={selected}
             >
               <div className="flex items-start justify-between gap-2">

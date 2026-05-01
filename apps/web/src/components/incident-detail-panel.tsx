@@ -7,7 +7,7 @@ import type { Ticket } from "@/types";
 export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {
   if (!ticket) {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Incident Detail</div>
         <div className="mt-8 text-center text-sm text-zinc-500">Select a ticket to inspect details.</div>
       </div>
@@ -39,7 +39,7 @@ export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {
         </span>
       </div>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+      <div className="mt-5 grid grid-flow-dense gap-4 sm:grid-cols-2">
         <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3">
           <Hash className="h-4 w-4 text-zinc-600" />
           <div>

@@ -33,7 +33,7 @@ export function PlatformEvidenceStrip({ items }: { items: EvidenceItem[] }) {
   }
 
   return (
-    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="flex items-center justify-between border-b border-zinc-800/70 pb-4">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Platform Evidence</div>
         <div className="mono-data text-[11px] text-zinc-600">{items.length} artifacts</div>
@@ -46,7 +46,7 @@ export function PlatformEvidenceStrip({ items }: { items: EvidenceItem[] }) {
             href={item.url || "#"}
             target={item.url ? "_blank" : undefined}
             rel={item.url ? "noopener noreferrer" : undefined}
-            className={`flex min-w-[200px] flex-col gap-2 rounded-xl border p-3.5 transition hover:brightness-110 ${typeBorder(item.type)}`}
+            className={`flex min-w-[200px] flex-col gap-2 rounded-xl border p-3.5 transition hover:brightness-110 hover:scale-105 transition-transform duration-500 ${typeBorder(item.type)}`}
           >
             <div className="flex items-center gap-2">
               {typeIcon(item.type)}

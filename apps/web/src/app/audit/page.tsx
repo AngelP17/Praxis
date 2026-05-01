@@ -99,7 +99,7 @@ export default function AuditTrailPage() {
       <SystemStatusRail activeLabel="Audit" />
       <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
-          <section className="sentinel-v2-panel-strong p-5 sm:p-6">
+          <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="sentinel-v2-eyebrow">Audit Trail</div>
@@ -108,7 +108,7 @@ export default function AuditTrailPage() {
               </div>
               <button
                 onClick={() => void exportIncident("INC-4821")}
-                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-4 py-2 text-sm text-zinc-200 hover:border-zinc-500"
+                className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-4 py-2 text-sm text-zinc-200 hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 <FileArrowDown size={14} />
                 Export INC-4821
@@ -126,7 +126,7 @@ export default function AuditTrailPage() {
             </label>
           </section>
 
-          <section className="sentinel-v2-panel p-4 sm:p-5">
+          <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
             {filtered.length === 0 ? (
               <EmptyState title="No audit events" message="No audit records matched the current filters." />
             ) : (
@@ -149,7 +149,7 @@ export default function AuditTrailPage() {
           </section>
 
           {notice && notice.includes("Seeded") ? (
-            <section className="sentinel-v2-panel p-4 sm:p-5">
+            <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={14} className="text-emerald-300" />
                 <div className="sentinel-v2-eyebrow">Immutable Audit Chain</div>
@@ -168,7 +168,7 @@ export default function AuditTrailPage() {
           ) : null}
 
           {exportPayload ? (
-            <section className="sentinel-v2-panel p-4 sm:p-5">
+            <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
               <div className="sentinel-v2-eyebrow">Export Payload Preview</div>
               <pre className="mono-data mt-3 overflow-x-auto rounded-lg border border-zinc-800/80 bg-zinc-950/80 p-3 text-[11px] text-zinc-300">{exportPayload}</pre>
             </section>

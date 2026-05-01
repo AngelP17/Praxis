@@ -265,7 +265,7 @@ export default function AdminPage() {
       <CommandShell>
         <SystemStatusRail activeLabel="Admin" />
         <div className="flex-1 overflow-auto px-4 py-5 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl rounded-[2rem] border border-rose-500/20 bg-black/20 p-8">
+          <div className="mx-auto max-w-5xl rounded-[2rem] border border-rose-500/20 bg-black/20 p-8">
             <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-rose-300">Admin access required</div>
             <h1 className="mt-3 text-3xl font-semibold text-white">This console is restricted to administrators</h1>
             <p className="mt-4 text-sm leading-7 text-zinc-400">
@@ -274,7 +274,7 @@ export default function AdminPage() {
             <div className="mt-6 flex gap-3">
               <Link
                 href="/command-center"
-                className="rounded-full border border-zinc-700 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500"
+                className="rounded-full border border-zinc-700 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 Return to command center
               </Link>
@@ -302,13 +302,13 @@ export default function AdminPage() {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/tickets/new"
-                className="rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400"
+                className="rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500"
               >
                 New ticket
               </Link>
               <Link
                 href="/command-center"
-                className="rounded-full border border-zinc-700 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500"
+                className="rounded-full border border-zinc-700 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 Back to command center
               </Link>
@@ -322,8 +322,8 @@ export default function AdminPage() {
           </div>
         ) : null}
 
-        <div className="grid gap-6 xl:grid-cols-2">
-          <section className="legacy-card rounded-[1.75rem] p-6">
+        <div className="grid gap-6 xl:grid-cols-2 grid-flow-dense">
+          <section className="legacy-card rounded-[1.75rem] p-6 py-20 hover:scale-105 transition-transform duration-500">
             <div className="flex items-center gap-3">
               <Users className="h-5 w-5 text-amber-300" />
               <div>
@@ -332,7 +332,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="mt-6 grid gap-3 md:grid-cols-2">
+            <div className="mt-6 grid gap-3 md:grid-cols-2 grid-flow-dense">
               <input
                 value={newUser.username}
                 onChange={(event) => setNewUser((current) => ({ ...current, username: event.target.value }))}
@@ -367,7 +367,7 @@ export default function AdminPage() {
             <button
               type="button"
               onClick={handleCreateUser}
-              className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400"
+              className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500"
             >
               Create user
             </button>
@@ -375,7 +375,7 @@ export default function AdminPage() {
             <div className="mt-6 space-y-3">
               {users.map((entry) => (
                 <div key={entry.username} className="rounded-[1.25rem] border border-zinc-800 bg-zinc-950/60 p-4">
-                  <div className="grid gap-3 md:grid-cols-2">
+                  <div className="grid gap-3 md:grid-cols-2 grid-flow-dense">
                     <input
                       value={entry.display_name}
                       onChange={(event) => updateUserDraft(entry.username, { display_name: event.target.value })}
@@ -406,7 +406,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => handleFloppyDiskUser(entry)}
-                        className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500"
+                        className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
                       >
                         FloppyDisk
                       </button>
@@ -414,7 +414,7 @@ export default function AdminPage() {
                         <button
                           type="button"
                           onClick={() => handleDeleteUser(entry.username)}
-                          className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20"
+                          className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20 hover:scale-105 transition-transform duration-500"
                         >
                           Delete
                         </button>
@@ -426,8 +426,8 @@ export default function AdminPage() {
             </div>
           </section>
 
-          <section className="space-y-6">
-            <div className="legacy-card rounded-[1.75rem] p-6">
+          <section className="space-y-6 py-20">
+            <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
               <div className="flex items-center gap-3">
                 <SlidersHorizontal className="h-5 w-5 text-amber-300" />
                 <div>
@@ -436,7 +436,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 md:grid-cols-[1fr,160px,160px]">
+              <div className="mt-6 grid gap-3 md:grid-cols-[1fr,160px,160px] grid-flow-dense">
                 <input
                   value={newCategory.name}
                   onChange={(event) => setNewCategory((current) => ({ ...current, name: event.target.value }))}
@@ -459,7 +459,7 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={handleCreateCategory}
-                className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400"
+                className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500"
               >
                 Create category
               </button>
@@ -482,14 +482,14 @@ export default function AdminPage() {
                         <button
                           type="button"
                           onClick={() => handleUpdateCategory(category, { is_active: !category.is_active })}
-                          className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500"
+                          className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
                         >
                           {category.is_active ? "Disable" : "Enable"}
                         </button>
                         <button
                           type="button"
                           onClick={() => handleDeleteCategory(category.id)}
-                          className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20"
+                          className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20 hover:scale-105 transition-transform duration-500"
                         >
                           Delete
                         </button>
@@ -500,7 +500,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="legacy-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
               <div className="flex items-center gap-3">
                 <Users className="h-5 w-5 text-amber-300" />
                 <div>
@@ -519,7 +519,7 @@ export default function AdminPage() {
                 <button
                   type="button"
                   onClick={handleCreateAssignee}
-                  className="rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400"
+                  className="rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500"
                 >
                   Create assignee
                 </button>
@@ -532,7 +532,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => handleDeleteAssignee(assignee)}
-                      className="rounded-full border border-rose-400/20 bg-rose-500/10 px-2 py-1 text-[11px] text-rose-100 transition hover:bg-rose-500/20"
+                      className="rounded-full border border-rose-400/20 bg-rose-500/10 px-2 py-1 text-[11px] text-rose-100 transition hover:bg-rose-500/20 hover:scale-105 transition-transform duration-500"
                     >
                       Delete
                     </button>
@@ -541,7 +541,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="legacy-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
               <div className="flex items-center gap-3">
                 <Tag className="h-5 w-5 text-amber-300" />
                 <div>
@@ -550,7 +550,7 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-3 md:grid-cols-[1fr,180px]">
+              <div className="mt-6 grid gap-3 md:grid-cols-[1fr,180px] grid-flow-dense">
                 <input
                   value={newLabel.name}
                   onChange={(event) => setNewLabel((current) => ({ ...current, name: event.target.value }))}
@@ -567,7 +567,7 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={handleCreateLabel}
-                className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400"
+                className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500"
               >
                 Create label
               </button>
@@ -580,7 +580,7 @@ export default function AdminPage() {
                     <button
                       type="button"
                       onClick={() => handleDeleteLabel(label.id)}
-                      className="rounded-full border border-rose-400/20 bg-rose-500/10 px-2 py-1 text-[11px] text-rose-100 transition hover:bg-rose-500/20"
+                      className="rounded-full border border-rose-400/20 bg-rose-500/10 px-2 py-1 text-[11px] text-rose-100 transition hover:bg-rose-500/20 hover:scale-105 transition-transform duration-500"
                     >
                       Delete
                     </button>
@@ -589,7 +589,7 @@ export default function AdminPage() {
               </div>
             </div>
 
-            <div className="legacy-card rounded-[1.75rem] p-6">
+            <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
               <div className="flex items-center gap-3">
                 <Key className="h-5 w-5 text-amber-300" />
                 <div>
@@ -624,7 +624,7 @@ export default function AdminPage() {
               <button
                 type="button"
                 onClick={handleChangePassword}
-                className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400"
+                className="mt-4 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500"
               >
                 Update password
               </button>

@@ -144,7 +144,7 @@ export default function IncidentDetailPage() {
       <div className="sentinel-v2-amber-field" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
-        <section className="sentinel-v2-panel-strong p-5 sm:p-6">
+        <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="sentinel-v2-eyebrow">Incident Detail</div>
@@ -156,20 +156,20 @@ export default function IncidentDetailPage() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/command-center"
-                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 Command center
               </Link>
               <button
                 onClick={() => void resolveIncident()}
                 disabled={resolving}
-                className="inline-flex min-h-10 items-center rounded-full border border-emerald-500/35 bg-emerald-500/12 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/18 disabled:opacity-60"
+                className="inline-flex min-h-10 items-center rounded-full border border-emerald-500/35 bg-emerald-500/12 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/18 disabled:opacity-60 hover:scale-105 transition-transform duration-500"
               >
                 {resolving ? "Resolving..." : "Resolve Incident"}
               </button>
               <Link
                 href="/replay/INC-4821"
-                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 Replay
               </Link>
@@ -180,7 +180,7 @@ export default function IncidentDetailPage() {
             <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-2.5 text-sm text-amber-100">{notice}</div>
           ) : null}
 
-          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 grid-flow-dense">
             <Stat label="Status" value={payload.incident.status} />
             <Stat label="Linked Tickets" value={String(payload.incident.ticket_count)} mono />
             <Stat label="Confidence" value={percent(payload.incident.confidence)} mono />
@@ -188,7 +188,7 @@ export default function IncidentDetailPage() {
           </div>
         </section>
 
-        <section className="mt-4 grid grid-cols-12 gap-4">
+        <section className="mt-4 grid grid-cols-12 gap-4 grid-flow-dense py-20">
           <div className="col-span-12 xl:col-span-7">
             <div className="sentinel-v2-panel h-full p-4 sm:p-5">
               <div className="sentinel-v2-eyebrow">Incident Focus</div>
@@ -198,7 +198,7 @@ export default function IncidentDetailPage() {
                 <p className="mt-2 text-sm leading-7 text-amber-50">{payload.recommended_action}</p>
               </div>
 
-              <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 grid-flow-dense">
                 {["SLO burn rate", "Kubernetes event window", "Forensic waveform capture", "Operator response runbook"].map((item, index) => (
                   <div key={item} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
                     <div className="inline-flex items-center gap-1.5 text-xs text-zinc-300">
@@ -242,7 +242,7 @@ export default function IncidentDetailPage() {
           </div>
         </section>
 
-        <section className="mt-4 sentinel-v2-panel p-4 sm:p-5">
+        <section className="mt-4 sentinel-v2-panel p-4 sm:p-5 py-20">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="sentinel-v2-eyebrow">Correlated Tickets</div>
             <div className="mono-data text-[11px] text-zinc-500">{payload.tickets.length} linked records</div>
@@ -252,7 +252,7 @@ export default function IncidentDetailPage() {
               <Link
                 key={ticket.ticket_id}
                 href={`/tickets/${ticket.ticket_id}`}
-                className="grid gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5 transition hover:border-amber-400/35 md:grid-cols-[130px,minmax(0,1fr),180px]"
+                className="grid gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5 transition hover:border-amber-400/35 hover:scale-105 transition-transform duration-500 md:grid-cols-[130px,minmax(0,1fr),180px] grid-flow-dense"
               >
                 <div className="mono-data text-xs text-zinc-100">{ticket.ticket_id}</div>
                 <div className="text-sm text-zinc-300">{ticket.title}</div>
@@ -267,7 +267,7 @@ export default function IncidentDetailPage() {
           </div>
         </section>
 
-        <section className="mt-4">
+        <section className="mt-4 py-20">
           <SignalMarquee
             items={[
               payload.incident.title,

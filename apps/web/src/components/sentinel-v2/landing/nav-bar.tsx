@@ -31,7 +31,7 @@ export function NavBar() {
 
         <div className="hidden items-center gap-4 overflow-x-auto text-[12px] text-zinc-400 md:flex">
           {links.map((link) => (
-            <Link key={link.href} href={link.href} className="transition-colors hover:text-zinc-200">
+            <Link key={link.href} href={link.href} className="transition-colors hover:text-zinc-200 hover:scale-105 transition-transform duration-500">
               {link.label}
             </Link>
           ))}
@@ -45,7 +45,7 @@ export function NavBar() {
           <button
             type="button"
             onClick={() => setMobileOpen((p) => !p)}
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-zinc-700/50 bg-zinc-900/50 text-zinc-400 transition hover:text-zinc-200 md:hidden"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-zinc-700/50 bg-zinc-900/50 text-zinc-400 transition hover:text-zinc-200 hover:scale-105 transition-transform duration-500 md:hidden"
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X size={16} /> : <List size={16} />}
@@ -61,7 +61,7 @@ export function NavBar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileOpen(false)}
-                className="rounded-xl px-4 py-3 text-sm text-zinc-300 transition hover:bg-zinc-900/60 hover:text-zinc-100"
+                className="rounded-xl px-4 py-3 text-sm text-zinc-300 transition hover:bg-zinc-900/60 hover:text-zinc-100 hover:scale-105 transition-transform duration-500"
               >
                 {link.label}
               </Link>

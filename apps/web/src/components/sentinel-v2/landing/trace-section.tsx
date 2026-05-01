@@ -31,7 +31,7 @@ const steps = [
 
 export function TraceSection() {
   return (
-    <section className="trace-section relative min-h-[200vh]">
+    <section className="trace-section relative min-h-[200vh] py-20">
       <div className="mx-auto flex max-w-6xl flex-col gap-12 px-4 py-32 md:flex-row sm:px-6 lg:px-8">
         <div className="md:sticky md:top-24 md:h-fit md:w-2/5">
           <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">Trace</div>

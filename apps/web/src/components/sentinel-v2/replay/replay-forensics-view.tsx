@@ -64,8 +64,8 @@ export function ReplayForensicsView({
       <div className="sentinel-v2-amber-field" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
-        <section className="sentinel-v2-panel-strong p-5 sm:p-6">
-          <div className="grid gap-4 xl:grid-cols-[1.2fr,0.8fr]">
+        <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
+          <div className="grid grid-flow-dense gap-4 xl:grid-cols-[1.2fr,0.8fr]">
             <div>
               <div className="sentinel-v2-eyebrow">Replay Forensics</div>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">Replay {id || payload.ticket_id}</h1>
@@ -75,13 +75,13 @@ export function ReplayForensicsView({
               <div className="mt-3 flex flex-wrap gap-2">
                 <Link
                   href="/command-center"
-                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
                 >
                   Command center
                 </Link>
                 <Link
                   href={`/incidents/${payload.ticket_id === "INC-4821" ? "IR-2026-041" : "IR-2026-040"}`}
-                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
                 >
                   Incident detail
                 </Link>
@@ -118,14 +118,14 @@ export function ReplayForensicsView({
             <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/12 px-4 py-2.5 text-sm text-amber-100">{notice}</div>
           ) : null}
 
-          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div className="mt-4 grid grid-flow-dense grid-cols-1 gap-3 md:grid-cols-3">
             <Metric icon={ShieldCheck} label={mode === "live" ? "Live replay chain" : "Demo replay chain"} value={mode === "live" ? "Verified" : "Seeded"} />
             <Metric icon={Fingerprint} label="Replay hash" value={replayHash} mono />
             <Metric icon={FileArrowDown} label="Audit bundle" value="Export ready" />
           </div>
         </section>
 
-        <section className="mt-4 grid grid-cols-12 gap-4">
+        <section className="mt-4 grid grid-flow-dense grid-cols-12 gap-4 py-20">
           <div className="col-span-12 xl:col-span-5">
             <div className="sentinel-v2-panel h-full p-4">
               <div className="sentinel-v2-eyebrow">Decision History</div>
@@ -149,7 +149,7 @@ export function ReplayForensicsView({
           <div className="col-span-12 xl:col-span-7">
             <div className="sentinel-v2-panel h-full p-4">
               <div className="sentinel-v2-eyebrow">Event Timeline</div>
-              <div className="mt-3 grid grid-cols-1 gap-2.5 md:grid-cols-2">
+              <div className="mt-3 grid grid-flow-dense grid-cols-1 gap-2.5 md:grid-cols-2">
                 {payload.events.map((event, index) => (
                   <div key={`${event.event_type}-${index}`} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 p-3">
                     <div className="text-sm text-zinc-100">{event.event_type.replace(/_/g, " ")}</div>
@@ -169,7 +169,7 @@ export function ReplayForensicsView({
           </div>
         </section>
 
-        <section className="mt-4 grid grid-cols-1 gap-4 xl:grid-cols-3">
+        <section className="mt-4 grid grid-flow-dense grid-cols-1 gap-4 xl:grid-cols-3 py-20">
           <div className="sentinel-v2-panel p-4">
             <div className="sentinel-v2-eyebrow">Evidence Chain</div>
             <div className="mt-3 space-y-2">
@@ -213,7 +213,7 @@ export function ReplayForensicsView({
               ))}
               <Link
                 href={`/replay/${id || payload.ticket_id}`}
-                className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-3 py-1.5 text-xs text-zinc-200 transition hover:border-zinc-500"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-zinc-700/70 bg-zinc-900/75 px-3 py-1.5 text-xs text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 <ArrowClockwise size={12} />
                 Refresh replay

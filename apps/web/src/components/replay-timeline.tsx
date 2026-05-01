@@ -39,7 +39,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
   }
 
   return (
-    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
         <ArrowCounterClockwise className="h-4 w-4 text-amber-300" />
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Replay Timeline</div>
@@ -64,7 +64,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
                   <button
                     type="button"
                     onClick={() => setExpandedId(isExpanded ? null : event.id)}
-                    className="w-full text-left"
+                    className="w-full text-left hover:scale-105 transition-transform duration-500"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-sm font-medium text-zinc-200">{event.action}</span>

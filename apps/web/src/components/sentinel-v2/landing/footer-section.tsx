@@ -30,19 +30,19 @@ export function FooterSection() {
             Aether Sentinel &middot; Operational Intelligence Platform
           </div>
           <div className="flex flex-wrap justify-center gap-6 text-[12px] text-zinc-500">
-            <Link href="/dashboard" className="transition-colors hover:text-zinc-300">
+            <Link href="/dashboard" className="transition-colors hover:text-zinc-300 hover:scale-105 transition-transform duration-500">
               Dashboard
             </Link>
-            <Link href="/command-center" className="transition-colors hover:text-zinc-300">
+            <Link href="/command-center" className="transition-colors hover:text-zinc-300 hover:scale-105 transition-transform duration-500">
               Command Center
             </Link>
-            <Link href="/incidents" className="transition-colors hover:text-zinc-300">
+            <Link href="/incidents" className="transition-colors hover:text-zinc-300 hover:scale-105 transition-transform duration-500">
               Incidents
             </Link>
-            <Link href="/replay/INC-4821" className="transition-colors hover:text-zinc-300">
+            <Link href="/replay/INC-4821" className="transition-colors hover:text-zinc-300 hover:scale-105 transition-transform duration-500">
               Replay
             </Link>
-            <Link href="/reports" className="transition-colors hover:text-zinc-300">
+            <Link href="/reports" className="transition-colors hover:text-zinc-300 hover:scale-105 transition-transform duration-500">
               Audit
             </Link>
           </div>

@@ -24,7 +24,7 @@ export function MotionReplayRail({ nodes }: { nodes: ReplayNode[] }) {
           animate={{ scaleX: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}
         />
-        <div className="relative grid grid-cols-5 gap-2">
+        <div className="relative grid grid-flow-dense grid-cols-5 gap-2">
           {nodes.map((node, index) => (
             <motion.div
               key={node.id}

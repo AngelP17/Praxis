@@ -17,7 +17,7 @@ export function DecisionExplanationPanel({
 }) {
   if (!decision) {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Decision Intelligence</div>
         <div className="mt-8 text-center text-sm text-zinc-500">No decision record available for this case.</div>
       </div>

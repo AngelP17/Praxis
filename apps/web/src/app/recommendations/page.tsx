@@ -114,7 +114,7 @@ export default function RecommendationsPage() {
       <SystemStatusRail activeLabel="Recommendations" />
       <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
-          <section className="sentinel-v2-panel-strong p-5 sm:p-6">
+          <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <div className="sentinel-v2-eyebrow">Recommendations</div>
@@ -128,7 +128,7 @@ export default function RecommendationsPage() {
             {notice ? <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">{notice}</div> : null}
           </section>
 
-          <section className="sentinel-v2-panel p-4 sm:p-5">
+          <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
             {rows.length === 0 ? (
               <EmptyState title="No recommendations yet" message="Run the Decision Center against open tickets to generate recommendation records." />
             ) : (
@@ -147,11 +147,11 @@ export default function RecommendationsPage() {
                     <div className="mt-2 flex flex-wrap items-center gap-2">
                       <span className="mono-data rounded-full border border-zinc-700/70 bg-zinc-900/70 px-2 py-0.5 text-[10px] text-zinc-400">confidence {row.confidence.toFixed(2)}</span>
                       <span className="mono-data rounded-full border border-zinc-700/70 bg-zinc-900/70 px-2 py-0.5 text-[10px] text-zinc-400">risk {row.risk_level}</span>
-                      <button onClick={() => void updateRecommendation(row.id, "accept")} className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-100">
+                      <button onClick={() => void updateRecommendation(row.id, "accept")} className="inline-flex items-center gap-1 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-100 hover:scale-105 transition-transform duration-500">
                         <CheckCircle size={12} />
                         Accept
                       </button>
-                      <button onClick={() => void updateRecommendation(row.id, "reject")} className="inline-flex items-center gap-1 rounded-full border border-rose-500/35 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-100">
+                      <button onClick={() => void updateRecommendation(row.id, "reject")} className="inline-flex items-center gap-1 rounded-full border border-rose-500/35 bg-rose-500/10 px-2.5 py-1 text-xs text-rose-100 hover:scale-105 transition-transform duration-500">
                         <XCircle size={12} />
                         Reject
                       </button>

@@ -36,7 +36,7 @@ export function AuditBundlePanel({
   }
 
   return (
-    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="flex items-center justify-between border-b border-zinc-800/70 pb-4">
         <div className="flex items-center gap-2">
           <ShieldCheck className="h-4 w-4 text-amber-300" />
@@ -46,7 +46,7 @@ export function AuditBundlePanel({
           <button
             type="button"
             onClick={onExport}
-            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-950/50 px-3 py-1.5 text-[11px] font-medium text-zinc-300 transition hover:border-amber-500/20 hover:text-amber-200"
+            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-950/50 px-3 py-1.5 text-[11px] font-medium text-zinc-300 transition hover:border-amber-500/20 hover:text-amber-200 hover:scale-105 transition-transform duration-500"
           >
             <Download className="h-3.5 w-3.5" />
             Export

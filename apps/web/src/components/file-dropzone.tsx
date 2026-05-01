@@ -113,7 +113,7 @@ export function FileDropzone({
               <button
                 type="button"
                 onClick={() => onChange(files.filter((_, fileIndex) => fileIndex !== index))}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-700 bg-black/30 text-zinc-400 transition hover:border-rose-400/40 hover:text-rose-200"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-700 bg-black/30 text-zinc-400 transition hover:border-rose-400/40 hover:text-rose-200 hover:scale-105 transition-transform duration-500"
                 aria-label={`Remove ${file.name}`}
               >
                 <X className="h-4 w-4" />

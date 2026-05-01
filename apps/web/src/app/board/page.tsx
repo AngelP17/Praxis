@@ -168,7 +168,7 @@ export default function BoardPage() {
             {/* Header */}
             <div className="border-b border-zinc-800/70 bg-black/20 px-5 py-5 sm:px-8">
               <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-                <div className="max-w-4xl">
+                <div className="max-w-5xl">
                   <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-amber-300">
                     Workflow Tracking
                   </div>
@@ -181,19 +181,19 @@ export default function BoardPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400">
+                  <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
                     <Plus size={16} />
                     New Ticket
                   </Link>
-                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10">
+                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10 hover:scale-105 transition-transform duration-500">
                     <Scan size={16} />
                     Command Center
                   </Link>
-                  <Link href="/reports" className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400">
+                  <Link href="/reports" className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
                     <Lightning size={16} />
                     Reports
                   </Link>
-                  <Link href="/admin" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10">
+                  <Link href="/admin" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10 hover:scale-105 transition-transform duration-500">
                     <Shield size={16} />
                     Admin
                   </Link>
@@ -202,7 +202,7 @@ export default function BoardPage() {
             </div>
 
             {/* Stats */}
-            <div className="grid gap-4 border-b border-zinc-800/70 px-5 py-5 sm:grid-cols-2 xl:grid-cols-4 sm:px-8">
+            <div className="grid gap-4 border-b border-zinc-800/70 px-5 py-5 sm:grid-cols-2 xl:grid-cols-4 sm:px-8 grid-flow-dense">
               <MotionPriorityStack items={stats} />
             </div>
 
@@ -211,9 +211,9 @@ export default function BoardPage() {
               {tickets.length === 0 ? (
                 <EmptyState title="Empty queue" message="The API returned no tickets. The board is clear." />
               ) : (
-                <div className="grid gap-5 xl:grid-cols-4">
+                <div className="grid gap-5 xl:grid-cols-4 grid-flow-dense">
                   {columns.map((column) => (
-                    <section key={column.key} className="legacy-card rounded-[1.5rem] p-4 sm:p-5">
+                    <section key={column.key} className="legacy-card rounded-[1.5rem] p-4 sm:p-5 py-20 hover:scale-105 transition-transform duration-500">
                       <div className="border-b border-zinc-800/70 pb-4">
                         <div className="flex items-start justify-between gap-4">
                           <div>
@@ -239,7 +239,7 @@ export default function BoardPage() {
                             <Link
                               key={ticket.ticket_id}
                               href={`/tickets/${ticket.ticket_id}`}
-                              className="block rounded-[1.15rem] border border-zinc-800 bg-zinc-950/60 p-4 transition hover:border-amber-500/20 hover:bg-zinc-900/80"
+                              className="block rounded-[1.15rem] border border-zinc-800 bg-zinc-950/60 p-4 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500"
                             >
                               <div className="flex items-center justify-between gap-3">
                                 <div className="mono-data text-[11px] uppercase tracking-[0.24em] text-zinc-500">

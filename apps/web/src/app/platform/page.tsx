@@ -137,7 +137,7 @@ export default function PlatformOverviewPage() {
       <SystemStatusRail activeLabel="Platform" />
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
-          <section className="sentinel-v2-panel-strong p-6 sm:p-8">
+          <section className="sentinel-v2-panel-strong p-6 sm:p-8 py-20">
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <div className="sentinel-v2-eyebrow">Platform Overview</div>
@@ -145,15 +145,15 @@ export default function PlatformOverviewPage() {
                 <p className="mt-3 text-sm text-zinc-400">Service: {summary?.service} · Namespace: {summary?.namespace} · Latest incident: {summary?.latest_incident_id}</p>
               </div>
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => void refresh()} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-4 py-2 text-sm text-zinc-200 hover:border-zinc-500">
+                <button onClick={() => void refresh()} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-4 py-2 text-sm text-zinc-200 hover:border-zinc-500 hover:scale-105 transition-transform duration-500">
                   <ArrowsClockwise size={14} />
                   Refresh
                 </button>
-                <button onClick={() => void triggerChaos("degraded")} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/12 px-4 py-2 text-sm text-amber-100 hover:bg-amber-500/18">
+                <button onClick={() => void triggerChaos("degraded")} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/12 px-4 py-2 text-sm text-amber-100 hover:bg-amber-500/18 hover:scale-105 transition-transform duration-500">
                   <WarningDiamond size={14} />
                   Chaos Degraded
                 </button>
-                <button onClick={() => void triggerChaos("reset")} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/12 px-4 py-2 text-sm text-emerald-100 hover:bg-emerald-500/18">
+                <button onClick={() => void triggerChaos("reset")} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/12 px-4 py-2 text-sm text-emerald-100 hover:bg-emerald-500/18 hover:scale-105 transition-transform duration-500">
                   <ShieldCheck size={14} />
                   Chaos Reset
                 </button>
@@ -163,14 +163,14 @@ export default function PlatformOverviewPage() {
             {chaosMessage ? <div className="mt-3 rounded-xl border border-zinc-600/50 bg-zinc-800/60 px-4 py-2.5 text-sm text-zinc-200">{chaosMessage}</div> : null}
           </section>
 
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 grid-flow-dense py-20">
             <Metric label="Availability" value={`${summary?.slo.availability.current ?? 0}%`} target={`target ${summary?.slo.availability.target ?? 0}%`} tone={summary?.slo.availability.status === "met" ? "ok" : "risk"} />
             <Metric label="MTTR" value={`${summary?.slo.mttr.current_seconds ?? 0}s`} target={`target ${summary?.slo.mttr.target_seconds ?? 0}s`} tone={summary?.slo.mttr.status === "met" ? "ok" : "risk"} />
             <Metric label="Error Rate" value={`${summary?.slo.error_rate.current_percent ?? 0}%`} target={`target ${summary?.slo.error_rate.target_percent ?? 0}%`} tone={summary?.slo.error_rate.status === "met" ? "ok" : "risk"} />
             <Metric label="P95 Latency" value={`${summary?.slo.p95_latency_ms.current_ms ?? 0}ms`} target={`target ${summary?.slo.p95_latency_ms.target_ms ?? 0}ms`} tone={summary?.slo.p95_latency_ms.status === "met" ? "ok" : "risk"} />
           </section>
 
-          <section className="grid grid-cols-1 gap-4 xl:grid-cols-[1.1fr,1fr]">
+          <section className="grid grid-cols-1 gap-4 xl:grid-cols-[1.1fr,1fr] grid-flow-dense py-20">
             <div className="sentinel-v2-panel p-5 sm:p-6">
               <div className="flex items-center justify-between">
                 <div className="sentinel-v2-eyebrow">Topology</div>

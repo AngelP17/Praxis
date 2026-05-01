@@ -44,7 +44,7 @@ export function IncidentPriorityQueue({
   const sorted = [...filtered].sort((a, b) => (b.priority_score ?? 0) - (a.priority_score ?? 0));
 
   return (
-    <div className="legacy-card rounded-[1.5rem] p-4 sm:p-5">
+    <div className="legacy-card rounded-[1.5rem] p-4 sm:p-5 hover:scale-105 transition-transform duration-500">
       <div className="flex items-center justify-between border-b border-zinc-800/70 pb-4">
         <div>
           <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Priority Queue</div>
@@ -56,7 +56,7 @@ export function IncidentPriorityQueue({
               key={f}
               type="button"
               onClick={() => setFilter(f)}
-              className={`rounded-full px-3 py-1 text-[11px] font-medium transition ${
+              className={`rounded-full px-3 py-1 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${
                 filter === f
                   ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
                   : "text-zinc-500 hover:text-zinc-300 border border-transparent"
@@ -85,7 +85,7 @@ export function IncidentPriorityQueue({
                 <button
                   type="button"
                   onClick={() => onSelect(ticket.ticket_id)}
-                  className={`w-full text-left rounded-[1.1rem] border bg-zinc-950/50 p-3.5 transition ${
+                  className={`w-full text-left rounded-[1.1rem] border bg-zinc-950/50 p-3.5 transition hover:scale-105 transition-transform duration-500 ${
                     isSelected ? "border-amber-500/30 bg-amber-500/[0.06]" : priorityBorder(ticket.priority_raw)
                   }`}
                 >
@@ -124,7 +124,7 @@ export function IncidentPriorityQueue({
       <div className="mt-4 border-t border-zinc-800/50 pt-4">
         <Link
           href="/tickets/new"
-          className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-300 transition hover:border-amber-500/20 hover:bg-zinc-900/60"
+          className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-300 transition hover:border-amber-500/20 hover:bg-zinc-900/60 hover:scale-105 transition-transform duration-500"
         >
           <span>Create new ticket</span>
           <CaretRight className="h-4 w-4 text-zinc-500" />

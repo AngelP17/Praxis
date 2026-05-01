@@ -44,7 +44,7 @@ export function IncidentFocusPanel({
             : "Fallback mode";
   const title = ticket?.ticketId === "INC-4821" ? "Press Line 3 vibration cascade" : ticket?.title;
   return (
-    <section className="sentinel-v2-panel-strong h-full max-h-[340px] overflow-y-auto p-4 sm:p-5">
+    <section className="sentinel-v2-panel-strong h-full max-h-[340px] overflow-y-auto p-4 sm:p-5 py-20">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Case Inspector</div>
@@ -72,7 +72,7 @@ export function IncidentFocusPanel({
             <div className="mt-2 text-sm text-zinc-400">Source: {sourceFor(ticket)}</div>
           </div>
 
-          <div className="mt-2.5 grid grid-cols-2 gap-2">
+          <div className="mt-2.5 grid grid-flow-dense grid-cols-2 gap-2">
             <Stat label="Priority score" value={String(ticket.score)} mono />
             <Stat label="Confidence" value={confidenceFor(ticket)} mono />
             <Stat label="Root cause" value={rootCauseFor(ticket, linkedIncident)} />

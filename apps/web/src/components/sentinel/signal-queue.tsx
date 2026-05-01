@@ -38,7 +38,7 @@ export function SignalQueue({
 }) {
   if (panelState === "loading") {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="h-4 w-28 animate-pulse rounded bg-zinc-800/80" />
         <div className="mt-4 space-y-2">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -51,7 +51,7 @@ export function SignalQueue({
 
   if (panelState === "error") {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-rose-300">Signal Queue</div>
         <p className="mt-3 text-sm text-rose-100">{message || "Signal queue failed to load."}</p>
       </div>
@@ -59,7 +59,7 @@ export function SignalQueue({
   }
 
   return (
-    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="flex flex-col gap-3 border-b border-zinc-800/50 pb-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Signal Queue</div>
@@ -93,7 +93,7 @@ export function SignalQueue({
                   : "border-zinc-800/60 bg-black/20 hover:border-amber-400/20 hover:bg-amber-500/[0.03]"
               }`}
             >
-              <div className="grid gap-4 xl:grid-cols-[48px,minmax(0,1fr),124px] xl:items-center">
+              <div className="grid grid-flow-dense gap-4 xl:grid-cols-[48px,minmax(0,1fr),124px] xl:items-center">
                 <div className="mono-data flex h-12 w-12 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-950 text-sm text-zinc-300">
                   #{index + 1}
                 </div>

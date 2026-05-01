@@ -138,14 +138,14 @@ export default function DecisionCenterPage() {
       <SystemStatusRail activeLabel="Decisions" />
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
-          <section className="sentinel-v2-panel-strong p-6 sm:p-8">
+          <section className="sentinel-v2-panel-strong p-6 sm:p-8 py-20">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <div className="sentinel-v2-eyebrow">Decision Center</div>
                 <h1 className="mt-3 text-[1.75rem] font-semibold leading-tight text-zinc-50 sm:text-[2rem]">Astraea Decisioning and Human Overrides</h1>
                 <p className="mt-3 text-sm text-zinc-400">Evaluate, approve, reject, and route recommendations directly against live decision records.</p>
               </div>
-              <button onClick={() => void loadTickets()} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-600/50 bg-zinc-800/60 px-4 py-2 text-sm text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700/60">
+              <button onClick={() => void loadTickets()} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-600/50 bg-zinc-800/60 px-4 py-2 text-sm text-zinc-200 hover:border-zinc-500 hover:bg-zinc-700/60 hover:scale-105 transition-transform duration-500">
                 <ArrowClockwise size={14} />
                 Refresh
               </button>
@@ -153,28 +153,38 @@ export default function DecisionCenterPage() {
             {notice ? <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-sm text-amber-100">{notice}</div> : null}
           </section>
 
-          <section className="grid grid-cols-12 gap-4">
+          <section className="grid grid-cols-12 gap-4 grid-flow-dense py-20">
             <div className="col-span-12 xl:col-span-4">
               <div className="sentinel-v2-panel h-full p-5">
                 <div className="sentinel-v2-eyebrow">Signal Queue</div>
                 <div className="mt-4 space-y-2.5">
-                  {tickets.slice(0, 8).map((ticket) => (
-                    <button
-                      key={ticket.ticket_id}
-                      onClick={() => setSelectedTicket(ticket.ticket_id)}
-                      className={`w-full rounded-lg border px-3.5 py-3 text-left transition ${
-                        selectedTicket === ticket.ticket_id
-                          ? "border-amber-500/40 bg-amber-500/12 shadow-sm shadow-amber-500/5"
-                          : "border-zinc-700/50 bg-zinc-800/40 hover:border-zinc-600/60 hover:bg-zinc-800/60"
-                      }`}
-                    >
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="mono-data text-xs font-medium text-zinc-100">{ticket.ticket_id}</span>
-                        <span className="mono-data text-xs text-amber-200">{ticket.priority_score ?? 0}</span>
-                      </div>
-                      <div className="mt-1.5 text-sm text-zinc-300">{ticket.title}</div>
-                    </button>
-                  ))}
+                  {tickets.slice(0, 8).map((ticket) =>
+                    selectedTicket === ticket.ticket_id ? (
+                      <button
+                        key={ticket.ticket_id}
+                        onClick={() => setSelectedTicket(ticket.ticket_id)}
+                        className="w-full rounded-lg border px-3.5 py-3 text-left transition border-amber-500/40 bg-amber-500/12 shadow-sm shadow-amber-500/5 hover:scale-105 transition-transform duration-500"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="mono-data text-xs font-medium text-zinc-100">{ticket.ticket_id}</span>
+                          <span className="mono-data text-xs text-amber-200">{ticket.priority_score ?? 0}</span>
+                        </div>
+                        <div className="mt-1.5 text-sm text-zinc-300">{ticket.title}</div>
+                      </button>
+                    ) : (
+                      <button
+                        key={ticket.ticket_id}
+                        onClick={() => setSelectedTicket(ticket.ticket_id)}
+                        className="w-full rounded-lg border px-3.5 py-3 text-left transition border-zinc-700/50 bg-zinc-800/40 hover:border-zinc-600/60 hover:bg-zinc-800/60 hover:scale-105 transition-transform duration-500"
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="mono-data text-xs font-medium text-zinc-100">{ticket.ticket_id}</span>
+                          <span className="mono-data text-xs text-amber-200">{ticket.priority_score ?? 0}</span>
+                        </div>
+                        <div className="mt-1.5 text-sm text-zinc-300">{ticket.title}</div>
+                      </button>
+                    )
+                  )}
                 </div>
               </div>
             </div>
@@ -188,11 +198,11 @@ export default function DecisionCenterPage() {
                     <p className="mt-1.5 text-xs text-zinc-500">{selectedTicketRecord?.ticket_id} · {selectedTicketRecord?.requester || "machine telemetry + operator ticket"}</p>
                   </div>
                   <div className="inline-flex gap-2">
-                    <button onClick={() => void actionDecision("approve")} disabled={!decision} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-100 hover:bg-emerald-500/18 disabled:opacity-50">
+                    <button onClick={() => void actionDecision("approve")} disabled={!decision} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-100 hover:bg-emerald-500/18 disabled:opacity-50 hover:scale-105 transition-transform duration-500">
                       <CheckCircle size={14} />
                       Approve
                     </button>
-                    <button onClick={() => void actionDecision("reject")} disabled={!decision} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-rose-500/35 bg-rose-500/10 px-4 py-2 text-sm font-medium text-rose-100 hover:bg-rose-500/18 disabled:opacity-50">
+                    <button onClick={() => void actionDecision("reject")} disabled={!decision} className="inline-flex min-h-10 items-center gap-2 rounded-full border border-rose-500/35 bg-rose-500/10 px-4 py-2 text-sm font-medium text-rose-100 hover:bg-rose-500/18 disabled:opacity-50 hover:scale-105 transition-transform duration-500">
                       <XCircle size={14} />
                       Reject
                     </button>
@@ -203,7 +213,7 @@ export default function DecisionCenterPage() {
                   <div className="mt-5 rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-4 py-3.5 text-sm text-zinc-400">No decision record returned yet for this ticket.</div>
                 ) : (
                   <>
-                    <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                    <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4 grid-flow-dense">
                       <Stat label="Decision ID" value={String(decision.id)} />
                       <Stat label="Priority" value={decision.priority_score.toFixed(1)} />
                       <Stat label="Confidence" value={decision.confidence_score.toFixed(2)} />
@@ -224,10 +234,10 @@ export default function DecisionCenterPage() {
                             </div>
                             <div className="mt-1.5 text-xs leading-relaxed text-zinc-400">{recommendation.rationale}</div>
                             <div className="mt-3 flex flex-wrap gap-2">
-                              <button onClick={() => void actionRecommendation(recommendation.id, "accept")} className="rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-100 hover:bg-emerald-500/18">
+                              <button onClick={() => void actionRecommendation(recommendation.id, "accept")} className="rounded-full border border-emerald-500/35 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-100 hover:bg-emerald-500/18 hover:scale-105 transition-transform duration-500">
                                 Accept
                               </button>
-                              <button onClick={() => void actionRecommendation(recommendation.id, "reject")} className="rounded-full border border-rose-500/35 bg-rose-500/10 px-3 py-1 text-xs font-medium text-rose-100 hover:bg-rose-500/18">
+                              <button onClick={() => void actionRecommendation(recommendation.id, "reject")} className="rounded-full border border-rose-500/35 bg-rose-500/10 px-3 py-1 text-xs font-medium text-rose-100 hover:bg-rose-500/18 hover:scale-105 transition-transform duration-500">
                                 Reject
                               </button>
                               <span className="mono-data rounded-full border border-zinc-600/50 bg-zinc-800/60 px-3 py-1 text-[10px] text-zinc-400">

@@ -86,7 +86,7 @@ export default function AssetsPage() {
       <SystemStatusRail activeLabel="Assets" />
       <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
-          <section className="sentinel-v2-panel-strong p-5 sm:p-6">
+          <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="sentinel-v2-eyebrow">Asset Management</div>
@@ -109,7 +109,7 @@ export default function AssetsPage() {
             </label>
           </section>
 
-          <section className="sentinel-v2-panel p-4 sm:p-5">
+          <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
             {filtered.length === 0 ? (
               <EmptyState title="No assets found" message="No assets matched the current filters." />
             ) : (

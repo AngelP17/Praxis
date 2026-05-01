@@ -38,7 +38,7 @@ export function SignalConstellation({
             : "Fallback mode";
 
   return (
-    <section className="sentinel-v2-panel h-full max-h-[340px] overflow-y-auto p-4 sm:p-5">
+    <section className="sentinel-v2-panel h-full max-h-[340px] overflow-y-auto p-4 sm:p-5 py-20">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Signal Queue</div>

@@ -9,7 +9,7 @@ type AccordionItem = {
 
 export function ForensicAccordion({ items }: { items: AccordionItem[] }) {
   return (
-    <section className="flex h-full w-full gap-1 overflow-hidden rounded-xl">
+    <section className="flex h-full w-full gap-1 overflow-hidden rounded-xl py-20">
       {items.map((item) => (
         <article
           key={item.id}

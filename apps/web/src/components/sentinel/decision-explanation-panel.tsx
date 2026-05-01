@@ -22,7 +22,7 @@ export function DecisionExplanationPanel({
 }) {
   if (panelState === "loading") {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="h-4 w-36 animate-pulse rounded bg-zinc-800/80" />
         <div className="mt-5 space-y-3">
           {Array.from({ length: 4 }).map((_, index) => (
@@ -35,7 +35,7 @@ export function DecisionExplanationPanel({
 
   if (panelState === "error") {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-rose-300">Astraea Decision</div>
         <p className="mt-3 text-sm text-rose-100">{message || "Decision explanation failed to load."}</p>
       </div>
@@ -44,7 +44,7 @@ export function DecisionExplanationPanel({
 
   if (!decision) {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6">
+      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Astraea Decision</div>
         <p className="mt-4 text-sm text-zinc-500">No decision record available for this case.</p>
       </div>

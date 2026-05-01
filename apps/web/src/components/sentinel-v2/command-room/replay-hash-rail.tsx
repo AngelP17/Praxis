@@ -28,7 +28,7 @@ export function ReplayHashRail({
             ? "Syncing chain"
             : "Fallback chain";
   return (
-    <section className="sentinel-v2-panel p-3.5">
+    <section className="sentinel-v2-panel p-3.5 py-20">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Replay Navigation</div>

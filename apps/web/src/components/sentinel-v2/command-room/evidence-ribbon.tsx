@@ -12,7 +12,7 @@ export function EvidenceRibbon({
   dataStatus: DataStatus;
 }) {
   return (
-    <section className="sentinel-v2-panel h-full p-4">
+    <section className="sentinel-v2-panel h-full p-4 py-20">
       <div className="flex items-center justify-between gap-2">
         <div>
           <div className="sentinel-v2-eyebrow">Platform Evidence</div>

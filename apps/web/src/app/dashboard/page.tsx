@@ -80,7 +80,7 @@ export default function DashboardPage() {
             {/* Large Status Card */}
             <div className="col-span-2 row-span-2 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-6 transition duration-300 hover:border-amber-500/30 hover:bg-zinc-900/70">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-500">Queue Overview</div>
-              <div className="mt-6 grid grid-cols-2 gap-4">
+              <div className="mt-6 grid grid-cols-2 gap-4 grid-flow-dense">
                 <div>
                   <div className="mono-data text-3xl font-semibold text-white">{metrics?.totalTickets ?? 0}</div>
                   <div className="mt-1 text-[11px] text-zinc-500">Total Tickets</div>
@@ -99,10 +99,10 @@ export default function DashboardPage() {
                 </div>
               </div>
               <div className="mt-6 flex gap-3">
-                <Link href="/command-center" className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-4 py-2 text-xs font-semibold text-zinc-950 transition hover:bg-amber-400">
+                <Link href="/command-center" className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-4 py-2 text-xs font-semibold text-zinc-950 transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
                   Command Center <ArrowRight size={12} />
                 </Link>
-                <Link href="/board" className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-xs font-medium text-zinc-300 transition hover:border-zinc-500">
+                <Link href="/board" className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-xs font-medium text-zinc-300 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500">
                   Board View
                 </Link>
               </div>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
                     <Link
                       key={incident.id}
                       href={`/incidents/${incident.id}`}
-                      className="flex items-center justify-between rounded-lg border border-zinc-800/50 bg-zinc-900/40 px-3 py-2.5 transition hover:border-amber-500/20"
+                      className="flex items-center justify-between rounded-lg border border-zinc-800/50 bg-zinc-900/40 px-3 py-2.5 transition hover:border-amber-500/20 hover:scale-105 transition-transform duration-500"
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">
@@ -166,9 +166,9 @@ export default function DashboardPage() {
             <div className="col-span-2 md:col-span-4 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition duration-300 hover:border-amber-500/30 hover:bg-zinc-900/70">
               <div className="flex items-center justify-between">
                 <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-500">Active Queue</div>
-                <Link href="/board" className="text-[11px] text-amber-300 transition hover:text-amber-200">View board</Link>
+                <Link href="/board" className="text-[11px] text-amber-300 transition hover:text-amber-200 hover:scale-105 transition-transform duration-500">View board</Link>
               </div>
-              <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3 grid-flow-dense">
                 {recentTickets.length === 0 ? (
                   <EmptyState title="Clear queue" message="No active tickets requiring attention." />
                 ) : (
@@ -176,7 +176,7 @@ export default function DashboardPage() {
                     <Link
                       key={ticket.ticket_id}
                       href={`/tickets/${ticket.ticket_id}`}
-                      className="flex items-center justify-between rounded-xl border border-zinc-800/50 bg-zinc-900/40 px-4 py-3 transition hover:border-amber-500/20"
+                      className="flex items-center justify-between rounded-xl border border-zinc-800/50 bg-zinc-900/40 px-4 py-3 transition hover:border-amber-500/20 hover:scale-105 transition-transform duration-500"
                     >
                       <div className="min-w-0">
                         <div className="flex items-center gap-2">

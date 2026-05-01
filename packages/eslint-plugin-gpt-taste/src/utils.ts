@@ -18,8 +18,17 @@ export function getStringValue(node: any): string | null {
     return getStringValue(node.expression);
   }
 
-  if (node.type === "TemplateLiteral" && node.quasis.length === 1) {
-    return node.quasis[0].value.raw;
+  if (node.type === "TemplateLiteral") {
+    return node.quasis.map((q: any) => q.value.raw).join("");
+  }
+
+  if (node.type === "BinaryExpression" && node.operator === "+") {
+    const left = getStringValue(node.left);
+    const right = getStringValue(node.right);
+    if (left !== null && right !== null) return left + right;
+    if (left !== null) return left;
+    if (right !== null) return right;
+    return null;
   }
 
   return null;

@@ -67,7 +67,7 @@ export function CommandTopBar({
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400">
+          <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
             <Plus className="h-4 w-4" />
             New ticket
           </Link>
@@ -75,15 +75,15 @@ export function CommandTopBar({
             <Table className="h-4 w-4" />
             {isExporting ? "Preparing..." : "Export"}
           </MagneticActionButton>
-          <Link href="/board" className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500">
+          <Link href="/board" className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500">
             <SquaresFour className="h-4 w-4" />
             Board
           </Link>
-          <Link href="/reports" className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500">
+          <Link href="/reports" className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500">
             <Pulse className="h-4 w-4" />
             Reports
           </Link>
-          <Link href="/admin" className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500">
+          <Link href="/admin" className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500">
             <Shield className="h-4 w-4" />
             Admin
           </Link>
@@ -91,7 +91,7 @@ export function CommandTopBar({
             type="button"
             onClick={onLogout}
             disabled={isSigningOut}
-            className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-rose-400/40 hover:text-rose-100 disabled:cursor-not-allowed disabled:opacity-70"
+            className="inline-flex items-center gap-2 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-rose-400/40 hover:text-rose-100 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
           >
             <SignOut className="h-4 w-4" />
             {isSigningOut ? "Signing out..." : "Logout"}
