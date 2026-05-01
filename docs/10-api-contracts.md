@@ -64,11 +64,34 @@ Evaluate a decision for an event.
 }
 ```
 
+### GET /api/decisions/tickets/{ticket_id}
+Get decision for a specific ticket.
+
+### POST /api/decisions/recompute/{ticket_id}
+Recompute decision for a ticket.
+
 ### GET /api/decisions/{decision_id}/detail
 Get decision details with full context.
 
 ### POST /api/decisions/{decision_id}/replay
 Replay a decision with original inputs.
+
+### POST /api/decisions/{decision_id}/approve
+Approve a decision with operator note.
+
+### POST /api/decisions/{decision_id}/reject
+Reject a decision with operator note.
+
+## Recommendations
+
+### GET /api/recommendations
+List recommendations.
+
+### POST /api/recommendations/{recommendation_id}/accept
+Accept a recommendation.
+
+### POST /api/recommendations/{recommendation_id}/reject
+Reject a recommendation with reason.
 
 ## Incident Management
 
@@ -83,6 +106,14 @@ Get chronological timeline of incident.
 
 ### POST /api/incidents/{incident_id}/resolve
 Resolve an incident.
+
+## Tickets
+
+### GET /api/tickets
+List tickets with optional limit filter.
+
+### GET /api/tickets/{ticket_id}
+Get ticket detail.
 
 ## Human Feedback
 
@@ -103,21 +134,49 @@ Submit feedback on a decision.
 ### GET /api/replay/incidents/{incident_id}
 Get replay bundle for an incident.
 
+### GET /api/audit/events
+List audit events.
+
 ### GET /api/audit/export/{incident_id}
 Export audit document.
 
 **Response:** Structured JSON with full incident lifecycle.
 
-## Platform Proxy
+## Platform
 
-### GET /api/platform/health
-Proxy to platform service health check.
+### GET /api/platform/summary
+Get platform summary with SLO metrics.
+
+### GET /api/platform/topology
+Get service topology (nodes and edges).
+
+### GET /api/platform/controls
+List platform controls.
+
+### POST /api/platform/chaos/degraded
+Trigger degraded chaos mode.
+
+### POST /api/platform/chaos/reset
+Reset chaos mode.
 
 ### GET /api/platform/slo/{service_id}
 Proxy to SLO metrics.
 
 ### GET /api/platform/evidence/{incident_id}
 Proxy to evidence artifacts.
+
+## Assets
+
+### GET /api/assets
+List infrastructure assets.
+
+### GET /api/assets/{asset_id}
+Get asset detail.
+
+## Metrics
+
+### GET /api/metrics
+Get system metrics for dashboard and landing.
 
 ## Authentication
 

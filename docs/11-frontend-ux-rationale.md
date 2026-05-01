@@ -52,9 +52,11 @@ No purple, cyan, or pink accents exist in the operational UI. These colors are r
 ### Font Stack
 - **Sans**: Geist - clean, technical, readable at small sizes
 - **Mono**: Geist Mono - used for IDs, hashes, timestamps, scores, and SLO values
+- **Display**: Outfit - used for landing page headlines and cinematic sections
 
 ### Type Scale
-- Eyebrow labels: 10px, uppercase, wide tracking
+- Display headings: `clamp(3rem, 5vw, 5.5rem)`, tight leading
+- Eyebrow labels: 10px, uppercase, wide tracking (0.19em)
 - Section headings: 18-24px, semibold
 - Body text: 13-14px, regular
 - Mono data: 11-13px, tabular numbers
@@ -67,6 +69,8 @@ Each component has a single responsibility:
 - `IncidentDetailPanel` shows case metadata and linked incidents
 - `DecisionExplanationPanel` renders Astraea scores and rationale
 - `ReplayTimeline` reconstructs incident chronology
+- `PlatformSLOPanel` displays SLO metrics and topology
+- `AuditTrail` renders immutable audit events
 
 ### State Isolation
 - Page components orchestrate data fetching
@@ -106,6 +110,16 @@ Every list has a meaningful empty state:
 - Contextual message explaining why empty
 - Suggested action to populate
 - Link to documentation
+
+## Resilient Data Fetching
+
+All operational pages use a shared `client-api.ts` helper with:
+- Request timeouts (8s default)
+- Automatic fallback to demo scenarios when APIs return empty or 404
+- Stale cache reuse when possible
+- Hard error only when no fallback path exists
+
+This ensures the demo never shows a broken interface, even when backend services are offline.
 
 ## Frontend State Machine
 

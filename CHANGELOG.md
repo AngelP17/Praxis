@@ -2,6 +2,35 @@
 
 All notable changes to Aether Sentinel will be documented in this file.
 
+## [1.1.0-surface-expansion] - 2026-05-01
+
+### Added
+- 6 new operational pages with real API integration:
+  - `/platform` — SRE control plane with SLO metrics, topology, controls, chaos testing
+  - `/decision-center` — Astraea decisioning with approve/reject and recommendation workflow
+  - `/assets` — Infrastructure asset inventory
+  - `/audit` — Audit trail viewer with export
+  - `/recommendations` — Recommendation acceptance and rejection
+  - `/event-ingestion` — Direct event ingestion interface
+- Incident detail timeline view (`/incidents/[id]`) with resolve flow
+- Shared API client helpers (`client-api.ts`) with timeout and fallback logic
+- Route-level motion polish and loading/error/empty state components
+- Surface expansion smoke tests
+- Dashboard page with dense bento layout and real metrics
+- Landing page cinematic redesign with AIDA structure, GSAP animations, gapless bento grid
+
+### Changed
+- Expanded system status rail with all new operational routes
+- Tightened panel contrast and typography on platform and decision-center pages
+- Command center now auto-falls back to demo scenario when live API returns empty
+- Frontend state management now uses resilient fetching with 30s auto-refresh
+
+### Fixed
+- Command center no longer dead-ends on `/api/tickets?limit=160: 404`
+- Demo fallback correctly selects highest-priority case with `INC-4821` handling
+- Status labeling avoids false "Live data active" with empty queue
+- Panel contrast raised from `opacity-0.08` to readable levels on dark backgrounds
+
 ## [1.0.0-flagship] - 2024-01-15
 
 ### Added

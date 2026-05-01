@@ -65,7 +65,7 @@ Incident Correlation -> Aether Workflow -> Human Feedback -> Replay/Audit
 
 | Service | Responsibility | Tech |
 |---------|---------------|------|
-| `web` | Command center, incident detail, replay UI | Next.js 16, React 19, Tailwind v4 |
+| `web` | Landing, command center, dashboard, incidents, decisions, platform, assets, audit, recommendations, event ingestion, replay UI | Next.js 16, React 19, Tailwind v4, GSAP |
 | `api-gateway` | Public API boundary, auth, orchestration | FastAPI |
 | `decision-service` | Deterministic scoring, explainability, replay | Python (Astraea) |
 | `platform-service` | SLOs, runbooks, topology, controls, chaos | FastAPI |
@@ -81,6 +81,28 @@ Incident Correlation -> Aether Workflow -> Human Feedback -> Replay/Audit
 | **Replay hashes** | SHA-256 of inputs guarantees decision integrity. Any tampering changes the hash. |
 | **SLO-backed evidence** | Infrastructure incidents are judged by user-facing impact, not just symptoms. |
 | **Immutable records** | Raw events are never modified. Decision records are append-only. Evidence is checksummed. |
+
+---
+
+## Frontend Surface
+
+| Route | Purpose | Data Source |
+|-------|---------|-------------|
+| `/` | Cinematic landing page with live metrics | `/api/metrics`, `/api/incidents`, `/api/tickets` |
+| `/dashboard` | System health bento overview | `/api/metrics`, `/api/tickets` |
+| `/command-center` | Primary operator work queue | `/api/tickets`, `/api/decisions` |
+| `/incidents` | Incident browser with search and filter | `/api/incidents` |
+| `/incidents/[id]` | Incident detail with timeline and resolve | `/api/incidents/{id}`, `/api/incidents/{id}/timeline` |
+| `/decision-center` | Astraea decisioning and human overrides | `/api/decisions`, `/api/recommendations` |
+| `/platform` | SRE control plane — SLOs, topology, chaos | `/api/platform/summary`, `/api/platform/topology`, `/api/platform/controls` |
+| `/assets` | Infrastructure asset inventory | `/api/assets` |
+| `/audit` | Audit trail viewer and export | `/api/audit/events` |
+| `/recommendations` | Recommendation workflow management | `/api/recommendations` |
+| `/event-ingestion` | Event ingestion interface | `/api/events/ingest` |
+| `/replay/[id]` | Point-in-time replay and audit | `/api/replay/incidents/{id}` |
+| `/reports` | Executive and operational reporting | `/api/metrics` |
+
+All operational pages use real API data with automatic fallback to demo scenarios when live services are unavailable. Every page includes loading, error, and empty states.
 
 ---
 
