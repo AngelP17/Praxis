@@ -1,6 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const steps = [
   {
@@ -30,43 +35,96 @@ const steps = [
 ];
 
 export function TraceSection() {
+  const scope = useRef<HTMLElement | null>(null);
+
+  useGSAP(
+    () => {
+      const pin = scope.current?.querySelector(".trace-pin");
+      if (pin) {
+        ScrollTrigger.create({
+          trigger: scope.current,
+          start: "top top",
+          end: "bottom bottom",
+          pin,
+          pinSpacing: false,
+        });
+      }
+
+      gsap.fromTo(
+        ".trace-step-item",
+        { opacity: 0.25, y: 56, scale: 0.96 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          stagger: 0.16,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: ".trace-gallery",
+            start: "top 72%",
+            end: "bottom 42%",
+            scrub: true,
+          },
+        }
+      );
+
+      gsap.fromTo(
+        ".trace-copy-word",
+        { opacity: 0.12, y: 10 },
+        {
+          opacity: 1,
+          y: 0,
+          stagger: 0.035,
+          ease: "none",
+          scrollTrigger: {
+            trigger: ".trace-copy",
+            start: "top 78%",
+            end: "bottom 46%",
+            scrub: true,
+          },
+        }
+      );
+    },
+    { scope }
+  );
+
   return (
-    <section className="trace-section relative min-h-[200vh] py-20">
-      <div className="mx-auto flex max-w-6xl flex-col gap-12 px-4 py-32 md:flex-row sm:px-6 lg:px-8">
-        <div className="md:sticky md:top-24 md:h-fit md:w-2/5">
-          <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">Trace</div>
+    <section ref={scope} className="trace-section relative min-h-[220vh] px-4 py-32 sm:px-6 md:py-48 lg:px-8">
+      <div className="mx-auto flex max-w-6xl flex-col gap-12 md:flex-row">
+        <div className="trace-pin md:h-fit md:w-2/5">
           <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[1.1] tracking-tight text-zinc-50">
             The Decision Trace
           </h2>
-          <p className="mt-5 max-w-sm text-sm leading-7 text-zinc-400">
-            How a raw signal becomes an auditable decision. Every step is immutable, hash-linked, and replayable.
+          <p className="trace-copy mt-5 max-w-sm text-sm leading-7 text-zinc-400">
+            {"How a raw signal becomes an auditable decision. Every step is immutable, hash-linked, and replayable."
+              .split(" ")
+              .map((word, index) => (
+                <span key={`${word}-${index}`} className="trace-copy-word inline-block pr-1">
+                  {word}
+                </span>
+              ))}
           </p>
         </div>
 
-        <div className="flex flex-col gap-20 md:w-3/5 md:gap-28">
+        <div className="trace-gallery flex flex-col gap-20 md:w-3/5 md:gap-28">
           {steps.map((step, index) => (
-            <motion.div
+            <article
               key={step.id}
-              initial={{ opacity: 0.4, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.55 }}
-              transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.03 }}
-              className="trace-step-item"
+              className="trace-step-item group relative overflow-hidden rounded-2xl border border-zinc-700/50 bg-zinc-900/45 p-6 transition-transform duration-700 ease-out hover:scale-[1.02]"
             >
+              <div
+                className="absolute inset-0 bg-cover bg-center opacity-20 grayscale contrast-125 transition-transform duration-700 ease-out group-hover:scale-105"
+                style={{ backgroundImage: `url('https://picsum.photos/seed/aether-${step.id}/960/640')` }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/90 via-zinc-950/72 to-amber-950/18" />
               <div className="flex items-baseline gap-4">
                 <span className="mono-data text-[10px] text-zinc-500">0{index + 1}</span>
                 <h3 className="font-display text-xl font-medium text-zinc-200">{step.title}</h3>
               </div>
-              <motion.p
-                initial={{ opacity: 0.3, x: 8 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.6 }}
-                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.06 + index * 0.03 }}
-                className="trace-step-text mt-4 max-w-lg pl-8 text-base leading-8 text-zinc-300"
-              >
+              <p className="trace-step-text relative mt-4 max-w-lg pl-8 text-base leading-8 text-zinc-300">
                 {step.description}
-              </motion.p>
-            </motion.div>
+              </p>
+            </article>
           ))}
         </div>
       </div>

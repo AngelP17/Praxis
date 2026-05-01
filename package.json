@@ -1,12 +1,27 @@
 {
-  "devDependencies": {
-    "typescript": "^6.0.3"
+  "name": "aether-sentinel",
+  "private": true,
+  "packageManager": "pnpm@10.29.3",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev --parallel",
+    "lint:gpt-taste": "turbo run lint:gpt-taste",
+    "lint:gpt-taste:ci": "turbo run lint:gpt-taste:ci",
+    "test:smoke": "turbo run test:smoke",
+    "typecheck": "turbo run typecheck",
+    "web:build": "pnpm --filter aether-web build",
+    "web:dev": "pnpm --filter aether-web dev",
+    "web:lint:gpt-taste:ci": "pnpm --filter aether-web lint:gpt-taste:ci",
+    "web:test:smoke": "pnpm --filter aether-web test:smoke",
+    "web:typecheck": "pnpm --filter aether-web typecheck"
   },
-  "dependencies": {
-    "@radix-ui/react-slot": "^1.2.4",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "geist": "^1.7.0",
-    "tailwind-merge": "^3.5.0"
+  "devDependencies": {
+    "turbo": "^2.6.3",
+    "typescript": "^5.8.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "next>postcss": "8.5.10"
+    }
   }
 }

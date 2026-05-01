@@ -145,7 +145,7 @@ export default function DecisionCenterPage() {
                 <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>Astraea Decisioning and Human Overrides</h1>
                 <p className="mt-5 text-base text-zinc-400 leading-relaxed">Evaluate, approve, reject, and route recommendations directly against live decision records.</p>
               </div>
-              <button onClick={() => void loadTickets()} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-zinc-600/50 bg-zinc-800/60 px-5 py-2.5 text-sm text-zinc-200 hover:border-zinc-500">
+              <button onClick={() => void loadTickets()} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-zinc-600/50 bg-zinc-800/60 px-5 py-2.5 text-sm text-zinc-200 transition-transform duration-500 hover:scale-105 hover:border-zinc-500">
                 <ArrowClockwise size={15} />
                 Refresh
               </button>
@@ -153,7 +153,7 @@ export default function DecisionCenterPage() {
             {notice ? <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-3 text-sm text-amber-100">{notice}</div> : null}
           </section>
 
-          <section className="section-spacer-breathing">
+          <section className="py-24 sm:py-32">
             <div className="grid grid-cols-12 gap-5 grid-flow-dense">
               <div className="col-span-12 xl:col-span-4">
                 <div className="sentinel-v2-panel-enhanced h-full p-6">
@@ -164,7 +164,7 @@ export default function DecisionCenterPage() {
                         <button
                           key={ticket.ticket_id}
                           onClick={() => setSelectedTicket(ticket.ticket_id)}
-                          className="card-hover-physics w-full rounded-xl border px-4 py-4 text-left border-amber-500/45 bg-amber-500/14 shadow-md shadow-amber-500/8"
+                          className="card-hover-physics w-full rounded-xl border border-amber-500/45 bg-amber-500/14 px-4 py-4 text-left shadow-md shadow-amber-500/8 transition-transform duration-500 hover:scale-105"
                         >
                           <div className="flex items-center justify-between gap-3">
                             <span className="mono-data text-sm font-medium text-zinc-100">{ticket.ticket_id}</span>
@@ -176,7 +176,7 @@ export default function DecisionCenterPage() {
                         <button
                           key={ticket.ticket_id}
                           onClick={() => setSelectedTicket(ticket.ticket_id)}
-                          className="card-hover-physics w-full rounded-xl border px-4 py-4 text-left border-zinc-700/60 bg-zinc-800/50 hover:border-zinc-600/70 hover:bg-zinc-800/60"
+                          className="card-hover-physics w-full rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 text-left transition-transform duration-500 hover:scale-105 hover:border-zinc-600/70 hover:bg-zinc-800/60"
                         >
                           <div className="flex items-center justify-between gap-3">
                             <span className="mono-data text-sm font-medium text-zinc-100">{ticket.ticket_id}</span>
@@ -199,11 +199,11 @@ export default function DecisionCenterPage() {
                       <p className="mt-2 text-sm text-zinc-500">{selectedTicketRecord?.ticket_id} · {selectedTicketRecord?.requester || "machine telemetry + operator ticket"}</p>
                     </div>
                     <div className="inline-flex gap-3">
-                      <button onClick={() => void actionDecision("approve")} disabled={!decision} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-emerald-500/45 bg-emerald-500/14 px-5 py-2.5 text-sm font-medium text-emerald-100 hover:bg-emerald-500/20 disabled:opacity-50">
+                      <button onClick={() => void actionDecision("approve")} disabled={!decision} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-emerald-500/45 bg-emerald-500/14 px-5 py-2.5 text-sm font-medium text-emerald-100 transition-transform duration-500 hover:scale-105 hover:bg-emerald-500/20 disabled:opacity-50 disabled:hover:scale-100">
                         <CheckCircle size={15} />
                         Approve
                       </button>
-                      <button onClick={() => void actionDecision("reject")} disabled={!decision} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-rose-500/45 bg-rose-500/14 px-5 py-2.5 text-sm font-medium text-rose-100 hover:bg-rose-500/20 disabled:opacity-50">
+                      <button onClick={() => void actionDecision("reject")} disabled={!decision} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-rose-500/45 bg-rose-500/14 px-5 py-2.5 text-sm font-medium text-rose-100 transition-transform duration-500 hover:scale-105 hover:bg-rose-500/20 disabled:opacity-50 disabled:hover:scale-100">
                         <XCircle size={15} />
                         Reject
                       </button>
@@ -228,17 +228,17 @@ export default function DecisionCenterPage() {
                         </div>
                         <div className="mt-6 space-y-4">
                           {decision.recommendations.map((recommendation) => (
-                            <div key={recommendation.id} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-900/70 px-4 py-4">
+                            <div key={recommendation.id} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-900/70 px-4 py-4 transition-transform duration-500 hover:scale-105">
                               <div className="flex items-center justify-between gap-3">
                                 <div className="text-base font-medium text-zinc-100">{recommendation.action_label}</div>
                                 <span className="mono-data text-xs text-zinc-500 font-medium">#{recommendation.id}</span>
                               </div>
                               <div className="mt-2 text-sm leading-relaxed text-zinc-400">{recommendation.rationale}</div>
                               <div className="mt-4 flex flex-wrap gap-3">
-                                <button onClick={() => void actionRecommendation(recommendation.id, "accept")} className="btn-enhanced rounded-full border border-emerald-500/45 bg-emerald-500/14 px-4 py-1.5 text-sm font-medium text-emerald-100 hover:bg-emerald-500/20">
+                                <button onClick={() => void actionRecommendation(recommendation.id, "accept")} className="btn-enhanced rounded-full border border-emerald-500/45 bg-emerald-500/14 px-4 py-1.5 text-sm font-medium text-emerald-100 transition-transform duration-500 hover:scale-105 hover:bg-emerald-500/20">
                                   Accept
                                 </button>
-                                <button onClick={() => void actionRecommendation(recommendation.id, "reject")} className="btn-enhanced rounded-full border border-rose-500/45 bg-rose-500/14 px-4 py-1.5 text-sm font-medium text-rose-100 hover:bg-rose-500/20">
+                                <button onClick={() => void actionRecommendation(recommendation.id, "reject")} className="btn-enhanced rounded-full border border-rose-500/45 bg-rose-500/14 px-4 py-1.5 text-sm font-medium text-rose-100 transition-transform duration-500 hover:scale-105 hover:bg-rose-500/20">
                                   Reject
                                 </button>
                                 <span className="mono-data rounded-full border border-zinc-600/60 bg-zinc-800/60 px-3 py-1.5 text-xs text-zinc-400">
@@ -263,7 +263,7 @@ export default function DecisionCenterPage() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4">
+    <div className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
       <div className="sentinel-v2-eyebrow-enhanced text-[11px]">{label}</div>
       <div className="mono-data mt-2 text-base font-medium text-zinc-100">{value}</div>
     </div>

@@ -145,15 +145,15 @@ export default function PlatformOverviewPage() {
                 <p className="mt-5 text-base text-zinc-400 leading-relaxed">Service: {summary?.service} · Namespace: {summary?.namespace} · Latest incident: {summary?.latest_incident_id}</p>
               </div>
               <div className="flex flex-wrap gap-3">
-                <button onClick={() => void refresh()} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-5 py-2.5 text-sm text-zinc-200 hover:border-zinc-500">
+                <button onClick={() => void refresh()} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-5 py-2.5 text-sm text-zinc-200 transition-transform duration-500 hover:scale-105 hover:border-zinc-500">
                   <ArrowsClockwise size={15} />
                   Refresh
                 </button>
-                <button onClick={() => void triggerChaos("degraded")} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/12 px-5 py-2.5 text-sm text-amber-100 hover:bg-amber-500/18">
+                <button onClick={() => void triggerChaos("degraded")} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/12 px-5 py-2.5 text-sm text-amber-100 transition-transform duration-500 hover:scale-105 hover:bg-amber-500/18">
                   <WarningDiamond size={15} />
                   Chaos Degraded
                 </button>
-                <button onClick={() => void triggerChaos("reset")} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/12 px-5 py-2.5 text-sm text-emerald-100 hover:bg-emerald-500/18">
+                <button onClick={() => void triggerChaos("reset")} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-emerald-500/35 bg-emerald-500/12 px-5 py-2.5 text-sm text-emerald-100 transition-transform duration-500 hover:scale-105 hover:bg-emerald-500/18">
                   <ShieldCheck size={15} />
                   Chaos Reset
                 </button>
@@ -163,7 +163,7 @@ export default function PlatformOverviewPage() {
             {chaosMessage ? <div className="mt-5 rounded-xl border border-zinc-600/50 bg-zinc-800/60 px-5 py-3 text-sm text-zinc-200">{chaosMessage}</div> : null}
           </section>
 
-          <section className="section-spacer-breathing">
+          <section className="py-24 sm:py-32">
             <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4 grid-flow-dense">
               <Metric label="Availability" value={`${summary?.slo.availability.current ?? 0}%`} target={`target ${summary?.slo.availability.target ?? 0}%`} tone={summary?.slo.availability.status === "met" ? "ok" : "risk"} />
               <Metric label="MTTR" value={`${summary?.slo.mttr.current_seconds ?? 0}s`} target={`target ${summary?.slo.mttr.target_seconds ?? 0}s`} tone={summary?.slo.mttr.status === "met" ? "ok" : "risk"} />
@@ -172,9 +172,9 @@ export default function PlatformOverviewPage() {
             </div>
           </section>
 
-          <section className="section-spacer-breathing">
+          <section className="py-24 sm:py-32">
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr,1fr] grid-flow-dense">
-              <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 sm:p-8">
+              <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
                 <div className="flex items-center justify-between">
                   <div className="sentinel-v2-eyebrow-enhanced">Topology</div>
                   <Network size={16} className="text-amber-200" />
@@ -186,7 +186,7 @@ export default function PlatformOverviewPage() {
                 ) : (
                   <div className="mt-6 space-y-3">
                     {topology.nodes.map((node) => (
-                      <div key={node.id} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4">
+                      <div key={node.id} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-base font-medium text-zinc-100">{node.label}</div>
                           <span className={`rounded-full border px-3 py-1 text-xs font-medium ${node.status === "healthy" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-100" : "border-amber-500/40 bg-amber-500/15 text-amber-100"}`}>{node.status}</span>
@@ -198,7 +198,7 @@ export default function PlatformOverviewPage() {
                 )}
               </div>
 
-              <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 sm:p-8">
+              <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
                 <div className="flex items-center justify-between">
                   <div className="sentinel-v2-eyebrow-enhanced">Controls & Evidence</div>
                   <Siren size={16} className="text-amber-200" />
@@ -206,7 +206,7 @@ export default function PlatformOverviewPage() {
                 {controls.length === 0 ? (
                   <div className="mt-6 space-y-3">
                     {DEMO_EVIDENCE.map((artifact) => (
-                      <div key={artifact.id} className="card-hover-physics flex items-start gap-4 rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4">
+                      <div key={artifact.id} className="card-hover-physics flex items-start gap-4 rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
                         <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-700/60 bg-zinc-900/70">
                           <FileText size={15} className="text-zinc-400" />
                         </div>
@@ -228,7 +228,7 @@ export default function PlatformOverviewPage() {
                 ) : (
                   <div className="mt-6 space-y-3">
                     {controls.slice(0, 8).map((control) => (
-                      <div key={`${control.category}-${control.name}`} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4">
+                      <div key={`${control.category}-${control.name}`} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-base font-medium text-zinc-100">{control.name}</div>
                           <span className="mono-data text-xs text-zinc-500 font-medium">{control.status}</span>
@@ -260,7 +260,7 @@ function Metric({
   tone: "ok" | "risk";
 }) {
   return (
-    <div className="sentinel-v2-panel-enhanced card-hover-physics p-6">
+    <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105">
       <div className="sentinel-v2-eyebrow-enhanced">{label}</div>
       <div className={`mono-data mt-4 font-semibold leading-none ${tone === "ok" ? "text-emerald-100" : "text-rose-100"}`} style={{ fontSize: "clamp(2rem, 3vw, 2.5rem)" }}>{value}</div>
       <div className="mt-3 text-xs text-zinc-500">{target}</div>

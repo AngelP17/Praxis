@@ -4,6 +4,12 @@ export default defineConfig({
   testDir: "./tests",
   timeout: 45_000,
   expect: { timeout: 10_000 },
+  webServer: {
+    command: "pnpm dev",
+    url: "http://localhost:3000",
+    reuseExistingServer: true,
+    timeout: 60_000,
+  },
   use: {
     baseURL: process.env.BASE_URL || "http://localhost:3000",
     headless: true,

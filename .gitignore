@@ -10,6 +10,7 @@ __pycache__/
 
 node_modules/
 .next/
+.turbo/
 dist/
 build/
 coverage/

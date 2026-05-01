@@ -23,22 +23,27 @@ export function BentoSection({
   const hasData = status === "ready" && metrics !== null;
 
   return (
-    <section className="relative px-4 py-32 sm:px-6 lg:px-8">
+    <section className="relative px-4 py-32 sm:px-6 md:py-48 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <div className="mb-16 text-center">
           <h2 className="font-display text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-tight tracking-tight text-zinc-50">
-            Operational intelligence in real time
+            Operational intelligence
+            <span
+              aria-hidden="true"
+              className="mx-3 inline-block h-8 w-20 rounded-full align-middle bg-cover bg-center grayscale contrast-125 sm:h-10 sm:w-28"
+              style={{ backgroundImage: "url('https://picsum.photos/seed/industrial-telemetry-lane/320/140')" }}
+            />
+            in real time
           </h2>
         </div>
 
         <div className="grid grid-cols-4 grid-flow-dense gap-3">
-          {/* Card 1: Large Feature */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="bento-card col-span-4 md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2 md:row-span-2"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
             <div className="relative z-10 flex h-full flex-col justify-between">
@@ -62,13 +67,12 @@ export function BentoSection({
             </div>
           </motion.div>
 
-          {/* Card 2: System Status */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.04 }}
-            className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <div className="relative z-10">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">System Health</div>
@@ -113,53 +117,43 @@ export function BentoSection({
             </div>
           </motion.div>
 
-          {/* Card 3: Throughput */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.08 }}
-            className="bento-card col-span-2 md:col-span-1 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
-                <Pulse size={11} className="text-amber-300" />
-                Throughput
+            <div className="relative z-10 grid grid-flow-dense grid-cols-2 gap-4">
+              <div>
+                <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
+                  <Pulse size={11} className="text-amber-300" />
+                  Throughput
+                </div>
+                <div className="mono-data mt-3 text-2xl text-zinc-100">
+                  {metrics?.signals_processed_24h ? `${(metrics.signals_processed_24h / 1_000_000).toFixed(1)}M` : "--"}
+                </div>
+                <div className="mt-1 text-[11px] text-zinc-400">signals processed daily</div>
               </div>
-              <div className="mono-data mt-3 text-2xl text-zinc-100">
-                {metrics?.signals_processed_24h ? `${(metrics.signals_processed_24h / 1_000_000).toFixed(1)}M` : "--"}
+              <div>
+                <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
+                  <Gauge size={11} className="text-amber-300" />
+                  Decision Latency
+                </div>
+                <div className="mono-data mt-3 text-2xl text-zinc-100">
+                  {metrics?.avg_decision_latency_ms ? `<${metrics.avg_decision_latency_ms}ms` : "--"}
+                </div>
+                <div className="mt-1 text-[11px] text-zinc-400">p99 inference time</div>
               </div>
-              <div className="mt-1 text-[11px] text-zinc-400">signals processed daily</div>
             </div>
           </motion.div>
 
-          {/* Card 4: Latency */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.12 }}
-            className="bento-card col-span-2 md:col-span-1 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
-          >
-            <div className="relative z-10">
-              <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
-                <Gauge size={11} className="text-amber-300" />
-                Decision Latency
-              </div>
-              <div className="mono-data mt-3 text-2xl text-zinc-100">
-                {metrics?.avg_decision_latency_ms ? `<${metrics.avg_decision_latency_ms}ms` : "--"}
-              </div>
-              <div className="mt-1 text-[11px] text-zinc-400">p99 inference time</div>
-            </div>
-          </motion.div>
-
-          {/* Card 5: Horizontal Accordion */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.16 }}
-            className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-1 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-1 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <ForensicAccordion
               items={[
@@ -171,13 +165,12 @@ export function BentoSection({
             />
           </motion.div>
 
-          {/* Card 6: Live Signals Marquee */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
-            className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-4 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-4 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <div className="mono-data mb-3 text-[10px] uppercase tracking-[0.18em] text-zinc-400">Live Lane</div>
             {liveSignals.length > 0 ? (
