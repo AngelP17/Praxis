@@ -1,0 +1,35 @@
+{
+  "name": "eslint-plugin-gpt-taste",
+  "version": "1.0.0",
+  "description": "Elite frontend design quality enforcement via ESLint rules",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "node --test dist/**/*.test.js"
+  },
+  "keywords": [
+    "eslint",
+    "eslintplugin",
+    "eslint-plugin",
+    "design",
+    "frontend",
+    "quality",
+    "gpt-taste"
+  ],
+  "author": "Aether Sentinel",
+  "license": "MIT",
+  "peerDependencies": {
+    "eslint": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@types/eslint": "^9.6.1",
+    "@types/node": "^22.14.0",
+    "eslint": "^9.25.0",
+    "typescript": "^5.8.3"
+  }
+}

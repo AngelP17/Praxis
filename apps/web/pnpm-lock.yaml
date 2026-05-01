@@ -72,6 +72,9 @@ importers:
       eslint-config-next:
         specifier: ^16.0.0
         version: 16.2.4(@typescript-eslint/parser@8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      eslint-plugin-gpt-taste:
+        specifier: file:../../packages/eslint-plugin-gpt-taste
+        version: file:../../packages/eslint-plugin-gpt-taste(eslint@9.39.4(jiti@2.6.1))
       playwright:
         specifier: ^1.52.0
         version: 1.59.1
@@ -1183,6 +1186,11 @@ packages:
         optional: true
       eslint-import-resolver-webpack:
         optional: true
+
+  eslint-plugin-gpt-taste@file:../../packages/eslint-plugin-gpt-taste:
+    resolution: {directory: ../../packages/eslint-plugin-gpt-taste, type: directory}
+    peerDependencies:
+      eslint: '>=8.0.0'
 
   eslint-plugin-import@2.32.0:
     resolution: {integrity: sha512-whOE1HFo/qJDyX4SnXzP4N6zOWn79WhnCUY/iDR0mPfQZO8wcYE4JClzI2oZrhBnnMUCBCHZhO6VQyoBU95mZA==}
@@ -3366,6 +3374,10 @@ snapshots:
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
+
+  eslint-plugin-gpt-taste@file:../../packages/eslint-plugin-gpt-taste(eslint@9.39.4(jiti@2.6.1)):
+    dependencies:
+      eslint: 9.39.4(jiti@2.6.1)
 
   eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.39.4(jiti@2.6.1)):
     dependencies:
