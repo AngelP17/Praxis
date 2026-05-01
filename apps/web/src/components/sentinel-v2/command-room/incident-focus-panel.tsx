@@ -44,7 +44,7 @@ export function IncidentFocusPanel({
             : "Fallback mode";
   const title = ticket?.ticketId === "INC-4821" ? "Press Line 3 vibration cascade" : ticket?.title;
   return (
-    <section className="sentinel-v2-panel-strong h-full max-h-[390px] overflow-y-auto p-4 sm:p-5">
+    <section className="sentinel-v2-panel-strong h-full max-h-[340px] overflow-y-auto p-4 sm:p-5">
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="sentinel-v2-eyebrow">Case Inspector</div>

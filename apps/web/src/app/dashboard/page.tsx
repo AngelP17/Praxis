@@ -78,7 +78,7 @@ export default function DashboardPage() {
           {/* Dense Bento Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 grid-flow-dense gap-3">
             {/* Large Status Card */}
-            <div className="col-span-2 row-span-2 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-6">
+            <div className="col-span-2 row-span-2 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-6 transition duration-300 hover:border-amber-500/30 hover:bg-zinc-900/70">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-500">Queue Overview</div>
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <div>
@@ -109,7 +109,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Incident Clusters */}
-            <div className="col-span-2 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5">
+            <div className="col-span-2 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition duration-300 hover:border-amber-500/30 hover:bg-zinc-900/70">
               <div className="flex items-center justify-between">
                 <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-500">Active Incidents</div>
                 <span className="mono-data text-[11px] text-zinc-500">{activeIncidents.length} clusters</span>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
             </div>
 
             {/* SLA Risk */}
-            <div className="col-span-1 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5">
+            <div className="col-span-1 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition duration-300 hover:border-amber-500/30 hover:bg-zinc-900/70">
               <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
                 <Clock size={11} className="text-amber-300" />
                 SLA Risk
@@ -153,7 +153,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Incident Count */}
-            <div className="col-span-1 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5">
+            <div className="col-span-1 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition duration-300 hover:border-amber-500/30 hover:bg-zinc-900/70">
               <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
                 <TrendUp size={11} className="text-amber-300" />
                 Incidents
@@ -163,7 +163,7 @@ export default function DashboardPage() {
             </div>
 
             {/* Active Queue - Full Width */}
-            <div className="col-span-2 md:col-span-4 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5">
+            <div className="col-span-2 md:col-span-4 rounded-2xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition duration-300 hover:border-amber-500/30 hover:bg-zinc-900/70">
               <div className="flex items-center justify-between">
                 <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-500">Active Queue</div>
                 <Link href="/board" className="text-[11px] text-amber-300 transition hover:text-amber-200">View board</Link>

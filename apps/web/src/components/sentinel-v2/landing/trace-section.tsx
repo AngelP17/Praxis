@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { motion } from "framer-motion";
 
 const steps = [
   {
@@ -32,66 +30,10 @@ const steps = [
 ];
 
 export function TraceSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const pinRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      if (pinRef.current && sectionRef.current) {
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: "top top",
-          end: "bottom bottom",
-          pin: pinRef.current,
-          pinSpacing: false,
-        });
-      }
-
-      const texts = gsap.utils.toArray<HTMLElement>(".trace-step-text");
-      texts.forEach((text) => {
-        gsap.fromTo(
-          text,
-          { opacity: 0.25 },
-          {
-            opacity: 1,
-            scrollTrigger: {
-              trigger: text,
-              start: "top 85%",
-              end: "top 50%",
-              scrub: true,
-            },
-          }
-        );
-      });
-
-      const items = gsap.utils.toArray<HTMLElement>(".trace-step-item");
-      items.forEach((item) => {
-        gsap.fromTo(
-          item,
-          { scale: 0.97, opacity: 0.6 },
-          {
-            scale: 1,
-            opacity: 1,
-            scrollTrigger: {
-              trigger: item,
-              start: "top 90%",
-              end: "top 60%",
-              scrub: true,
-            },
-          }
-        );
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
-
   return (
-    <section ref={sectionRef} className="trace-section relative min-h-[200vh]">
+    <section className="trace-section relative min-h-[200vh]">
       <div className="mx-auto flex max-w-6xl flex-col gap-12 px-4 py-32 md:flex-row sm:px-6 lg:px-8">
-        <div ref={pinRef} className="md:w-2/5">
+        <div className="md:sticky md:top-24 md:h-fit md:w-2/5">
           <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">Trace</div>
           <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[1.1] tracking-tight text-zinc-50">
             The Decision Trace
@@ -103,15 +45,28 @@ export function TraceSection() {
 
         <div className="flex flex-col gap-20 md:w-3/5 md:gap-28">
           {steps.map((step, index) => (
-            <div key={step.id} className="trace-step-item">
+            <motion.div
+              key={step.id}
+              initial={{ opacity: 0.4, y: 16 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.55 }}
+              transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.03 }}
+              className="trace-step-item"
+            >
               <div className="flex items-baseline gap-4">
                 <span className="mono-data text-[10px] text-zinc-500">0{index + 1}</span>
                 <h3 className="font-display text-xl font-medium text-zinc-200">{step.title}</h3>
               </div>
-              <p className="trace-step-text mt-4 max-w-lg pl-8 text-base leading-8 text-zinc-300">
+              <motion.p
+                initial={{ opacity: 0.3, x: 8 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.6 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.06 + index * 0.03 }}
+                className="trace-step-text mt-4 max-w-lg pl-8 text-base leading-8 text-zinc-300"
+              >
                 {step.description}
-              </p>
-            </div>
+              </motion.p>
+            </motion.div>
           ))}
         </div>
       </div>

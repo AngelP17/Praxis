@@ -1,8 +1,14 @@
+"use client";
+
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { ChartLine, Hash, ShieldCheck, Waveform } from "@phosphor-icons/react/dist/ssr";
 
 import { getDemoIncident } from "@/lib/demo-scenario";
-import { getServerApiUrl } from "@/lib/server-api";
+import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { ErrorState } from "@/components/error-state";
 import { SignalMarquee } from "@/components/sentinel-v2/motion/signal-marquee";
 
 type IncidentDetailPayload = {
@@ -24,26 +30,10 @@ type IncidentDetailPayload = {
   }>;
 };
 
-async function loadIncident(id: string): Promise<{ payload: IncidentDetailPayload; notice?: string }> {
-  try {
-    const response = await fetch(await getServerApiUrl(`/api/incidents/${id}`), { cache: "no-store" });
-    if (!response.ok) {
-      return {
-        payload: getDemoIncident(id),
-        notice:
-          response.status === 404
-            ? `Demo scenario active. Incident ${id} is not present in live storage.`
-            : `Demo scenario active. Incident API returned ${response.status}.`,
-      };
-    }
-    return { payload: (await response.json()) as IncidentDetailPayload };
-  } catch (error) {
-    return {
-      payload: getDemoIncident(id),
-      notice: `Demo scenario active. Live incident API unavailable: ${error instanceof Error ? error.message : "Unknown error"}`,
-    };
-  }
-}
+type TimelinePayload = {
+  incident_id: string;
+  timeline: Array<{ phase: string; timestamp?: string; detail: string; source?: string; label?: string }>;
+};
 
 function percent(value?: number | null) {
   if (typeof value !== "number") return "--";
@@ -55,9 +45,98 @@ function score(value?: number | null) {
   return value.toFixed(1);
 }
 
-export default async function IncidentDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const { payload, notice } = await loadIncident(id);
+export default function IncidentDetailPage() {
+  const params = useParams<{ id: string }>();
+  const incidentId = params.id;
+
+  const [payload, setPayload] = useState<IncidentDetailPayload | null>(null);
+  const [timeline, setTimeline] = useState<TimelinePayload | null>(null);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [notice, setNotice] = useState<string | null>(null);
+  const [resolving, setResolving] = useState(false);
+
+  const loadIncident = useCallback(async () => {
+    setStatus("loading");
+    setNotice(null);
+    try {
+      const [incidentR, timelineR] = await Promise.allSettled([
+        fetchJsonWithTimeout<IncidentDetailPayload>(`/api/incidents/${incidentId}`),
+        fetchJsonWithTimeout<TimelinePayload>(`/api/incidents/${incidentId}/timeline`),
+      ]);
+
+      const incidentData =
+        incidentR.status === "fulfilled" ? incidentR.value : getDemoIncident(incidentId);
+
+      const timelineData: TimelinePayload =
+        timelineR.status === "fulfilled"
+          ? timelineR.value
+          : {
+              incident_id: incidentId,
+              timeline: [
+                { phase: "signal", detail: "Telemetry threshold crossed on press-line-3", timestamp: "T+00s" },
+                { phase: "decision", detail: "Astraea priority raised to 96 with confidence 0.92", timestamp: "T+04s" },
+                { phase: "workflow", detail: "Mechanical escalation route created", timestamp: "T+09s" },
+                { phase: "feedback", detail: "Ops Lead approved / Reliability requested extra sample", timestamp: "T+15s" },
+              ],
+            };
+
+      setPayload(incidentData);
+      setTimeline(timelineData);
+      setStatus("ready");
+      if (incidentR.status === "rejected") {
+        setNotice("Demo scenario active. Incident detail returned from seeded records.");
+      }
+    } catch (error) {
+      setStatus("error");
+      setNotice(error instanceof Error ? error.message : "Incident detail unavailable.");
+    }
+  }, [incidentId]);
+
+  useEffect(() => {
+    void loadIncident();
+  }, [loadIncident]);
+
+  async function resolveIncident() {
+    setResolving(true);
+    try {
+      await postJsonWithTimeout(`/api/incidents/${incidentId}/resolve`, {
+        summary: "Resolved from forensic command interface with mechanical replacement workflow.",
+      });
+      setNotice(`Incident ${incidentId} marked resolved.`);
+      await loadIncident();
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Resolve operation failed.");
+    } finally {
+      setResolving(false);
+    }
+  }
+
+  if (status === "loading") {
+    return (
+      <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+        <div className="sentinel-v2-grid" />
+        <div className="sentinel-v2-noise" />
+        <div className="sentinel-v2-amber-field" />
+        <div className="relative z-10 mx-auto max-w-[1580px]">
+          <LoadingSkeleton />
+        </div>
+      </main>
+    );
+  }
+
+  if (status === "error" || !payload) {
+    return (
+      <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+        <div className="sentinel-v2-grid" />
+        <div className="sentinel-v2-noise" />
+        <div className="sentinel-v2-amber-field" />
+        <div className="relative z-10 mx-auto max-w-[1580px]">
+          <ErrorState title="Incident detail unavailable" message={notice || "Could not load incident payload."} onRetry={() => void loadIncident()} />
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
       <div className="sentinel-v2-grid" />
@@ -71,7 +150,7 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
               <div className="sentinel-v2-eyebrow">Incident Detail</div>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">{payload.incident.title}</h1>
               <p className="mt-2 max-w-3xl text-sm leading-7 text-zinc-300">
-                Forensic incident context with deterministic recommendation and linked execution trail.
+                Forensic incident context with timeline reconstruction, deterministic recommendation, and closure control.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -81,6 +160,13 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
               >
                 Command center
               </Link>
+              <button
+                onClick={() => void resolveIncident()}
+                disabled={resolving}
+                className="inline-flex min-h-10 items-center rounded-full border border-emerald-500/35 bg-emerald-500/12 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/18 disabled:opacity-60"
+              >
+                {resolving ? "Resolving..." : "Resolve Incident"}
+              </button>
               <Link
                 href="/replay/INC-4821"
                 className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500"
@@ -113,12 +199,7 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
               </div>
 
               <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2">
-                {[
-                  "SLO burn rate",
-                  "Kubernetes event window",
-                  "Forensic waveform capture",
-                  "Operator response runbook",
-                ].map((item, index) => (
+                {["SLO burn rate", "Kubernetes event window", "Forensic waveform capture", "Operator response runbook"].map((item, index) => (
                   <div key={item} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
                     <div className="inline-flex items-center gap-1.5 text-xs text-zinc-300">
                       {index % 2 === 0 ? <ChartLine size={13} className="text-amber-200" /> : <Waveform size={13} className="text-amber-200" />}
@@ -132,16 +213,30 @@ export default async function IncidentDetailPage({ params }: { params: Promise<{
 
           <div className="col-span-12 xl:col-span-5">
             <div className="sentinel-v2-panel h-full p-4 sm:p-5">
-              <div className="sentinel-v2-eyebrow">Incident Ledger</div>
-              <div className="mt-3 space-y-2.5">
-                <LedgerItem label="Replay hash" value="sha256:inc-4821c9a2f" />
-                <LedgerItem label="Root cause" value="bearing degradation" />
-                <LedgerItem label="Decision confidence" value="0.92" />
-                <LedgerItem label="Workflow route" value="Mechanical response lane" />
+              <div className="sentinel-v2-eyebrow">Timeline Reconstruction</div>
+              <div className="mt-3 space-y-2">
+                {(timeline?.timeline || []).map((item, index) => (
+                  <div key={`${item.phase}-${index}`} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="text-sm capitalize text-zinc-100">{item.phase}</div>
+                      <span className="mono-data text-[11px] text-zinc-500">{item.timestamp || "--"}</span>
+                    </div>
+                    <div className="mt-1 text-xs text-zinc-400">{item.detail}</div>
+                  </div>
+                ))}
               </div>
-              <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700/70 bg-zinc-900/75 px-3 py-2 text-xs text-zinc-300">
-                <ShieldCheck size={13} className="text-emerald-300" />
-                Human-reviewed before closure
+
+              <div className="mt-3 rounded-xl border border-zinc-800/80 bg-zinc-950/80 p-3">
+                <div className="sentinel-v2-eyebrow">Incident Ledger</div>
+                <div className="mt-2 space-y-2">
+                  <LedgerItem label="Replay hash" value="sha256:inc-4821c9a2f" />
+                  <LedgerItem label="Root cause" value="bearing degradation" />
+                  <LedgerItem label="Workflow route" value="Mechanical response lane" />
+                </div>
+                <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700/70 bg-zinc-900/75 px-3 py-2 text-xs text-zinc-300">
+                  <ShieldCheck size={13} className="text-emerald-300" />
+                  Human-reviewed before closure
+                </div>
               </div>
             </div>
           </div>

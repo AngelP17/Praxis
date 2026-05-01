@@ -1,16 +1,11 @@
 "use client";
 
-import Link from "next/link";
-import { useLandingData } from "@/lib/hooks/use-landing-data";
 import { NavBar } from "./nav-bar";
 import { HeroSection } from "./hero-section";
-import { BentoSection } from "./bento-section";
 import { TraceSection } from "./trace-section";
 import { FooterSection } from "./footer-section";
 
 export function SentinelLandingPage() {
-  const { metrics, recentIncidents, liveSignals, status, errorMessage } = useLandingData();
-
   return (
     <main className="relative overflow-x-hidden w-full max-w-full min-h-[100dvh] bg-[#070809]">
       <div className="pointer-events-none fixed inset-0 z-0">
@@ -23,7 +18,6 @@ export function SentinelLandingPage() {
       <div className="relative z-10">
         <NavBar />
         <HeroSection />
-        <BentoSection metrics={metrics} recentIncidents={recentIncidents} liveSignals={liveSignals} status={status} errorMessage={errorMessage} />
         <TraceSection />
         <FooterSection />
       </div>

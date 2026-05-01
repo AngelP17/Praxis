@@ -8,11 +8,15 @@ export function NavBar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = [
+    { href: "/platform", label: "Platform" },
     { href: "/dashboard", label: "Dashboard" },
     { href: "/command-center", label: "Command Center" },
+    { href: "/decision-center", label: "Decision Center" },
     { href: "/incidents", label: "Incidents" },
+    { href: "/assets", label: "Assets" },
+    { href: "/audit", label: "Audit Trail" },
     { href: "/replay/INC-4821", label: "Replay" },
-    { href: "/reports", label: "Audit" },
+    { href: "/event-ingestion", label: "Ingestion" },
   ];
 
   return (
@@ -25,7 +29,7 @@ export function NavBar() {
           </span>
         </div>
 
-        <div className="hidden items-center gap-6 text-[13px] text-zinc-400 md:flex">
+        <div className="hidden items-center gap-4 overflow-x-auto text-[12px] text-zinc-400 md:flex">
           {links.map((link) => (
             <Link key={link.href} href={link.href} className="transition-colors hover:text-zinc-200">
               {link.label}

@@ -81,6 +81,14 @@ export function CommandRoomV2({
   const state = displayStatus(feedStatus, feedMode, visibleCountForStatus);
   const stateLabel = statusLabel(state);
   const pulseMode = state === "live" ? "live" : state === "demo" ? "demo" : state === "stale" ? "stale" : "offline";
+  const queueSummary =
+    tickets.length > 0
+      ? `queue ${tickets.length} visible`
+      : state === "demo"
+        ? "queue seeded from demo scenario"
+        : state === "stale"
+          ? "queue restored from last known records"
+          : "queue pending live sync";
 
   useEffect(() => {
     if (tickets.length === 0) return;
@@ -92,12 +100,12 @@ export function CommandRoomV2({
   }, [tickets, selectedTicketId, onSelectTicket]);
 
   return (
-    <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-3 sm:px-6 lg:px-8">
+    <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-2 sm:px-6 lg:px-8">
       <div className="sentinel-v2-grid" />
       <div className="sentinel-v2-noise" />
       <div className="sentinel-v2-amber-field" />
       <div className="relative z-10 mx-auto w-full max-w-[1600px]">
-        <header className="sentinel-v2-panel mb-3 p-3.5 sm:p-4">
+        <header className="sentinel-v2-panel mb-2 p-3 sm:p-3.5">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
@@ -110,9 +118,7 @@ export function CommandRoomV2({
               <h1 className="mt-1.5 text-lg font-semibold leading-tight text-zinc-100 sm:text-xl">
                 Signal → Decision → Workflow → Feedback → Replay
               </h1>
-              <div className="mt-1 text-xs text-zinc-500">
-                Last sync {formatSync(lastSyncSeconds)} | {clockText()} UTC | queue {tickets.length > 0 ? tickets.length : 0} visible
-              </div>
+              <div className="mt-1 text-xs text-zinc-500">Last sync {formatSync(lastSyncSeconds)} | {clockText()} UTC | {queueSummary}</div>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
@@ -171,11 +177,11 @@ export function CommandRoomV2({
           </div>
         </section>
 
-        <section className="mt-3 sentinel-v2-ops-path rounded-2xl p-0.5">
+        <section className="mt-2 sentinel-v2-ops-path rounded-2xl p-0.5">
           <ReplayHashRail ticket={selectedTicket} dataStatus={state} />
         </section>
 
-        <section className="sentinel-v2-ops-path mt-3 grid grid-cols-1 gap-3 rounded-2xl p-0.5 xl:grid-cols-[1.45fr,1fr,1fr]">
+        <section className="sentinel-v2-ops-path mt-2 grid grid-cols-1 gap-3 rounded-2xl p-0.5 xl:grid-cols-[1.45fr,1fr,1fr]">
           <EvidenceRibbon
             dataStatus={state}
             items={[
@@ -237,7 +243,7 @@ export function CommandRoomV2({
           />
         </section>
 
-        <footer className="mt-3 pb-1">
+        <footer className="mt-2 pb-1">
           <div className="sentinel-v2-panel px-4 py-3 text-xs text-zinc-400">
             Signal → Decision → Workflow → Feedback → Replay is active for{" "}
             <span className="mono-data text-amber-100">{selectedTicket?.ticketId || "INC-4821"}</span> with confidence{" "}

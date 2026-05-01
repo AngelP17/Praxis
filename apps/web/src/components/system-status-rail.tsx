@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  Brain,
+  FileText,
   Gauge,
+  HardDrives,
+  Pulse,
   Scan,
+  Sparkle,
   Ticket,
   SquaresFour,
   Table,
@@ -17,11 +22,17 @@ import { clearStoredSession } from "@/lib/auth";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: Gauge },
+  { label: "Platform", href: "/platform", icon: Lightning },
   { label: "Command", href: "/command-center", icon: Scan },
+  { label: "Decisions", href: "/decision-center", icon: Brain },
+  { label: "Recommendations", href: "/recommendations", icon: Sparkle },
+  { label: "Ingestion", href: "/event-ingestion", icon: Pulse },
   { label: "Board", href: "/board", icon: SquaresFour },
   { label: "Incidents", href: "/incidents", icon: Shield },
+  { label: "Assets", href: "/assets", icon: HardDrives },
   { label: "Tickets", href: "/tickets/new", icon: Ticket },
   { label: "Reports", href: "/reports", icon: Table },
+  { label: "Audit", href: "/audit", icon: FileText },
 ];
 
 export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {

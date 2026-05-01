@@ -12,12 +12,12 @@ export function ErrorState({
   onRetry?: () => void;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-[1.5rem] border border-rose-500/15 bg-rose-500/[0.03] px-6 py-14 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-500/20 bg-rose-500/10">
+    <div className="sentinel-v2-panel flex flex-col items-center justify-center rounded-[1.4rem] border border-rose-500/15 bg-rose-500/[0.05] px-6 py-14 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-500/25 bg-rose-500/12">
         <Warning className="h-5 w-5 text-rose-300" />
       </div>
       <div className="mono-data mt-4 text-[11px] uppercase tracking-[0.28em] text-rose-300">{title}</div>
-      <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-400">{message}</p>
+      <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-300">{message}</p>
       {onRetry ? (
         <button
           type="button"

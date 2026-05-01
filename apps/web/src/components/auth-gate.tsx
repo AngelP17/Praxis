@@ -25,38 +25,10 @@ function AuthLoadingShell() {
   );
 }
 
-function AuthErrorShell({
-  message,
-  onRetry,
-}: {
-  message: string;
-  onRetry: () => void;
-}) {
-  return (
-    <div className="pointer-events-none fixed right-4 top-4 z-50 w-full max-w-md px-2" aria-live="polite">
-      <div className="pointer-events-auto rounded-2xl border border-amber-500/25 bg-zinc-950/90 px-5 py-4 shadow-2xl">
-        <div className="text-xs uppercase tracking-[0.28em] text-red-300">
-          Session verification failed
-        </div>
-        <p className="mt-3 text-sm leading-6 text-zinc-300">{message}</p>
-        <button
-          type="button"
-          onClick={onRetry}
-          className="mt-4 inline-flex items-center justify-center rounded-full border border-amber-400/30 bg-amber-500/15 px-4 py-2 text-sm font-medium text-amber-100 transition hover:bg-amber-500/22"
-        >
-          Retry
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export function AuthGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  const [errorMessage, setErrorMessage] = useState("");
-  const [nonce, setNonce] = useState(0);
+  const [status, setStatus] = useState<"loading" | "ready">("loading");
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,7 +36,6 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
     async function run() {
       setStatus("loading");
-      setErrorMessage("");
       const token = readAccessToken();
       if (!token) {
         const redirect = getAuthRedirectPath(pathname, false);
@@ -101,8 +72,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
       }
 
       // Degrade gracefully: keep current page interactive when verification API is unavailable.
-      setErrorMessage(result.message || "Session verification failed");
-      setStatus("error");
+      setStatus("ready");
     }
 
     void run();
@@ -110,22 +80,10 @@ export function AuthGate({ children }: { children: ReactNode }) {
       active = false;
       controller.abort();
     };
-  }, [pathname, router, nonce]);
+  }, [pathname, router]);
 
   if (status === "loading") {
     return <AuthLoadingShell />;
-  }
-
-  if (status === "error") {
-    return (
-      <>
-        {children}
-        <AuthErrorShell
-          message={`${errorMessage}. Continuing in resilient mode while command surfaces use live/demo fallback.`}
-          onRetry={() => setNonce((value) => value + 1)}
-        />
-      </>
-    );
   }
 
   return <>{children}</>;

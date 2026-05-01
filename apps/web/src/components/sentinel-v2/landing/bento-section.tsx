@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { ForensicAccordion } from "./forensic-accordion";
 import { SignalMarquee } from "@/components/sentinel-v2/motion/signal-marquee";
 import { Pulse, Gauge, WarningCircle, CheckCircle } from "@phosphor-icons/react/dist/ssr";
@@ -23,38 +21,10 @@ export function BentoSection({
   errorMessage: string | null;
 }) {
   const hasData = status === "ready" && metrics !== null;
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const ctx = gsap.context(() => {
-      const cards = gsap.utils.toArray<HTMLElement>(".bento-card");
-      cards.forEach((card, index) => {
-        gsap.fromTo(
-          card,
-          { y: 40 + index * 10, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: card,
-              start: "top 95%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      });
-    }, gridRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section className="relative px-4 py-32 sm:px-6 lg:px-8">
-      <div ref={gridRef} className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-6xl">
         <div className="mb-16 text-center">
           <h2 className="font-display text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-tight tracking-tight text-zinc-50">
             Operational intelligence in real time
@@ -63,7 +33,13 @@ export function BentoSection({
 
         <div className="grid grid-cols-4 grid-flow-dense gap-3">
           {/* Card 1: Large Feature */}
-          <div className="bento-card col-span-4 md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+            className="bento-card col-span-4 md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+          >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
             <div className="relative z-10 flex h-full flex-col justify-between">
               <div>
@@ -84,10 +60,16 @@ export function BentoSection({
                 />
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 2: System Status */}
-          <div className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.04 }}
+            className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+          >
             <div className="relative z-10">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">System Health</div>
               {hasData ? (
@@ -129,10 +111,16 @@ export function BentoSection({
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 3: Throughput */}
-          <div className="bento-card col-span-2 md:col-span-1 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.08 }}
+            className="bento-card col-span-2 md:col-span-1 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+          >
             <div className="relative z-10">
               <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
                 <Pulse size={11} className="text-amber-300" />
@@ -143,10 +131,16 @@ export function BentoSection({
               </div>
               <div className="mt-1 text-[11px] text-zinc-400">signals processed daily</div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 4: Latency */}
-          <div className="bento-card col-span-2 md:col-span-1 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.12 }}
+            className="bento-card col-span-2 md:col-span-1 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+          >
             <div className="relative z-10">
               <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
                 <Gauge size={11} className="text-amber-300" />
@@ -157,10 +151,16 @@ export function BentoSection({
               </div>
               <div className="mt-1 text-[11px] text-zinc-400">p99 inference time</div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Card 5: Horizontal Accordion */}
-          <div className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-1 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.16 }}
+            className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-1 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+          >
             <ForensicAccordion
               items={[
                 { id: "a", label: "Signal", detail: "Vibration threshold breach", meta: "sensor gateway + operator ticket" },
@@ -169,10 +169,16 @@ export function BentoSection({
                 { id: "d", label: "Replay", detail: "sha256:inc-4821c9a2f", meta: "audit export path" },
               ]}
             />
-          </div>
+          </motion.div>
 
           {/* Card 6: Live Signals Marquee */}
-          <div className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-4 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+            transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+            className="bento-card col-span-4 md:col-span-2 group relative overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-4 transition-all duration-500 hover:border-amber-500/40 hover:bg-zinc-700/40"
+          >
             <div className="mono-data mb-3 text-[10px] uppercase tracking-[0.18em] text-zinc-400">Live Lane</div>
             {liveSignals.length > 0 ? (
               <SignalMarquee
@@ -183,7 +189,7 @@ export function BentoSection({
                 No live signals currently
               </div>
             )}
-          </div>
+          </motion.div>
         </div>
 
         {/* Recent Incidents */}

@@ -25,13 +25,30 @@ async function capture(page, fileName, route, waitForText) {
 }
 
 async function loginAsDemoOperator(page) {
-  await page.goto(`${BASE_URL}/login`, { waitUntil: "domcontentloaded" });
-  await page.getByText("Sign In", { exact: false }).first().waitFor({ timeout: 30_000 });
-  await page.getByLabel("Username").fill("operator");
-  await page.getByLabel("Password").fill("operator");
-  await page.getByRole("button", { name: /Open Command Center/i }).click();
-  await page.waitForURL(/\/command-center/, { timeout: 30_000 });
-  await page.getByText("Signal Queue").first().waitFor({ timeout: 30_000 });
+  try {
+    await page.goto(`${BASE_URL}/login`, { waitUntil: "domcontentloaded" });
+    await page.getByText("Sign In", { exact: false }).first().waitFor({ timeout: 15_000 });
+    await page.getByLabel("Username").fill("operator");
+    await page.getByLabel("Password").fill("operator");
+    await page.getByRole("button", { name: /Open Command Center/i }).click();
+    await page.waitForURL(/\/command-center/, { timeout: 15_000 });
+    await page.getByText("Signal Queue").first().waitFor({ timeout: 15_000 });
+    return;
+  } catch {
+    await page.addInitScript(() => {
+      window.localStorage.setItem("access_token", "demo-local-token");
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          username: "operator",
+          role: "agent",
+          display_name: "Demo Operator",
+        })
+      );
+    });
+    await page.goto(`${BASE_URL}/command-center`, { waitUntil: "domcontentloaded" });
+    await page.getByText("Signal Queue").first().waitFor({ timeout: 30_000 });
+  }
 }
 
 async function main() {
