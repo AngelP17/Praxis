@@ -29,6 +29,38 @@ type DecisionPayload = {
   }>;
 };
 
+function buildDemoDecision(ticketId: string): DecisionPayload {
+  const ticket = DEMO_TICKETS.find((item) => item.ticket_id === ticketId) ?? DEMO_TICKETS[0];
+  return {
+    id: Number(ticket.ticket_id.replace(/\D/g, "")) || 4821,
+    ticket_id: ticket.ticket_id,
+    priority_score: ticket.priority_score ?? 75,
+    confidence_score: ticket.confidence_score ?? 0.82,
+    root_cause_hypothesis: ticket.root_cause_hypothesis || "correlated operational signal",
+    decision_ts: ticket.created_at,
+    recommendations: [
+      {
+        id: 1,
+        rank: 1,
+        action_label: ticket.resolution_notes || "Route incident to the responsible owner",
+        rationale: `Astraea correlated ${ticket.requester || "live signals"} with incident history and current operating risk.`,
+        risk_level: ticket.priority_raw || "High",
+        confidence: ticket.confidence_score ?? 0.82,
+        status: "ready_for_operator",
+      },
+      {
+        id: 2,
+        rank: 2,
+        action_label: "Capture evidence bundle and replay hash",
+        rationale: "Preserve the decision trail before closure so the incident can be replayed during review.",
+        risk_level: "Medium",
+        confidence: 0.78,
+        status: "ready_for_operator",
+      },
+    ],
+  };
+}
+
 export default function DecisionCenterPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [selectedTicket, setSelectedTicket] = useState<string>("INC-4821");
@@ -64,8 +96,8 @@ export default function DecisionCenterPage() {
         const recomputed = await postJsonWithTimeout<DecisionPayload>(`/api/decisions/recompute/${ticketId}`, {});
         setDecision(recomputed);
       } catch (error) {
-        setDecision(null);
-        setNotice(error instanceof Error ? error.message : "Decision API unavailable.");
+        setDecision(buildDemoDecision(ticketId));
+        setNotice(error instanceof Error ? `Demo decision active: ${error.message}` : "Demo decision active.");
       }
     }
   }, []);
@@ -94,7 +126,7 @@ export default function DecisionCenterPage() {
       setNotice(type === "approve" ? "Decision approved." : "Decision rejected.");
       await loadDecision(selectedTicket);
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Decision action failed.");
+      setNotice(type === "approve" ? "Demo decision approved." : "Demo decision rejected.");
     }
   }
 
@@ -107,7 +139,19 @@ export default function DecisionCenterPage() {
       setNotice(type === "accept" ? `Recommendation ${recommendationId} accepted.` : `Recommendation ${recommendationId} rejected.`);
       await loadDecision(selectedTicket);
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Recommendation action failed.");
+      setDecision((current) =>
+        current
+          ? {
+              ...current,
+              recommendations: current.recommendations.map((recommendation) =>
+                recommendation.id === recommendationId
+                  ? { ...recommendation, status: type === "accept" ? "accepted" : "rejected" }
+                  : recommendation
+              ),
+            }
+          : current
+      );
+      setNotice(type === "accept" ? `Recommendation ${recommendationId} accepted in demo mode.` : `Recommendation ${recommendationId} rejected in demo mode.`);
     }
   }
 
@@ -210,9 +254,7 @@ export default function DecisionCenterPage() {
                     </div>
                   </div>
 
-                  {!decision ? (
-                    <div className="mt-7 rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-5 py-4 text-sm text-zinc-400">No decision record returned yet for this ticket.</div>
-                  ) : (
+                  {decision ? (
                     <>
                       <div className="mt-7 grid grid-cols-2 gap-4 lg:grid-cols-4 grid-flow-dense">
                         <Stat label="Decision ID" value={String(decision.id)} />
@@ -250,7 +292,7 @@ export default function DecisionCenterPage() {
                         </div>
                       </div>
                     </>
-                  )}
+                  ) : null}
                 </div>
               </div>
             </div>

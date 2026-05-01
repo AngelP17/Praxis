@@ -40,19 +40,23 @@ export function TraceSection() {
   useGSAP(
     () => {
       const pin = scope.current?.querySelector(".trace-pin");
-      if (pin) {
+      const mm = gsap.matchMedia();
+
+      mm.add("(min-width: 768px)", () => {
+        if (!pin) return undefined;
         ScrollTrigger.create({
           trigger: scope.current,
-          start: "top top",
+          start: "top 12%",
           end: "bottom bottom",
           pin,
           pinSpacing: false,
         });
-      }
+        return undefined;
+      });
 
       gsap.fromTo(
         ".trace-step-item",
-        { opacity: 0.25, y: 56, scale: 0.96 },
+        { opacity: 0.72, y: 28, scale: 0.98 },
         {
           opacity: 1,
           y: 0,
@@ -61,8 +65,8 @@ export function TraceSection() {
           ease: "power2.out",
           scrollTrigger: {
             trigger: ".trace-gallery",
-            start: "top 72%",
-            end: "bottom 42%",
+            start: "top 86%",
+            end: "bottom 52%",
             scrub: true,
           },
         }
@@ -70,7 +74,7 @@ export function TraceSection() {
 
       gsap.fromTo(
         ".trace-copy-word",
-        { opacity: 0.12, y: 10 },
+        { opacity: 0.48, y: 6 },
         {
           opacity: 1,
           y: 0,
@@ -78,18 +82,20 @@ export function TraceSection() {
           ease: "none",
           scrollTrigger: {
             trigger: ".trace-copy",
-            start: "top 78%",
-            end: "bottom 46%",
+            start: "top 90%",
+            end: "bottom 58%",
             scrub: true,
           },
         }
       );
+
+      return () => mm.revert();
     },
     { scope }
   );
 
   return (
-    <section ref={scope} className="trace-section relative min-h-[220vh] px-4 py-32 sm:px-6 md:py-48 lg:px-8">
+    <section ref={scope} className="trace-section relative px-4 py-24 sm:px-6 md:min-h-[145vh] md:py-32 lg:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-12 md:flex-row">
         <div className="trace-pin md:h-fit md:w-2/5">
           <h2 className="mt-4 font-display text-[clamp(2rem,4vw,3.5rem)] font-medium leading-[1.1] tracking-tight text-zinc-50">
@@ -106,7 +112,7 @@ export function TraceSection() {
           </p>
         </div>
 
-        <div className="trace-gallery flex flex-col gap-20 md:w-3/5 md:gap-28">
+        <div className="trace-gallery flex flex-col gap-8 md:w-3/5 md:gap-14">
           {steps.map((step, index) => (
             <article
               key={step.id}

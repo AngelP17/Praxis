@@ -37,7 +37,7 @@ export function ProductShellPreview() {
           </div>
         </div>
 
-        <section className="col-span-12 xl:col-span-4 rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5 py-20">
+        <div className="col-span-12 rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5 md:col-span-4">
           <div className="flex items-center justify-between gap-2">
             <div className="sentinel-v2-eyebrow">Signal Queue</div>
             <span className="mono-data text-[10px] text-zinc-500">4 visible</span>
@@ -57,21 +57,21 @@ export function ProductShellPreview() {
               </div>
             ))}
           </div>
-        </section>
+        </div>
 
-        <section className="col-span-12 xl:col-span-8 space-y-3.5 py-20">
+        <div className="col-span-12 space-y-3.5 md:col-span-8">
           <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5">
             <div className="sentinel-v2-eyebrow">Selected Incident</div>
             <h3 className="mt-1.5 text-sm font-medium text-zinc-100">Press Line 3 vibration cascade</h3>
             <div className="mt-1 text-[10px] text-zinc-500">INC-4821 · machine telemetry + operator ticket</div>
-            <div className="mt-2 grid grid-flow-dense grid-cols-3 gap-2">
+            <div className="mt-2 grid grid-flow-dense grid-cols-1 gap-2 sm:grid-cols-3">
               <MiniMetric icon={TrendUp} label="Priority score" value="96" />
               <MiniMetric icon={ShieldCheck} label="Confidence" value="0.92" />
               <MiniMetric icon={Gauge} label="Source" value="telemetry + ticket" />
             </div>
           </div>
 
-          <div className="grid grid-flow-dense grid-cols-2 gap-3.5">
+          <div className="grid grid-flow-dense grid-cols-1 gap-3.5 sm:grid-cols-2">
             <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5">
               <div className="sentinel-v2-eyebrow">Astraea Decision</div>
               <p className="mt-1.5 text-xs leading-5 text-zinc-200">Route to mechanical team and schedule bearing replacement.</p>
@@ -91,10 +91,10 @@ export function ProductShellPreview() {
             </div>
           </div>
 
-          <div className="grid grid-flow-dense grid-cols-2 gap-3.5">
+          <div className="grid grid-flow-dense grid-cols-1 gap-3.5 sm:grid-cols-2">
             <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5">
               <div className="sentinel-v2-eyebrow">Mini Replay Timeline</div>
-              <div className="mt-2 grid grid-flow-dense grid-cols-4 gap-1.5 text-center">
+              <div className="mt-2 grid grid-flow-dense grid-cols-2 gap-1.5 text-center sm:grid-cols-4">
                 {["Signal", "Decision", "Workflow", "Audit"].map((step, index) => (
                   <div key={step} className="rounded-md border border-zinc-800/80 bg-zinc-900/75 px-1.5 py-1.5">
                     <div className="mono-data text-[9px] text-zinc-500">0{index + 1}</div>
@@ -118,7 +118,7 @@ export function ProductShellPreview() {
               </div>
             </div>
           </div>
-        </section>
+        </div>
       </div>
     </div>
   );

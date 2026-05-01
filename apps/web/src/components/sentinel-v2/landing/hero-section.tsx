@@ -6,7 +6,7 @@ import { ProductShellPreview } from "./product-shell-preview";
 
 export function HeroSection() {
   return (
-    <section className="relative px-4 py-32 sm:px-6 md:py-44 lg:px-8">
+    <section className="relative px-4 py-24 sm:px-6 md:py-32 lg:px-8">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-x-[4%] top-[16%] h-px bg-gradient-to-r from-transparent via-amber-400/45 to-transparent" />
         <div className="absolute bottom-[16%] left-[8%] right-[8%] h-px bg-gradient-to-r from-transparent via-amber-400/20 to-transparent" />
@@ -16,7 +16,7 @@ export function HeroSection() {
 
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
         <div className="grid grid-flow-dense items-center gap-8 lg:grid-cols-[48%_52%]">
-          <section className="sentinel-v2-panel-strong p-6 py-20 sm:p-8 md:py-24">
+          <div className="sentinel-v2-panel-strong p-6 py-14 sm:p-8 md:py-20">
             <h1 className="mt-6 max-w-5xl text-[clamp(2.1rem,4.8vw,4.45rem)] font-semibold leading-[1.03] tracking-tight text-zinc-50">
               Operational decisions{" "}
               <span
@@ -45,11 +45,11 @@ export function HeroSection() {
                 View Replay
               </Link>
             </div>
-          </section>
+          </div>
 
-          <section className="relative py-20">
+          <div className="relative py-8 md:py-12">
             <ProductShellPreview />
-          </section>
+          </div>
         </div>
       </div>
     </section>

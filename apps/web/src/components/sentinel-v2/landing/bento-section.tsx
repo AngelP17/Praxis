@@ -20,12 +20,21 @@ export function BentoSection({
   status: string;
   errorMessage: string | null;
 }) {
-  const hasData = status === "ready" && metrics !== null;
+  const displayMetrics = metrics ?? {
+    total_open: 4,
+    critical: 1,
+    sla_breach_risk: 3,
+    incident_clusters: 3,
+    signals_processed_24h: 2400000,
+    avg_decision_latency_ms: 184,
+    replay_coverage_percent: 97,
+    active_evidence_lanes: 4,
+  };
 
   return (
-    <section className="relative px-4 py-32 sm:px-6 md:py-48 lg:px-8">
+    <section className="relative px-4 py-24 sm:px-6 md:py-32 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <div className="mb-16 text-center">
+        <div className="mb-12 text-center">
           <h2 className="font-display text-[clamp(1.5rem,3vw,2.5rem)] font-medium leading-tight tracking-tight text-zinc-50">
             Operational intelligence
             <span
@@ -76,44 +85,38 @@ export function BentoSection({
           >
             <div className="relative z-10">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">System Health</div>
-              {hasData ? (
-                <div className="mt-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-300">Status</span>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
-                      metrics.critical > 0
-                        ? "border-rose-500/30 bg-rose-500/15 text-rose-200"
-                        : "border-emerald-500/30 bg-emerald-500/15 text-emerald-200"
-                    }`}>
-                      {metrics.critical > 0 ? (
-                        <><WarningCircle size={10} /> Degraded</>
-                      ) : (
-                        <><CheckCircle size={10} /> Healthy</>
-                      )}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-300">Open Tickets</span>
-                    <span className="mono-data text-sm text-zinc-100">{metrics.total_open}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-300">Critical</span>
-                    <span className="mono-data text-sm text-rose-300">{metrics.critical}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-300">SLA Risk</span>
-                    <span className="mono-data text-sm text-amber-300">{metrics.sla_breach_risk}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-zinc-300">Incident Clusters</span>
-                    <span className="mono-data text-sm text-zinc-100">{metrics.incident_clusters}</span>
-                  </div>
+              <div className="mt-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-300">Status</span>
+                  <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-medium ${
+                    displayMetrics.critical > 0
+                      ? "border-rose-500/30 bg-rose-500/15 text-rose-200"
+                      : "border-emerald-500/30 bg-emerald-500/15 text-emerald-200"
+                  }`}>
+                    {displayMetrics.critical > 0 ? (
+                      <><WarningCircle size={10} /> Degraded</>
+                    ) : (
+                      <><CheckCircle size={10} /> Healthy</>
+                    )}
+                  </span>
                 </div>
-              ) : (
-                <div className="mt-4 text-sm text-zinc-400">
-                  {status === "error" ? `Error: ${errorMessage}` : "Loading system metrics..."}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-300">Open Tickets</span>
+                  <span className="mono-data text-sm text-zinc-100">{displayMetrics.total_open}</span>
                 </div>
-              )}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-300">Critical</span>
+                  <span className="mono-data text-sm text-rose-300">{displayMetrics.critical}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-300">SLA Risk</span>
+                  <span className="mono-data text-sm text-amber-300">{displayMetrics.sla_breach_risk}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-zinc-300">Incident Clusters</span>
+                  <span className="mono-data text-sm text-zinc-100">{displayMetrics.incident_clusters}</span>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -131,7 +134,7 @@ export function BentoSection({
                   Throughput
                 </div>
                 <div className="mono-data mt-3 text-2xl text-zinc-100">
-                  {metrics?.signals_processed_24h ? `${(metrics.signals_processed_24h / 1_000_000).toFixed(1)}M` : "--"}
+                  {(displayMetrics.signals_processed_24h / 1_000_000).toFixed(1)}M
                 </div>
                 <div className="mt-1 text-[11px] text-zinc-400">signals processed daily</div>
               </div>
@@ -141,7 +144,7 @@ export function BentoSection({
                   Decision Latency
                 </div>
                 <div className="mono-data mt-3 text-2xl text-zinc-100">
-                  {metrics?.avg_decision_latency_ms ? `<${metrics.avg_decision_latency_ms}ms` : "--"}
+                  &lt;{displayMetrics.avg_decision_latency_ms}ms
                 </div>
                 <div className="mt-1 text-[11px] text-zinc-400">p99 inference time</div>
               </div>
@@ -173,15 +176,9 @@ export function BentoSection({
             className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-4 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <div className="mono-data mb-3 text-[10px] uppercase tracking-[0.18em] text-zinc-400">Live Lane</div>
-            {liveSignals.length > 0 ? (
-              <SignalMarquee
-                items={liveSignals.map((s) => `${s.ticket_id} / ${s.title.slice(0, 30)}${s.title.length > 30 ? "..." : ""} / score ${s.priority_score}`)}
-              />
-            ) : (
-              <div className="rounded-xl border border-zinc-600/40 bg-zinc-950/70 px-4 py-2.5 text-[10px] text-zinc-500">
-                No live signals currently
-              </div>
-            )}
+            <SignalMarquee
+              items={(liveSignals.length > 0 ? liveSignals : []).map((s) => `${s.ticket_id} / ${s.title.slice(0, 30)}${s.title.length > 30 ? "..." : ""} / score ${s.priority_score}`)}
+            />
           </motion.div>
         </div>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { DEMO_INCIDENTS, DEMO_METRICS, DEMO_TICKETS } from "@/lib/demo-scenario";
 
 export type SystemMetrics = {
   total_open: number;
@@ -50,6 +51,34 @@ const initialState: LandingDataState = {
   errorMessage: null,
   lastUpdated: 0,
 };
+
+const demoMetrics: SystemMetrics = {
+  ...DEMO_METRICS,
+  signals_processed_24h: 2400000,
+  avg_decision_latency_ms: 184,
+  replay_coverage_percent: 97,
+  active_evidence_lanes: 4,
+};
+
+const demoIncidents: RecentIncident[] = DEMO_INCIDENTS.map((incident) => ({
+  id: incident.id,
+  title: incident.title,
+  status: incident.status,
+  root_cause_hypothesis: incident.root_cause_hypothesis,
+  ticket_count: incident.ticket_count,
+  confidence: incident.confidence,
+  business_impact_score: incident.business_impact_score,
+  opened_at: incident.opened_at,
+}));
+
+const demoSignals: LiveSignal[] = DEMO_TICKETS.slice(0, 4).map((ticket) => ({
+  ticket_id: ticket.ticket_id,
+  title: ticket.title,
+  status: ticket.status,
+  priority_score: ticket.priority_score ?? 0,
+  category: ticket.category ?? "Operations",
+  created_at: ticket.created_at,
+}));
 
 function resolveApiPath(path: string) {
   const apiBase = process.env.NEXT_PUBLIC_API_URL;
@@ -102,17 +131,19 @@ export function useLandingData() {
       if (tickets.status === "rejected") errorMessages.push(`Tickets: ${tickets.reason.message}`);
 
       setState({
-        metrics: liveMetrics,
-        recentIncidents: liveIncidents.slice(0, 6),
-        liveSignals: liveTickets.slice(0, 8),
-        status: errorMessages.length > 0 && !liveMetrics && liveIncidents.length === 0 && liveTickets.length === 0 ? "error" : "ready",
-        errorMessage: errorMessages.length > 0 ? errorMessages.join("; ") : null,
+        metrics: liveMetrics ?? demoMetrics,
+        recentIncidents: (liveIncidents.length > 0 ? liveIncidents : demoIncidents).slice(0, 6),
+        liveSignals: (liveTickets.length > 0 ? liveTickets : demoSignals).slice(0, 8),
+        status: "ready",
+        errorMessage: errorMessages.length > 0 ? "Demo scenario active while live landing APIs are unavailable." : null,
         lastUpdated: Date.now(),
       });
     } catch (error) {
       setState({
-        ...initialState,
-        status: "error",
+        metrics: demoMetrics,
+        recentIncidents: demoIncidents,
+        liveSignals: demoSignals,
+        status: "ready",
         errorMessage: error instanceof Error ? error.message : "Failed to load landing data",
         lastUpdated: Date.now(),
       });
