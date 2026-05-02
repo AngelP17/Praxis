@@ -58,9 +58,132 @@ This creates a real, deterministic incident from raw signal to audit export that
 
 ## Architecture
 
-```text
-Signal Ingestion -> Event Normalization -> Astraea Decision Engine ->
-Incident Correlation -> Aether Workflow -> Human Feedback -> Replay/Audit
+### System Flow
+
+```mermaid
+flowchart LR
+    subgraph Sources["Operational Signal Sources"]
+        Tickets["Tickets / Operator Notes"]
+        MachineEvents["Machine Telemetry"]
+        K8sAlerts["Kubernetes Alerts"]
+        Prometheus["Prometheus Metrics"]
+    end
+
+    subgraph Ingestion["Ingestion & Normalization"]
+        Ingest["Ingest Event"]
+        Normalize["Normalize Payload"]
+        Validate["Validate Schema"]
+        StoreEvent["Store Operational Event"]
+    end
+
+    subgraph Decision["Astraea Decision Engine"]
+        Features["Extract Features"]
+        Score["Score Priority & Risk"]
+        Explain["Generate Explanation"]
+        Hash["Create Replay Hash"]
+    end
+
+    subgraph Workflow["Aether Workflow Layer"]
+        Correlate["Correlate Incident"]
+        Route["Route Ownership"]
+        Recommend["Generate Recommendations"]
+        Feedback["Capture Human Feedback"]
+    end
+
+    subgraph Evidence["Platform Evidence Layer"]
+        SLO["SLO Metrics"]
+        Runbook["Runbook Mapping"]
+        Topology["Topology Graph"]
+        Chaos["Chaos Results"]
+    end
+
+    subgraph Audit["Replay & Audit"]
+        Timeline["Replay Timeline"]
+        Verify["Verify Hash"]
+        Export["Audit Export"]
+        Report["Post-Incident Report"]
+    end
+
+    Sources --> Ingest
+    Ingest --> Normalize
+    Normalize --> Validate
+    Validate --> StoreEvent
+    StoreEvent --> Features
+    Features --> Score
+    Score --> Explain
+    Explain --> Hash
+    Hash --> Correlate
+    Correlate --> Route
+    Route --> Recommend
+    Recommend --> Feedback
+    Feedback --> StoreEvent
+    Evidence --> StoreEvent
+    StoreEvent --> Timeline
+    Timeline --> Verify
+    Verify --> Export
+    Export --> Report
+```
+
+### Service Architecture
+
+```mermaid
+flowchart TB
+    subgraph Client["Frontend Client"]
+        NextJS["Next.js 16 / React 19"]
+        Tailwind["Tailwind CSS v4"]
+        GSAP["GSAP / Framer Motion"]
+    end
+
+    subgraph Gateway["API Gateway (Port 8000)"]
+        FastAPI["FastAPI + Pydantic"]
+        Auth["Auth Middleware"]
+        Router["Route Orchestration"]
+    end
+
+    subgraph Services["Backend Services"]
+        Decision["Decision Service (Port 8001)"]
+        Platform["Platform Service (Port 8080)"]
+    end
+
+    subgraph Core["Core Packages"]
+        Astraea["Astraea Engine"]
+        Domain["Domain Models"]
+        Pipelines["Ingestion Pipelines"]
+    end
+
+    subgraph Data["Data Layer"]
+        Postgres[(PostgreSQL)]
+        SQLite[(SQLite Dev)]
+    end
+
+    NextJS --> Gateway
+    Gateway --> Decision
+    Gateway --> Platform
+    Decision --> Astraea
+    Platform --> Core
+    Gateway --> Data
+    Decision --> Data
+    Platform --> Data
+```
+
+### Frontend Route Map
+
+```mermaid
+flowchart LR
+    Landing["/ Landing"] --> Login["/login"]
+    Login --> Dashboard["/dashboard"]
+    Login --> Command["/command-center"]
+    Login --> Incidents["/incidents"]
+    Login --> Decision["/decision-center"]
+    Login --> Platform2["/platform"]
+    Login --> Assets2["/assets"]
+    Login --> Audit2["/audit"]
+    Login --> Recommendations2["/recommendations"]
+    Login --> Ingestion2["/event-ingestion"]
+    Login --> Replay2["/replay/:id"]
+    Login --> Reports2["/reports"]
+    Login --> Admin2["/admin"]
+    Incidents --> Detail["/incidents/:id"]
 ```
 
 | Service | Responsibility | Tech |
