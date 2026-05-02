@@ -53,7 +53,23 @@ export default function LoginPage() {
       toast.success("Session established");
       router.push("/command-center");
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Authentication failed.");
+      // Demo fallback: if API is unavailable, allow demo login
+      const isApiUnavailable = submitError instanceof Error && 
+        (submitError.message.includes("404") || submitError.message.includes("Failed to fetch") || submitError.message.includes("NetworkError"));
+      
+      if (isApiUnavailable && (username === "admin" || username === "operator" || username === "viewer")) {
+        const role = username === "admin" ? "admin" : username === "viewer" ? "viewer" : "agent";
+        localStorage.setItem(ACCESS_TOKEN_KEY, "demo-token");
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify({
+          username,
+          role,
+          display_name: username.charAt(0).toUpperCase() + username.slice(1),
+        }));
+        toast.success("Demo session active");
+        router.push("/command-center");
+      } else {
+        setError(submitError instanceof Error ? submitError.message : "Authentication failed.");
+      }
     } finally {
       setIsSubmitting(false);
     }

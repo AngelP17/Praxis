@@ -33,8 +33,12 @@ export default function EventIngestionPage() {
     setNotice(null);
     try {
       const rows = await fetchJsonWithTimeout<EventRow[]>("/api/events");
-      setEvents(rows);
+      const validRows = Array.isArray(rows) ? rows : [];
+      setEvents(validRows);
       setStatus("ready");
+      if (!Array.isArray(rows)) {
+        setNotice("Event stream returned unexpected format. Ingest events to populate the feed.");
+      }
     } catch (error) {
       setEvents([]);
       setStatus("ready");

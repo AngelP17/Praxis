@@ -8,6 +8,7 @@ import { SystemStatusRail } from "@/components/system-status-rail";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
+import { DEMO_INCIDENTS } from "@/lib/demo-scenario";
 import {
   Shield,
   TrendUp,
@@ -30,12 +31,18 @@ export default function IncidentsPage() {
       const response = await fetch(`${base}/api/incidents`, { cache: "no-store" });
       if (!response.ok) throw new Error(`API returned ${response.status}`);
       const data = (await response.json()) as Incident[];
-      setIncidents(data);
-      setFiltered(data);
+      const validData = Array.isArray(data) && data.length > 0 ? data : DEMO_INCIDENTS;
+      setIncidents(validData);
+      setFiltered(validData);
       setStatus("ready");
+      if (!Array.isArray(data) || data.length === 0) {
+        setErrorMessage("No live incidents returned. Showing demo scenario.");
+      }
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Unable to load incidents");
-      setStatus("error");
+      setIncidents(DEMO_INCIDENTS);
+      setFiltered(DEMO_INCIDENTS);
+      setStatus("ready");
+      setErrorMessage(error instanceof Error ? `Demo mode: ${error.message}` : "Demo scenario active.");
     }
   }, []);
 
@@ -54,7 +61,7 @@ export default function IncidentsPage() {
     ));
   }, [search, incidents]);
 
-  const statuses = Array.from(new Set(incidents.map((i) => i.status)));
+  const statuses = incidents.length > 0 ? Array.from(new Set(incidents.map((i) => i.status))) : [];
 
   if (status === "loading") {
     return (
@@ -62,17 +69,6 @@ export default function IncidentsPage() {
         <SystemStatusRail activeLabel="Incidents" />
         <div className="flex-1 p-4 sm:p-6 lg:p-8">
           <LoadingSkeleton />
-        </div>
-      </CommandShell>
-    );
-  }
-
-  if (status === "error") {
-    return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Incidents" />
-        <div className="flex-1 p-4 sm:p-6 lg:p-8">
-          <ErrorState title="Incidents unavailable" message={errorMessage || "Could not load incident data."} onRetry={loadIncidents} />
         </div>
       </CommandShell>
     );
@@ -92,6 +88,9 @@ export default function IncidentsPage() {
               </h1>
               <div className="mono-data text-[11px] text-zinc-500">{incidents.length} total</div>
             </div>
+            {errorMessage ? (
+              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">{errorMessage}</div>
+            ) : null}
           </div>
 
           {/* Search */}

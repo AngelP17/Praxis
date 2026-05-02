@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Ticket, Incident } from "@/types";
+import { DEMO_TICKETS, DEMO_INCIDENTS, DEMO_METRICS } from "@/lib/demo-scenario";
 
 export type SystemStatus = "healthy" | "degraded" | "critical" | "unknown";
 
@@ -87,12 +88,17 @@ export function useDashboardData() {
       ]);
 
       const liveMetrics = metrics.status === "fulfilled" ? metrics.value : null;
-      const liveIncidents = incidents.status === "fulfilled" ? incidents.value : [];
-      const liveTickets = tickets.status === "fulfilled" ? tickets.value : [];
+      const liveIncidents = incidents.status === "fulfilled" && Array.isArray(incidents.value) ? incidents.value : [];
+      const liveTickets = tickets.status === "fulfilled" && Array.isArray(tickets.value) ? tickets.value : [];
 
-      const openTickets = liveTickets.filter((t) => !["Resolved", "Closed"].includes(t.status));
+      // Use demo data as fallback when APIs fail
+      const fallbackTickets = liveTickets.length === 0 ? DEMO_TICKETS : liveTickets;
+      const fallbackIncidents = liveIncidents.length === 0 ? DEMO_INCIDENTS : liveIncidents;
+      const fallbackMetrics = liveMetrics || DEMO_METRICS;
+
+      const openTickets = fallbackTickets.filter((t) => !["Resolved", "Closed"].includes(t.status));
       const criticalTickets = openTickets.filter((t) => t.priority_raw === "Critical");
-      const resolvedToday = liveTickets.filter((t) => {
+      const resolvedToday = fallbackTickets.filter((t) => {
         if (!t.resolved_at) return false;
         const resolved = new Date(t.resolved_at);
         const now = new Date();
@@ -100,13 +106,13 @@ export function useDashboardData() {
       });
 
       const dashboardMetrics: DashboardMetrics = {
-        totalTickets: liveTickets.length,
+        totalTickets: fallbackTickets.length,
         openTickets: openTickets.length,
         criticalTickets: criticalTickets.length,
         resolvedToday: resolvedToday.length,
         avgDecisionLatency: 0,
-        incidentCount: liveIncidents.length,
-        slaRiskCount: liveMetrics?.sla_breach_risk ?? 0,
+        incidentCount: fallbackIncidents.length,
+        slaRiskCount: fallbackMetrics.sla_breach_risk ?? 0,
         systemStatus: "unknown",
       };
       dashboardMetrics.systemStatus = calculateSystemStatus(dashboardMetrics);
@@ -119,16 +125,29 @@ export function useDashboardData() {
       setState({
         metrics: dashboardMetrics,
         recentTickets: openTickets.slice(0, 10),
-        activeIncidents: liveIncidents.filter((i) => i.status !== "Closed" && i.status !== "Resolved").slice(0, 6),
-        status: errorMessages.length > 0 && !liveMetrics && liveIncidents.length === 0 && liveTickets.length === 0 ? "error" : "ready",
-        errorMessage: errorMessages.length > 0 ? errorMessages.join("; ") : null,
+        activeIncidents: fallbackIncidents.filter((i) => i.status !== "Closed" && i.status !== "Resolved").slice(0, 6),
+        status: "ready",
+        errorMessage: errorMessages.length > 0 ? `Demo mode: ${errorMessages.join("; ")}` : null,
         lastUpdated: Date.now(),
       });
     } catch (error) {
+      // Ultimate fallback: use all demo data
+      const openTickets = DEMO_TICKETS.filter((t) => !["Resolved", "Closed"].includes(t.status));
       setState({
-        ...initialState,
-        status: "error",
-        errorMessage: error instanceof Error ? error.message : "Failed to load dashboard data",
+        metrics: {
+          totalTickets: DEMO_TICKETS.length,
+          openTickets: openTickets.length,
+          criticalTickets: openTickets.filter((t) => t.priority_raw === "Critical").length,
+          resolvedToday: 0,
+          avgDecisionLatency: 0,
+          incidentCount: DEMO_INCIDENTS.length,
+          slaRiskCount: DEMO_METRICS.sla_breach_risk,
+          systemStatus: "degraded",
+        },
+        recentTickets: openTickets.slice(0, 10),
+        activeIncidents: DEMO_INCIDENTS.filter((i) => i.status !== "Closed" && i.status !== "Resolved").slice(0, 6),
+        status: "ready",
+        errorMessage: error instanceof Error ? `Demo mode: ${error.message}` : "Demo scenario active.",
         lastUpdated: Date.now(),
       });
     }
