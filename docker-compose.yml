@@ -1,0 +1,92 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: aether-postgres
+    environment:
+      POSTGRES_USER: aether
+      POSTGRES_PASSWORD: aether
+      POSTGRES_DB: aether_sentinel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aether -d aether_sentinel"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: apps/api_gateway/Dockerfile
+    container_name: aether-api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://aether:aether@postgres:5432/aether_sentinel
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      ENV: production
+      DEBUG: "false"
+      ALLOWED_ORIGINS: "http://localhost:3000"
+      DECISION_SERVICE_URL: http://decision-service:8001
+      PLATFORM_SERVICE_URL: http://platform-service:8080
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  decision-service:
+    build:
+      context: .
+      dockerfile: services/decision-service/Dockerfile
+    container_name: aether-decision-service
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://aether:aether@postgres:5432/aether_sentinel
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  platform-service:
+    build:
+      context: .
+      dockerfile: services/platform-service/Dockerfile
+    container_name: aether-platform-service
+    ports:
+      - "8080:8080"
+    environment:
+      DATABASE_URL: postgresql://aether:aether@postgres:5432/aether_sentinel
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    container_name: aether-web
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    depends_on:
+      - api-gateway
+
+volumes:
+  postgres_data:

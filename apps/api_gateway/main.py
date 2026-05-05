@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from apps.api_gateway.config import settings
 from apps.api_gateway.deps import init_db
+from apps.api_gateway.logging_config import configure_logging, get_logger
+from apps.api_gateway.middleware.rate_limit import RateLimitMiddleware
 from apps.api_gateway.routes.attachments import router as attachments_router
 from apps.api_gateway.routes.assets import router as assets_router
 from apps.api_gateway.routes.auth import router as auth_router
@@ -24,8 +26,12 @@ from apps.api_gateway.routes.tickets import router as tickets_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    configure_logging()
+    logger = get_logger("main")
+    logger.info("aether_api_starting", version="1.2.0", env=settings.ENV)
     if settings.AUTO_INIT_DB:
         init_db()
+        logger.info("database_initialized")
     yield
 
 
@@ -35,6 +41,8 @@ app = FastAPI(
     version="0.1.0",
     lifespan=lifespan,
 )
+
+app.add_middleware(RateLimitMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -67,13 +75,13 @@ app.include_router(audit_router, prefix="/api/audit", tags=["audit"])
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "aether-api"}
+    return {"status": "healthy", "service": "aether-api", "version": "1.2.0"}
 
 
 @app.get("/")
 async def root():
     return {
         "service": "Aether API",
-        "version": "0.1.0",
+        "version": "1.2.0",
         "docs": "/docs",
     }

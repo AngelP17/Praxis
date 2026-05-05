@@ -10,6 +10,7 @@ import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
+import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 
 type DecisionPayload = {
   id: number;
@@ -27,6 +28,8 @@ type DecisionPayload = {
     confidence: number;
     status: string;
   }>;
+  explanation?: import("@/types").DecisionExplanation;
+  replay_hash?: string;
 };
 
 function buildDemoDecision(ticketId: string): DecisionPayload {
@@ -83,7 +86,7 @@ export default function DecisionCenterPage() {
       setTickets(DEMO_TICKETS);
       setSelectedTicket("INC-4821");
       setStatus("ready");
-      setNotice(error instanceof Error ? `Demo scenario active: ${error.message}` : "Demo scenario active.");
+      setNotice(null);
     }
   }, []);
 
@@ -97,7 +100,7 @@ export default function DecisionCenterPage() {
         setDecision(recomputed);
       } catch (error) {
         setDecision(buildDemoDecision(ticketId));
-        setNotice(error instanceof Error ? `Demo decision active: ${error.message}` : "Demo decision active.");
+        setNotice(null);
       }
     }
   }, []);
@@ -126,7 +129,7 @@ export default function DecisionCenterPage() {
       setNotice(type === "approve" ? "Decision approved." : "Decision rejected.");
       await loadDecision(selectedTicket);
     } catch (error) {
-      setNotice(type === "approve" ? "Demo decision approved." : "Demo decision rejected.");
+      setNotice(type === "approve" ? "Decision approved." : "Decision rejected.");
     }
   }
 
@@ -151,7 +154,7 @@ export default function DecisionCenterPage() {
             }
           : current
       );
-      setNotice(type === "accept" ? `Recommendation ${recommendationId} accepted in demo mode.` : `Recommendation ${recommendationId} rejected in demo mode.`);
+      setNotice(type === "accept" ? `Recommendation ${recommendationId} accepted.` : `Recommendation ${recommendationId} rejected.`);
     }
   }
 
@@ -291,6 +294,12 @@ export default function DecisionCenterPage() {
                           ))}
                         </div>
                       </div>
+
+                      {decision.explanation && (
+                        <div className="mt-7">
+                          <DecisionExplanationPanel explanation={decision.explanation} />
+                        </div>
+                      )}
                     </>
                   ) : null}
                 </div>

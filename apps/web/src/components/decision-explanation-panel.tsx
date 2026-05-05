@@ -1,105 +1,157 @@
 "use client";
 
-import { Brain, CheckCircle, ShieldWarning, Info } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { Info, CaretDown, CaretUp, Shield, Graph, ArrowsCounterClockwise, UserCheck } from "@phosphor-icons/react";
+import type { DecisionExplanation } from "@/types";
 
 export function DecisionExplanationPanel({
-  decision,
+  explanation,
+  compact = false,
 }: {
-  decision?: {
-    priority_score?: number;
-    confidence_score?: number;
-    root_cause_hypothesis?: string;
-    sla_risk_score?: number;
-    actionability_score?: number;
-    recurrence_score?: number;
-  } | null;
+  explanation?: DecisionExplanation;
+  compact?: boolean;
 }) {
-  if (!decision) {
+  const [expanded, setExpanded] = useState(!compact);
+
+  if (!explanation) {
     return (
-      <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
-        <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Decision Intelligence</div>
-        <div className="mt-8 text-center text-sm text-zinc-500">No decision record available for this case.</div>
+      <div className="sv3-plate" style={{ padding: 12 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--sv3-muted)" }}>
+          <Info size={12} />
+          <span className="label" style={{ fontSize: 10 }}>Explanation pending</span>
+        </div>
       </div>
     );
   }
 
-  const metrics = [
-    {
-      label: "Priority",
-      value: decision.priority_score ?? 0,
-      max: 100,
-      icon: ShieldWarning,
-      color: "#f59e0b",
-    },
-    {
-      label: "Confidence",
-      value: decision.confidence_score ?? 0,
-      max: 100,
-      icon: CheckCircle,
-      color: "#22c55e",
-    },
-    {
-      label: "SLA Risk",
-      value: decision.sla_risk_score ?? 0,
-      max: 100,
-      icon: Info,
-      color: "#f43f5e",
-    },
-    {
-      label: "Actionability",
-      value: decision.actionability_score ?? 0,
-      max: 100,
-      icon: Brain,
-      color: "#06b6d4",
-    },
-  ];
+  const integrity = explanation.integrity_score;
+  const counterfactuals = explanation.counterfactuals;
+  const factors = explanation.top_causal_factors ?? [];
+  const missing = explanation.missing_evidence ?? [];
+  const calibration = explanation.calibration_trace ?? [];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 350, damping: 28, delay: 0.05 }}
-      className="legacy-card rounded-[1.5rem] p-5 sm:p-6"
-    >
-      <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
-        <Brain className="h-4 w-4 text-amber-300" />
-        <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Decision Intelligence</div>
-      </div>
+    <div className="sv3-plate" style={{ padding: 0, overflow: "hidden" }}>
+      <button
+        type="button"
+        onClick={() => setExpanded((v) => !v)}
+        className="hover:opacity-80 hover:scale-[1.01] transition-all duration-300"
+        style={{
+          width: "100%", textAlign: "left",
+          padding: "10px 14px",
+          background: "transparent", border: 0, cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          color: "var(--sv3-fg)",
+        }}
+      >
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <Shield size={12} className="text-amber-200" />
+          <span className="label" style={{ fontSize: 10 }}>Why this decision holds</span>
+          {integrity && (
+            <span className="mono" style={{ fontSize: 10, color: "var(--sv3-amber)" }}>
+              I{integrity.integrity_score.toFixed(2)}
+            </span>
+          )}
+        </span>
+        {expanded ? <CaretUp size={11} /> : <CaretDown size={11} />}
+      </button>
 
-      <div className="mt-5 space-y-4">
-        {metrics.map((metric) => {
-          const Icon = metric.icon;
-          const pct = Math.min(100, Math.max(0, (metric.value / metric.max) * 100));
-          return (
-            <div key={metric.label}>
-              <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2">
-                  <Icon className="h-3.5 w-3.5" style={{ color: metric.color }} />
-                  <span className="text-zinc-300">{metric.label}</span>
-                </div>
-                <span className="mono-data text-zinc-400">{metric.value.toFixed(1)}</span>
+      {expanded && (
+        <div style={{ padding: "0 14px 14px", display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Integrity score */}
+          {integrity && (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+              <Metric label="Replayability" value={integrity.replayability} />
+              <Metric label="Evidence" value={integrity.evidence_coverage} />
+              <Metric label="Stability" value={integrity.counterfactual_stability} />
+              <Metric label="Review" value={integrity.human_review_state} amber={integrity.human_review_state > 0} />
+            </div>
+          )}
+
+          {/* Top causal factors */}
+          {factors.length > 0 && (
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                <Graph size={11} />
+                <span className="label" style={{ fontSize: 9 }}>Top causal factors</span>
               </div>
-              <div className="mt-2 h-1.5 rounded-full bg-zinc-900 overflow-hidden">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ backgroundColor: metric.color }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.1 }}
-                />
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {factors.map((f) => (
+                  <div key={f.node_id} className="sv3-plate" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div>
+                      <span className="mono" style={{ fontSize: 10, color: "var(--sv3-muted)" }}>{f.node_id}</span>
+                      <span className="label" style={{ fontSize: 9, marginLeft: 8, color: "var(--sv3-subtle)" }}>{f.node_type}</span>
+                    </div>
+                    <div className="mono" style={{ fontSize: 10, color: "var(--sv3-amber)" }}>
+                      W{f.provenance_weight.toFixed(2)} &middot; C{f.confidence.toFixed(2)}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
-          );
-        })}
-      </div>
+          )}
 
-      {decision.root_cause_hypothesis && (
-        <div className="mt-5 rounded-xl border border-amber-500/10 bg-amber-500/[0.04] p-4">
-          <div className="text-[10px] uppercase tracking-wider text-amber-400/80">Root Cause</div>
-          <p className="mt-2 text-sm leading-6 text-zinc-300">{decision.root_cause_hypothesis}</p>
+          {/* Counterfactuals */}
+          {counterfactuals && counterfactuals.perturbations.length > 0 && (
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                <ArrowsCounterClockwise size={11} />
+                <span className="label" style={{ fontSize: 9 }}>Counterfactual replay</span>
+                <span className="mono" style={{ fontSize: 10, color: "var(--sv3-muted)" }}>S{counterfactuals.stability_score.toFixed(2)}</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {counterfactuals.perturbations.slice(0, 3).map((p, i) => (
+                  <div key={i} className="sv3-plate" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 11, color: "var(--sv3-fg)" }}>{p.name}</span>
+                    <span className="mono" style={{ fontSize: 10, color: p.score_delta < 0 ? "var(--sv3-warn)" : "var(--sv3-ok)" }}>
+                      {p.score_delta > 0 ? "+" : ""}{p.score_delta.toFixed(3)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Calibration trace */}
+          {calibration.length > 0 && (
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                <UserCheck size={11} />
+                <span className="label" style={{ fontSize: 9 }}>Operator calibration</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {calibration.map((c, i) => (
+                  <div key={i} className="sv3-plate" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 11, color: "var(--sv3-fg)" }}>{c.operator_id} &middot; {c.feedback_type}</span>
+                    <span className="mono" style={{ fontSize: 10, color: "var(--sv3-muted)" }}>
+                      {c.calibration_delta > 0 ? "+" : ""}{c.calibration_delta.toFixed(3)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Missing evidence */}
+          {missing.length > 0 && (
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--sv3-warn)" }}>
+              <Info size={11} />
+              <span className="label" style={{ fontSize: 9, color: "inherit" }}>Missing evidence: {missing.join(", ")}</span>
+            </div>
+          )}
         </div>
       )}
-    </motion.div>
+    </div>
+  );
+}
+
+function Metric({ label, value, amber }: { label: string; value: number; amber?: boolean }) {
+  return (
+    <div className="sv3-plate" style={{ padding: "6px 8px", textAlign: "center" }}>
+      <div className="label" style={{ fontSize: 8 }}>{label}</div>
+      <div className="mono" style={{ fontSize: 13, marginTop: 4, color: amber ? "var(--sv3-amber)" : "var(--sv3-fg)" }}>
+        {value.toFixed(2)}
+      </div>
+    </div>
   );
 }

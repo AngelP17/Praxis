@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/notifications";
 import { clearStoredSession } from "@/lib/auth";
 import { useCommandFeed } from "@/lib/hooks/use-command-feed";
-import { CommandRoomV2 } from "@/components/sentinel-v2/command-room/command-room-v2";
+import { CommandRoomV3 } from "@/components/sentinel-v3/command-room/command-room-v3";
 
 export default function CommandCenterPage() {
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function CommandCenterPage() {
   }, [isSigningOut, router]);
 
   return (
-    <CommandRoomV2
+    <CommandRoomV3
       feedStatus={feed.status}
       feedMode={feed.mode}
       lastSyncSeconds={lastSyncSeconds}

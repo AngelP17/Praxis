@@ -20,6 +20,52 @@ export interface Ticket {
   labels?: TicketLabel[];
 }
 
+export interface DecisionExplanation {
+  integrity_score?: {
+    replayability: number;
+    evidence_coverage: number;
+    counterfactual_stability: number;
+    human_review_state: number;
+    uncertainty_penalty: number;
+    integrity_score: number;
+  };
+  provenance_graph?: Record<string, unknown>;
+  counterfactuals?: {
+    baseline_score: number;
+    baseline_confidence: number;
+    perturbations: Array<{
+      name: string;
+      action: string;
+      target_node_id: string;
+      score_delta: number;
+      confidence_delta: number;
+      new_score: number;
+      new_confidence: number;
+    }>;
+    stability_score: number;
+  };
+  calibration_trace: Array<{
+    decision_id: string;
+    feedback_type: string;
+    operator_id: string;
+    original_confidence: number;
+    calibrated_confidence: number;
+    calibration_delta: number;
+    timestamp: string;
+    note: string;
+    preserved_audit_hash: string;
+  }>;
+  top_causal_factors: Array<{
+    node_id: string;
+    node_type: string;
+    source_id: string;
+    provenance_weight: number;
+    confidence: number;
+    severity: string;
+  }>;
+  missing_evidence: string[];
+}
+
 export interface Decision {
   id: number;
   ticket_id: string;
@@ -35,6 +81,8 @@ export interface Decision {
   root_cause_hypothesis: string;
   confidence_score: number;
   decision_ts: string;
+  explanation?: DecisionExplanation;
+  replay_hash?: string;
 }
 
 export interface Recommendation {

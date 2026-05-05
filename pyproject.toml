@@ -1,6 +1,6 @@
 [project]
 name = "aether-sentinel"
-version = "1.0.0"
+version = "1.2.0"
 description = "Operational intelligence platform for manufacturing and infrastructure incident response"
 requires-python = ">=3.11"
 dependencies = [

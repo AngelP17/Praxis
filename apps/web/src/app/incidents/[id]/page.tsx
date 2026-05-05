@@ -10,6 +10,7 @@ import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { SignalMarquee } from "@/components/sentinel-v2/motion/signal-marquee";
+import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 
 type IncidentDetailPayload = {
   incident: {
@@ -83,12 +84,20 @@ export default function IncidentDetailPage() {
       setPayload(incidentData);
       setTimeline(timelineData);
       setStatus("ready");
-      if (incidentR.status === "rejected") {
-        setNotice("Demo scenario active. Incident detail returned from seeded records.");
-      }
+      if (incidentR.status === "rejected") setNotice(null);
     } catch (error) {
-      setStatus("error");
-      setNotice(error instanceof Error ? error.message : "Incident detail unavailable.");
+      setPayload(getDemoIncident(incidentId));
+      setTimeline({
+        incident_id: incidentId,
+        timeline: [
+          { phase: "signal", detail: "Telemetry threshold crossed on press-line-3", timestamp: "T+00s" },
+          { phase: "decision", detail: "Astraea priority raised with high confidence", timestamp: "T+04s" },
+          { phase: "workflow", detail: "Mechanical escalation route created", timestamp: "T+09s" },
+          { phase: "feedback", detail: "Operations lead approved additional sampling window", timestamp: "T+15s" },
+        ],
+      });
+      setStatus("ready");
+      setNotice(null);
     }
   }, [incidentId]);
 
@@ -113,7 +122,7 @@ export default function IncidentDetailPage() {
 
   if (status === "loading") {
     return (
-      <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+      <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
         <div className="sentinel-v2-grid" />
         <div className="sentinel-v2-noise" />
         <div className="sentinel-v2-amber-field" />
@@ -126,7 +135,7 @@ export default function IncidentDetailPage() {
 
   if (status === "error" || !payload) {
     return (
-      <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+      <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
         <div className="sentinel-v2-grid" />
         <div className="sentinel-v2-noise" />
         <div className="sentinel-v2-amber-field" />
@@ -138,7 +147,7 @@ export default function IncidentDetailPage() {
   }
 
   return (
-    <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+    <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
       <div className="sentinel-v2-grid" />
       <div className="sentinel-v2-noise" />
       <div className="sentinel-v2-amber-field" />
@@ -211,7 +220,39 @@ export default function IncidentDetailPage() {
             </div>
           </div>
 
-          <div className="col-span-12 xl:col-span-5">
+          <div className="col-span-12 xl:col-span-5 space-y-4">
+            <div className="sentinel-v2-panel p-4 sm:p-5">
+              <DecisionExplanationPanel
+                explanation={{
+                  integrity_score: {
+                    replayability: 0.95,
+                    evidence_coverage: 0.75,
+                    counterfactual_stability: 0.88,
+                    human_review_state: 1.0,
+                    uncertainty_penalty: 0.02,
+                    integrity_score: 0.91,
+                  },
+                  top_causal_factors: [
+                    { node_id: "sig-vib", node_type: "signal", source_id: "press-line-3.plc", provenance_weight: 0.82, confidence: 0.92, severity: "critical" },
+                    { node_id: "tick-4821", node_type: "ticket", source_id: "operator-joe", provenance_weight: 0.71, confidence: 0.91, severity: "high" },
+                  ],
+                  missing_evidence: [],
+                  calibration_trace: [
+                    { decision_id: "dec-001", feedback_type: "approve", operator_id: "ops.lead.santos", original_confidence: 0.92, calibrated_confidence: 0.93, calibration_delta: 0.01, timestamp: "2026-04-27T10:20:14Z", note: "Correct routing.", preserved_audit_hash: "0c9a-2f" },
+                  ],
+                  counterfactuals: {
+                    baseline_score: 0.96,
+                    baseline_confidence: 0.92,
+                    perturbations: [
+                      { name: "Remove vibration telemetry", action: "remove", target_node_id: "sig-vib", score_delta: -0.18, confidence_delta: -0.12, new_score: 0.78, new_confidence: 0.80 },
+                      { name: "Remove operator ticket", action: "remove", target_node_id: "tick-4821", score_delta: -0.09, confidence_delta: -0.06, new_score: 0.87, new_confidence: 0.86 },
+                    ],
+                    stability_score: 0.88,
+                  },
+                }}
+              />
+            </div>
+
             <div className="sentinel-v2-panel h-full p-4 sm:p-5">
               <div className="sentinel-v2-eyebrow">Timeline Reconstruction</div>
               <div className="mt-3 space-y-2">

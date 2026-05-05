@@ -21,6 +21,17 @@ class Settings(BaseSettings):
     AUTO_INIT_DB: bool = True
     USERS_FILE: str | None = None
 
+    # Rate limiting
+    RATE_LIMIT_PER_MINUTE: int = 120
+
+    # Logging
+    LOG_LEVEL: str = "INFO"
+    LOG_FORMAT: str = "console"  # "json" or "console"
+
+    # Service URLs
+    DECISION_SERVICE_URL: str = "http://localhost:8001"
+    PLATFORM_SERVICE_URL: str = "http://localhost:8080"
+
     @property
     def is_production(self) -> bool:
         return self.ENV == "production"
