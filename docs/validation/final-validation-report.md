@@ -49,7 +49,7 @@ pnpm --dir apps/web typecheck
 
 ### Result
 ```
-> aether-web@1.0.0 typecheck /Users/apinzon/Desktop/Projects/aether-sentinel/apps/web
+> praxis-web@1.0.0 typecheck /Users/apinzon/Desktop/Projects/praxis/apps/web
 > tsc --noEmit
 
 (no output = no errors)
@@ -68,7 +68,7 @@ pnpm --dir apps/web build
 
 ### Result
 ```
-> aether-web@1.0.0 build /Users/apinzon/Desktop/Projects/aether-sentinel/apps/web
+> praxis-web@1.0.0 build /Users/apinzon/Desktop/Projects/praxis/apps/web
 > next build
 
   Next.js 16.2.4 (Turbopack)
@@ -161,7 +161,7 @@ rg "Inter" apps/web/src
 Result: `0 matches`
 
 ```bash
-rg -i "Aether OpsCenter" apps/web/src docs/
+rg -i "Praxis OpsCenter" apps/web/src docs/
 ```
 Result: `0 matches`
 
@@ -199,7 +199,7 @@ AETHER_DEMO_BASE_URL=http://127.0.0.1:8011 make demo-validate
 
 ### Result
 ```
-=== Aether Sentinel Flagship Path Validation ===
+=== Praxis Flagship Path Validation ===
 
 PASS: Health check
 PASS: Event ingested -> <event_id>
@@ -282,7 +282,7 @@ Flagship path VALIDATED.
 
 ## Conclusion
 
-Aether Sentinel v1.1.0 meets all requirements for production portfolio status:
+Praxis v1.1.0 meets all requirements for production portfolio status:
 - 13 passing backend tests
 - 17/17 frontend pages build successfully
 - 2/2 smoke tests pass

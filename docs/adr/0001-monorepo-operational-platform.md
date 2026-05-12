@@ -4,7 +4,7 @@
 Accepted
 
 ## Context
-Aether Sentinel integrates three independent systems:
+Praxis integrates three independent systems:
 - **Ticketing**: event ingestion, ticket workflow, operator UI
 - **Astraea**: deterministic decision engine, scoring, prioritization
 - **k8s-resilience-pilot**: SLO evidence, infrastructure context, platform proxy

@@ -7,6 +7,7 @@ from apps.api_gateway.services.operational_intelligence import (
     count_similar_cases,
     fetch_ticket_row,
 )
+from apps.api_gateway.services.decision_explanation import build_decision_explanation
 
 
 class DecisionService:
@@ -48,6 +49,15 @@ class DecisionService:
         if existing:
             payload = dict(existing)
             payload["recommendations"] = self._load_recommendations(payload["id"])
+            payload["explanation"] = build_decision_explanation(
+                ticket_id=ticket_id,
+                decision_id=str(payload["id"]),
+                priority_score=payload.get("priority_score", 0.0),
+                confidence_score=payload.get("confidence_score", 0.0),
+                root_cause_hypothesis=payload.get("root_cause_hypothesis", ""),
+                feedback_records=self._load_feedback_records(payload["id"]),
+            )
+            payload["replay_hash"] = self._load_replay_hash(payload["id"])
             return payload
         if not persist_if_missing:
             ticket = fetch_ticket_row(self.db, ticket_id)
@@ -125,7 +135,11 @@ class DecisionService:
         )
 
         decision_id = int(inserted["id"])
-        decision_ts = inserted["decision_ts"].isoformat() if hasattr(inserted["decision_ts"], "isoformat") else inserted["decision_ts"]
+        decision_ts = (
+            inserted["decision_ts"].isoformat()
+            if hasattr(inserted["decision_ts"], "isoformat")
+            else inserted["decision_ts"]
+        )
         self.db.execute(
             text(
                 """
@@ -190,7 +204,7 @@ class DecisionService:
                     'decision_generated',
                     CURRENT_TIMESTAMP,
                     'system',
-                    'aether-api',
+                    'praxis-api',
                     CAST(:payload_json AS JSONB),
                     :source_hash
                 )
@@ -268,6 +282,31 @@ class DecisionService:
         ).mappings()
         return [dict(row) for row in rows]
 
+    def _load_feedback_records(self, decision_id: int) -> list[dict]:
+        rows = self.db.execute(
+            text(
+                """
+                SELECT actor, feedback_type, feedback_value, note, created_at
+                FROM human_feedback
+                WHERE decision_id = :decision_id
+                ORDER BY created_at ASC
+                """
+            ),
+            {"decision_id": decision_id},
+        ).mappings()
+        return [dict(row) for row in rows]
+
+    def _load_replay_hash(self, decision_id: int) -> str:
+        row = (
+            self.db.execute(
+                text("SELECT replay_hash FROM decision_records WHERE id = :decision_id"),
+                {"decision_id": decision_id},
+            )
+            .mappings()
+            .first()
+        )
+        return row["replay_hash"] if row else ""
+
     def evaluate_event(self, payload: dict[str, object]) -> dict[str, object]:
         import uuid
 
@@ -343,7 +382,11 @@ class DecisionService:
         )
 
         decision_id = int(inserted["id"])
-        decision_ts = inserted["decision_ts"].isoformat() if hasattr(inserted["decision_ts"], "isoformat") else inserted["decision_ts"]
+        decision_ts = (
+            inserted["decision_ts"].isoformat()
+            if hasattr(inserted["decision_ts"], "isoformat")
+            else inserted["decision_ts"]
+        )
 
         recommendations = payload.get("recommendations", self._default_recommendations(payload))
         for rec in recommendations:
@@ -415,6 +458,14 @@ class DecisionService:
         payload["recommendations"] = self._load_recommendations(decision_id)
         payload["event_id"] = payload.get("event_id")
         payload["requires_human_review"] = bool(payload.get("requires_human_review", 1))
+        payload["explanation"] = build_decision_explanation(
+            ticket_id=payload.get("ticket_id", ""),
+            decision_id=str(decision_id),
+            priority_score=payload.get("priority_score", 0.0),
+            confidence_score=payload.get("confidence_score", 0.0),
+            root_cause_hypothesis=payload.get("root_cause_hypothesis", ""),
+            feedback_records=self._load_feedback_records(decision_id),
+        )
         return payload
 
     def get_latest_decision_for_event(self, event_id: str) -> dict[str, object] | None:

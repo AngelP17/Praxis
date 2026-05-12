@@ -13,7 +13,7 @@ Without correlation, the system treats these as four separate incidents. With co
 
 ## Correlation Dimensions
 
-Aether Sentinel correlates events across multiple dimensions:
+Praxis correlates events across multiple dimensions:
 
 ### Asset Dimension
 Events affecting the same asset are candidates for correlation.

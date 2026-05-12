@@ -1,7 +1,7 @@
 [project]
-name = "aether-sentinel"
-version = "1.2.0"
-description = "Operational intelligence platform for manufacturing and infrastructure incident response"
+name = "praxis"
+version = "2.0.0"
+description = "Forward-deployed operational intelligence platform for messy enterprise workflows"
 requires-python = ">=3.11"
 dependencies = [
     "fastapi>=0.115.0",

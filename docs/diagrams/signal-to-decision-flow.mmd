@@ -4,7 +4,7 @@ sequenceDiagram
     participant Store as Event Store
     participant Astraea as Astraea Engine
     participant Incident as Incident Service
-    participant Aether as Aether Workflow
+    participant Praxis as Praxis Workflow
     participant UI as Command Room UI
 
     Source->>Gateway: POST /api/events/ingest
@@ -16,5 +16,5 @@ sequenceDiagram
     Astraea->>Astraea: Generate explanation and replay hash
     Astraea->>Store: Persist decision record
     Store->>Incident: Link related events
-    Incident->>Aether: Create or update ticket
-    Aether->>UI: Expose ranked queue and decision context
+    Incident->>Praxis: Create or update ticket
+    Praxis->>UI: Expose ranked queue and decision context

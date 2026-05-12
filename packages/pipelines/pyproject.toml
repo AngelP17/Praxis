@@ -1,7 +1,7 @@
 [project]
-name = "aether-pipelines"
+name = "praxis-pipelines"
 version = "0.1.0"
-description = "Ingestion and processing pipelines for Aether Sentinel"
+description = "Ingestion and processing pipelines for Praxis"
 requires-python = ">=3.11"
 dependencies = [
     "pandas>=2.2.0",

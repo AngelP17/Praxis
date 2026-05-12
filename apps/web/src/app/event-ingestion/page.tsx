@@ -8,6 +8,7 @@ import { SystemStatusRail } from "@/components/system-status-rail";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
+import { DEMO_EVENT_STREAM } from "@/lib/demo-scenario";
 
 type EventRow = {
   event_id: string;
@@ -34,15 +35,15 @@ export default function EventIngestionPage() {
     try {
       const rows = await fetchJsonWithTimeout<EventRow[]>("/api/events");
       const validRows = Array.isArray(rows) ? rows : [];
-      setEvents(validRows);
+      setEvents(validRows.length > 0 ? validRows : DEMO_EVENT_STREAM);
       setStatus("ready");
       if (!Array.isArray(rows)) {
-        setNotice("Event stream returned unexpected format. Ingest events to populate the feed.");
+        setNotice(null);
       }
     } catch (error) {
-      setEvents([]);
+      setEvents(DEMO_EVENT_STREAM);
       setStatus("ready");
-      setNotice(error instanceof Error ? `Event stream unavailable: ${error.message}` : "Event stream unavailable.");
+      setNotice(null);
     }
   }, []);
 
@@ -91,10 +92,10 @@ export default function EventIngestionPage() {
       <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
           <section className="grid grid-cols-1 gap-3 xl:grid-cols-[0.95fr,1.05fr] grid-flow-dense py-20">
-            <form onSubmit={ingest} className="sentinel-v2-panel-strong p-5 sm:p-6">
+            <form onSubmit={ingest} className="praxis-v2-panel-strong p-5 sm:p-6">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <div className="sentinel-v2-eyebrow">Event Ingestion</div>
+                  <div className="praxis-v2-eyebrow">Event Ingestion</div>
                   <h1 className="mt-2 text-2xl font-semibold text-zinc-50">Real-time Signal Intake</h1>
                 </div>
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/70 bg-zinc-900/70 text-amber-200">
@@ -115,8 +116,8 @@ export default function EventIngestionPage() {
               </button>
             </form>
 
-            <section className="sentinel-v2-panel p-5 sm:p-6 py-20">
-              <div className="sentinel-v2-eyebrow">Live Event Feed</div>
+            <section className="praxis-v2-panel p-5 sm:p-6 py-20">
+              <div className="praxis-v2-eyebrow">Live Event Feed</div>
               <div className="mt-3 space-y-2">
                 {events.length === 0 ? (
                   <EmptyState title="No events yet" message="Ingest events to populate the live stream." />

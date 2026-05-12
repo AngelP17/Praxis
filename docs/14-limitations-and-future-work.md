@@ -72,7 +72,7 @@ We chose PostgreSQL for operational data. This provides ACID guarantees and SQL 
 
 ## Honest Assessment
 
-Aether Sentinel is a mature proof-of-concept for operational intelligence. It demonstrates:
+Praxis is a mature proof-of-concept for operational intelligence. It demonstrates:
 - Deterministic decisioning with replay
 - Human-in-the-loop control
 - Platform evidence integration

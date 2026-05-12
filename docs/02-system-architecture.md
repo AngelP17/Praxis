@@ -2,7 +2,7 @@
 
 ## Overview
 
-Aether Sentinel is organized around a closed operational loop. Signals enter the system, are normalized, scored by the decision engine, routed through workflow, reviewed by humans, and preserved for replay.
+Praxis is organized around a closed operational loop. Signals enter the system, are normalized, scored by the decision engine, routed through workflow, reviewed by humans, and preserved for replay.
 
 ## System Context
 
@@ -22,14 +22,14 @@ flowchart LR
         StoreEvent["Store Operational Event"]
     end
 
-    subgraph Decision["Astraea Decision Engine"]
+    subgraph Decision["Praxis Decision Engine"]
         Features["Extract Features"]
         Score["Score Priority and Risk"]
         Explain["Generate Explanation"]
         Hash["Create Replay Hash"]
     end
 
-    subgraph Workflow["Aether Workflow Layer"]
+    subgraph Workflow["Praxis Workflow Layer"]
         Correlate["Correlate Incident"]
         Ticket["Create or Update Ticket"]
         Route["Route Ownership"]

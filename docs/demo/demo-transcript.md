@@ -26,7 +26,7 @@ Show the recommendation:
 - "Route to mechanical team immediately. Schedule bearing replacement within 2 hours."
 - Human review required: true
 
-> "Now Aether turns that decision into an operational workflow: incident correlation, ticket routing, feedback capture, and audit export."
+> "Now Praxis turns that decision into an operational workflow: incident correlation, ticket routing, feedback capture, and audit export."
 
 Show the incident detail panel:
 - Incident key: INC-2024-001
@@ -66,4 +66,4 @@ Open the Replay page. Show:
 
 ## Closing Statement
 
-> "Aether Sentinel turns incident management from reactive firefighting into accountable operational intelligence. The value is not prediction alone. The value is decision accountability."
+> "Praxis turns incident management from reactive firefighting into accountable operational intelligence. The value is not prediction alone. The value is decision accountability."

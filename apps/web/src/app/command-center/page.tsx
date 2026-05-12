@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useToast } from "@/components/notifications";
 import { clearStoredSession } from "@/lib/auth";
 import { useCommandFeed } from "@/lib/hooks/use-command-feed";
-import { CommandRoomV3 } from "@/components/sentinel-v3/command-room/command-room-v3";
+import { PraxisCommandWorkbench } from "@/components/praxis/workbench/command-workbench";
 
 export default function CommandCenterPage() {
   const router = useRouter();
@@ -38,7 +38,7 @@ export default function CommandCenterPage() {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "aether_sentinel_audit_bundle.xlsx";
+      anchor.download = "praxis_audit_bundle.xlsx";
       anchor.click();
       URL.revokeObjectURL(url);
       toast.success("Audit export started");
@@ -62,7 +62,7 @@ export default function CommandCenterPage() {
   }, [isSigningOut, router]);
 
   return (
-    <CommandRoomV3
+    <PraxisCommandWorkbench
       feedStatus={feed.status}
       feedMode={feed.mode}
       lastSyncSeconds={lastSyncSeconds}

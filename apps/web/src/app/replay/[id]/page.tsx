@@ -1,6 +1,6 @@
 import { getDemoReplay } from "@/lib/demo-scenario";
 import { getServerApiUrl } from "@/lib/server-api";
-import { ReplayForensicsViewV3 } from "@/components/sentinel-v3/replay/replay-forensics-view-v3";
+import { PraxisReplayWorkbench } from "@/components/praxis/workbench/replay-workbench";
 
 type ReplayPayload = {
   ticket_id: string;
@@ -48,5 +48,5 @@ async function loadReplay(id: string): Promise<{ mode: "live" | "demo"; payload:
 export default async function ReplayPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const data = await loadReplay(id);
-  return <ReplayForensicsViewV3 id={id} payload={data.payload} mode={data.mode} notice={data.notice} />;
+  return <PraxisReplayWorkbench id={id} payload={data.payload} mode={data.mode} notice={data.notice} />;
 }

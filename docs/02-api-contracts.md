@@ -1,4 +1,4 @@
-# Aether Sentinel API Contracts
+# Praxis API Contracts
 
 ## Ingestion APIs
 

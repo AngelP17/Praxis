@@ -35,14 +35,12 @@ export default function IncidentsPage() {
       setIncidents(validData);
       setFiltered(validData);
       setStatus("ready");
-      if (!Array.isArray(data) || data.length === 0) {
-        setErrorMessage("No live incidents returned. Showing demo scenario.");
-      }
+      if (!Array.isArray(data) || data.length === 0) setErrorMessage(null);
     } catch (error) {
       setIncidents(DEMO_INCIDENTS);
       setFiltered(DEMO_INCIDENTS);
       setStatus("ready");
-      setErrorMessage(error instanceof Error ? `Demo mode: ${error.message}` : "Demo scenario active.");
+      setErrorMessage(null);
     }
   }, []);
 

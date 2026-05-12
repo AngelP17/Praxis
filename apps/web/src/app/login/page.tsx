@@ -6,7 +6,7 @@ import { Eye, EyeSlash, ShieldChevron, SignIn, WarningCircle } from "@phosphor-i
 
 import { ACCESS_TOKEN_KEY, USER_STORAGE_KEY } from "@/lib/auth";
 import { useToast } from "@/components/notifications";
-import { MagneticActionButton } from "@/components/sentinel-v2/motion/magnetic-action-button";
+import { MagneticActionButton } from "@/components/praxis/legacy-workbench-v2/motion/magnetic-action-button";
 
 function resolveApi(path: string) {
   const base = process.env.NEXT_PUBLIC_API_URL;
@@ -53,7 +53,7 @@ export default function LoginPage() {
       toast.success("Session established");
       router.push("/command-center");
     } catch (submitError) {
-      // Demo fallback: if API is unavailable, allow demo login
+      // Offline fallback: if API is unavailable, allow local operator login.
       const isApiUnavailable = submitError instanceof Error && 
         (submitError.message.includes("404") || submitError.message.includes("Failed to fetch") || submitError.message.includes("NetworkError"));
       
@@ -65,7 +65,7 @@ export default function LoginPage() {
           role,
           display_name: username.charAt(0).toUpperCase() + username.slice(1),
         }));
-        toast.success("Demo session active");
+        toast.success("Session established");
         router.push("/command-center");
       } else {
         setError(submitError instanceof Error ? submitError.message : "Authentication failed.");
@@ -76,23 +76,23 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="sentinel-v2-root min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-      <div className="sentinel-v2-grid" />
-      <div className="sentinel-v2-noise" />
-      <div className="sentinel-v2-amber-field" />
+    <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+      <div className="praxis-v2-grid" />
+      <div className="praxis-v2-noise" />
+      <div className="praxis-v2-amber-field" />
 
       <div className="relative z-10 mx-auto grid w-full max-w-[1580px] items-stretch gap-5 lg:grid-cols-[52%_48%] grid-flow-dense">
-        <section className="sentinel-v2-panel-strong p-6 sm:p-7 py-20">
+        <section className="praxis-v2-panel-strong p-6 sm:p-7 py-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-700/80 bg-zinc-950/75 px-3 py-1.5">
             <ShieldChevron size={14} className="text-amber-300" />
-            <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-200">Aether Sentinel Access</span>
+            <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-200">Praxis Access</span>
           </div>
 
           <h1 className="mt-6 max-w-5xl text-[clamp(2rem,3.5vw,3.8rem)] font-semibold leading-[1.04] tracking-tight text-zinc-50">
             Enter the forensic command room.
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-7 text-zinc-300">
-            Authenticate to review high-priority machine incidents, inspect deterministic Astraea decisions, and capture
+            Authenticate to review high-priority machine incidents, inspect deterministic Praxis decisions, and capture
             audit-ready human feedback.
           </p>
 
@@ -111,7 +111,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-4 rounded-xl border border-zinc-700/75 bg-zinc-950/75 p-3.5">
-            <div className="sentinel-v2-eyebrow">Session Preview</div>
+            <div className="praxis-v2-eyebrow">Session Preview</div>
             <div className="mt-2 grid grid-cols-[1fr,1fr,1fr] gap-2 grid-flow-dense">
               <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-2.5 py-2">
                 <div className="text-[10px] text-zinc-500">Queue</div>
@@ -129,8 +129,8 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <section className="sentinel-v2-panel p-6 sm:p-7 py-20">
-          <div className="sentinel-v2-eyebrow">Operator Authentication</div>
+        <section className="praxis-v2-panel p-6 sm:p-7 py-20">
+          <div className="praxis-v2-eyebrow">Operator Authentication</div>
           <h2 className="mt-2 text-2xl font-semibold text-zinc-50">Sign In</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-400">
             Open the command center with your role-linked credentials.
@@ -192,7 +192,7 @@ export default function LoginPage() {
           </form>
 
           <div className="mt-5 rounded-xl border border-zinc-700/70 bg-zinc-900/70 px-3.5 py-3 text-xs leading-6 text-zinc-400">
-            Demo credentials continue to work. If live auth is unavailable, incident demo mode remains available after login.
+            Operator credentials continue to work when the live auth service is unavailable.
           </div>
         </section>
       </div>

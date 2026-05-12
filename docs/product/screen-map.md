@@ -2,7 +2,7 @@
 
 ## Screen 1: Landing Page (`/`)
 
-**Purpose**: Cinematic introduction to Aether Sentinel with live system health
+**Purpose**: Cinematic introduction to Praxis with live system health
 
 **Layout Structure**:
 - Floating glass pill navigation

@@ -60,7 +60,7 @@ def _build_executive_summary(wb: Workbook, *, tickets: list[dict], incidents: li
     ws = wb.active
     ws.title = "Executive Summary"
 
-    ws.cell(1, 1, "Aether — Executive Summary").font = Font(bold=True, size=14)
+    ws.cell(1, 1, "Praxis — Executive Summary").font = Font(bold=True, size=14)
     ws.cell(2, 1, f"Generated {datetime.now(UTC).isoformat()}").font = Font(color="666666", size=10)
 
     _apply_header_style(ws, row=4, headers=["KPI", "Value"])
@@ -209,7 +209,7 @@ def _build_audit_extract(wb: Workbook, *, tickets: list[dict]) -> None:
             [
                 ticket["ticket_id"],
                 "decision_generated",
-                "aether-api",
+                "praxis-api",
                 datetime.now(UTC).isoformat(),
                 ticket.get("root_cause_hypothesis") or "",
                 "proposed",

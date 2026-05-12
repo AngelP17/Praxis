@@ -1,10 +1,10 @@
 #!/bin/bash
-# One-command demo launcher for Aether Sentinel
+# One-command demo launcher for Praxis
 # Usage: ./scripts/demo/run_demo.sh
 
 set -e
 
-echo "=== Aether Sentinel One-Command Demo ==="
+echo "=== Praxis One-Command Demo ==="
 echo ""
 
 # 1. Kill anything on our ports (aggressive)
@@ -29,11 +29,11 @@ find . -name "*.pyc" -delete 2>/dev/null || true
 
 # 3. Start backend services in background
 echo "[3/6] Starting backend services..."
-.venv/bin/uvicorn apps.api_gateway.main:app --host 0.0.0.0 --port 8000 > /tmp/aether-api.log 2>&1 &
+.venv/bin/uvicorn apps.api_gateway.main:app --host 0.0.0.0 --port 8000 > /tmp/praxis-api.log 2>&1 &
 API_PID=$!
-.venv/bin/uvicorn services.platform-service.src.main:app --host 0.0.0.0 --port 8080 > /tmp/aether-platform.log 2>&1 &
+.venv/bin/uvicorn services.platform-service.src.main:app --host 0.0.0.0 --port 8080 > /tmp/praxis-platform.log 2>&1 &
 PLATFORM_PID=$!
-.venv/bin/uvicorn services.decision-service.main:app --host 0.0.0.0 --port 8001 > /tmp/aether-decision.log 2>&1 &
+.venv/bin/uvicorn services.decision-service.main:app --host 0.0.0.0 --port 8001 > /tmp/praxis-decision.log 2>&1 &
 DECISION_PID=$!
 
 # 4. Wait for API to be ready
@@ -49,7 +49,7 @@ done
 # 5. Start web app
 echo "[5/6] Starting web app..."
 cd apps/web
-pnpm dev > /tmp/aether-web.log 2>&1 &
+pnpm dev > /tmp/praxis-web.log 2>&1 &
 WEB_PID=$!
 cd ../..
 
@@ -58,7 +58,7 @@ echo "[6/6] Seeding Press Vibration Cascade scenario..."
 .venv/bin/python scripts/demo/seed_scenario.py sample-data/scenarios/press-vibration-cascade.json
 
 echo ""
-echo "=== Aether Sentinel is running ==="
+echo "=== Praxis is running ==="
 echo ""
 echo "  Web App:        http://localhost:3000"
 echo "  API Gateway:    http://localhost:8000"
@@ -69,7 +69,7 @@ echo "  Open http://localhost:3000/command-center (no login needed)"
 echo ""
 echo "  PIDs: API=$API_PID Platform=$PLATFORM_PID Decision=$DECISION_PID Web=$WEB_PID"
 echo ""
-echo "  Logs: /tmp/aether-*.log"
+echo "  Logs: /tmp/praxis-*.log"
 echo ""
 echo "Press Ctrl+C to stop all services"
 

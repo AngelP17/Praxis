@@ -143,7 +143,7 @@ def check_audit_export(decision_id: str) -> bool:
 def main() -> int:
     global CURRENT_BASE_URL
     CURRENT_BASE_URL = resolve_base_url()
-    print("=== Aether Sentinel Flagship Path Validation ===\n")
+    print("=== Praxis Flagship Path Validation ===\n")
     print(f"Using API base: {CURRENT_BASE_URL}\n")
 
     if not check_health():

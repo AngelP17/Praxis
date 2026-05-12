@@ -10,7 +10,7 @@ from pipelines.retrieval.similar_cases import compute_text_similarity
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Rebuild the lightweight Aether similar-case index."
+        description="Rebuild the lightweight Praxis similar-case index."
     )
     parser.add_argument(
         "--threshold",

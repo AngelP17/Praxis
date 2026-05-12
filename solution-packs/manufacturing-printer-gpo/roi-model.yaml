@@ -1,0 +1,26 @@
+variables:
+  incidents_per_month: 12
+  average_minutes_lost_per_incident: 35
+  loaded_labor_rate_per_hour: 48
+  shipment_delay_cost_per_hour: 250
+  current_triage_minutes: 45
+  praxis_triage_minutes: 12
+
+formulas:
+  monthly_labor_cost_saved:
+    expression: incidents_per_month * ((current_triage_minutes - praxis_triage_minutes) / 60) * loaded_labor_rate_per_hour
+    description: Labor hours saved by faster triage
+
+  monthly_delay_cost_avoided:
+    expression: incidents_per_month * (average_minutes_lost_per_incident / 60) * shipment_delay_cost_per_hour
+    description: Cost of delayed shipments avoided
+
+  annual_value:
+    expression: 12 * (monthly_labor_cost_saved + monthly_delay_cost_avoided)
+    description: Total annual value delivered
+
+calculations:
+  monthly_labor_cost_saved: 316.80
+  monthly_delay_cost_avoided: 1750.00
+  monthly_total: 2066.80
+  annual_value: 38481.60

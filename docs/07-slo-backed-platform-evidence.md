@@ -32,7 +32,7 @@ Historical results from controlled fault injection that validate resilience assu
 ### Incident Snapshots
 Point-in-time captures of service topology, configuration, and resource utilization.
 
-## How Evidence Enters Aether Sentinel
+## How Evidence Enters Praxis
 
 ```
 Kubernetes Event -> Platform Service -> Normalization -> Evidence Artifact -> Incident Link

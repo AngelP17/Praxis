@@ -1,4 +1,4 @@
-.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo
+.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo praxis-install praxis-fieldlab-up praxis-fieldlab-down praxis-demo praxis-validate-pack praxis-readout praxis-proof praxis-proof-open praxis-benchmark praxis-test
 
 install:
 	python3 -m venv .venv
@@ -10,7 +10,7 @@ test:
 
 demo: demo-api demo-platform demo-decision demo-web
 	@echo ""
-	@echo "Aether Sentinel demo is running:"
+	@echo "Praxis demo is running:"
 	@echo "  API Gateway:    http://localhost:8000"
 	@echo "  Decision Svc:   http://localhost:8001"
 	@echo "  Platform Svc:   http://localhost:8080"
@@ -76,3 +76,40 @@ clean-demo:
 	-pkill -f "uvicorn services.decision-service.main:app"
 	-pkill -f "next-dev"
 	@echo "Demo processes stopped."
+
+# Praxis-specific targets
+
+praxis-install:
+	pnpm install
+	.venv/bin/uv sync 2>/dev/null || python3 -m venv .venv && .venv/bin/pip install -e . -e packages/astraea-core -e packages/domain -e packages/pipelines && cd apps/web && pnpm install
+
+praxis-fieldlab-up:
+	cd infrastructure/floci && docker compose up -d
+	cd infrastructure/floci && ./bootstrap.sh
+
+praxis-fieldlab-down:
+	cd infrastructure/floci && docker compose down
+
+praxis-demo:
+	.venv/bin/python scripts/run_fieldlab_demo.py --solution-pack manufacturing-printer-gpo
+
+praxis-validate-pack:
+	.venv/bin/python scripts/validate_solution_pack.py solution-packs/manufacturing-printer-gpo
+
+praxis-readout:
+	.venv/bin/python scripts/generate_executive_readout.py --run-id $(RUN_ID)
+
+praxis-proof:
+	.venv/bin/python scripts/run_fieldlab_demo.py --solution-pack manufacturing-printer-gpo --emit-proof
+	.venv/bin/python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json
+	.venv/bin/python scripts/render_proof_summary.py artifacts/latest/praxis_proof.json
+
+praxis-proof-open:
+	open artifacts/latest/proof-summary.md
+
+praxis-benchmark:
+	.venv/bin/python scripts/run_benchmarks.py
+	.venv/bin/python scripts/render_benchmark_report.py
+
+praxis-test:
+	.venv/bin/pytest tests/praxis tests/integration -v

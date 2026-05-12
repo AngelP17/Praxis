@@ -55,7 +55,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Aether Sentinel Decision Service",
+    title="Praxis Decision Service",
     description="Deterministic decision engine wrapper around Astraea",
     version="1.2.0",
     lifespan=lifespan,

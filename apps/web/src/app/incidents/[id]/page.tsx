@@ -9,7 +9,7 @@ import { getDemoIncident } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
-import { SignalMarquee } from "@/components/sentinel-v2/motion/signal-marquee";
+import { SignalMarquee } from "@/components/praxis/legacy-workbench-v2/motion/signal-marquee";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 
 type IncidentDetailPayload = {
@@ -75,7 +75,7 @@ export default function IncidentDetailPage() {
               incident_id: incidentId,
               timeline: [
                 { phase: "signal", detail: "Telemetry threshold crossed on press-line-3", timestamp: "T+00s" },
-                { phase: "decision", detail: "Astraea priority raised to 96 with confidence 0.92", timestamp: "T+04s" },
+                { phase: "decision", detail: "Praxis priority raised to 96 with confidence 0.92", timestamp: "T+04s" },
                 { phase: "workflow", detail: "Mechanical escalation route created", timestamp: "T+09s" },
                 { phase: "feedback", detail: "Ops Lead approved / Reliability requested extra sample", timestamp: "T+15s" },
               ],
@@ -91,7 +91,7 @@ export default function IncidentDetailPage() {
         incident_id: incidentId,
         timeline: [
           { phase: "signal", detail: "Telemetry threshold crossed on press-line-3", timestamp: "T+00s" },
-          { phase: "decision", detail: "Astraea priority raised with high confidence", timestamp: "T+04s" },
+          { phase: "decision", detail: "Praxis priority raised with high confidence", timestamp: "T+04s" },
           { phase: "workflow", detail: "Mechanical escalation route created", timestamp: "T+09s" },
           { phase: "feedback", detail: "Operations lead approved additional sampling window", timestamp: "T+15s" },
         ],
@@ -123,9 +123,9 @@ export default function IncidentDetailPage() {
   if (status === "loading") {
     return (
       <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-        <div className="sentinel-v2-grid" />
-        <div className="sentinel-v2-noise" />
-        <div className="sentinel-v2-amber-field" />
+        <div className="praxis-v2-grid" />
+        <div className="praxis-v2-noise" />
+        <div className="praxis-v2-amber-field" />
         <div className="relative z-10 mx-auto max-w-[1580px]">
           <LoadingSkeleton />
         </div>
@@ -136,9 +136,9 @@ export default function IncidentDetailPage() {
   if (status === "error" || !payload) {
     return (
       <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-        <div className="sentinel-v2-grid" />
-        <div className="sentinel-v2-noise" />
-        <div className="sentinel-v2-amber-field" />
+        <div className="praxis-v2-grid" />
+        <div className="praxis-v2-noise" />
+        <div className="praxis-v2-amber-field" />
         <div className="relative z-10 mx-auto max-w-[1580px]">
           <ErrorState title="Incident detail unavailable" message={notice || "Could not load incident payload."} onRetry={() => void loadIncident()} />
         </div>
@@ -148,15 +148,15 @@ export default function IncidentDetailPage() {
 
   return (
     <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-      <div className="sentinel-v2-grid" />
-      <div className="sentinel-v2-noise" />
-      <div className="sentinel-v2-amber-field" />
+      <div className="praxis-v2-grid" />
+      <div className="praxis-v2-noise" />
+      <div className="praxis-v2-amber-field" />
 
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
-        <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
+        <section className="praxis-v2-panel-strong p-5 sm:p-6 py-20">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <div className="sentinel-v2-eyebrow">Incident Detail</div>
+              <div className="praxis-v2-eyebrow">Incident Detail</div>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">{payload.incident.title}</h1>
               <p className="mt-2 max-w-3xl text-sm leading-7 text-zinc-300">
                 Forensic incident context with timeline reconstruction, deterministic recommendation, and closure control.
@@ -199,11 +199,11 @@ export default function IncidentDetailPage() {
 
         <section className="mt-4 grid grid-cols-12 gap-4 grid-flow-dense py-20">
           <div className="col-span-12 xl:col-span-7">
-            <div className="sentinel-v2-panel h-full p-4 sm:p-5">
-              <div className="sentinel-v2-eyebrow">Incident Focus</div>
+            <div className="praxis-v2-panel h-full p-4 sm:p-5">
+              <div className="praxis-v2-eyebrow">Incident Focus</div>
               <p className="mt-3 text-sm leading-7 text-zinc-300">{payload.common_cause}</p>
               <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/12 p-4">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-amber-100">Astraea recommendation</div>
+                <div className="text-[11px] uppercase tracking-[0.18em] text-amber-100">Praxis recommendation</div>
                 <p className="mt-2 text-sm leading-7 text-amber-50">{payload.recommended_action}</p>
               </div>
 
@@ -221,7 +221,7 @@ export default function IncidentDetailPage() {
           </div>
 
           <div className="col-span-12 xl:col-span-5 space-y-4">
-            <div className="sentinel-v2-panel p-4 sm:p-5">
+            <div className="praxis-v2-panel p-4 sm:p-5">
               <DecisionExplanationPanel
                 explanation={{
                   integrity_score: {
@@ -253,8 +253,8 @@ export default function IncidentDetailPage() {
               />
             </div>
 
-            <div className="sentinel-v2-panel h-full p-4 sm:p-5">
-              <div className="sentinel-v2-eyebrow">Timeline Reconstruction</div>
+            <div className="praxis-v2-panel h-full p-4 sm:p-5">
+              <div className="praxis-v2-eyebrow">Timeline Reconstruction</div>
               <div className="mt-3 space-y-2">
                 {(timeline?.timeline || []).map((item, index) => (
                   <div key={`${item.phase}-${index}`} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
@@ -268,7 +268,7 @@ export default function IncidentDetailPage() {
               </div>
 
               <div className="mt-3 rounded-xl border border-zinc-800/80 bg-zinc-950/80 p-3">
-                <div className="sentinel-v2-eyebrow">Incident Ledger</div>
+                <div className="praxis-v2-eyebrow">Incident Ledger</div>
                 <div className="mt-2 space-y-2">
                   <LedgerItem label="Replay hash" value="sha256:inc-4821c9a2f" />
                   <LedgerItem label="Root cause" value="bearing degradation" />
@@ -283,9 +283,9 @@ export default function IncidentDetailPage() {
           </div>
         </section>
 
-        <section className="mt-4 sentinel-v2-panel p-4 sm:p-5 py-20">
+        <section className="mt-4 praxis-v2-panel p-4 sm:p-5 py-20">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="sentinel-v2-eyebrow">Correlated Tickets</div>
+            <div className="praxis-v2-eyebrow">Correlated Tickets</div>
             <div className="mono-data text-[11px] text-zinc-500">{payload.tickets.length} linked records</div>
           </div>
           <div className="mt-3 space-y-2">
@@ -321,7 +321,7 @@ export default function IncidentDetailPage() {
         </section>
 
         <footer className="mt-4 pb-1">
-          <div className="sentinel-v2-panel px-4 py-2.5 text-xs text-zinc-400">
+          <div className="praxis-v2-panel px-4 py-2.5 text-xs text-zinc-400">
             <div className="inline-flex items-center gap-1.5">
               <Hash size={12} className="text-amber-200" />
               Incident linked to replay hash chain and audit export.

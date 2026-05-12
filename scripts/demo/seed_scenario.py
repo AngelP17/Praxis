@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Seed a deterministic scenario into a running Aether Sentinel stack."""
+"""Seed a deterministic scenario into a running Praxis stack."""
 
 import argparse
 import json

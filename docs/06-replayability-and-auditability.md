@@ -10,7 +10,7 @@ After an incident, the system must answer:
 4. Who acted?
 5. Why?
 
-Aether Sentinel answers all five questions from a single incident record.
+Praxis answers all five questions from a single incident record.
 
 ## Replay Inputs
 

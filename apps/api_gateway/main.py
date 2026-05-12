@@ -19,16 +19,23 @@ from apps.api_gateway.routes.metrics import router as metrics_router
 from apps.api_gateway.routes.recommendations import router as recommendations_router
 from apps.api_gateway.routes.audit import router as audit_router
 from apps.api_gateway.routes.platform import router as platform_router
+from apps.api_gateway.routes.proofs import router as proofs_router
 from apps.api_gateway.routes.replay import router as replay_router
 from apps.api_gateway.routes.reports import router as reports_router
 from apps.api_gateway.routes.tickets import router as tickets_router
+from apps.api_gateway.routes.fieldlab import router as fieldlab_router
+from apps.api_gateway.routes.solution_packs import router as solution_packs_router
+from apps.api_gateway.routes.ontology import router as ontology_router
+from apps.api_gateway.routes.value_cases import router as value_cases_router
+from apps.api_gateway.routes.deployment_plans import router as deployment_plans_router
+from apps.api_gateway.routes.discovery import router as discovery_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging()
     logger = get_logger("main")
-    logger.info("aether_api_starting", version="1.2.0", env=settings.ENV)
+    logger.info("praxis_api_starting", version="2.0.0", env=settings.ENV)
     if settings.AUTO_INIT_DB:
         init_db()
         logger.info("database_initialized")
@@ -36,9 +43,9 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Aether API",
-    description="Operational Incident Intelligence and Decision Platform",
-    version="0.1.0",
+    title="Praxis API",
+    description="Forward-deployed operational intelligence platform",
+    version="2.0.0",
     lifespan=lifespan,
 )
 
@@ -71,17 +78,26 @@ app.include_router(comments_router, prefix="/api", tags=["comments"])
 app.include_router(attachments_router, prefix="/api", tags=["attachments"])
 app.include_router(platform_router, prefix="/api/platform", tags=["platform"])
 app.include_router(audit_router, prefix="/api/audit", tags=["audit"])
+app.include_router(fieldlab_router, prefix="/api/fieldlab", tags=["fieldlab"])
+app.include_router(solution_packs_router, prefix="/api/solution-packs", tags=["solution-packs"])
+app.include_router(ontology_router, prefix="/api/ontology", tags=["ontology"])
+app.include_router(value_cases_router, prefix="/api/value-cases", tags=["value-cases"])
+app.include_router(
+    deployment_plans_router, prefix="/api/deployment-plans", tags=["deployment-plans"]
+)
+app.include_router(discovery_router, prefix="/api/discovery", tags=["discovery"])
+app.include_router(proofs_router, prefix="/api/proofs", tags=["proofs"])
 
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "aether-api", "version": "1.2.0"}
+    return {"status": "healthy", "service": "praxis-api", "version": "2.0.0"}
 
 
 @app.get("/")
 async def root():
     return {
-        "service": "Aether API",
-        "version": "1.2.0",
+        "service": "Praxis API",
+        "version": "2.0.0",
         "docs": "/docs",
     }

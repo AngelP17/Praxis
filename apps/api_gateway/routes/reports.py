@@ -26,7 +26,7 @@ def get_excel_report(
         output.seek(0)
 
         now = datetime.now()
-        filename = now.strftime("aether_report_%Y%m%d_%H%M%S.xlsx")
+        filename = now.strftime("praxis_report_%Y%m%d_%H%M%S.xlsx")
 
         return StreamingResponse(
             output,

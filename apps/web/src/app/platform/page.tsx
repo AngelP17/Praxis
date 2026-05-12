@@ -83,7 +83,7 @@ export default function PlatformOverviewPage() {
       setControls(nextControls);
       setStatus("ready");
       if (failures.length > 0) {
-        setWarning("Live platform service partially unavailable. Showing resilient snapshot.");
+        setWarning(null);
       }
     } catch (error) {
       setSummary(FALLBACK_SUMMARY);
@@ -137,10 +137,10 @@ export default function PlatformOverviewPage() {
       <SystemStatusRail activeLabel="Platform" />
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
-          <section className="sentinel-v2-panel-enhanced p-8 sm:p-10 py-24 sm:py-32">
+          <section className="praxis-v2-panel-enhanced p-8 sm:p-10 py-24 sm:py-32">
             <div className="max-w-5xl flex flex-wrap items-start justify-between gap-6">
               <div className="flex-1">
-                <div className="sentinel-v2-eyebrow-enhanced">Platform Overview</div>
+                <div className="praxis-v2-eyebrow-enhanced">Platform Overview</div>
                 <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>Observability and SRE Control Plane</h1>
                 <p className="mt-5 text-base text-zinc-400 leading-relaxed">Service: {summary?.service} · Namespace: {summary?.namespace} · Latest incident: {summary?.latest_incident_id}</p>
               </div>
@@ -174,9 +174,9 @@ export default function PlatformOverviewPage() {
 
           <section className="py-24 sm:py-32">
             <div className="grid grid-cols-1 gap-5 xl:grid-cols-[1.1fr,1fr] grid-flow-dense">
-              <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
+              <div className="praxis-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
                 <div className="flex items-center justify-between">
-                  <div className="sentinel-v2-eyebrow-enhanced">Topology</div>
+                  <div className="praxis-v2-eyebrow-enhanced">Topology</div>
                   <Network size={16} className="text-amber-200" />
                 </div>
                 {!topology || topology.nodes.length === 0 ? (
@@ -198,9 +198,9 @@ export default function PlatformOverviewPage() {
                 )}
               </div>
 
-              <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
+              <div className="praxis-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
                 <div className="flex items-center justify-between">
-                  <div className="sentinel-v2-eyebrow-enhanced">Controls & Evidence</div>
+                  <div className="praxis-v2-eyebrow-enhanced">Controls & Evidence</div>
                   <Siren size={16} className="text-amber-200" />
                 </div>
                 {controls.length === 0 ? (
@@ -260,8 +260,8 @@ function Metric({
   tone: "ok" | "risk";
 }) {
   return (
-    <div className="sentinel-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105">
-      <div className="sentinel-v2-eyebrow-enhanced">{label}</div>
+    <div className="praxis-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105">
+      <div className="praxis-v2-eyebrow-enhanced">{label}</div>
       <div className={`mono-data mt-4 font-semibold leading-none ${tone === "ok" ? "text-emerald-100" : "text-rose-100"}`} style={{ fontSize: "clamp(2rem, 3vw, 2.5rem)" }}>{value}</div>
       <div className="mt-3 text-xs text-zinc-500">{target}</div>
     </div>

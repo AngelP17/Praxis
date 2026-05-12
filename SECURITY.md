@@ -9,7 +9,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Aether Sentinel, please report it privately.
+If you discover a security vulnerability in Praxis, please report it privately.
 
 1. **Do not** open a public issue.
 2. Email details to the maintainer with a clear description of the vulnerability.

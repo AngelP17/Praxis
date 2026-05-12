@@ -52,13 +52,7 @@ const initialState: LandingDataState = {
   lastUpdated: 0,
 };
 
-const demoMetrics: SystemMetrics = {
-  ...DEMO_METRICS,
-  signals_processed_24h: 2400000,
-  avg_decision_latency_ms: 184,
-  replay_coverage_percent: 97,
-  active_evidence_lanes: 4,
-};
+const demoMetrics: SystemMetrics = DEMO_METRICS;
 
 const demoIncidents: RecentIncident[] = DEMO_INCIDENTS.map((incident) => ({
   id: incident.id,
@@ -135,7 +129,7 @@ export function useLandingData() {
         recentIncidents: (liveIncidents.length > 0 ? liveIncidents : demoIncidents).slice(0, 6),
         liveSignals: (liveTickets.length > 0 ? liveTickets : demoSignals).slice(0, 8),
         status: "ready",
-        errorMessage: errorMessages.length > 0 ? "Demo scenario active while live landing APIs are unavailable." : null,
+        errorMessage: errorMessages.length > 0 ? "Simulated operations feed active while live APIs reconnect." : null,
         lastUpdated: Date.now(),
       });
     } catch (error) {
@@ -144,7 +138,7 @@ export function useLandingData() {
         recentIncidents: demoIncidents,
         liveSignals: demoSignals,
         status: "ready",
-        errorMessage: error instanceof Error ? error.message : "Failed to load landing data",
+        errorMessage: "Simulated operations feed active while live APIs reconnect.",
         lastUpdated: Date.now(),
       });
     }

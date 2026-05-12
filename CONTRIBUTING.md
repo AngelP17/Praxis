@@ -1,4 +1,4 @@
-# Contributing to Aether Sentinel
+# Contributing to Praxis
 
 Thank you for your interest in contributing. This project is currently maintained as a personal portfolio and research system.
 

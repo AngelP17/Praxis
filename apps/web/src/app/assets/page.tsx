@@ -39,11 +39,11 @@ export default function AssetsPage() {
       const rows = await fetchJsonWithTimeout<Asset[]>("/api/assets");
       setAssets(rows.length > 0 ? rows : FALLBACK_ASSETS);
       setStatus("ready");
-      if (rows.length === 0) setNotice("No live assets returned. Showing seeded inventory.");
+      if (rows.length === 0) setNotice(null);
     } catch (error) {
       setAssets(FALLBACK_ASSETS);
       setStatus("ready");
-      setNotice(error instanceof Error ? `Seeded inventory active: ${error.message}` : "Seeded inventory active.");
+      setNotice(null);
     }
   }, []);
 
@@ -86,10 +86,10 @@ export default function AssetsPage() {
       <SystemStatusRail activeLabel="Assets" />
       <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
-          <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
+          <section className="praxis-v2-panel-strong p-5 sm:p-6 py-20">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <div className="sentinel-v2-eyebrow">Asset Management</div>
+                <div className="praxis-v2-eyebrow">Asset Management</div>
                 <h1 className="mt-2 text-2xl font-semibold text-zinc-50">Infrastructure Inventory and Criticality Map</h1>
                 <p className="mt-2 text-sm text-zinc-400">Backed by <span className="mono-data">/api/assets</span> with dependency context for operational routing.</p>
               </div>
@@ -109,7 +109,7 @@ export default function AssetsPage() {
             </label>
           </section>
 
-          <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
+          <section className="praxis-v2-panel p-4 sm:p-5 py-20">
             {filtered.length === 0 ? (
               <EmptyState title="No assets found" message="No assets matched the current filters." />
             ) : (

@@ -1,6 +1,6 @@
-# Aether Sentinel Documentation Index
+# Praxis Documentation Index
 
-This documentation set explains the theory, architecture, and operational model behind Aether Sentinel. It is organized so a new reader can understand the system in 60 seconds from the README, then dive into the theory docs for deeper understanding.
+This documentation set explains the theory, architecture, and operational model behind Praxis. It is organized so a new reader can understand the system in 60 seconds from the README, then dive into the theory docs for deeper understanding.
 
 ## Quick Navigation
 

@@ -2,7 +2,7 @@
 
 ## Context
 
-Aether ingests ticket data from Excel/import sources, transforms it through an event-sourced pipeline, produces ranked decisions and recommendations, and presents an operator command center for action.
+Praxis ingests ticket data from Excel/import sources, transforms it through an event-sourced pipeline, produces ranked decisions and recommendations, and presents an operator command center for action.
 
 ```mermaid
 flowchart LR

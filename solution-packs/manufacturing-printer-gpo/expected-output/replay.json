@@ -1,0 +1,11 @@
+{
+  "incident_id": "GA-PRINT-GPO-042",
+  "replay_hash": "sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+  "decision_ts": "2026-05-01T15:00:00Z",
+  "priority_score": 0.82,
+  "evidence_trust": 0.82,
+  "recommendation": "Validate Point and Print policy, GPO read permissions, and local IP printer drift",
+  "action_taken": "approved",
+  "replayed_at": "2026-05-01T15:00:00Z",
+  "hash_verified": true
+}

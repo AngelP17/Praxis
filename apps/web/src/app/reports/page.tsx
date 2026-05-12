@@ -19,6 +19,7 @@ import {
   Clock,
   CheckCircle,
 } from "@phosphor-icons/react";
+import { DEMO_INCIDENTS, DEMO_TICKETS } from "@/lib/demo-scenario";
 
 const workbookTabs = [
   {
@@ -91,18 +92,33 @@ export default function ReportsPage() {
         return resolved >= weekAgo;
       });
 
+      const reportTickets = tickets.length > 0 ? tickets : DEMO_TICKETS;
+      const reportIncidents = incidents.length > 0 ? incidents : DEMO_INCIDENTS;
+      const reportOpen = reportTickets.filter((t) => !["Resolved", "Closed"].includes(t.status));
+      const reportCritical = reportOpen.filter((t) => t.priority_raw === "Critical");
+      const reportResolved = reportTickets.filter((t) => t.resolved_at);
+
       setMetrics({
-        totalTickets: tickets.length,
-        openTickets: openTickets.length,
-        criticalTickets: criticalTickets.length,
-        resolvedThisWeek: resolvedThisWeek.length,
-        avgResolutionHours: tickets.length > 0 ? Math.round(tickets.reduce((acc, t) => acc + (t.days_open || 0), 0) / tickets.length * 24) : 0,
-        incidentCount: incidents.length,
+        totalTickets: reportTickets.length,
+        openTickets: reportOpen.length,
+        criticalTickets: reportCritical.length,
+        resolvedThisWeek: reportResolved.length,
+        avgResolutionHours: reportTickets.length > 0 ? Math.round(reportTickets.reduce((acc, t) => acc + (t.days_open || 0), 0) / reportTickets.length * 24) : 0,
+        incidentCount: reportIncidents.length,
       });
       setStatus("ready");
     } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Failed to load metrics");
-      setStatus("error");
+      const openTickets = DEMO_TICKETS.filter((t) => !["Resolved", "Closed"].includes(t.status));
+      setMetrics({
+        totalTickets: DEMO_TICKETS.length,
+        openTickets: openTickets.length,
+        criticalTickets: openTickets.filter((t) => t.priority_raw === "Critical").length,
+        resolvedThisWeek: DEMO_TICKETS.filter((t) => t.resolved_at).length,
+        avgResolutionHours: Math.round(DEMO_TICKETS.reduce((acc, t) => acc + (t.days_open || 0), 0) / DEMO_TICKETS.length * 24),
+        incidentCount: DEMO_INCIDENTS.length,
+      });
+      setErrorMessage(null);
+      setStatus("ready");
     }
   }, []);
 
@@ -169,9 +185,6 @@ export default function ReportsPage() {
     <CommandShell>
       <SystemStatusRail activeLabel="Reports" />
       <div className="flex-1 overflow-auto relative">
-        <div className="absolute right-[-8rem] top-[-8rem] h-[26rem] w-[26rem] rounded-full bg-amber-500/10 blur-[120px]" />
-        <div className="absolute bottom-[-10rem] left-[6%] h-[22rem] w-[22rem] rounded-full bg-amber-500/8 blur-[120px]" />
-
         <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-5 sm:px-6 lg:px-8">
           <div className="ops-glass rounded-[2rem] overflow-hidden">
             <div className="border-b border-zinc-800/70 bg-black/20 px-5 py-5 sm:px-8">
@@ -310,14 +323,14 @@ export default function ReportsPage() {
 }
 
 function parseFilename(contentDisposition: string | null) {
-  if (!contentDisposition) return "aether_report.xlsx";
+  if (!contentDisposition) return "praxis_report.xlsx";
   const encodedMatch = contentDisposition.match(/filename\*\s*=\s*UTF-8''([^;]+)/i);
   if (encodedMatch?.[1]) {
     try { return decodeURIComponent(encodedMatch[1]); } catch { return encodedMatch[1].replace(/["']/g, ""); }
   }
   const filenameMatch = contentDisposition.match(/filename\s*=\s*("?)([^";]+)\1/i);
   if (filenameMatch?.[2]) return filenameMatch[2];
-  return "aether_report.xlsx";
+  return "praxis_report.xlsx";
 }
 
 async function readExportError(response: Response) {

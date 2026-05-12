@@ -26,7 +26,7 @@ A dashboard tells you that CPU is high. Operational intelligence tells you that 
 
 ## Core Thesis
 
-Aether Sentinel treats every incident as a **decision lifecycle**:
+Praxis treats every incident as a **decision lifecycle**:
 
 ```
 Signal -> Context -> Decision -> Action -> Feedback -> Replay
@@ -62,14 +62,14 @@ When a manufacturing line stops, someone will ask:
 - Who acted?
 - Why?
 
-Aether Sentinel answers all five questions from a single incident record.
+Praxis answers all five questions from a single incident record.
 
 ## Decision Ownership Model
 
-In Aether Sentinel, decisions have explicit ownership:
+In Praxis, decisions have explicit ownership:
 
 - **Astraea** owns scoring, ranking, and recommendation generation
-- **Aether** owns workflow routing, ticket creation, and assignment
+- **Praxis** owns workflow routing, ticket creation, and assignment
 - **Platform Service** owns SLO evidence and infrastructure context
 - **Human operators** own acceptance, rejection, and override
 - **The audit layer** owns replay, timeline reconstruction, and export

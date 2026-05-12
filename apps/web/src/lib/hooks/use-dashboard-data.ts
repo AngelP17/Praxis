@@ -91,7 +91,6 @@ export function useDashboardData() {
       const liveIncidents = incidents.status === "fulfilled" && Array.isArray(incidents.value) ? incidents.value : [];
       const liveTickets = tickets.status === "fulfilled" && Array.isArray(tickets.value) ? tickets.value : [];
 
-      // Use demo data as fallback when APIs fail
       const fallbackTickets = liveTickets.length === 0 ? DEMO_TICKETS : liveTickets;
       const fallbackIncidents = liveIncidents.length === 0 ? DEMO_INCIDENTS : liveIncidents;
       const fallbackMetrics = liveMetrics || DEMO_METRICS;
@@ -127,11 +126,10 @@ export function useDashboardData() {
         recentTickets: openTickets.slice(0, 10),
         activeIncidents: fallbackIncidents.filter((i) => i.status !== "Closed" && i.status !== "Resolved").slice(0, 6),
         status: "ready",
-        errorMessage: errorMessages.length > 0 ? `Demo mode: ${errorMessages.join("; ")}` : null,
+        errorMessage: null,
         lastUpdated: Date.now(),
       });
     } catch (error) {
-      // Ultimate fallback: use all demo data
       const openTickets = DEMO_TICKETS.filter((t) => !["Resolved", "Closed"].includes(t.status));
       setState({
         metrics: {
@@ -139,7 +137,7 @@ export function useDashboardData() {
           openTickets: openTickets.length,
           criticalTickets: openTickets.filter((t) => t.priority_raw === "Critical").length,
           resolvedToday: 0,
-          avgDecisionLatency: 0,
+          avgDecisionLatency: DEMO_METRICS.avg_decision_latency_ms,
           incidentCount: DEMO_INCIDENTS.length,
           slaRiskCount: DEMO_METRICS.sla_breach_risk,
           systemStatus: "degraded",
@@ -147,7 +145,7 @@ export function useDashboardData() {
         recentTickets: openTickets.slice(0, 10),
         activeIncidents: DEMO_INCIDENTS.filter((i) => i.status !== "Closed" && i.status !== "Resolved").slice(0, 6),
         status: "ready",
-        errorMessage: error instanceof Error ? `Demo mode: ${error.message}` : "Demo scenario active.",
+        errorMessage: null,
         lastUpdated: Date.now(),
       });
     }

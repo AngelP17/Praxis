@@ -21,7 +21,7 @@
     "quality",
     "gpt-taste"
   ],
-  "author": "Aether Sentinel",
+  "author": "Praxis",
   "license": "MIT",
   "peerDependencies": {
     "eslint": ">=8.0.0"

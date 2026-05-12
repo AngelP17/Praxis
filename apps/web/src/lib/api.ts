@@ -24,6 +24,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export { api };
+
 export const ticketsApi = {
   list: (params?: Record<string, string | number>) =>
     api.get("/tickets", { params }),

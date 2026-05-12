@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Praxis — Wireframes</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700&family=Caveat:wght@400;600;700&family=Patrick+Hand&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #f0eee9; }
+  body { font-family: "Geist", "Manrope", sans-serif; }
+  /* Sketch-mode overlay applied to artboards when t.fidelity === 'sketch' */
+  .fid-sketch {
+    --p-display: "Caveat", "Patrick Hand", cursive !important;
+    --p-body: "Patrick Hand", "Caveat", cursive !important;
+    --p-mono: "Patrick Hand", monospace !important;
+  }
+  .fid-sketch * { letter-spacing: 0.005em !important; }
+  .fid-sketch [data-board], .fid-sketch [data-pattern-bg] { display: var(--sketch-bg, block); }
+  /* hide hi-fi pattern bg in sketch */
+  .fid-sketch [data-pattern-bg] { opacity: 0.18; filter: saturate(0.2) contrast(0.6); }
+  /* paper noise overlay for sketch mode */
+  .fid-sketch::after {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.08'/></svg>");
+    mix-blend-mode: multiply; opacity: .35;
+  }
+  /* Density driver — applied within app boards via --p-d */
+  [data-density="compact"] { --pad: 12px; --gap: 8px; }
+  [data-density="comfy"]   { --pad: 18px; --gap: 14px; }
+  [data-density="spacious"]{ --pad: 26px; --gap: 20px; }
+
+  /* Smooth scroll & avoid noisy scroll bars on artboards */
+  body::-webkit-scrollbar { display: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="praxis/shared.jsx"></script>
+<script type="text/babel" src="praxis/brand.jsx"></script>
+<script type="text/babel" src="praxis/marketing.jsx"></script>
+<script type="text/babel" src="praxis/app.jsx"></script>
+<script type="text/babel" src="praxis/flow.jsx"></script>
+
+<script type="text/babel">
+const { useState } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "fidelity": "hifi",
+  "logoVariant": "origami",
+  "palette": "plasma",
+  "type": "techspace",
+  "density": "comfy",
+  "pattern": "ribbon"
+}/*EDITMODE-END*/;
+
+// Wrap each artboard so it picks up the theme + sketch-mode class + density.
+function ThemedBoard({ children }) {
+  // children is a single Board-returning component invocation; we wrap it
+  // with theme application here.
+  return children;
+}
+
+function PraxisApp() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const theme = usePraxisTheme(t);
+  const cls = t.fidelity === 'sketch' ? 'fid-sketch' : 'fid-hifi';
+  const boardStyle = { ...theme.css, position: 'absolute', inset: 0 };
+
+  // Helper to render any board component with the themed wrapper.
+  const wrap = (Cmp, extra = {}) => (
+    <div className={cls} data-density={t.density} style={boardStyle}>
+      <Cmp theme={theme} t={t} {...extra} />
+    </div>
+  );
+
+  return (
+    <>
+      <DesignCanvas>
+        <DCSection id="brand" title="Brand Identity" subtitle="Praxis Brand Guidelines · v1.0">
+          <DCArtboard id="brand-hero" label="01 · Brand Hero" width={1280} height={760}>{wrap(BrandHero)}</DCArtboard>
+          <DCArtboard id="brand-logo" label="02 · Primary Logo" width={1280} height={760}>{wrap(BrandLogo)}</DCArtboard>
+          <DCArtboard id="brand-construction" label="03 · Construction" width={1280} height={760}>{wrap(BrandConstruction)}</DCArtboard>
+          <DCArtboard id="brand-type" label="04 · Typography" width={1280} height={760}>{wrap(BrandTypography)}</DCArtboard>
+          <DCArtboard id="brand-color" label="05 · Brand Colors" width={1280} height={760}>{wrap(BrandColors)}</DCArtboard>
+          <DCArtboard id="brand-pattern" label="06 · Pattern & Motion" width={1280} height={760}>{wrap(BrandPattern)}</DCArtboard>
+        </DCSection>
+
+        <DCSection id="marketing" title="Marketing Site" subtitle="Three tonal directions">
+          <DCArtboard id="mkt-cinematic" label="A · Cinematic" width={1280} height={800}>{wrap(MarketingCinematic)}</DCArtboard>
+          <DCArtboard id="mkt-technical" label="B · Technical / operator" width={1280} height={800}>{wrap(MarketingTechnical)}</DCArtboard>
+          <DCArtboard id="mkt-editorial" label="C · Editorial / decision-maker" width={1280} height={800}>{wrap(MarketingEditorial)}</DCArtboard>
+        </DCSection>
+
+        <DCSection id="workbench" title="Field Workbench · App Screens" subtitle="Nine surfaces, one operator">
+          <DCArtboard id="overview"  label="01 · Operational Overview" width={1440} height={900}>{wrap(AppOverview)}</DCArtboard>
+          <DCArtboard id="packs"     label="02 · Solution Packs"        width={1440} height={900}>{wrap(AppPacks)}</DCArtboard>
+          <DCArtboard id="fieldlab"  label="03 · FieldLab"              width={1440} height={900}>{wrap(AppFieldLab)}</DCArtboard>
+          <DCArtboard id="ontology"  label="04 · Ontology Graph"        width={1440} height={900}>{wrap(AppOntology)}</DCArtboard>
+          <DCArtboard id="decision"  label="05 · Decision Detail"       width={1440} height={900}>{wrap(AppDecision)}</DCArtboard>
+          <DCArtboard id="discovery" label="06 · Discovery / VOI"       width={1440} height={900}>{wrap(AppDiscovery)}</DCArtboard>
+          <DCArtboard id="valuecase" label="07 · Value Case"            width={1440} height={900}>{wrap(AppValueCase)}</DCArtboard>
+          <DCArtboard id="expansion" label="08 · Expansion Map"         width={1440} height={900}>{wrap(AppExpansion)}</DCArtboard>
+          <DCArtboard id="readout"   label="09 · Executive Readout"     width={1440} height={900}>{wrap(AppReadout)}</DCArtboard>
+        </DCSection>
+
+        <DCSection id="flow" title="Solution Pack Flow · Storyboard" subtitle="From customer signal to executive readout">
+          <DCArtboard id="s1" label="01 · Select"   width={320} height={420}>{wrap(Step1_Select)}</DCArtboard>
+          <DCArtboard id="s2" label="02 · Context"  width={320} height={420}>{wrap(Step2_Context)}</DCArtboard>
+          <DCArtboard id="s3" label="03 · Compile"  width={320} height={420}>{wrap(Step3_Compile)}</DCArtboard>
+          <DCArtboard id="s4" label="04 · FieldLab" width={320} height={420}>{wrap(Step4_FieldLab)}</DCArtboard>
+          <DCArtboard id="s5" label="05 · Stream"   width={320} height={420}>{wrap(Step5_Stream)}</DCArtboard>
+          <DCArtboard id="s6" label="06 · Decide"   width={320} height={420}>{wrap(Step6_Decide)}</DCArtboard>
+          <DCArtboard id="s7" label="07 · Action"   width={320} height={420}>{wrap(Step7_Action)}</DCArtboard>
+          <DCArtboard id="s8" label="08 · Readout"  width={320} height={420}>{wrap(Step8_Readout)}</DCArtboard>
+        </DCSection>
+      </DesignCanvas>
+
+      <TweaksPanel>
+        <TweakSection label="Fidelity" />
+        <TweakRadio
+          label="Mode" value={t.fidelity}
+          options={[{ value: 'sketch', label: 'Sketch' }, { value: 'hifi', label: 'Hi-fi' }]}
+          onChange={(v) => setTweak('fidelity', v)} />
+
+        <TweakSection label="Brand" />
+        <TweakRadio
+          label="Logo variant" value={t.logoVariant}
+          options={[{ value: 'origami', label: 'Origami' }, { value: 'flat', label: 'Flat' }, { value: 'outline', label: 'Outline' }]}
+          onChange={(v) => setTweak('logoVariant', v)} />
+        <TweakSelect
+          label="Type pairing" value={t.type}
+          options={[
+            { value: 'techspace', label: 'Space Grotesk + Geist' },
+            { value: 'editorial', label: 'Instrument Serif + Geist' },
+            { value: 'manrope',   label: 'Manrope · all' },
+            { value: 'monomono',  label: 'Geist Mono · all' },
+          ]}
+          onChange={(v) => setTweak('type', v)} />
+        <TweakSelect
+          label="Palette" value={t.palette}
+          options={[
+            { value: 'plasma',  label: 'Plasma · Violet & Mint' },
+            { value: 'glacier', label: 'Glacier · Teal & Apricot' },
+            { value: 'bone',    label: 'Bone · Editorial light' },
+          ]}
+          onChange={(v) => setTweak('palette', v)} />
+
+        <TweakSection label="Layout" />
+        <TweakRadio
+          label="Density" value={t.density}
+          options={[{ value: 'compact', label: 'Compact' }, { value: 'comfy', label: 'Comfy' }, { value: 'spacious', label: 'Spacious' }]}
+          onChange={(v) => setTweak('density', v)} />
+        <TweakSelect
+          label="Pattern" value={t.pattern}
+          options={[
+            { value: 'ribbon',   label: 'Spectral Ribbons' },
+            { value: 'aperture', label: 'Aperture Curves' },
+            { value: 'grid',     label: 'Light Topography' },
+            { value: 'wave',     label: 'Wave Fields' },
+            { value: 'dots',     label: 'Static Interference' },
+            { value: 'none',     label: 'None' },
+          ]}
+          onChange={(v) => setTweak('pattern', v)} />
+      </TweaksPanel>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<PraxisApp />);
+</script>
+</body>
+</html>

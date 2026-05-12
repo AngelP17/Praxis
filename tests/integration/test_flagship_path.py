@@ -7,7 +7,7 @@ from apps.api_gateway.main import app
 from infrastructure.db.base import Base
 from infrastructure.db.session import clean_database_url
 
-TEST_DATABASE_URL = "sqlite:///./test_aether_sentinel.db"
+TEST_DATABASE_URL = "sqlite:///./test_praxis.db"
 
 engine = create_engine(
     TEST_DATABASE_URL,

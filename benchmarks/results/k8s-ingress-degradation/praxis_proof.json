@@ -1,0 +1,57 @@
+{
+  "action": {
+    "action_log_hash": "sha256:afb2e491776ef7c20e4a47a555cd76ca6d2aed7deb1ff65da7b03b359c850860",
+    "actor": "operator",
+    "mode": "human_approval",
+    "recommended_action": "rollback_ingress_policy",
+    "run_id": "fieldlab_run_k8s-ingress-degradation",
+    "status": "approved"
+  },
+  "customer_context_hash": "sha256:bce381aecdb53e6e7f05ae8cbc2cf2dc29c2480fb63678a37f30526c886dd112",
+  "decision": {
+    "confidence": 0.79,
+    "next_best_questions": [
+      "Which ingress rules changed in the last deployment window?",
+      "What is the current p95 latency vs baseline?"
+    ],
+    "priority_score": 0.88,
+    "requires_human_review": true,
+    "root_cause_hypothesis": "ingress_config_rollback_conflict"
+  },
+  "evidence": {
+    "corroboration_score": 0.74,
+    "evidence_trust": 0.77,
+    "freshness_score": 0.91,
+    "raw_events": 6,
+    "source_coverage": 0.86,
+    "sources": [
+      "gitops",
+      "incident_management",
+      "ingress_controller",
+      "kubernetes",
+      "observability",
+      "praxis"
+    ]
+  },
+  "generated_at": "2026-05-12T00:00:00Z",
+  "ontology": {
+    "actions_available": 6,
+    "links_created": 36,
+    "mapping_confidence": 0.82,
+    "objects_created": 10
+  },
+  "proof_hash": "sha256:ad1393c04e8f034d0f9015da330de0f2f201360bcc57920d389a46f8314bfed0",
+  "proof_id": "proof_praxis_k8s_ingress_degradation_001",
+  "replay": {
+    "deterministic": true,
+    "replay_hash": "sha256:e4c4b0a8bb77ca930a45405652a36d8400981cacb9c1b6cbb8d05ae31cddad8f",
+    "verified_at": "2026-05-12T00:00:00Z"
+  },
+  "run_id": "fieldlab_run_k8s-ingress-degradation",
+  "solution_pack": "k8s-ingress-degradation",
+  "value_case": {
+    "confidence": 0.71,
+    "estimated_annual_value": 94500,
+    "primary_value_driver": "reduced outage duration and SRE triage time"
+  }
+}

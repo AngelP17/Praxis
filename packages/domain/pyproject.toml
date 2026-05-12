@@ -1,7 +1,7 @@
 [project]
-name = "aether-domain"
+name = "praxis-domain"
 version = "0.1.0"
-description = "Domain models and policies for Aether Sentinel"
+description = "Domain models and policies for Praxis"
 requires-python = ">=3.11"
 
 [build-system]

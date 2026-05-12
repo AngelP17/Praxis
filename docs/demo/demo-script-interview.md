@@ -2,9 +2,9 @@
 
 ## The Pitch (60 seconds)
 
-> "Aether Sentinel is an operational intelligence platform, not a dashboard. It treats every incident as a decision lifecycle: Signal -> Decision -> Workflow -> Feedback -> Replay."
+> "Praxis is an operational intelligence platform, not a dashboard. It treats every incident as a decision lifecycle: Signal -> Decision -> Workflow -> Feedback -> Replay."
 
-> "Most systems show you that CPU is high. Aether Sentinel tells you that this CPU spike correlates with a ticket from three days ago, affects a business-critical workflow, and should be routed to the on-call engineer who resolved the last similar incident."
+> "Most systems show you that CPU is high. Praxis tells you that this CPU spike correlates with a ticket from three days ago, affects a business-critical workflow, and should be routed to the on-call engineer who resolved the last similar incident."
 
 > "Every decision is deterministic, explainable, and replayable. Every recommendation can be reviewed, accepted, rejected, or overridden by a human operator. And every incident leaves an immutable audit trail."
 
@@ -13,10 +13,10 @@
 ### Signal Ingestion
 Events arrive from tickets, machine sensors, Kubernetes alerts, and operator notes. They are normalized into a canonical `OperationalEvent` schema and validated.
 
-### Astraea Decision Engine
+### Praxis Decision Engine
 Astraea extracts features (severity, urgency, business impact, SLA risk, recurrence, dependency criticality, actionability, uncertainty penalty) and scores each event. The output includes a priority score, confidence score, root cause hypothesis, recommendation, and a deterministic replay hash.
 
-### Aether Workflow
+### Praxis Workflow
 The workflow layer correlates events into incidents, creates or updates tickets, routes ownership, and captures human feedback.
 
 ### Platform Evidence
@@ -59,4 +59,4 @@ A: Strict package boundaries, separate `pyproject.toml` per package, and shared 
 
 ## Closing
 
-> "Aether Sentinel turns incident management from reactive firefighting into accountable operational intelligence. The goal is not prediction alone. The goal is decision accountability."
+> "Praxis turns incident management from reactive firefighting into accountable operational intelligence. The goal is not prediction alone. The goal is decision accountability."

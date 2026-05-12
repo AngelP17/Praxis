@@ -1,0 +1,25 @@
+id: manufacturing-printer-gpo
+name: Manufacturing Printer Deployment Failure
+industry: manufacturing
+buyer_persona: Director of Operations
+technical_persona: IT Manager
+economic_buyer: CFO
+primary_pain: Shipping and production paperwork delays caused by unreliable printer deployment
+systems:
+  - print_server
+  - active_directory
+  - group_policy
+  - msp_ticketing
+  - erp_shipping_workflow
+signals:
+  - printer_mapping_missing
+  - gpo_permission_issue
+  - point_and_print_missing
+  - local_ip_printer_drift
+business_metrics:
+  - delayed_shipments
+  - downtime_minutes
+  - support_hours
+  - vendor_escalations
+target_outcome: Reduce repeated printer incidents and provide audit-ready ownership workflow
+demo_length_minutes: 7

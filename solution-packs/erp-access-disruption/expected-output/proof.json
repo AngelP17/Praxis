@@ -1,0 +1,56 @@
+{
+  "proof_id": "proof_praxis_erp_access_disruption_001",
+  "run_id": "fieldlab_run_erp-access-disruption",
+  "solution_pack": "erp-access-disruption",
+  "customer_context_hash": "sha256:b4cb06b9fbb9fefbeea30d604b42d297d3595d50deee059b4d65edce7804ebde",
+  "evidence": {
+    "raw_events": 6,
+    "sources": [
+      "helpdesk",
+      "identity_provider",
+      "operator_note",
+      "praxis",
+      "warehouse_management"
+    ],
+    "source_coverage": 0.71,
+    "corroboration_score": 0.74,
+    "freshness_score": 0.91,
+    "evidence_trust": 0.794
+  },
+  "ontology": {
+    "objects_created": 8,
+    "links_created": 36,
+    "actions_available": 4,
+    "mapping_confidence": 0.77
+  },
+  "decision": {
+    "root_cause_hypothesis": "sso_group_role_mismatch_during_provisioning",
+    "priority_score": 0.81,
+    "confidence": 0.74,
+    "requires_human_review": true,
+    "next_best_questions": [
+      "Which ERP modules are blocked per user group?",
+      "What is the fallback access process during SSO outages?"
+    ]
+  },
+  "action": {
+    "recommended_action": "restore_erp_role_mapping",
+    "mode": "human_approval",
+    "actor": "operator",
+    "status": "approved",
+    "run_id": "fieldlab_run_erp-access-disruption",
+    "action_log_hash": "sha256:984df124e2a3ecf104f22ca2ad2dfa345522f00538759295a9857b7e2fd41680"
+  },
+  "value_case": {
+    "estimated_annual_value": 67200,
+    "confidence": 0.66,
+    "primary_value_driver": "reduced access downtime and escalation churn"
+  },
+  "replay": {
+    "replay_hash": "sha256:3bfc611ff1dccd75199db1df2f84809dfd7d452b97665865e9354a0c396f3fef",
+    "deterministic": true,
+    "verified_at": "2026-05-12T00:00:00Z"
+  },
+  "generated_at": "2026-05-12T00:00:00Z",
+  "proof_hash": "sha256:d213589d7cfd851d9c02cdac73646b0e0cec77f6df3020adaca096cecfcae4b1"
+}

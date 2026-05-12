@@ -1,0 +1,8 @@
+variables:
+  incidents_per_quarter: 5
+  incident_minutes: 41
+  failed_request_cost: 1.25
+  failed_requests: 12400
+formulas:
+  annual_value:
+    expression: 4 * incidents_per_quarter * failed_requests * failed_request_cost

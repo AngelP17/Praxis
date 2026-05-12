@@ -1,0 +1,57 @@
+objects:
+  - type: Site
+    key: site-georgia
+    display_name: Georgia Plant
+  - type: Asset
+    key: asset-weifps01
+    display_name: WEIFPS01 Printer
+  - type: BusinessProcess
+    key: process-shipping-documentation
+    display_name: Shipping Documentation
+  - type: Vendor
+    key: vendor-printmsp
+    display_name: PrintMSP
+  - type: Control
+    key: control-group-policy
+    display_name: Group Policy Printer Deployment
+  - type: Stakeholder
+    key: stakeholder-sarah-chen
+    display_name: Sarah Chen (Director of Operations)
+  - type: Stakeholder
+    key: stakeholder-james-rodriguez
+    display_name: James Rodriguez (IT Manager)
+
+links:
+  - source: site-georgia
+    target: asset-weifps01
+    type: owns
+  - source: asset-weifps01
+    target: process-shipping-documentation
+    type: supports
+  - source: vendor-printmsp
+    target: asset-weifps01
+    type: manages
+  - source: control-group-policy
+    target: asset-weifps01
+    type: governs
+  - source: stakeholder-sarah-chen
+    target: process-shipping-documentation
+    type: accountable_for
+
+actions:
+  - type: acknowledge_incident
+    mode: HUMAN_APPROVAL
+  - type: assign_owner
+    mode: ASSISTED_ACTION
+  - type: validate_point_and_print
+    mode: ASSISTED_ACTION
+  - type: audit_gpo_permissions
+    mode: READ_ONLY
+  - type: monitor_ip_drift
+    mode: ASSISTED_ACTION
+  - type: request_vendor_support
+    mode: ASSISTED_ACTION
+  - type: approve_remediation
+    mode: HUMAN_APPROVAL
+  - type: close_with_evidence
+    mode: WRITEBACK

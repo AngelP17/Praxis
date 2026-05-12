@@ -1,17 +1,17 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: aether-postgres
+    container_name: praxis-postgres
     environment:
-      POSTGRES_USER: aether
-      POSTGRES_PASSWORD: aether
-      POSTGRES_DB: aether_sentinel
+      POSTGRES_USER: praxis
+      POSTGRES_PASSWORD: praxis
+      POSTGRES_DB: praxis
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U aether -d aether_sentinel"]
+      test: ["CMD-SHELL", "pg_isready -U praxis -d praxis"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -20,11 +20,11 @@ services:
     build:
       context: .
       dockerfile: apps/api_gateway/Dockerfile
-    container_name: aether-api-gateway
+    container_name: praxis-api-gateway
     ports:
       - "8000:8000"
     environment:
-      DATABASE_URL: postgresql://aether:aether@postgres:5432/aether_sentinel
+      DATABASE_URL: postgresql://praxis:praxis@postgres:5432/praxis
       SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
       ENV: production
       DEBUG: "false"
@@ -44,11 +44,11 @@ services:
     build:
       context: .
       dockerfile: services/decision-service/Dockerfile
-    container_name: aether-decision-service
+    container_name: praxis-decision-service
     ports:
       - "8001:8001"
     environment:
-      DATABASE_URL: postgresql://aether:aether@postgres:5432/aether_sentinel
+      DATABASE_URL: postgresql://praxis:praxis@postgres:5432/praxis
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,11 +62,11 @@ services:
     build:
       context: .
       dockerfile: services/platform-service/Dockerfile
-    container_name: aether-platform-service
+    container_name: praxis-platform-service
     ports:
       - "8080:8080"
     environment:
-      DATABASE_URL: postgresql://aether:aether@postgres:5432/aether_sentinel
+      DATABASE_URL: postgresql://praxis:praxis@postgres:5432/praxis
     depends_on:
       postgres:
         condition: service_healthy
@@ -80,7 +80,7 @@ services:
     build:
       context: ./apps/web
       dockerfile: Dockerfile
-    container_name: aether-web
+    container_name: praxis-web
     ports:
       - "3000:3000"
     environment:

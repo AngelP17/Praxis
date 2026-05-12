@@ -1,0 +1,15 @@
+{
+  "incident_id": "GA-PRINT-GPO-042",
+  "title": "Recurring Printer Deployment Failure — WEIFPS01",
+  "status": "identified",
+  "severity": "high",
+  "site": "Georgia",
+  "asset": "WEIFPS01",
+  "affected_business_process": "Shipping Documentation",
+  "root_cause_hypothesis": "Printer deployment policy drift — Point and Print restriction, GPO permission inheritance, and local IP printer drift not monitored",
+  "priority_score": 0.82,
+  "evidence_trust": 0.82,
+  "requires_human_review": true,
+  "detected_events": 12,
+  "recurrence_count": 3
+}

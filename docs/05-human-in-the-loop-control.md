@@ -2,7 +2,7 @@
 
 ## Control Philosophy
 
-Aether Sentinel recommends action, but the operator approves, rejects, or overrides.
+Praxis recommends action, but the operator approves, rejects, or overrides.
 
 This is not a limitation. It is a design choice.
 

@@ -11,7 +11,7 @@ from infrastructure.db.session import get_db_context, init_db
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Populate Aether intelligence tables from the existing ticketing data."
+        description="Populate Praxis intelligence tables from the existing ticketing data."
     )
     parser.add_argument(
         "--limit",
@@ -48,7 +48,7 @@ def main() -> None:
             text("SELECT COUNT(*) AS total FROM decision_records")
         ).mappings().first()
 
-        print(f"Aether seed completed at {datetime.now(UTC).isoformat()}")
+        print(f"Praxis seed completed at {datetime.now(UTC).isoformat()}")
         print(f"Tickets processed: {processed}")
         print(f"Decision records available: {decisions['total'] if decisions else 0}")
         print(f"Recommendations available: {recommendations['total'] if recommendations else 0}")

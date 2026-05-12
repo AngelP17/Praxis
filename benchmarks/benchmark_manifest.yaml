@@ -1,0 +1,13 @@
+packs:
+  - manufacturing-printer-gpo
+  - erp-access-disruption
+  - k8s-ingress-degradation
+metrics:
+  - ontology_mapping_confidence
+  - decision_replay_match
+  - evidence_trust_score
+  - next_best_question_gain
+  - value_case_confidence
+  - time_to_executive_readout
+  - pack_validation_status
+  - proof_verification_status

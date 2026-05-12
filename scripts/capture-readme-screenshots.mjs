@@ -18,7 +18,7 @@ const shots = [
   {
     name: "command-center.png",
     url: "/command-center",
-    waitFor: "text=Aether OpsCenter",
+    waitFor: "text=Praxis OpsCenter",
     postWaitMs: 1500,
   },
   {

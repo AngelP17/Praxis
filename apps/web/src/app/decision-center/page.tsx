@@ -46,7 +46,7 @@ function buildDemoDecision(ticketId: string): DecisionPayload {
         id: 1,
         rank: 1,
         action_label: ticket.resolution_notes || "Route incident to the responsible owner",
-        rationale: `Astraea correlated ${ticket.requester || "live signals"} with incident history and current operating risk.`,
+        rationale: `Praxis correlated ${ticket.requester || "live signals"} with incident history and current operating risk.`,
         risk_level: ticket.priority_raw || "High",
         confidence: ticket.confidence_score ?? 0.82,
         status: "ready_for_operator",
@@ -185,11 +185,11 @@ export default function DecisionCenterPage() {
       <SystemStatusRail activeLabel="Decisions" />
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
-          <section className="sentinel-v2-panel-enhanced p-8 sm:p-10 py-24 sm:py-32">
+          <section className="praxis-v2-panel-enhanced p-8 sm:p-10 py-24 sm:py-32">
             <div className="max-w-5xl flex flex-wrap items-center justify-between gap-6">
               <div className="flex-1">
-                <div className="sentinel-v2-eyebrow-enhanced">Decision Center</div>
-                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>Astraea Decisioning and Human Overrides</h1>
+                <div className="praxis-v2-eyebrow-enhanced">Decision Center</div>
+                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>Praxis Decisioning and Human Overrides</h1>
                 <p className="mt-5 text-base text-zinc-400 leading-relaxed">Evaluate, approve, reject, and route recommendations directly against live decision records.</p>
               </div>
               <button onClick={() => void loadTickets()} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-zinc-600/50 bg-zinc-800/60 px-5 py-2.5 text-sm text-zinc-200 transition-transform duration-500 hover:scale-105 hover:border-zinc-500">
@@ -203,8 +203,8 @@ export default function DecisionCenterPage() {
           <section className="py-24 sm:py-32">
             <div className="grid grid-cols-12 gap-5 grid-flow-dense">
               <div className="col-span-12 xl:col-span-4">
-                <div className="sentinel-v2-panel-enhanced h-full p-6">
-                  <div className="sentinel-v2-eyebrow-enhanced">Signal Queue</div>
+                <div className="praxis-v2-panel-enhanced h-full p-6">
+                  <div className="praxis-v2-eyebrow-enhanced">Signal Queue</div>
                   <div className="mt-6 space-y-3">
                     {tickets.slice(0, 8).map((ticket) =>
                       selectedTicket === ticket.ticket_id ? (
@@ -238,10 +238,10 @@ export default function DecisionCenterPage() {
               </div>
 
               <div className="col-span-12 xl:col-span-8">
-                <div className="sentinel-v2-panel-enhanced h-full p-6 sm:p-8">
+                <div className="praxis-v2-panel-enhanced h-full p-6 sm:p-8">
                   <div className="flex flex-wrap items-center justify-between gap-5">
                     <div className="flex-1">
-                      <div className="sentinel-v2-eyebrow-enhanced">Selected Decision</div>
+                      <div className="praxis-v2-eyebrow-enhanced">Selected Decision</div>
                       <h2 className="mt-3 text-xl sm:text-2xl font-semibold text-zinc-100">{selectedTicketRecord?.title || "No ticket selected"}</h2>
                       <p className="mt-2 text-sm text-zinc-500">{selectedTicketRecord?.ticket_id} · {selectedTicketRecord?.requester || "machine telemetry + operator ticket"}</p>
                     </div>
@@ -315,7 +315,7 @@ export default function DecisionCenterPage() {
 function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
-      <div className="sentinel-v2-eyebrow-enhanced text-[11px]">{label}</div>
+      <div className="praxis-v2-eyebrow-enhanced text-[11px]">{label}</div>
       <div className="mono-data mt-2 text-base font-medium text-zinc-100">{value}</div>
     </div>
   );

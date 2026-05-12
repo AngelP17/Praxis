@@ -1,8 +1,8 @@
-# Aether Sentinel Demo Script
+# Praxis Demo Script
 
 ## 30-Second Pitch
 
-I built Aether Sentinel, an operational intelligence platform for manufacturing and infrastructure incidents. It combines three layers: ingestion of messy operational signals, a deterministic decision engine called Astraea that scores and explains incidents, and an Aether workflow layer that opens tickets, routes work, captures human feedback, and preserves replayable audit history.
+I built Praxis, an operational intelligence platform for manufacturing and infrastructure incidents. It combines three layers: ingestion of messy operational signals, a deterministic decision engine called Astraea that scores and explains incidents, and an Praxis workflow layer that opens tickets, routes work, captures human feedback, and preserves replayable audit history.
 
 ## Quick Demo
 

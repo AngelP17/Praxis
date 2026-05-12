@@ -9,7 +9,7 @@ Infrastructure incidents (Kubernetes pod failures, node outages, network partiti
 SLOs (Service Level Objectives) translate technical symptoms into business impact: availability, latency, error rate, throughput.
 
 ## Decision
-Aether Sentinel will integrate SLO evidence from the k8s-resilience-pilot platform service. Every infrastructure incident is enriched with:
+Praxis will integrate SLO evidence from the k8s-resilience-pilot platform service. Every infrastructure incident is enriched with:
 - Availability snapshot
 - P95/P99 latency
 - Error rate

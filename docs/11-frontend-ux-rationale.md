@@ -2,7 +2,7 @@
 
 ## Design Philosophy
 
-The Aether Sentinel frontend is a **control room**, not a dashboard.
+The Praxis frontend is a **control room**, not a dashboard.
 
 A dashboard displays information for consumption. A control room enables action, accountability, and auditability.
 
@@ -157,7 +157,7 @@ stateDiagram-v2
 
 Traditional dashboard UIs optimize for information density. Control room UIs optimize for decision velocity.
 
-Aether Sentinel optimizes for:
+Praxis optimizes for:
 1. **Speed to decision**: Priority-ranked queue, one-click actions
 2. **Decision confidence**: Explanations, scores, evidence
 3. **Decision accountability**: Feedback, replay, audit

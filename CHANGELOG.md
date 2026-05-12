@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to Aether Sentinel will be documented in this file.
+All notable changes to Praxis will be documented in this file.
 
 ## [1.1.0-surface-expansion] - 2026-05-01
 

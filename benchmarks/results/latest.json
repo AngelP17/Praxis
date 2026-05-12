@@ -1,0 +1,44 @@
+{
+  "events_processed": 24,
+  "packs_tested": 3,
+  "proofs_valid": 3,
+  "replay_determinism": true,
+  "results": [
+    {
+      "decision_replay_match": true,
+      "events_processed": 12,
+      "evidence_trust_score": 0.826,
+      "next_best_question_gain": 0.18,
+      "ontology_mapping_confidence": 0.79,
+      "pack_validation_status": true,
+      "proof_verification_status": true,
+      "solution_pack": "manufacturing-printer-gpo",
+      "time_to_executive_readout": "simulated",
+      "value_case_confidence": 0.68
+    },
+    {
+      "decision_replay_match": true,
+      "events_processed": 6,
+      "evidence_trust_score": 0.794,
+      "next_best_question_gain": 0.18,
+      "ontology_mapping_confidence": 0.77,
+      "pack_validation_status": true,
+      "proof_verification_status": true,
+      "solution_pack": "erp-access-disruption",
+      "time_to_executive_readout": "simulated",
+      "value_case_confidence": 0.66
+    },
+    {
+      "decision_replay_match": true,
+      "events_processed": 6,
+      "evidence_trust_score": 0.77,
+      "next_best_question_gain": 0.18,
+      "ontology_mapping_confidence": 0.82,
+      "pack_validation_status": true,
+      "proof_verification_status": true,
+      "solution_pack": "k8s-ingress-degradation",
+      "time_to_executive_readout": "simulated",
+      "value_case_confidence": 0.71
+    }
+  ]
+}

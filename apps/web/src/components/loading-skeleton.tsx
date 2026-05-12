@@ -3,7 +3,7 @@
 export function LoadingSkeleton() {
   return (
     <div className="space-y-4">
-      <div className="sentinel-v2-panel-strong rounded-[1.4rem] p-6">
+      <div className="praxis-v2-panel-strong rounded-[1.4rem] p-6">
         <div className="flex items-center justify-between">
           <div className="space-y-2">
             <div className="h-3 w-40 animate-pulse rounded-md bg-zinc-800/90" />
@@ -17,7 +17,7 @@ export function LoadingSkeleton() {
 
       <div className="grid grid-flow-dense gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="sentinel-v2-panel rounded-[1.15rem] p-5">
+          <div key={i} className="praxis-v2-panel rounded-[1.15rem] p-5">
             <div className="flex items-center justify-between">
               <div className="h-2.5 w-20 animate-pulse rounded-md bg-zinc-800/90" />
               <div className="h-10 w-10 animate-pulse rounded-2xl border border-zinc-700/70 bg-zinc-900/80" />
@@ -30,7 +30,7 @@ export function LoadingSkeleton() {
 
       <div className="grid grid-flow-dense gap-5 xl:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="sentinel-v2-panel rounded-[1.2rem] p-4">
+          <div key={i} className="praxis-v2-panel rounded-[1.2rem] p-4">
             <div className="flex items-center gap-3">
               <div className="h-2.5 w-2.5 animate-pulse rounded-full bg-zinc-800" />
               <div className="h-4 w-24 animate-pulse rounded-md bg-zinc-800/90" />

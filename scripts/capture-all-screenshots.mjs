@@ -85,7 +85,7 @@ async function loginAsDemoOperator(page) {
   try {
     await page.getByText("Signal Queue", { exact: false }).first().waitFor({ timeout: 20000 });
   } catch {
-    await page.getByText("Aether", { exact: false }).first().waitFor({ timeout: 20000 });
+    await page.getByText("Praxis", { exact: false }).first().waitFor({ timeout: 20000 });
   }
 }
 

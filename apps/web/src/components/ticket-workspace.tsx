@@ -483,7 +483,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                 {ticketId ? detail?.ticket.title || ticketId : "Create a new operational ticket"}
               </h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                This is the transactional workspace for the new Aether design: create, edit, attach files, discuss work,
+                This is the transactional workspace for the new Praxis design: create, edit, attach files, discuss work,
                 and move the ticket through its actual lifecycle.
               </p>
               <div className="mt-4 flex flex-wrap gap-2 text-xs text-zinc-400">

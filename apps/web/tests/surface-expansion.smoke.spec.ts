@@ -19,7 +19,7 @@ test("expanded platform surfaces render core content", async ({ page }) => {
   await expect(page.getByText("Observability and SRE Control Plane")).toBeVisible({ timeout: 30_000 });
 
   await page.goto("/decision-center", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Astraea Decisioning and Human Overrides")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Praxis Decisioning and Human Overrides")).toBeVisible({ timeout: 30_000 });
 
   await page.goto("/assets", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Infrastructure Inventory and Criticality Map")).toBeVisible({ timeout: 30_000 });

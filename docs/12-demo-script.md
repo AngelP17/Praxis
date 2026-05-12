@@ -118,7 +118,7 @@ Verify:
 
 ### Opening
 
-"Aether Sentinel is an operational intelligence platform. It does not just display incidents. It makes decisions about incidents, explains those decisions, captures human feedback, and preserves everything for replay and audit."
+"Praxis is an operational intelligence platform. It does not just display incidents. It makes decisions about incidents, explains those decisions, captures human feedback, and preserves everything for replay and audit."
 
 ### Key Points
 

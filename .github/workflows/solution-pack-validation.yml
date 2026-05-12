@@ -1,0 +1,24 @@
+name: Solution Pack Validation
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate-packs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate all solution packs
+        run: |
+          for pack_dir in solution-packs/*/; do
+            if [ -d "$pack_dir" ]; then
+              pack_name=$(basename "$pack_dir")
+              echo "Validating: $pack_name"
+              python scripts/validate_solution_pack.py "$pack_dir"
+            fi
+          done

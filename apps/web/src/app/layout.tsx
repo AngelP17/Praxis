@@ -10,8 +10,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Aether Sentinel",
-  description: "Operational Intelligence and Decision Platform",
+  title: "Praxis",
+  description: "Forward-deployed operational intelligence for messy enterprise workflows",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

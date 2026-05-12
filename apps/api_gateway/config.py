@@ -13,7 +13,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    DATABASE_URL: str = "sqlite:///./aether-sentinel.db"
+    DATABASE_URL: str = "sqlite:///./praxis.db"
     SECRET_KEY: str = "change-me-in-production"
     ENV: str = "development"
     DEBUG: bool = True

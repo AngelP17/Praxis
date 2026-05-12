@@ -44,8 +44,8 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
   };
 
   return (
-    <aside className="ops-rail ops-shell z-20 hidden border-r border-zinc-800/50 px-2 py-4 lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:flex-col">
-      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl border border-amber-400/20 bg-amber-500/10 text-amber-300">
+    <aside className="ops-rail sv3 z-20 hidden border-r border-[var(--sv3-line)] bg-[rgba(14,14,15,0.88)] px-2 py-4 backdrop-blur lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:flex-col">
+      <div className="mx-auto flex h-11 w-11 items-center justify-center border border-[var(--sv3-amber-line)] bg-[var(--sv3-amber-soft)] text-[var(--sv3-amber)]">
         <Lightning weight="fill" className="h-5 w-5" />
       </div>
 
@@ -57,10 +57,10 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
             <Link
               key={item.label}
               href={item.href}
-              className={`group flex items-center gap-3 rounded-xl border px-4 py-3 text-sm transition hover:scale-105 transition-transform duration-500 ${
+              className={`group flex items-center gap-3 border px-4 py-3 text-sm transition hover:scale-105 transition-transform duration-500 ${
                 isActive
-                  ? "border-amber-500/20 bg-amber-500/10 text-amber-200"
-                  : "border-transparent text-zinc-500 hover:border-zinc-700/60 hover:bg-zinc-900/60 hover:text-zinc-100"
+                  ? "border-[var(--sv3-amber-line)] bg-[var(--sv3-amber-soft)] text-[var(--sv3-amber)]"
+                  : "border-transparent text-[var(--sv3-muted)] hover:border-[var(--sv3-line-strong)] hover:bg-white/[0.03] hover:text-[var(--sv3-fg)]"
               }`}
             >
               <Icon className="h-4 w-4 shrink-0" weight={isActive ? "fill" : "regular"} />
@@ -74,12 +74,12 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
         <button
           type="button"
           onClick={handleLogout}
-          className="group flex w-full items-center gap-3 rounded-xl border border-transparent px-4 py-3 text-sm text-zinc-500 transition hover:border-rose-400/20 hover:bg-rose-500/10 hover:text-rose-200 hover:scale-105 transition-transform duration-500"
+          className="group flex w-full items-center gap-3 border border-transparent px-4 py-3 text-sm text-[var(--sv3-muted)] transition hover:border-rose-400/20 hover:bg-rose-500/10 hover:text-rose-200 hover:scale-105 transition-transform duration-500"
         >
           <SignOut className="h-4 w-4 shrink-0" />
           <span className="ops-rail-label font-medium">Logout</span>
         </button>
-        <div className="mx-auto mt-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-amber-400 to-orange-600 text-xs font-bold text-black">
+        <div className="mx-auto mt-4 flex h-10 w-10 items-center justify-center border border-[var(--sv3-amber-line)] bg-[var(--sv3-amber)] text-xs font-bold text-[#0b0b0c]">
           AP
         </div>
       </div>

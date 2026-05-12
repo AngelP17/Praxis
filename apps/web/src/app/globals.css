@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "../styles/praxis-workbench.css";
 
 @theme {
   --font-sans: "Geist", system-ui, -apple-system, sans-serif;
@@ -40,6 +41,42 @@
 
 :root {
   color-scheme: dark;
+}
+
+.praxis-theme {
+  --praxis-bg: #0a0a14;
+  --praxis-panel: #13121f;
+  --praxis-panel-alt: #1c1a2e;
+  --praxis-line: #2a263f;
+  --praxis-bone: #f1eddf;
+  --praxis-muted: #86819f;
+  --praxis-faint: #48455a;
+  --praxis-violet: #715bff;
+  --praxis-mint: #3effa8;
+  --praxis-crit: #ef4444;
+  --font-display: var(--font-outfit), "Geist", system-ui, sans-serif;
+  background:
+    radial-gradient(circle at 78% 12%, rgba(113, 91, 255, 0.18), transparent 28%),
+    radial-gradient(circle at 12% 70%, rgba(62, 255, 168, 0.08), transparent 26%),
+    var(--praxis-bg);
+}
+
+.praxis-theme::selection {
+  background: rgba(62, 255, 168, 0.28);
+  color: var(--praxis-bone);
+}
+
+.praxis-marquee {
+  animation: praxis-marquee 34s linear infinite;
+}
+
+@keyframes praxis-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 * {
@@ -117,8 +154,8 @@ body {
   backdrop-filter: blur(14px);
 }
 
-/* Sentinel V2 */
-.sentinel-v2-root {
+/* Praxis Legacy Workbench */
+.praxis-v2-root {
   position: relative;
   background:
     radial-gradient(58% 46% at 76% 20%, rgba(245, 158, 11, 0.12), transparent 72%),
@@ -126,7 +163,7 @@ body {
     linear-gradient(180deg, #070809 0%, #0b0d10 56%, #08090b 100%);
 }
 
-.sentinel-v2-grid {
+.praxis-v2-grid {
   pointer-events: none;
   position: absolute;
   inset: 0;
@@ -137,7 +174,7 @@ body {
   mask-image: radial-gradient(circle at center, black 20%, transparent 100%);
 }
 
-.sentinel-v2-noise {
+.praxis-v2-noise {
   pointer-events: none;
   position: absolute;
   inset: 0;
@@ -151,7 +188,7 @@ body {
   opacity: 0.4;
 }
 
-.sentinel-v2-amber-field {
+.praxis-v2-amber-field {
   pointer-events: none;
   position: absolute;
   inset: 0;
@@ -161,18 +198,18 @@ body {
   opacity: 0.58;
 }
 
-.sentinel-v2-topline {
+.praxis-v2-topline {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.02),
     0 18px 42px rgba(0, 0, 0, 0.32);
   backdrop-filter: blur(14px);
 }
 
-.sentinel-v2-ops-path {
+.praxis-v2-ops-path {
   position: relative;
 }
 
-.sentinel-v2-ops-path::before {
+.praxis-v2-ops-path::before {
   content: "";
   pointer-events: none;
   position: absolute;
@@ -185,7 +222,7 @@ body {
   opacity: 0.45;
 }
 
-.sentinel-v2-panel {
+.praxis-v2-panel {
   border-radius: 1.15rem;
   border: 1px solid rgba(82, 82, 91, 0.42);
   background:
@@ -197,7 +234,7 @@ body {
   backdrop-filter: blur(18px);
 }
 
-.sentinel-v2-panel-strong {
+.praxis-v2-panel-strong {
   border-radius: 1.3rem;
   border: 1px solid rgba(113, 113, 122, 0.46);
   background:
@@ -209,7 +246,7 @@ body {
   backdrop-filter: blur(20px);
 }
 
-.sentinel-v2-panel-enhanced {
+.praxis-v2-panel-enhanced {
   border-radius: 1.4rem;
   border: 1px solid rgba(130, 130, 140, 0.54);
   background:
@@ -224,7 +261,7 @@ body {
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.sentinel-v2-panel-enhanced:hover {
+.praxis-v2-panel-enhanced:hover {
   border-color: rgba(161, 161, 170, 0.64);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
@@ -233,7 +270,7 @@ body {
     0 0 0 1px rgba(245, 158, 11, 0.1);
 }
 
-.sentinel-v2-eyebrow {
+.praxis-v2-eyebrow {
   font-family: var(--font-mono);
   font-size: 0.62rem;
   letter-spacing: 0.19em;
@@ -241,7 +278,7 @@ body {
   color: #a1a1aa;
 }
 
-.sentinel-v2-eyebrow-enhanced {
+.praxis-v2-eyebrow-enhanced {
   font-family: var(--font-mono);
   font-size: 0.7rem;
   letter-spacing: 0.22em;
@@ -250,7 +287,7 @@ body {
   font-weight: 600;
 }
 
-.sentinel-v2-shell-preview {
+.praxis-v2-shell-preview {
   position: relative;
   border-radius: 1.45rem;
   border: 1px solid rgba(113, 113, 122, 0.48);
@@ -263,12 +300,12 @@ body {
     0 35px 95px rgba(0, 0, 0, 0.5);
 }
 
-.sentinel-v2-shell-preview-floating {
+.praxis-v2-shell-preview-floating {
   transform: perspective(1400px) rotateY(-4deg) rotateX(2deg);
   transform-origin: center;
 }
 
-.sentinel-v2-shell-preview-glow {
+.praxis-v2-shell-preview-glow {
   pointer-events: none;
   position: absolute;
   inset: 0;
@@ -278,7 +315,7 @@ body {
     radial-gradient(36% 34% at 12% 86%, rgba(245, 158, 11, 0.09), transparent 70%);
 }
 
-.sentinel-v2-shell-preview-rail {
+.praxis-v2-shell-preview-rail {
   pointer-events: none;
   position: absolute;
   inset: 12% 12px 12px 12px;
@@ -394,7 +431,7 @@ body {
 }
 
 @media (max-width: 1023px) {
-  .sentinel-v2-shell-preview-floating {
+  .praxis-v2-shell-preview-floating {
     transform: none;
   }
 

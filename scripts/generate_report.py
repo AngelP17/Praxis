@@ -9,8 +9,8 @@ from infrastructure.db.session import get_db_context, init_db
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Generate an Aether Excel report")
-    parser.add_argument("--output", default="aether_report.xlsx")
+    parser = argparse.ArgumentParser(description="Generate an Praxis Excel report")
+    parser.add_argument("--output", default="praxis_report.xlsx")
     args = parser.parse_args()
 
     init_db()

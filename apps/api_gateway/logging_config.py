@@ -6,7 +6,7 @@ from apps.api_gateway.config import settings
 
 
 def configure_logging():
-    """Configure structured logging for Aether API."""
+    """Configure structured logging for Praxis API."""
     shared_processors = [
         structlog.contextvars.merge_contextvars,
         structlog.processors.add_log_level,

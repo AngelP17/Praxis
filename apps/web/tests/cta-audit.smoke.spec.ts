@@ -16,7 +16,7 @@ test.beforeEach(async ({ page }) => {
 
 test("all shipped routes render without dead error walls", async ({ page }) => {
   const routes = [
-    { path: "/", expected: "Aether Sentinel" },
+    { path: "/", expected: "Praxis" },
     { path: "/dashboard", expected: "Dashboard" },
     { path: "/command-center", expected: "Signal Queue" },
     { path: "/incidents", expected: "Incidents" },
@@ -29,7 +29,7 @@ test("all shipped routes render without dead error walls", async ({ page }) => {
     { path: "/audit", expected: "Compliance and Forensic Event Ledger" },
     { path: "/board", expected: "Board" },
     { path: "/admin", expected: "Admin" },
-    { path: "/decision-center", expected: "Astraea Decisioning" },
+    { path: "/decision-center", expected: "Praxis Decisioning" },
   ];
 
   for (const route of routes) {

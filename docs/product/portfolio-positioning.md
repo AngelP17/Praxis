@@ -2,7 +2,7 @@
 
 ## Product Elevator Pitch
 
-> Aether is an operational incident intelligence platform that transforms raw service tickets into ranked, explainable, and auditable actions through event-sourced case history, business-impact-aware prioritization, similar-case retrieval, incident clustering, and operator feedback loops.
+> Praxis is an operational incident intelligence platform that transforms raw service tickets into ranked, explainable, and auditable actions through event-sourced case history, business-impact-aware prioritization, similar-case retrieval, incident clustering, and operator feedback loops.
 
 ## Problem Statement
 
@@ -10,7 +10,7 @@ IT operations teams are drowning in ticket noise. Dashboards show what happened 
 
 ## Solution
 
-Aether provides:
+Praxis provides:
 - **Ranked decisions, not raw queues** — 7-factor priority scoring with explainable weights
 - **Incident intelligence** — automatic clustering of related tickets with common-cause detection
 - **Operational memory** — similar-case retrieval with resolution effectiveness tracking
@@ -19,7 +19,7 @@ Aether provides:
 
 ## Competitive Differentiation
 
-| Capability | Generic Ticketing | Jira Service Management | Aether |
+| Capability | Generic Ticketing | Jira Service Management | Praxis |
 |---|---|---|---|
 | Priority scoring | Raw priority field | AI-assisted (opaque) | 7-factor weighted (explainable) |
 | Incident grouping | Manual | Rule-based | Automatic clustering |
@@ -36,6 +36,6 @@ Aether provides:
 
 ## Value Proposition
 
-**Before Aether**: 400 open tickets, no clear ranking, same incidents reoccurring, no accountability for recommendations.
+**Before Praxis**: 400 open tickets, no clear ranking, same incidents reoccurring, no accountability for recommendations.
 
-**After Aether**: Tickets ranked by operational impact, incidents automatically grouped, similar-case resolution path suggested, every recommendation logged and tracked.
+**After Praxis**: Tickets ranked by operational impact, incidents automatically grouped, similar-case resolution path suggested, every recommendation logged and tracked.

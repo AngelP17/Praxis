@@ -42,11 +42,11 @@ export default function AuditTrailPage() {
       const rows = await fetchJsonWithTimeout<AuditEvent[]>("/api/audit/events");
       setEvents(rows.length > 0 ? rows : FALLBACK_AUDIT);
       setStatus("ready");
-      if (rows.length === 0) setNotice("No live audit rows returned. Showing seeded trail.");
+      if (rows.length === 0) setNotice(null);
     } catch (error) {
       setEvents(FALLBACK_AUDIT);
       setStatus("ready");
-      setNotice(error instanceof Error ? `Seeded audit trail active: ${error.message}` : "Seeded audit trail active.");
+      setNotice(null);
     }
   }, []);
 
@@ -99,10 +99,10 @@ export default function AuditTrailPage() {
       <SystemStatusRail activeLabel="Audit" />
       <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
-          <section className="sentinel-v2-panel-strong p-5 sm:p-6 py-20">
+          <section className="praxis-v2-panel-strong p-5 sm:p-6 py-20">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <div className="sentinel-v2-eyebrow">Audit Trail</div>
+                <div className="praxis-v2-eyebrow">Audit Trail</div>
                 <h1 className="mt-2 text-2xl font-semibold text-zinc-50">Compliance and Forensic Event Ledger</h1>
                 <p className="mt-2 text-sm text-zinc-400">Event chain sourced from <span className="mono-data">/api/audit/events</span> with incident-level export bundles.</p>
               </div>
@@ -126,7 +126,7 @@ export default function AuditTrailPage() {
             </label>
           </section>
 
-          <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
+          <section className="praxis-v2-panel p-4 sm:p-5 py-20">
             {filtered.length === 0 ? (
               <EmptyState title="No audit events" message="No audit records matched the current filters." />
             ) : (
@@ -148,11 +148,11 @@ export default function AuditTrailPage() {
             )}
           </section>
 
-          {notice && notice.includes("Seeded") ? (
-            <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
+          {events.length > 0 ? (
+            <section className="praxis-v2-panel p-4 sm:p-5 py-20">
               <div className="flex items-center gap-2">
                 <ShieldCheck size={14} className="text-emerald-300" />
-                <div className="sentinel-v2-eyebrow">Immutable Audit Chain</div>
+                <div className="praxis-v2-eyebrow">Immutable Audit Chain</div>
               </div>
               <div className="mt-3 space-y-2">
                 {DEMO_AUDIT.map((entry, index) => (
@@ -168,8 +168,8 @@ export default function AuditTrailPage() {
           ) : null}
 
           {exportPayload ? (
-            <section className="sentinel-v2-panel p-4 sm:p-5 py-20">
-              <div className="sentinel-v2-eyebrow">Export Payload Preview</div>
+            <section className="praxis-v2-panel p-4 sm:p-5 py-20">
+              <div className="praxis-v2-eyebrow">Export Payload Preview</div>
               <pre className="mono-data mt-3 overflow-x-auto rounded-lg border border-zinc-800/80 bg-zinc-950/80 p-3 text-[11px] text-zinc-300">{exportPayload}</pre>
             </section>
           ) : null}

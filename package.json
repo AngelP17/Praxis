@@ -1,5 +1,5 @@
 {
-  "name": "aether-sentinel",
+  "name": "praxis",
   "private": true,
   "packageManager": "pnpm@10.29.3",
   "scripts": {
@@ -9,11 +9,11 @@
     "lint:gpt-taste:ci": "turbo run lint:gpt-taste:ci",
     "test:smoke": "turbo run test:smoke",
     "typecheck": "turbo run typecheck",
-    "web:build": "pnpm --filter aether-web build",
-    "web:dev": "pnpm --filter aether-web dev",
-    "web:lint:gpt-taste:ci": "pnpm --filter aether-web lint:gpt-taste:ci",
-    "web:test:smoke": "pnpm --filter aether-web test:smoke",
-    "web:typecheck": "pnpm --filter aether-web typecheck"
+    "web:build": "pnpm --filter praxis-web build",
+    "web:dev": "pnpm --filter praxis-web dev",
+    "web:lint:gpt-taste:ci": "pnpm --filter praxis-web lint:gpt-taste:ci",
+    "web:test:smoke": "pnpm --filter praxis-web test:smoke",
+    "web:typecheck": "pnpm --filter praxis-web typecheck"
   },
   "devDependencies": {
     "turbo": "^2.6.3",

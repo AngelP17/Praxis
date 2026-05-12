@@ -1,6 +1,6 @@
 # GPT-Taste QA Gate
 
-The `gpt-taste` QA gate is an automated design-quality enforcement system built as a custom ESLint plugin. It prevents visual regression and maintains elite frontend standards across the Aether Sentinel web application.
+The `gpt-taste` QA gate is an automated design-quality enforcement system built as a custom ESLint plugin. It prevents visual regression and maintains elite frontend standards across the Praxis web application.
 
 ## Why This Exists
 
@@ -135,7 +135,7 @@ pnpm lint:gpt-taste
 
 ```bash
 cd apps/web
-pnpm lint:gpt-taste src/components/sentinel-v2/landing/
+pnpm lint:gpt-taste src/components/praxis/
 ```
 
 ### CI output (JSON)

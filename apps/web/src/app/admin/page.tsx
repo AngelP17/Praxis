@@ -296,7 +296,7 @@ export default function AdminPage() {
               <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-amber-300">Admin Console</div>
               <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">Users, permissions, categories, and labels</h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
-                This keeps the operational control plane inside the new Aether design while restoring the management features a real ticketing system needs.
+                This keeps the operational control plane inside the new Praxis design while restoring the management features a real ticketing system needs.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">

@@ -13,7 +13,7 @@ Each source uses different field names, different severity scales, and different
 
 ## Normalization Strategy
 
-Aether Sentinel normalizes all signals into a canonical `OperationalEvent` model:
+Praxis normalizes all signals into a canonical `OperationalEvent` model:
 
 ```python
 class OperationalEvent:

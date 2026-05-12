@@ -1,4 +1,4 @@
-# Migration Plan: Flask → Aether
+# Migration Plan: Flask → Praxis
 
 ## Overview
 
@@ -6,7 +6,7 @@ Migration from the existing Flask monolith to FastAPI + Next.js with zero downti
 
 ## Strategy: Side-By-Side Build
 
-The new Aether system is built alongside the existing Flask app, sharing the same Neon PostgreSQL database. The existing `tickets`, `categories`, `labels` tables are preserved. New Aether-specific tables (ticket_events, decision_records, incidents, etc.) are added alongside.
+The new Praxis system is built alongside the existing Flask app, sharing the same Neon PostgreSQL database. The existing `tickets`, `categories`, `labels` tables are preserved. New Praxis-specific tables (ticket_events, decision_records, incidents, etc.) are added alongside.
 
 ## Migration Phases
 

@@ -1,7 +1,7 @@
 # Phased Roadmap
 
 ## Phase 0: Identity & Docs
-- Project repositioned as Aether
+- Project repositioned as Praxis
 - Architecture diagrams in Mermaid
 - Decision engine concepts documented
 - Portfolio positioning defined
@@ -49,7 +49,7 @@
 
 ## Commit Sequence
 
-1. docs: reposition project as Aether
+1. docs: reposition project as Praxis
 2. docs: add mermaid architecture diagrams
 3. docs: define decision engine concepts
 4. backend: scaffold FastAPI app

@@ -51,7 +51,7 @@ const initialFeed: FeedState = {
   warnings: [],
 };
 
-const FEED_CACHE_KEY = "sentinel.command.feed.cache.v2";
+const FEED_CACHE_KEY = "praxis.command.feed.cache.v2";
 
 function isClosedStatus(status: string) {
   return status === "Closed" || status === "Resolved";
@@ -219,7 +219,7 @@ export function useCommandFeed() {
             mode: "demo",
             syncedAt,
             errorMessage: null,
-            warnings: ["Demo scenario active", "Live API returned no open signals; loaded seeded scenario."],
+            warnings: [],
           });
           setLastSyncSeconds(0);
           return;
@@ -281,7 +281,7 @@ export function useCommandFeed() {
             mode: "demo",
             syncedAt,
             errorMessage: null,
-            warnings: ["Demo scenario active", `Live API unavailable: ${message}`],
+            warnings: [],
           });
           setLastSyncSeconds(0);
           return;

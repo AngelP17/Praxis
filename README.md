@@ -1,48 +1,60 @@
-# Aether Sentinel
+# Praxis
 
-[![CI](https://github.com/AngelP17/aether-sentinel/actions/workflows/ci.yml/badge.svg)](https://github.com/AngelP17/aether-sentinel/actions)
+[![CI](https://github.com/AngelP17/praxis/actions/workflows/ci.yml/badge.svg)](https://github.com/AngelP17/praxis/actions)
 
-**Operational intelligence platform for explainable incident decisions, human-in-the-loop workflows, and replayable audit trails.**
+**Proof-carrying field deployment for enterprise operations.**
 
-Aether Sentinel turns noisy operational signals into deterministic, explainable, and replayable action. It is not a dashboard. It is a closed-loop decision system for manufacturing and infrastructure operations.
+Praxis turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
 
-> **Tag:** `v1.2.0` — Causal Replay Decision Framework
+## Watch Praxis Work
 
----
+[3-minute demo](apps/web/public/demo/praxis-3-minute-demo.mp4)
 
-## 60-Second System Tour
+In one run, Praxis loads a manufacturing solution pack, streams messy events through FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.
 
-1. **Signal arrives** from machine telemetry, ticketing, Kubernetes alerts, or operator notes.
-2. **Event is normalized** into a canonical operational event with schema validation.
-3. **Astraea scores** severity, urgency, business impact, SLA risk, recurrence, dependency criticality, actionability, and uncertainty.
-4. **Evidence is weighted** by provenance — freshness, source reliability, corroboration, and audit completeness.
-5. **Counterfactual replay** tests score stability under evidence removal or perturbation.
-6. **Aether correlates** the event into an incident and routes the workflow.
-7. **A human operator** accepts, rejects, or overrides the recommendation.
-8. **Feedback calibrates** future confidence bands without mutating audit history.
-9. **The system preserves** replay hashes, explanations, counterfactual deltas, feedback, and platform evidence for audit.
+> **Tag:** `praxis-v1` — Field-Deployed Decision Platform
 
 ---
 
-## Why This Is Not a Dashboard
+## Why Praxis Exists
 
-A dashboard displays state.
-Aether Sentinel changes the operational decision loop.
+Enterprises do not fail because they lack dashboards.
 
-The system is built around **decision accountability**:
-- What happened
-- Why it mattered
-- What was recommended
-- Who acted
-- How the decision can be replayed
-- What evidence change would alter the decision
+They fail because operational knowledge, data, decisions, ownership, and actions are fragmented across tickets, spreadsheets, ERP systems, machine telemetry, tribal knowledge, and vendors.
 
-Most systems show you that CPU is high.
-Aether Sentinel tells you that this CPU spike correlates with a ticket from three days ago, affects a business-critical workflow, should be routed to the on-call engineer who resolved the last similar incident, and that removing the retry-burst metric would drop the priority score by 15 points.
+Praxis turns that fragmentation into a deployable decision graph:
+
+```
+Customer data -> Operational ontology -> Decision engine -> Human action -> Audit trail -> Value proof -> Expansion roadmap
+```
+
+Dashboards show state. **Praxis drives operational decisions.**
 
 ---
 
-## Flagship Demo Path
+## What Praxis Does
+
+1. Ingest messy customer signals (tickets, telemetry, alerts, operator notes)
+2. Compile an operational ontology (objects, links, actions, metrics)
+3. Simulate the customer workflow locally through **Praxis FieldLab** (Floci-backed AWS emulation)
+4. Generate explainable decisions and human-approved actions
+5. Produce replayable audit artifacts with cryptographic integrity
+6. Build a value case, deployment plan, and executive readout
+
+---
+
+## Target Roles Demonstrated
+
+| Target role | Praxis proof |
+|-------------|-------------|
+| **Solutions Engineer** | Can scope a customer use case, build a technical demo, explain architecture, handle security/compliance, and show business value |
+| **GTM Engineer** | Can package repeatable demo systems, solution templates, ROI calculators, customer narratives, and product feedback loops |
+| **Forward Deployed Engineer** | Can integrate messy customer data, model operational workflows, build adapters, deploy locally, and iterate with users |
+| **Platform Engineer** | Integrates Floci-backed local AWS services to simulate production event pipelines without cloud credentials |
+
+---
+
+## Flagship Demo: Printer GPO Failure to Executive Value Case
 
 ```bash
 # 1. Install everything
@@ -56,179 +68,66 @@ make demo-seed
 
 # 4. Validate the end-to-end path
 make demo-validate
+
+# Or run the proof-first artifact path
+make praxis-proof
 ```
 
+A plant reports repeated printer failures affecting shipping paperwork. Praxis ingests the signal, maps it to the operational ontology, identifies the affected business process, scores the evidence, routes a human-approved action, generates an audit trail, and builds a value case for standardizing printer deployment governance.
+
 This creates a real, deterministic incident from raw signal to audit export that you can inspect in the web UI at `http://localhost:3000`.
+
+The proof path emits `artifacts/latest/praxis_proof.json` and verifies it with deterministic hash integrity.
 
 ---
 
 ## Architecture
 
-### System Flow
-
-```mermaid
-flowchart LR
-    subgraph Sources["Operational Signal Sources"]
-        Tickets["Tickets / Operator Notes"]
-        MachineEvents["Machine Telemetry"]
-        K8sAlerts["Kubernetes Alerts"]
-        Prometheus["Prometheus Metrics"]
-    end
-
-    subgraph Ingestion["Ingestion & Normalization"]
-        Ingest["Ingest Event"]
-        Normalize["Normalize Payload"]
-        Validate["Validate Schema"]
-        StoreEvent["Store Operational Event"]
-    end
-
-    subgraph Reasoning["Astraea Reasoning Layer"]
-        Provenance["Provenance Engine<br/>freshness + reliability + corroboration"]
-        Counterfactual["Counterfactual Replay<br/>evidence removal / perturbation"]
-        Causal["Causal Incident Graph<br/>action plan + runbook links"]
-    end
-
-    subgraph Decision["Astraea Decision Engine"]
-        Features["Extract Features"]
-        Score["Score Priority & Risk"]
-        Integrity["Decision Integrity Score<br/>replayability + coverage + stability + review"]
-        Explain["Generate Explanation"]
-        Hash["Create Replay Hash"]
-    end
-
-    subgraph Calibration["Human-in-the-Loop Calibration"]
-        Feedback["Capture Operator Feedback"]
-        Calibrate["Update Confidence Bands<br/>append-only; no audit mutation"]
-    end
-
-    subgraph Workflow["Aether Workflow Layer"]
-        Correlate["Correlate Incident"]
-        Route["Route Ownership"]
-        Recommend["Generate Recommendations"]
-    end
-
-    subgraph Evidence["Platform Evidence Layer"]
-        SLO["SLO Metrics"]
-        Runbook["Runbook Mapping"]
-        Topology["Topology Graph"]
-        Chaos["Chaos Results"]
-    end
-
-    subgraph Audit["Replay & Audit"]
-        Timeline["Replay Timeline"]
-        Verify["Verify Hash"]
-        Export["Audit Export"]
-        Report["Post-Incident Report"]
-    end
-
-    Sources --> Ingest
-    Ingest --> Normalize
-    Normalize --> Validate
-    Validate --> StoreEvent
-    StoreEvent --> Provenance
-    Provenance --> Features
-    Features --> Score
-    Score --> Integrity
-    Integrity --> Counterfactual
-    Counterfactual --> Causal
-    Causal --> Explain
-    Explain --> Hash
-    Hash --> Calibration
-    Calibration --> Correlate
-    Correlate --> Route
-    Route --> Recommend
-    Recommend --> Feedback
-    Feedback --> Calibrate
-    Calibrate --> StoreEvent
-    Evidence --> StoreEvent
-    StoreEvent --> Timeline
-    Timeline --> Verify
-    Verify --> Export
-    Export --> Report
+```
+Praxis
+├── FieldLab (Floci local AWS substrate)
+│   ├── SQS event queues
+│   ├── S3 audit and evidence archive
+│   ├── DynamoDB operational state
+│   ├── EventBridge workflow events
+│   └── Lambda-style customer adapters
+│
+├── Ontology Compiler
+│   ├── Customer objects, Assets, Events, Incidents
+│   ├── Actions, Stakeholders, Value metrics
+│   └── Links, confidence scoring
+│
+├── Decision Engine
+│   ├── Priority scoring (weighted multi-factor)
+│   ├── Evidence trust scoring
+│   ├── Causal graph reasoning
+│   ├── Value-of-information ranking
+│   ├── Counterfactual replay
+│   └── Human review thresholds
+│
+├── GTM Engine
+│   ├── Solution packs (repeatable demos)
+│   ├── ROI model
+│   ├── Objection handling
+│   ├── Security/compliance answers
+│   └── Expansion map
+│
+└── Field Workbench
+    ├── Customer discovery
+    ├── Data mapping
+    ├── Demo execution
+    ├── Implementation plan
+    ├── Audit export
+    └── Executive readout
 ```
 
 ### Service Architecture
 
-```mermaid
-flowchart TB
-    subgraph Client["Frontend Client"]
-        NextJS["Next.js 16 / React 19"]
-        Tailwind["Tailwind CSS v4"]
-        GSAP["GSAP / Framer Motion"]
-    end
-
-    subgraph Gateway["API Gateway (Port 8000)"]
-        FastAPI["FastAPI + Pydantic"]
-        Auth["Auth Middleware"]
-        Router["Route Orchestration"]
-        Explain["Decision Explanation Service"]
-    end
-
-    subgraph Services["Backend Services"]
-        Decision["Decision Service (Port 8001)"]
-        Platform["Platform Service (Port 8080)"]
-    end
-
-    subgraph Core["Core Packages"]
-        Astraea["Astraea Engine"]
-        Domain["Domain Models"]
-        Pipelines["Ingestion Pipelines"]
-    end
-
-    subgraph ReasoningCore["Astraea Reasoning Modules"]
-        Prov["Provenance Engine"]
-        CF["Counterfactual Replay"]
-        CIG["Causal Incident Graph"]
-        Integ["Decision Integrity"]
-        Calib["Feedback Calibration"]
-    end
-
-    subgraph Data["Data Layer"]
-        Postgres[(PostgreSQL)]
-        SQLite[(SQLite Dev)]
-    end
-
-    NextJS --> Gateway
-    Gateway --> Decision
-    Gateway --> Platform
-    Gateway --> Explain
-    Decision --> Astraea
-    Astraea --> Prov
-    Astraea --> CF
-    Astraea --> CIG
-    Astraea --> Integ
-    Astraea --> Calib
-    Platform --> Core
-    Gateway --> Data
-    Decision --> Data
-    Platform --> Data
-```
-
-### Frontend Route Map
-
-```mermaid
-flowchart LR
-    Landing["/ Landing"] --> Login["/login"]
-    Login --> Dashboard["/dashboard"]
-    Login --> Command["/command-center"]
-    Login --> Incidents["/incidents"]
-    Login --> Decision["/decision-center"]
-    Login --> Platform2["/platform"]
-    Login --> Assets2["/assets"]
-    Login --> Audit2["/audit"]
-    Login --> Recommendations2["/recommendations"]
-    Login --> Ingestion2["/event-ingestion"]
-    Login --> Replay2["/replay/:id"]
-    Login --> Reports2["/reports"]
-    Login --> Admin2["/admin"]
-    Incidents --> Detail["/incidents/:id"]
-```
-
 | Service | Responsibility | Tech |
 |---------|---------------|------|
-| `web` | Landing, command center, dashboard, incidents, decisions, platform, assets, audit, recommendations, event ingestion, replay UI | Next.js 16, React 19, Tailwind v4, GSAP |
-| `api-gateway` | Public API boundary, auth, orchestration, decision explanation generation | FastAPI |
-| `decision-service` | Deterministic scoring, explainability, replay | Python (Astraea) |
+| `web` | Landing, command center, dashboard, field workbench, solution packs, ontology, value case, executive readout | Next.js 16, React 19, Tailwind v4, GSAP |
+| `api-gateway` | Public API boundary, auth, orchestration, decision explanation, fieldlab, solution packs, ontology | FastAPI |
+| `decision-service` | Deterministic scoring, explainability, replay | Python (Praxis core) |
 | `platform-service` | SLOs, runbooks, topology, controls, chaos | FastAPI |
 
 ---
@@ -242,127 +141,75 @@ flowchart LR
 | **Replay hashes** | SHA-256 of inputs guarantees decision integrity. Any tampering changes the hash. |
 | **Provenance-weighted evidence** | Priority and confidence depend on evidence freshness, source reliability, corroboration, and audit completeness. |
 | **Counterfactual testing** | Score stability is verified under evidence removal or perturbation. Unstable decisions are flagged for review. |
-| **SLO-backed evidence** | Infrastructure incidents are judged by user-facing impact, not just symptoms. |
-| **Immutable records** | Raw events are never modified. Decision records are append-only. Evidence is checksummed. Calibration updates future confidence without mutating audit history. |
+| **FieldLab local simulation** | Reproduce customer workflows locally through Floci before touching production infrastructure. |
+| **Solution packs** | Repeatable demo systems with scenarios, ROI models, objection handling, and security reviews. |
 
 ---
 
-## Causal Replay Decision Framework
+## Flagship Algorithms
 
-Aether Sentinel implements a **replayable, counterfactually tested, human-calibrated operational decision** pipeline. Every recommendation is:
+### Operational Ontology Compiler
+Turns messy customer inputs into a structured operational model (Objects + Links + Actions + Metrics + Risks). Maps raw data to object types (Site, Asset, Incident, Vendor, Stakeholder, BusinessProcess) with confidence scoring.
 
-1. **Grounded in causal evidence** — incident graphs with provenance lineage (`astraea.reasoning.provenance`)
-2. **Counterfactually tested** — score stability verified under evidence removal/perturbation (`astraea.reasoning.counterfactual`)
-3. **Uncertainty-aware** — confidence bands, not point estimates, with review thresholds (`astraea.decision.integrity`)
-4. **Human-calibrated** — operator feedback updates future confidence without mutating audit history (`astraea.decision.calibration`)
-5. **Deterministically replayable** — same inputs produce identical hashes, scores, and explanations (`astraea.core.replay`)
+### Evidence Trust Score
+Grades the quality of evidence behind recommendations using source reliability, freshness, corroboration, completeness, consistency, and auditability.
 
-### Research-Backed, Not Research-Claimed
+### Use Case Qualification Score
+Scores whether a customer use case is worth pursuing (pain intensity, data readiness, stakeholder urgency, measurable value, deployability, expansion leverage).
 
-Every flagship module maps to a published source:
+### Value-of-Information Ranking
+When data is missing, Praxis identifies which questions to ask first based on expected confidence gain, business impact, and acquisition feasibility.
 
-| Source | Claim | Implementation |
-|--------|-------|---------------|
-| Wachter et al., 2017 | Counterfactual explanations | `astraea.reasoning.counterfactual` |
-| Verma et al., 2020 | Actionable, minimal recourse | `astraea.reasoning.counterfactual` |
-| Karimi et al., 2020 | Recourse as intervention | `astraea.reasoning.causal_replay` |
-| Mitchell et al., 2019 | Model cards | `packages/domain/models/decision_card.py` |
-| Gebru et al., 2021 | Datasheets / provenance | `astraea.reasoning.provenance` |
-| W3C PROV | Traceable lineage | `astraea.reasoning.provenance` |
-| Amershi et al., 2022 | Human-in-the-loop calibration | `astraea.decision.calibration` |
-| Shafer & Vovk, 2008; Angelopoulos & Bates, 2021 | Conformal prediction / uncertainty | `astraea.decision.integrity` |
+### Intervention Planner
+Turns recommendations into field-safe actions with modes: READ_ONLY, HUMAN_APPROVAL, ASSISTED_ACTION, WRITEBACK (simulated only), BLOCKED.
 
-Evidence-safe language rules:
-- "Grounded in" or "inspired by" a paper: module exists, tests pass, algorithm follows methodology.
-- "Proven": reserved for claims with passing tests, benchmarks, and visible UI evidence.
-- "Novel" / "groundbreaking": banned without peer-reviewed publication + independent replication.
-- "Autonomous": never used. System is **operator-assisted**, not autonomous.
+### Expansion Graph
+Shows how a pilot expands into a bigger account, scoring adjacent use cases by shared data model, stakeholder overlap, measurable value, and implementation reuse.
 
-See full details in `docs/research/`.
+---
+
+## Praxis Field Workbench Flow
+
+```
+1. Select Solution Pack
+2. Load Customer Context
+3. Compile Operational Ontology
+4. Start FieldLab (Floci)
+5. Stream Events through SQS/S3/DynamoDB
+6. Generate Decisions
+7. Review Recommendations
+8. Capture Human Action
+9. Produce Replay Artifact
+10. Generate Value Case
+11. Generate Executive Readout
+12. Generate Deployment Plan
+```
 
 ---
 
 ## Frontend Surface
 
-| Route | Purpose | Data Source |
+| Route | Purpose | Role signal |
 |-------|---------|-------------|
-| `/` | Cinematic landing page with live metrics | `/api/metrics`, `/api/incidents`, `/api/tickets` |
-| `/dashboard` | System health bento overview | `/api/metrics`, `/api/tickets` |
-| `/command-center` | Primary operator work queue with decision explanations | `/api/tickets`, `/api/decisions` |
-| `/incidents` | Incident browser with search and filter | `/api/incidents` |
-| `/incidents/[id]` | Incident detail with timeline, decision explanation, and resolve | `/api/incidents/{id}`, `/api/incidents/{id}/timeline` |
-| `/decision-center` | Astraea decisioning with counterfactual deltas and human overrides | `/api/decisions`, `/api/recommendations` |
-| `/platform` | SRE control plane — SLOs, topology, chaos | `/api/platform/summary`, `/api/platform/topology`, `/api/platform/controls` |
-| `/assets` | Infrastructure asset inventory | `/api/assets` |
-| `/audit` | Audit trail viewer and export | `/api/audit/events` |
-| `/recommendations` | Recommendation workflow management | `/api/recommendations` |
-| `/event-ingestion` | Event ingestion interface | `/api/events/ingest` |
-| `/replay/[id]` | Point-in-time replay with decision explanation and forensics | `/api/replay/incidents/{id}` |
-| `/reports` | Executive and operational reporting | `/api/metrics` |
-| `/admin` | Role-gated admin console | `/api/auth`, `/api/catalog` |
-
-All operational pages use real API data with automatic fallback to demo scenarios when live services are unavailable. Every page includes loading, error, and empty states.
-
-### Flagship UI Pattern
-
-The current global design direction is the `sentinel-v3` surface in `apps/web/src/components/sentinel-v3/`, with scoped tokens and primitives in `apps/web/src/styles/sentinel-v3.css`. New frontend work should reuse the V3 square plates, amber hairlines, mono labels, flow rails, waveform/sparkline primitives, and command-room density before introducing a new visual language.
-
-For design QA, run:
-
-```bash
-pnpm web:typecheck
-pnpm web:lint:gpt-taste:ci
-pnpm web:build
-```
-
----
-
-## Screenshots
-
-### Landing Page
-![Landing Page](screenshots/01-landing.png)
-
-### Login
-![Login](screenshots/02-login.png)
-
-### Dashboard
-![Dashboard](screenshots/03-dashboard.png)
-
-### Command Center
-![Command Center](screenshots/04-command-center.png)
-
-### Incidents
-![Incidents](screenshots/05-incidents.png)
-
-### Incident Detail
-![Incident Detail](screenshots/06-incident-detail.png)
-
-### Decision Center
-![Decision Center](screenshots/07-decision-center.png)
-
-### Platform
-![Platform](screenshots/08-platform.png)
-
-### Assets
-![Assets](screenshots/09-assets.png)
-
-### Audit
-![Audit](screenshots/10-audit.png)
-
-### Recommendations
-![Recommendations](screenshots/11-recommendations.png)
-
-### Event Ingestion
-![Event Ingestion](screenshots/12-event-ingestion.png)
-
-### Replay
-![Replay](screenshots/13-replay.png)
-
-### Reports
-![Reports](screenshots/14-reports.png)
-
-### Admin
-![Admin](screenshots/15-admin.png)
+| `/` | Landing page with live metrics | All |
+| `/dashboard` | System health bento overview | Operator |
+| `/command-center` | Primary operator work queue with decision explanations | Operator |
+| `/incidents/[id]` | Incident detail with timeline | Operator |
+| `/decision-center` | Decision center with counterfactual deltas | Operator |
+| `/field-workbench` | End-to-end customer workflow from discovery to readout | FDSE |
+| `/solution-packs` | Catalog of repeatable demo packs | GTM Engineer |
+| `/solution-packs/[id]` | Launch a specific customer scenario | Solutions Engineer |
+| `/fieldlab` | Floci-backed local environment status and event flow | Platform/SE |
+| `/ontology` | Operational object graph, links, and actions | FDSE |
+| `/value-case` | ROI calculator and assumptions | GTM Engineer |
+| `/deployment-plan` | Technical rollout plan and risk register | Solutions Engineer |
+| `/executive-readout` | CFO/COO-ready summary | GTM/SE |
+| `/platform` | SRE control plane — SLOs, topology, chaos | Platform |
+| `/assets` | Infrastructure asset inventory | Operator |
+| `/audit` | Audit trail viewer and export | Operator |
+| `/replay/[id]` | Point-in-time replay with forensics | Operator |
+| `/reports` | Executive and operational reporting | Operator |
+| `/admin` | Role-gated admin console | Admin |
 
 ---
 
@@ -374,6 +221,7 @@ pnpm web:build
 - Node.js 22+
 - pnpm
 - PostgreSQL 15+ (or SQLite for local dev)
+- Docker (for FieldLab/Floci)
 
 ### Install
 
@@ -402,20 +250,19 @@ Then open `http://localhost:3000` for the command center.
 | `operator` | `operator` | Agent (recommended for demo) |
 | `viewer` | `viewer` | Read-only |
 
-### Manual service start
+### FieldLab (requires Docker)
 
 ```bash
-# API Gateway
-uvicorn apps.api_gateway.main:app --reload --port 8000
+make praxis-fieldlab-up     # Start Floci local AWS emulation
+make praxis-fieldlab-down   # Stop Floci
+```
 
-# Platform Service
-uvicorn services.platform-service.src.main:app --reload --port 8080
+### Solution Packs
 
-# Decision Service
-uvicorn services.decision-service.main:app --reload --port 8001
-
-# Web App
-cd apps/web && pnpm dev
+```bash
+make praxis-demo            # Run the flagship demo
+make praxis-validate-pack   # Validate a solution pack
+make praxis-readout RUN_ID=xyz  # Generate executive readout
 ```
 
 ---
@@ -423,33 +270,38 @@ cd apps/web && pnpm dev
 ## Repo Structure
 
 ```text
-aether-sentinel/
+praxis/
 ├── apps/
-│   ├── api_gateway/       # FastAPI gateway + decision explanation
-│   └── web/               # Next.js command center
+│   ├── api_gateway/       # FastAPI gateway + fieldlab, ontology, solution packs
+│   └── web/               # Next.js command center + field workbench
 ├── services/
-│   ├── decision-service/  # Astraea wrapper
+│   ├── decision-service/  # Praxis decision wrapper
 │   └── platform-service/  # K8s platform API
 ├── packages/
-│   ├── astraea-core/      # Deterministic engine + reasoning modules
-│   ├── domain/            # Domain models (evidence, counterfactual, integrity, calibration)
-│   └── pipelines/         # Ingestion pipelines
-├── docs/
-│   ├── research/          # Dossier, claim ledger, benchmarks, sources.bib
-│   └── architecture/      # ADRs, API contracts, diagrams
+│   ├── astraea-core/      # Deterministic engine + praxis algorithms
+│   ├── domain/            # Domain models
+│   └── pipelines/         # Ingestion pipelines + fieldlab adapters
+├── solution-packs/        # Repeatable demo systems
+│   ├── manufacturing-printer-gpo/
+│   ├── erp-access-disruption/
+│   ├── k8s-ingress-degradation/
+│   ├── email-quarantine-disruption/
+│   └── machine-cascade-maintenance/
 ├── infrastructure/
+│   ├── floci/             # FieldLab: docker-compose, terraform, bootstrap
 │   ├── db/                # SQLAlchemy models, migrations
 │   ├── k8s/               # Kubernetes manifests
 │   ├── terraform/         # Infrastructure as code
 │   └── monitoring/        # Prometheus, Grafana
-├── scripts/
-│   ├── capture-all-screenshots.mjs
-│   ├── capture-demo-screenshots.mjs
-│   └── capture-readme-screenshots.mjs
-├── sample-data/           # Deterministic demo scenarios
-├── tests/                 # Unit, integration, e2e tests
-├── runbooks/              # Incident response runbooks
-└── .github/               # CI workflows, issue templates
+├── docs/
+│   ├── praxis/            # Positioning, fieldlab, ontology, GTM, FDSE, security
+│   ├── adr/               # Architecture decision records
+│   └── research/          # Dossier, claim ledger, benchmarks
+├── tests/
+│   ├── praxis/            # Ontology compiler, evidence trust, use case score, VOI
+│   └── integration/       # FieldLab integration, solution pack e2e
+├── scripts/               # Demo, validation, executive readout, screenshot capture
+└── .github/               # CI workflows, fieldlab-proof, solution-pack-validation
 ```
 
 ---
@@ -459,13 +311,13 @@ aether-sentinel/
 | Gate | Command | Status |
 |------|---------|--------|
 | Python tests (core) | `make test` | 13 passed |
-| Python tests (reasoning) | `pytest tests/astraea/test_provenance.py tests/astraea/test_counterfactual.py tests/astraea/test_causal_replay.py tests/astraea/test_integrity.py tests/astraea/test_calibration.py` | **29 passed** |
-| Python integration | `pytest tests/integration/` | **8 passed** |
+| Python tests (reasoning) | `pytest tests/astraea/` | 29 passed |
+| Python integration | `pytest tests/integration/` | 8 passed |
 | TypeScript check | `pnpm web:typecheck` | Pass |
 | Next.js build | `pnpm web:build` | 17/17 pages |
 | GPT-taste lint | `pnpm web:lint:gpt-taste:ci` | Pass |
-| Smoke tests | `pnpm web:test:smoke` | **6/6 passed** |
-| CTA audit | `pnpm web:test:smoke cta-audit.smoke.spec.ts` | **4/4 passed** |
+| Smoke tests | `pnpm web:test:smoke` | 6/6 passed |
+| CTA audit | `pnpm web:test:smoke cta-audit.smoke.spec.ts` | 4/4 passed |
 | Audit | `pnpm --dir apps/web audit --prod` | 0 vulnerabilities |
 | Lint | `make lint` | Pass |
 | Demo validation | `make demo-validate` | End-to-end verified |
@@ -474,14 +326,14 @@ aether-sentinel/
 
 All 6 benchmark scenarios pass:
 
-| ID | Scenario | Ticket | Expected Root Cause | Integrity Range | Result |
-|----|----------|--------|---------------------|-----------------|--------|
-| B1 | Press Line 3 Vibration Cascade | INC-4821 | `bearing_degradation` | 0.85–0.95 | **PASS** |
-| B2 | Kubernetes Ingress Degradation | INC-4814 | `ingress_controller_backpressure` | 0.75–0.88 | **PASS** |
-| B3 | IAM Policy Drift | INC-4799 | `policy_drift` | 0.70–0.82 | **PASS** |
-| B4 | Sensor Calibration Offset | INC-4758 | `calibration_offset` | 0.68–0.80 | **PASS** |
-| B5 | Contradictory Evidence | synthetic | confidence drop + review flag | drops | **PASS** |
-| B6 | Missing Evidence | synthetic | suppressed + review flag | suppressed | **PASS** |
+| ID | Scenario | Expected Root Cause | Result |
+|----|----------|---------------------|--------|
+| B1 | Press Line 3 Vibration Cascade | `bearing_degradation` | **PASS** |
+| B2 | Kubernetes Ingress Degradation | `ingress_controller_backpressure` | **PASS** |
+| B3 | IAM Policy Drift | `policy_drift` | **PASS** |
+| B4 | Sensor Calibration Offset | `calibration_offset` | **PASS** |
+| B5 | Contradictory Evidence | confidence drop + review flag | **PASS** |
+| B6 | Missing Evidence | suppressed + review flag | **PASS** |
 
 ---
 

@@ -1,0 +1,8 @@
+variables:
+  incidents_per_month: 8
+  downtime_minutes: 52
+  loaded_labor_rate_per_hour: 62
+  blocked_order_cost_per_hour: 420
+formulas:
+  annual_value:
+    expression: 12 * incidents_per_month * (downtime_minutes / 60) * blocked_order_cost_per_hour

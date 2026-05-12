@@ -11,7 +11,7 @@ Many incident management platforms offer fully automated remediation: auto-resta
 - Operator skill atrophies if the system always decides
 
 ## Decision
-Aether Sentinel will **recommend** action but require **human approval** for all critical decisions. The system:
+Praxis will **recommend** action but require **human approval** for all critical decisions. The system:
 1. Scores and prioritizes events
 2. Generates recommendations with explanation
 3. Presents them to operators

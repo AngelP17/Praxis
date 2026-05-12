@@ -37,7 +37,7 @@ Key design decisions:
 - Design system must be documented and enforced
 
 ## Mitigation
-- Components are isolated in `components/sentinel/` and `components/motion/`
+- Components are isolated in `components/praxis/` and `components/motion/`
 - Motion is only in leaf client components
 - `min-h-[100dvh]` used instead of `h-screen`
 - CSS Grid preferred over flex math

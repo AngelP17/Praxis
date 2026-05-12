@@ -30,7 +30,7 @@ type NotificationContextType = {
 };
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
-const STORAGE_KEY = "aether.notifications.v1";
+const STORAGE_KEY = "praxis.notifications.v1";
 const TOAST_LIFETIME_MS = 4000;
 const MAX_NOTIFICATIONS = 50;
 

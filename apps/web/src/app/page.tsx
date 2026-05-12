@@ -1,5 +1,5 @@
-import { SentinelLandingPage } from "@/components/sentinel-v2/landing/sentinel-landing-page";
+import { PraxisExperience } from "@/components/praxis/praxis-experience";
 
 export default function HomePage() {
-  return <SentinelLandingPage />;
+  return <PraxisExperience />;
 }
