@@ -84,7 +84,7 @@ export default function LoginPage() {
       <div className="relative z-10 mx-auto grid w-full max-w-[1580px] items-stretch gap-5 lg:grid-cols-[52%_48%] grid-flow-dense">
         <section className="praxis-v2-panel-strong p-6 sm:p-7 py-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-zinc-700/80 bg-zinc-950/75 px-3 py-1.5">
-            <ShieldChevron size={14} className="text-amber-300" />
+            <ShieldChevron size={14} className="text-violet-300" />
             <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-200">Praxis Access</span>
           </div>
 
@@ -147,7 +147,7 @@ export default function LoginPage() {
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 autoComplete="username"
-                className="min-h-11 w-full rounded-xl border border-zinc-700/75 bg-zinc-950/85 px-3.5 text-sm text-zinc-100 outline-none transition focus:border-amber-400/45"
+                className="min-h-11 w-full rounded-xl border border-zinc-700/75 bg-zinc-950/85 px-3.5 text-sm text-zinc-100 outline-none transition focus:border-violet-400/45"
               />
             </div>
 
@@ -163,7 +163,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="current-password"
-                  className="min-h-11 w-full rounded-xl border border-zinc-700/75 bg-zinc-950/85 px-3.5 pr-11 text-sm text-zinc-100 outline-none transition focus:border-amber-400/45"
+                  className="min-h-11 w-full rounded-xl border border-zinc-700/75 bg-zinc-950/85 px-3.5 pr-11 text-sm text-zinc-100 outline-none transition focus:border-violet-400/45"
                 />
                 <button
                   type="button"

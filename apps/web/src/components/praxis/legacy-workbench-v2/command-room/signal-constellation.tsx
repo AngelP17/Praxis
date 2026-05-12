@@ -46,7 +46,7 @@ export function SignalConstellation({
         </div>
         <div className="inline-flex items-center gap-2">
           <span className="rounded-md border border-zinc-700/70 bg-zinc-900/75 px-2 py-1 text-[10px] text-zinc-300">{stateBadge}</span>
-          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
+          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-violet-300">
             <Broadcast size={15} />
           </div>
         </div>

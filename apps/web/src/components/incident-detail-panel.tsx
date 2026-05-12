@@ -31,8 +31,8 @@ export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {
             ticket.priority_raw.toLowerCase() === "critical"
               ? "border-rose-500/20 bg-rose-500/10 text-rose-200"
               : ticket.priority_raw.toLowerCase() === "high"
-              ? "border-orange-500/20 bg-orange-500/10 text-orange-200"
-              : "border-amber-500/20 bg-amber-500/10 text-amber-200"
+              ? "border-violet-500/20 bg-violet-500/10 text-violet-200"
+              : "border-violet-500/20 bg-violet-500/10 text-violet-200"
           }`}
         >
           {ticket.priority_raw}

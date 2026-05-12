@@ -52,10 +52,10 @@ export function DecisionExplanationPanel({
   }
 
   const metrics = [
-    { label: "Priority", value: decision.priority_score ?? 0, icon: ShieldWarning, color: "#f59e0b" },
+    { label: "Priority", value: decision.priority_score ?? 0, icon: ShieldWarning, color: "#715BFF" },
     { label: "Confidence", value: decision.confidence_score ?? 0, icon: CheckCircle, color: "#22c55e" },
     { label: "SLA Risk", value: decision.sla_risk_score ?? 0, icon: Info, color: "#f43f5e" },
-    { label: "Actionability", value: decision.actionability_score ?? 0, icon: Brain, color: "#f59e0b" },
+    { label: "Actionability", value: decision.actionability_score ?? 0, icon: Brain, color: "#715BFF" },
   ];
 
   return (
@@ -66,12 +66,12 @@ export function DecisionExplanationPanel({
       className="legacy-card rounded-[1.5rem] p-5 sm:p-6"
     >
       {(mode === "demo" || mode === "stale") && (
-        <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+        <div className="mb-4 rounded-xl border border-violet-500/20 bg-violet-500/10 px-3 py-2 text-xs text-violet-100">
           {mode === "demo" ? "Operations snapshot active" : "Using stale decision context"}
         </div>
       )}
       <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
-        <Brain className="h-4 w-4 text-amber-300" />
+        <Brain className="h-4 w-4 text-violet-300" />
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Praxis Decision</div>
       </div>
 
@@ -103,8 +103,8 @@ export function DecisionExplanationPanel({
       </div>
 
       {decision.root_cause_hypothesis && (
-        <div className="mt-5 rounded-xl border border-amber-500/10 bg-amber-500/[0.04] p-4">
-          <div className="text-[10px] uppercase tracking-wider text-amber-400/80">Root Cause</div>
+        <div className="mt-5 rounded-xl border border-violet-500/10 bg-violet-500/[0.04] p-4">
+          <div className="text-[10px] uppercase tracking-wider text-violet-400/80">Root Cause</div>
           <p className="mt-2 text-sm leading-6 text-zinc-300">{decision.root_cause_hypothesis}</p>
         </div>
       )}

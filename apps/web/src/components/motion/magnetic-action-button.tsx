@@ -32,7 +32,7 @@ export function MagneticActionButton({ children, onClick }: { children: ReactNod
       onMouseLeave={handleMouseLeave}
       style={{ x: springX, y: springY }}
       whileTap={{ scale: 0.97 }}
-      className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black shadow-lg shadow-amber-500/20 transition-colors hover:bg-amber-400"
+      className="relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black shadow-lg shadow-violet-500/20 transition-colors hover:bg-violet-400"
     >
       {children}
     </motion.button>

@@ -114,14 +114,14 @@ export default function AuditTrailPage() {
                 Export INC-4821
               </button>
             </div>
-            {notice ? <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">{notice}</div> : null}
+            {notice ? <div className="mt-3 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{notice}</div> : null}
             <label className="relative mt-4 block max-w-lg">
               <MagnifyingGlass size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search event id, source, type, severity..."
-                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-amber-400/45"
+                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/45"
               />
             </label>
           </section>

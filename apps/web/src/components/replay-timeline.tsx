@@ -24,7 +24,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
     switch (status) {
       case "success": return <CheckCircle className="h-3.5 w-3.5 text-emerald-400" />;
       case "failure": return <XCircle className="h-3.5 w-3.5 text-rose-400" />;
-      case "override": return <UserCircle className="h-3.5 w-3.5 text-amber-400" />;
+      case "override": return <UserCircle className="h-3.5 w-3.5 text-violet-400" />;
       default: return <Clock className="h-3.5 w-3.5 text-slate-400" />;
     }
   }
@@ -33,7 +33,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
     switch (status) {
       case "success": return "bg-emerald-500";
       case "failure": return "bg-rose-500";
-      case "override": return "bg-amber-500";
+      case "override": return "bg-violet-500";
       default: return "bg-slate-500";
     }
   }
@@ -41,7 +41,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
   return (
     <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
-        <ArrowCounterClockwise className="h-4 w-4 text-amber-300" />
+        <ArrowCounterClockwise className="h-4 w-4 text-violet-300" />
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Replay Timeline</div>
         <div className="mono-data ml-auto text-[11px] text-zinc-600">{sorted.length} events</div>
       </div>

@@ -18,7 +18,7 @@ export function EvidenceRibbon({
           <div className="praxis-v2-eyebrow">Platform Evidence</div>
           <p className="mt-1 text-xs text-zinc-400">SLO burn rate, Kubernetes event window, waveform, runbook</p>
         </div>
-        <div className={`rounded-md border px-2 py-1 text-[10px] uppercase tracking-[0.16em] ${dataStatus === "live" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100" : "border-amber-500/30 bg-amber-500/10 text-amber-100"}`}>
+        <div className={`rounded-md border px-2 py-1 text-[10px] uppercase tracking-[0.16em] ${dataStatus === "live" ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-100" : "border-violet-500/30 bg-violet-500/10 text-violet-100"}`}>
           {dataStatus === "live" ? "Verified" : "Seeded"}
         </div>
       </div>
@@ -30,7 +30,7 @@ export function EvidenceRibbon({
             <div key={item.id} className="px-3 py-2.5">
               <div className="flex items-center justify-between gap-2">
                 <div className="inline-flex items-center gap-2 text-sm text-zinc-200">
-                  <Icon size={14} className="text-amber-200" />
+                  <Icon size={14} className="text-violet-200" />
                   {item.label}
                 </div>
                 <span className="mono-data text-[10px] text-zinc-500">{item.timestamp}</span>

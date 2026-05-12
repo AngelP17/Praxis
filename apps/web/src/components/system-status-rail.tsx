@@ -44,7 +44,7 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
   };
 
   return (
-    <aside className="ops-rail sv3 z-20 hidden border-r border-[var(--sv3-line)] bg-[rgba(14,14,15,0.88)] px-2 py-4 backdrop-blur lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:flex-col">
+    <aside className="ops-rail sv3 z-20 hidden border-r border-[var(--sv3-line)] bg-[rgba(10,10,20,0.88)] px-2 py-4 backdrop-blur lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:flex-col">
       <div className="mx-auto flex h-11 w-11 items-center justify-center border border-[var(--sv3-amber-line)] bg-[var(--sv3-amber-soft)] text-[var(--sv3-amber)]">
         <Lightning weight="fill" className="h-5 w-5" />
       </div>
@@ -79,7 +79,7 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
           <SignOut className="h-4 w-4 shrink-0" />
           <span className="ops-rail-label font-medium">Logout</span>
         </button>
-        <div className="mx-auto mt-4 flex h-10 w-10 items-center justify-center border border-[var(--sv3-amber-line)] bg-[var(--sv3-amber)] text-xs font-bold text-[#0b0b0c]">
+        <div className="mx-auto mt-4 flex h-10 w-10 items-center justify-center border border-[var(--sv3-amber-line)] bg-[var(--sv3-amber)] text-xs font-bold text-[var(--praxis-bg)]">
           AP
         </div>
       </div>

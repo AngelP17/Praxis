@@ -37,14 +37,14 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
                 }}
                 className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border-2 z-10 relative"
                 style={{
-                  borderColor: isComplete ? "#22c55e" : isActive ? "#f59e0b" : "#3f3f46",
+                  borderColor: isComplete ? "#22c55e" : isActive ? "#715BFF" : "#3f3f46",
                   backgroundColor: isComplete ? "rgba(34,197,94,0.15)" : isActive ? "rgba(245,158,11,0.15)" : "rgba(9,9,11,0.8)",
                 }}
               >
                 <div
                   className="h-2.5 w-2.5 rounded-full"
                   style={{
-                    backgroundColor: isComplete ? "#22c55e" : isActive ? "#f59e0b" : "#3f3f46",
+                    backgroundColor: isComplete ? "#22c55e" : isActive ? "#715BFF" : "#3f3f46",
                   }}
                 />
               </motion.div>
@@ -57,7 +57,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
                 <Link
                   href={node.href}
                   className={`inline-flex items-center gap-1 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${
-                    isActive ? "text-amber-300" : "text-zinc-500 hover:text-zinc-300"
+                    isActive ? "text-violet-300" : "text-zinc-500 hover:text-zinc-300"
                   }`}
                 >
                   {node.label}

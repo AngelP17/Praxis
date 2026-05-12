@@ -115,7 +115,7 @@ export function ReplayForensicsView({
           />
 
           {notice ? (
-            <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/12 px-4 py-2.5 text-sm text-amber-100">{notice}</div>
+            <div className="mt-4 rounded-xl border border-violet-500/25 bg-violet-500/12 px-4 py-2.5 text-sm text-violet-100">{notice}</div>
           ) : null}
 
           <div className="mt-4 grid grid-flow-dense grid-cols-1 gap-3 md:grid-cols-3">
@@ -134,7 +134,7 @@ export function ReplayForensicsView({
                   <div key={decision.id} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 p-3">
                     <div className="flex items-center justify-between gap-2">
                       <div className="text-sm text-zinc-100">{prettyCause(decision.root_cause_hypothesis)}</div>
-                      <span className="mono-data text-xs text-amber-100">{decision.priority_score.toFixed(1)}</span>
+                      <span className="mono-data text-xs text-violet-100">{decision.priority_score.toFixed(1)}</span>
                     </div>
                     <div className="mt-1 flex items-center justify-between gap-2 text-[11px] text-zinc-500">
                       <span className="mono-data">{decision.decision_ts}</span>
@@ -161,7 +161,7 @@ export function ReplayForensicsView({
 
               <div className="mt-3 rounded-lg border border-zinc-700/70 bg-zinc-950/80 p-3">
                 <div className="inline-flex items-center gap-2 text-xs text-zinc-300">
-                  <Path size={13} className="text-amber-200" />
+                  <Path size={13} className="text-violet-200" />
                   Replay path: Signal → Decision → Workflow → Feedback → Replay
                 </div>
               </div>
@@ -193,7 +193,7 @@ export function ReplayForensicsView({
                 <div key={decision.id} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
                   <div className="text-xs text-zinc-200">Decision record {decision.id}</div>
                   <div className="mt-1 inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
-                    <LinkSimple size={11} className="text-amber-300" />
+                    <LinkSimple size={11} className="text-violet-300" />
                     <span className="mono-data">sha256:{id.toLowerCase()}-{decision.id}c9</span>
                   </div>
                 </div>
@@ -225,7 +225,7 @@ export function ReplayForensicsView({
         <footer className="mt-4 pb-1">
           <div className="praxis-v2-panel px-4 py-2.5 text-xs text-zinc-400">
             <div className="inline-flex items-center gap-1.5">
-              <ClockCounterClockwise size={12} className="text-amber-200" />
+              <ClockCounterClockwise size={12} className="text-violet-200" />
               Hash-linked forensic replay complete for <span className="mono-data text-zinc-200">{id || payload.ticket_id}</span>.
             </div>
           </div>
@@ -249,7 +249,7 @@ function Metric({
   return (
     <div className="rounded-xl border border-zinc-700/70 bg-zinc-900/75 p-3">
       <div className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-        <Icon size={12} className="text-amber-200" />
+        <Icon size={12} className="text-violet-200" />
         {label}
       </div>
       <div className={`mt-2 text-sm text-zinc-100 ${mono ? "mono-data" : ""}`}>{value}</div>

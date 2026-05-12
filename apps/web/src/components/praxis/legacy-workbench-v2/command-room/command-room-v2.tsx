@@ -109,7 +109,7 @@ export function CommandRoomV2({
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2.5">
-                <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-amber-300">
+                <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-700/70 bg-zinc-900/75 text-violet-300">
                   <ShieldChevron size={15} />
                 </div>
                 <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-zinc-300">Praxis</span>
@@ -152,12 +152,12 @@ export function CommandRoomV2({
                 value={search}
                 onChange={(event) => onSearchChange(event.target.value)}
                 placeholder="Search signal queue, category, operator, or incident..."
-                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-amber-400/45"
+                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/45"
               />
             </label>
             <div className="flex flex-wrap gap-2">
               {warnings.slice(0, 2).map((warning) => (
-                <div key={warning} className="rounded-full border border-amber-500/25 bg-amber-500/12 px-3 py-1.5 text-xs text-amber-100">
+                <div key={warning} className="rounded-full border border-violet-500/25 bg-violet-500/12 px-3 py-1.5 text-xs text-violet-100">
                   {warning}
                 </div>
               ))}
@@ -246,7 +246,7 @@ export function CommandRoomV2({
         <footer className="mt-2 pb-1">
           <div className="praxis-v2-panel px-4 py-3 text-xs text-zinc-400">
             Signal → Decision → Workflow → Feedback → Replay is active for{" "}
-            <span className="mono-data text-amber-100">{selectedTicket?.ticketId || "INC-4821"}</span> with confidence{" "}
+            <span className="mono-data text-violet-100">{selectedTicket?.ticketId || "INC-4821"}</span> with confidence{" "}
             <span className="mono-data text-zinc-200">{confidenceFor(selectedTicket).toFixed(2)}</span>.
           </div>
         </footer>

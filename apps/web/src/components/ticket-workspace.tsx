@@ -446,7 +446,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
     return (
       <div className="ops-shell min-h-[100dvh] px-4 py-5 text-white sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl rounded-[2rem] border border-zinc-800 bg-black/20 p-8">
-          <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-amber-300">Loading workspace</div>
+          <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-violet-300">Loading workspace</div>
           <div className="mt-4 text-sm text-zinc-400">Pulling ticket state, operators, categories, labels, and comments.</div>
         </div>
       </div>
@@ -476,7 +476,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
         <div className="ops-glass rounded-[2rem] px-5 py-5 sm:px-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
-              <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-amber-300">
+              <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-violet-300">
                 {ticketId ? "Ticket Workspace" : "New Ticket"}
               </div>
               <h1 className="mt-3 text-3xl font-semibold tracking-tight text-white">
@@ -527,7 +527,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                 type="button"
                 onClick={handleFloppyDiskTicket}
                 disabled={isSaving}
-                className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
+                className="inline-flex items-center gap-2 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
               >
                 <FloppyDisk className="h-4 w-4" />
                 {isSaving ? "Saving..." : ticketId ? "FloppyDisk changes" : "Create ticket"}
@@ -540,7 +540,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
           <section className="space-y-6 py-20">
             <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
               <div className="flex items-center gap-3">
-                <FileText className="h-5 w-5 text-amber-300" />
+                <FileText className="h-5 w-5 text-violet-300" />
                 <div>
                   <div className="text-lg font-semibold text-white">Ticket record</div>
                   <div className="mt-1 text-sm text-zinc-500">Create or update the operational facts that drive the queue.</div>
@@ -553,7 +553,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.title}
                     onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Briefly describe the issue"
                   />
                 </label>
@@ -562,7 +562,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.requester}
                     onChange={(event) => setForm((current) => ({ ...current, requester: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Who raised the ticket?"
                   />
                 </label>
@@ -571,7 +571,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.status}
                     onChange={(event) => setForm((current) => ({ ...current, status: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     {statuses.map((status) => (
                       <option key={status} value={status}>
@@ -585,7 +585,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.priority}
                     onChange={(event) => setForm((current) => ({ ...current, priority: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     {priorities.map((priority) => (
                       <option key={priority} value={priority}>
@@ -599,7 +599,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.category_id}
                     onChange={(event) => setForm((current) => ({ ...current, category_id: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     <option value="">No category</option>
                     {options.categories.map((category) => (
@@ -639,7 +639,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.staff_assigned}
                     onChange={(event) => setForm((current) => ({ ...current, staff_assigned: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     <option value="">Unassigned</option>
                     {currentAssignees.map((assignee) => (
@@ -679,7 +679,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.request_type}
                     onChange={(event) => setForm((current) => ({ ...current, request_type: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Used if you intentionally leave category unset"
                   />
                 </label>
@@ -688,7 +688,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.site_id}
                     onChange={(event) => setForm((current) => ({ ...current, site_id: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Optional site, asset, or tenant reference"
                   />
                 </label>
@@ -697,7 +697,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <textarea
                     value={form.description}
                     onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                    className="mt-2 min-h-[160px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 min-h-[160px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Capture the actual operating context, error, and request details."
                   />
                 </label>
@@ -706,7 +706,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <textarea
                     value={form.resolution_notes}
                     onChange={(event) => setForm((current) => ({ ...current, resolution_notes: event.target.value }))}
-                    className="mt-2 min-h-[120px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                    className="mt-2 min-h-[120px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Document what fixed it, what remains open, or what operators should know."
                   />
                 </label>
@@ -731,7 +731,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                         }
                         className={`rounded-full border px-3 py-2 text-xs font-medium transition hover:scale-105 transition-transform duration-500 ${
                           active
-                            ? "border-amber-400/30 bg-amber-500/12 text-amber-100"
+                            ? "border-violet-400/30 bg-violet-500/12 text-violet-100"
                             : "border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:border-zinc-500"
                         }`}
                         style={!active ? undefined : { boxShadow: `inset 0 0 0 1px ${label.color}55` }}
@@ -746,7 +746,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
 
             <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
               <div className="flex items-center gap-3">
-                <Paperclip className="h-5 w-5 text-amber-300" />
+                <Paperclip className="h-5 w-5 text-violet-300" />
                 <div>
                   <div className="text-lg font-semibold text-white">Ticket files</div>
                   <div className="mt-1 text-sm text-zinc-500">Attach screenshots, PDFs, and text files directly to the ticket.</div>
@@ -767,7 +767,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                             href={attachmentLink(attachment)}
                             target="_blank"
                             rel="noreferrer"
-                            className="truncate text-sm font-medium text-amber-100 hover:text-amber-200 hover:scale-105 transition-transform duration-500"
+                            className="truncate text-sm font-medium text-violet-100 hover:text-violet-200 hover:scale-105 transition-transform duration-500"
                           >
                             {attachment.original_name}
                           </a>
@@ -805,7 +805,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
           <section className="space-y-6 py-20">
             <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
               <div className="flex items-center gap-3">
-                <Chat className="h-5 w-5 text-amber-300" />
+                <Chat className="h-5 w-5 text-violet-300" />
                 <div>
                   <div className="text-lg font-semibold text-white">Comments and worklog</div>
                   <div className="mt-1 text-sm text-zinc-500">Use comments as the collaborative timeline for the ticket.</div>
@@ -816,7 +816,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                 <textarea
                   value={commentBody}
                   onChange={(event) => setCommentBody(event.target.value)}
-                  className="min-h-[120px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                  className="min-h-[120px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   placeholder="Add a meaningful update, next step, diagnostic note, or customer-facing summary."
                 />
                 <FileDropzone files={commentFiles} onChange={setCommentFiles} label="Attach files to this comment" />
@@ -824,7 +824,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   type="button"
                   onClick={handleSubmitComment}
                   disabled={isSubmittingComment}
-                  className="inline-flex items-center gap-2 rounded-full bg-amber-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-amber-300 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
+                  className="inline-flex items-center gap-2 rounded-full bg-violet-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-violet-300 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
                 >
                   <Plus className="h-4 w-4" />
                   {isSubmittingComment ? "Posting..." : "Add comment"}
@@ -867,13 +867,13 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                           <textarea
                             value={editingCommentBody}
                             onChange={(event) => setEditingCommentBody(event.target.value)}
-                            className="min-h-[100px] w-full rounded-2xl border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-amber-400/50"
+                            className="min-h-[100px] w-full rounded-2xl border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                           />
                           <div className="flex gap-2">
                             <button
                               type="button"
                               onClick={handleUpdateComment}
-                              className="rounded-full bg-amber-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500"
+                              className="rounded-full bg-violet-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-violet-400 hover:scale-105 transition-transform duration-500"
                             >
                               FloppyDisk edit
                             </button>
@@ -902,7 +902,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                                     href={attachmentLink(attachment)}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="truncate text-sm font-medium text-amber-100 hover:text-amber-200 hover:scale-105 transition-transform duration-500"
+                                    className="truncate text-sm font-medium text-violet-100 hover:text-violet-200 hover:scale-105 transition-transform duration-500"
                                   >
                                     {attachment.original_name}
                                   </a>
@@ -947,7 +947,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
             {detail ? (
               <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
                 <div className="flex items-center gap-3">
-                  <Shield className="h-5 w-5 text-amber-300" />
+                  <Shield className="h-5 w-5 text-violet-300" />
                   <div>
                     <div className="text-lg font-semibold text-white">Timeline and intelligence</div>
                     <div className="mt-1 text-sm text-zinc-500">Operational context stays visible beside the transactional workflow.</div>

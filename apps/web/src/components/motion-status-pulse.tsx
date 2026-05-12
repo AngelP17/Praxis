@@ -35,7 +35,7 @@ function PulseDot({ point, index }: { point: PulsePoint; index: number }) {
     return controls.stop;
   }, [intensity, point.intensity, index]);
 
-  const color = point.intensity > 0.7 ? "#f43f5e" : point.intensity > 0.4 ? "#f59e0b" : "#22c55e";
+  const color = point.intensity > 0.7 ? "#f43f5e" : point.intensity > 0.4 ? "#715BFF" : "#22c55e";
 
   return (
     <motion.div

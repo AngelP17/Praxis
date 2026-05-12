@@ -87,7 +87,7 @@ export default function IncidentsPage() {
               <div className="mono-data text-[11px] text-zinc-500">{incidents.length} total</div>
             </div>
             {errorMessage ? (
-              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">{errorMessage}</div>
+              <div className="mt-4 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{errorMessage}</div>
             ) : null}
           </div>
 
@@ -99,7 +99,7 @@ export default function IncidentsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search incidents..."
-                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-amber-400/45"
+                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/45"
               />
             </label>
           </div>
@@ -110,7 +110,7 @@ export default function IncidentsPage() {
               {filtered.length === incidents.length ? (
                 <button
                   onClick={() => setFiltered(incidents)}
-                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-amber-500/30 bg-amber-500/10 text-amber-200 hover:scale-105 transition-transform duration-500"
+                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-violet-500/30 bg-violet-500/10 text-violet-200 hover:scale-105 transition-transform duration-500"
                 >
                   All
                 </button>
@@ -143,14 +143,14 @@ export default function IncidentsPage() {
                 <Link
                   key={incident.id}
                   href={`/incidents/${incident.id}`}
-                  className="group flex flex-col gap-3 rounded-xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500 sm:flex-row sm:items-center sm:justify-between"
+                  className="group flex flex-col gap-3 rounded-xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="mono-data text-[10px] text-zinc-500">{incident.id}</span>
                       <span className={`rounded-full border px-2.5 py-1 text-[10px] font-medium ${
                         incident.status === "Investigating" ? "border-rose-500/20 bg-rose-500/10 text-rose-200" :
-                        incident.status === "Mitigating" ? "border-amber-500/20 bg-amber-500/10 text-amber-200" :
+                        incident.status === "Mitigating" ? "border-violet-500/20 bg-violet-500/10 text-violet-200" :
                         "border-emerald-500/20 bg-emerald-500/10 text-emerald-200"
                       }`}>
                         {incident.status}
@@ -173,7 +173,7 @@ export default function IncidentsPage() {
                       <Clock size={10} className="text-zinc-600" />
                       {Math.round(incident.confidence)}%
                     </span>
-                    <ArrowRight size={14} className="text-zinc-600 transition group-hover:text-amber-300" />
+                    <ArrowRight size={14} className="text-zinc-600 transition group-hover:text-violet-300" />
                   </div>
                 </Link>
               ))

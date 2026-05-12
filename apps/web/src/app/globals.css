@@ -15,12 +15,12 @@
   --color-text-primary: #f4f4f5;
   --color-text-secondary: #a1a1aa;
   --color-text-muted: #52525b;
-  --color-accent: #f59e0b;
-  --color-accent-dim: rgba(245, 158, 11, 0.08);
-  --color-slate: #64748b;
-  --color-emerald: #22c55e;
-  --color-rose: #f43f5e;
-  --color-orange: #f97316;
+  --color-accent: #715BFF;
+  --color-accent-dim: rgba(113, 91, 255, 0.08);
+  --color-slate: #86819F;
+  --color-emerald: #3EFFA8;
+  --color-rose: #EF4444;
+  --color-orange: #715BFF;
 }
 
 @font-face {

@@ -16,7 +16,7 @@ export function OperatorFeedbackStack({
           <div className="praxis-v2-eyebrow">Human Feedback</div>
           <p className="mt-1 text-xs text-zinc-400">Operator checkpoints before closure</p>
         </div>
-        <ChatCircleDots size={15} className="text-amber-200" />
+        <ChatCircleDots size={15} className="text-violet-200" />
       </div>
 
       <div className="mt-3 space-y-2">
@@ -39,8 +39,8 @@ export function OperatorFeedbackStack({
                   </>
                 ) : (
                   <>
-                    <WarningCircle size={13} className="text-amber-300" />
-                    <span className="text-amber-100">Needs another sampling window</span>
+                    <WarningCircle size={13} className="text-violet-300" />
+                    <span className="text-violet-100">Needs another sampling window</span>
                   </>
                 )}
               </div>

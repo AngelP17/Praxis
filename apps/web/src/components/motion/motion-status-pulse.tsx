@@ -17,7 +17,7 @@ export function MotionStatusPulse({ points }: { points: PulsePoint[] }) {
 
 function PulseDot({ point, index }: { point: PulsePoint; index: number }) {
   const intensity = useMotionValue(point.intensity);
-  const color = point.intensity > 0.7 ? "#f43f5e" : point.intensity > 0.4 ? "#f59e0b" : "#22c55e";
+  const color = point.intensity > 0.7 ? "#f43f5e" : point.intensity > 0.4 ? "#715BFF" : "#22c55e";
 
   useEffect(() => {
     const controls = animate(intensity, [point.intensity, 1, point.intensity], {

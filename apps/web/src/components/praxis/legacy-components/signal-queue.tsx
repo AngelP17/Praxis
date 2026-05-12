@@ -6,17 +6,17 @@ import type { QueueTicket } from "@/lib/hooks/use-command-feed";
 
 const priorityPalette: Record<string, string> = {
   Critical: "#f43f5e",
-  High: "#f97316",
-  Medium: "#f59e0b",
+  High: "#715BFF",
+  Medium: "#715BFF",
   Low: "#71717a",
 };
 
 const statusPalette: Record<string, string> = {
   Closed: "#22c55e",
   Resolved: "#22c55e",
-  "In Progress": "#f59e0b",
-  "Waiting for Info": "#f59e0b",
-  Open: "#f97316",
+  "In Progress": "#715BFF",
+  "Waiting for Info": "#715BFF",
+  Open: "#715BFF",
 };
 
 export function SignalQueue({
@@ -66,11 +66,11 @@ export function SignalQueue({
           <h2 className="mt-1 text-2xl font-semibold text-zinc-50">Ranked events</h2>
           <p className="mt-1 text-sm text-zinc-400">Source, asset, and decision score for each live signal.</p>
         </div>
-        <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-amber-300">{tickets.length} visible</span>
+        <span className="mono-data text-[11px] uppercase tracking-[0.22em] text-violet-300">{tickets.length} visible</span>
       </div>
 
       {(mode === "demo" || mode === "stale") && (
-        <div className="mt-3 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+        <div className="mt-3 rounded-xl border border-violet-500/25 bg-violet-500/10 px-3 py-2 text-xs text-violet-100">
           {mode === "demo" ? "Operations snapshot active" : "Live feed is partially stale"}
         </div>
       )}
@@ -89,8 +89,8 @@ export function SignalQueue({
               onClick={() => onSelect(ticket.ticketId)}
               className={`block w-full rounded-[1.1rem] border px-4 py-4 text-left transition ${
                 selectedId === ticket.ticketId
-                  ? "border-amber-400/30 bg-amber-500/[0.06]"
-                  : "border-zinc-800/60 bg-black/20 hover:border-amber-400/20 hover:bg-amber-500/[0.03]"
+                  ? "border-violet-400/30 bg-violet-500/[0.06]"
+                  : "border-zinc-800/60 bg-black/20 hover:border-violet-400/20 hover:bg-violet-500/[0.03]"
               }`}
             >
               <div className="grid grid-flow-dense gap-4 xl:grid-cols-[48px,minmax(0,1fr),124px] xl:items-center">

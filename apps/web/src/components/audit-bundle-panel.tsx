@@ -27,9 +27,9 @@ export function AuditBundlePanel({
       case "event":
         return "bg-slate-500/10 text-slate-300 border-slate-500/20";
       case "decision":
-        return "bg-amber-500/10 text-amber-300 border-amber-500/20";
+        return "bg-violet-500/10 text-violet-300 border-violet-500/20";
       case "feedback":
-        return "bg-amber-500/10 text-amber-300 border-amber-500/20";
+        return "bg-violet-500/10 text-violet-300 border-violet-500/20";
       case "resolution":
         return "bg-emerald-500/10 text-emerald-300 border-emerald-500/20";
     }
@@ -39,14 +39,14 @@ export function AuditBundlePanel({
     <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="flex items-center justify-between border-b border-zinc-800/70 pb-4">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="h-4 w-4 text-amber-300" />
+          <ShieldCheck className="h-4 w-4 text-violet-300" />
           <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Audit Bundle</div>
         </div>
         {onExport && (
           <button
             type="button"
             onClick={onExport}
-            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-950/50 px-3 py-1.5 text-[11px] font-medium text-zinc-300 transition hover:border-amber-500/20 hover:text-amber-200 hover:scale-105 transition-transform duration-500"
+            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700 bg-zinc-950/50 px-3 py-1.5 text-[11px] font-medium text-zinc-300 transition hover:border-violet-500/20 hover:text-violet-200 hover:scale-105 transition-transform duration-500"
           >
             <Download className="h-3.5 w-3.5" />
             Export

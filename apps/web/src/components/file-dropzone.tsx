@@ -67,12 +67,12 @@ export function FileDropzone({
         }}
         className={`rounded-[1.25rem] border border-dashed px-4 py-5 transition ${
           isOver
-            ? "border-amber-400/50 bg-amber-500/10"
+            ? "border-violet-400/50 bg-violet-500/10"
             : "border-zinc-700/70 bg-zinc-950/50 hover:border-zinc-500/80 hover:bg-zinc-900/60"
         }`}
       >
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/6 bg-black/30 text-amber-300">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/6 bg-black/30 text-violet-300">
             <CloudArrowUp className="h-5 w-5" />
           </div>
           <div className="min-w-0">

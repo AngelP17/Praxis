@@ -186,7 +186,7 @@ export default function IncidentDetailPage() {
           </div>
 
           {notice ? (
-            <div className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-4 py-2.5 text-sm text-amber-100">{notice}</div>
+            <div className="mt-4 rounded-xl border border-violet-500/25 bg-violet-500/10 px-4 py-2.5 text-sm text-violet-100">{notice}</div>
           ) : null}
 
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 grid-flow-dense">
@@ -202,16 +202,16 @@ export default function IncidentDetailPage() {
             <div className="praxis-v2-panel h-full p-4 sm:p-5">
               <div className="praxis-v2-eyebrow">Incident Focus</div>
               <p className="mt-3 text-sm leading-7 text-zinc-300">{payload.common_cause}</p>
-              <div className="mt-4 rounded-xl border border-amber-500/30 bg-amber-500/12 p-4">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-amber-100">Praxis recommendation</div>
-                <p className="mt-2 text-sm leading-7 text-amber-50">{payload.recommended_action}</p>
+              <div className="mt-4 rounded-xl border border-violet-500/30 bg-violet-500/12 p-4">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-violet-100">Praxis recommendation</div>
+                <p className="mt-2 text-sm leading-7 text-violet-50">{payload.recommended_action}</p>
               </div>
 
               <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 grid-flow-dense">
                 {["SLO burn rate", "Kubernetes event window", "Forensic waveform capture", "Operator response runbook"].map((item, index) => (
                   <div key={item} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
                     <div className="inline-flex items-center gap-1.5 text-xs text-zinc-300">
-                      {index % 2 === 0 ? <ChartLine size={13} className="text-amber-200" /> : <Waveform size={13} className="text-amber-200" />}
+                      {index % 2 === 0 ? <ChartLine size={13} className="text-violet-200" /> : <Waveform size={13} className="text-violet-200" />}
                       {item}
                     </div>
                   </div>
@@ -293,13 +293,13 @@ export default function IncidentDetailPage() {
               <Link
                 key={ticket.ticket_id}
                 href={`/tickets/${ticket.ticket_id}`}
-                className="grid gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5 transition hover:border-amber-400/35 hover:scale-105 transition-transform duration-500 md:grid-cols-[130px,minmax(0,1fr),180px] grid-flow-dense"
+                className="grid gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5 transition hover:border-violet-400/35 hover:scale-105 transition-transform duration-500 md:grid-cols-[130px,minmax(0,1fr),180px] grid-flow-dense"
               >
                 <div className="mono-data text-xs text-zinc-100">{ticket.ticket_id}</div>
                 <div className="text-sm text-zinc-300">{ticket.title}</div>
                 <div className="flex items-center gap-2 md:justify-end">
                   <span className="rounded-full border border-zinc-700 px-2 py-0.5 text-[10px] text-zinc-300">{ticket.status}</span>
-                  <span className="mono-data rounded-full border border-amber-500/25 bg-amber-500/10 px-2 py-0.5 text-[10px] text-amber-100">
+                  <span className="mono-data rounded-full border border-violet-500/25 bg-violet-500/10 px-2 py-0.5 text-[10px] text-violet-100">
                     {score(ticket.priority_score)}
                   </span>
                 </div>
@@ -323,7 +323,7 @@ export default function IncidentDetailPage() {
         <footer className="mt-4 pb-1">
           <div className="praxis-v2-panel px-4 py-2.5 text-xs text-zinc-400">
             <div className="inline-flex items-center gap-1.5">
-              <Hash size={12} className="text-amber-200" />
+              <Hash size={12} className="text-violet-200" />
               Incident linked to replay hash chain and audit export.
             </div>
           </div>

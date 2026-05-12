@@ -17,7 +17,7 @@ export function FooterSection() {
           <div className="mt-10">
             <Link
               href="/command-center"
-              className="inline-flex min-h-12 items-center gap-2.5 rounded-full bg-amber-500 px-8 py-4 text-sm font-semibold text-zinc-950 transition-all duration-300 hover:bg-amber-400 hover:shadow-[0_0_50px_rgba(245,158,11,0.3)]"
+              className="inline-flex min-h-12 items-center gap-2.5 rounded-full bg-violet-500 px-8 py-4 text-sm font-semibold text-zinc-950 transition-all duration-300 hover:bg-violet-400 hover:shadow-[0_0_50px_rgba(245,158,11,0.3)]"
             >
               Enter Command Center
               <ArrowRight size={16} />

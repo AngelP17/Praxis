@@ -6,20 +6,20 @@
  */
 
 .sv3 {
-  --sv3-bg: #0E0E0F;
-  --sv3-plate: #131315;
-  --sv3-plate-2: #17171A;
-  --sv3-line: rgba(255,255,255,0.06);
-  --sv3-line-strong: rgba(255,255,255,0.10);
-  --sv3-amber: #E5A83B;
-  --sv3-amber-soft: rgba(229,168,59,0.16);
-  --sv3-amber-line: rgba(229,168,59,0.32);
-  --sv3-amber-glow: rgba(229,168,59,0.45);
-  --sv3-fg: #ECEAE6;
-  --sv3-muted: #8E8A82;
-  --sv3-subtle: #5C5852;
-  --sv3-ok: #4ADE80;
-  --sv3-warn: #F5C542;
+  --sv3-bg: #0A0A14;
+  --sv3-plate: #13121F;
+  --sv3-plate-2: #1C1A2E;
+  --sv3-line: rgba(241,237,223,0.06);
+  --sv3-line-strong: rgba(241,237,223,0.10);
+  --sv3-amber: #715BFF;
+  --sv3-amber-soft: rgba(113,91,255,0.16);
+  --sv3-amber-line: rgba(113,91,255,0.32);
+  --sv3-amber-glow: rgba(113,91,255,0.45);
+  --sv3-fg: #F1EDDF;
+  --sv3-muted: #86819F;
+  --sv3-subtle: #48455A;
+  --sv3-ok: #3EFFA8;
+  --sv3-warn: #715BFF;
   --sv3-crit: #EF4444;
   --sv3-info: #60A5FA;
 
@@ -45,8 +45,8 @@
 .sv3-bg {
   position: relative;
   background:
-    radial-gradient(1200px 600px at 90% -10%, rgba(229,168,59,0.10), transparent 55%),
-    radial-gradient(900px 500px at 0% 100%, rgba(229,168,59,0.04), transparent 60%),
+    radial-gradient(1200px 600px at 90% -10%, rgba(113,91,255,0.10), transparent 55%),
+    radial-gradient(900px 500px at 0% 100%, rgba(62,255,168,0.04), transparent 60%),
     var(--sv3-bg);
 }
 .sv3-bg::before {
@@ -84,7 +84,7 @@
 .sv3-plate-crisp { border-color: var(--sv3-line-strong); }
 .sv3-plate-amber {
   border-color: var(--sv3-amber-line);
-  box-shadow: inset 0 1px 0 rgba(229,168,59,0.10);
+  box-shadow: inset 0 1px 0 rgba(113,91,255,0.10);
 }
 
 /* Pulse dots */

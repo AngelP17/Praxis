@@ -54,7 +54,7 @@ export function CommandTopBar({
       <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
         <div className="max-w-4xl">
           <div className="flex flex-wrap items-center gap-3">
-            <p className="mono-data text-[10px] uppercase tracking-[0.32em] text-amber-300">Praxis</p>
+            <p className="mono-data text-[10px] uppercase tracking-[0.32em] text-violet-300">Praxis</p>
             <StatusBadge status={feedStatus} mode={feedMode} />
             <MotionStatusPulse
               points={[
@@ -67,7 +67,7 @@ export function CommandTopBar({
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
+          <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 hover:scale-105 transition-transform duration-500">
             <Plus className="h-4 w-4" />
             New ticket
           </Link>
@@ -113,7 +113,7 @@ export function CommandTopBar({
             </span>
           </div>
           {warnings.map((w) => (
-            <div key={w} className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-500/10 px-3 py-2 text-amber-100">
+            <div key={w} className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/10 px-3 py-2 text-violet-100">
               <Warning className="h-3.5 w-3.5" />
               <span>{w}</span>
             </div>
@@ -126,7 +126,7 @@ export function CommandTopBar({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search queue, owner, category, or ticket..."
-            className="w-full rounded-2xl border border-zinc-800 bg-black/20 py-3 pl-10 pr-4 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-amber-400/30"
+            className="w-full rounded-2xl border border-zinc-800 bg-black/20 py-3 pl-10 pr-4 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/30"
           />
         </label>
       </div>
@@ -139,11 +139,11 @@ function StatusBadge({ status, mode }: { status: FeedStatus; mode: FeedMode }) {
     status === "ready" && mode === "live"
       ? { dot: "#22c55e", border: "border-emerald-500/20", bg: "bg-emerald-500/8", text: "text-emerald-200", label: "Live data active" }
       : status === "ready" && mode === "demo"
-      ? { dot: "#f59e0b", border: "border-amber-500/25", bg: "bg-amber-500/12", text: "text-amber-100", label: "Operations snapshot active" }
+      ? { dot: "#715BFF", border: "border-violet-500/25", bg: "bg-violet-500/12", text: "text-violet-100", label: "Operations snapshot active" }
       : status === "ready" && mode === "stale"
-      ? { dot: "#f59e0b", border: "border-amber-500/20", bg: "bg-amber-500/8", text: "text-amber-100", label: "Live data partially stale" }
+      ? { dot: "#715BFF", border: "border-violet-500/20", bg: "bg-violet-500/8", text: "text-violet-100", label: "Live data partially stale" }
       : status === "loading"
-      ? { dot: "#f59e0b", border: "border-amber-500/20", bg: "bg-amber-500/8", text: "text-amber-100", label: "Syncing live data" }
+      ? { dot: "#715BFF", border: "border-violet-500/20", bg: "bg-violet-500/8", text: "text-violet-100", label: "Syncing live data" }
       : { dot: "#f43f5e", border: "border-rose-500/20", bg: "bg-rose-500/10", text: "text-rose-100", label: "Live data unavailable" };
 
   return (

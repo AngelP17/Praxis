@@ -35,7 +35,7 @@ export function HumanFeedbackPanel({
   return (
     <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
       <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
-        <ChatText className="h-4 w-4 text-amber-300" />
+        <ChatText className="h-4 w-4 text-violet-300" />
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Human Feedback</div>
         <div className="mono-data ml-auto text-[11px] text-zinc-600">{feedback.length} responses</div>
       </div>
@@ -52,7 +52,7 @@ export function HumanFeedbackPanel({
                 ? "border-emerald-500/15 bg-emerald-500/[0.04]"
                 : item.verdict === "reject"
                 ? "border-rose-500/15 bg-rose-500/[0.04]"
-                : "border-amber-500/15 bg-amber-500/[0.04]"
+                : "border-violet-500/15 bg-violet-500/[0.04]"
             }`}
           >
             <div className="flex items-center justify-between gap-2">
@@ -63,7 +63,7 @@ export function HumanFeedbackPanel({
                     ? "text-emerald-400"
                     : item.verdict === "reject"
                     ? "text-rose-400"
-                    : "text-amber-400"
+                    : "text-violet-400"
                 }`}
               >
                 {item.verdict}
@@ -113,7 +113,7 @@ export function HumanFeedbackPanel({
               onClick={() => setVerdict("question")}
               className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${
                 verdict === "question"
-                  ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
+                  ? "bg-violet-500/15 text-violet-200 border border-violet-500/20"
                   : "text-zinc-500 hover:text-zinc-300 border border-transparent"
               }`}
             >
@@ -133,13 +133,13 @@ export function HumanFeedbackPanel({
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Add context to your feedback..."
                 rows={3}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-amber-500/30 focus:outline-none resize-none"
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-violet-500/30 focus:outline-none resize-none"
               />
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="mt-2 inline-flex items-center gap-2 rounded-full bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 disabled:opacity-60 hover:scale-105 transition-transform duration-500"
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 disabled:opacity-60 hover:scale-105 transition-transform duration-500"
               >
                 <PaperPlaneRight className="h-4 w-4" />
                 {isSubmitting ? "Submitting..." : "Submit Feedback"}

@@ -31,7 +31,7 @@ export function ProductShellPreview() {
               <span className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-300">Replay + Decision Context</span>
             </div>
             <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
-              <ClockCounterClockwise size={11} className="text-amber-200" />
+              <ClockCounterClockwise size={11} className="text-violet-200" />
               26:27 UTC
             </div>
           </div>
@@ -46,11 +46,11 @@ export function ProductShellPreview() {
             {queue.map((item, index) => (
               <div
                 key={item.id}
-                className={`rounded-lg border px-2.5 py-2 ${index === 0 ? "border-amber-400/40 bg-amber-500/12" : "border-zinc-800/80 bg-zinc-900/75"}`}
+                className={`rounded-lg border px-2.5 py-2 ${index === 0 ? "border-violet-400/40 bg-violet-500/12" : "border-zinc-800/80 bg-zinc-900/75"}`}
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="mono-data text-[11px] text-zinc-100">{item.id}</span>
-                  <span className="mono-data text-[11px] text-amber-200">P{item.score}</span>
+                  <span className="mono-data text-[11px] text-violet-200">P{item.score}</span>
                 </div>
                 <div className="mt-1 text-[11px] leading-5 text-zinc-300">{item.title}</div>
                 <div className="mt-1 text-[10px] text-zinc-500">{item.source}</div>
@@ -77,15 +77,15 @@ export function ProductShellPreview() {
               <p className="mt-1.5 text-xs leading-5 text-zinc-200">Route to mechanical team and schedule bearing replacement.</p>
               <div className="mt-2 text-[11px] text-zinc-500">Root cause: bearing degradation</div>
               <div className="mt-2 inline-flex items-center gap-1.5 rounded-md border border-zinc-700/70 bg-zinc-900/75 px-2 py-1 text-[10px] text-zinc-300">
-                <DotsThree size={12} className="text-amber-200" />
+                <DotsThree size={12} className="text-violet-200" />
                 operator checkpoint pending
               </div>
             </div>
             <div className="rounded-xl border border-zinc-700/70 bg-zinc-950/85 p-3.5">
               <div className="praxis-v2-eyebrow">Replay Hash</div>
-              <div className="mono-data mt-1.5 text-[11px] text-amber-100">sha256:inc-4821c9a2f</div>
+              <div className="mono-data mt-1.5 text-[11px] text-violet-100">sha256:inc-4821c9a2f</div>
               <div className="mt-2 inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
-                <ClockCounterClockwise size={12} className="text-amber-200" />
+                <ClockCounterClockwise size={12} className="text-violet-200" />
                 Deterministic replay chain
               </div>
             </div>
@@ -109,7 +109,7 @@ export function ProductShellPreview() {
                 {evidence.map((item, index) => (
                   <div key={item} className="inline-flex w-full items-center justify-between rounded-md border border-zinc-800/80 bg-zinc-900/75 px-2 py-1.5">
                     <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-300">
-                      {index % 2 === 0 ? <Waveform size={11} className="text-amber-200" /> : <ChartLine size={11} className="text-amber-200" />}
+                      {index % 2 === 0 ? <Waveform size={11} className="text-violet-200" /> : <ChartLine size={11} className="text-violet-200" />}
                       {item}
                     </div>
                     <span className="mono-data text-[9px] text-zinc-500">{index === 2 ? "captured" : "ok"}</span>
@@ -136,7 +136,7 @@ function MiniMetric({
   return (
     <div className="rounded-md border border-zinc-800/80 bg-zinc-900/75 px-2 py-1.5">
       <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-500">
-        <Icon size={11} className="text-amber-200" />
+        <Icon size={11} className="text-violet-200" />
         {label}
       </div>
       <div className="mono-data mt-1 text-[11px] text-zinc-100">{value}</div>

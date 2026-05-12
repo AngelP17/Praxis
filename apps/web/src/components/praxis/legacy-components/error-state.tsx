@@ -16,7 +16,7 @@ export function ErrorState({ message, onRetry }: { message: string | null; onRet
         <button
           type="button"
           onClick={onRetry}
-          className="inline-flex items-center gap-2 rounded-full border border-amber-400/20 bg-amber-500/10 px-4 py-2.5 text-sm font-medium text-amber-100 transition hover:bg-amber-500/20 hover:scale-105 transition-transform duration-500"
+          className="inline-flex items-center gap-2 rounded-full border border-violet-400/20 bg-violet-500/10 px-4 py-2.5 text-sm font-medium text-violet-100 transition hover:bg-violet-500/20 hover:scale-105 transition-transform duration-500"
         >
           <Pulse className="h-4 w-4" />
           Retry live sync

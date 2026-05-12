@@ -32,11 +32,11 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
                 transition={{ type: "spring", stiffness: 100, damping: 20, delay: index * 0.1 }}
                 className="mx-auto flex h-8 w-8 items-center justify-center rounded-full border-2 z-10 relative"
                 style={{
-                  borderColor: isComplete ? "#22c55e" : isActive ? "#f59e0b" : "#3f3f46",
+                  borderColor: isComplete ? "#22c55e" : isActive ? "#715BFF" : "#3f3f46",
                   backgroundColor: isComplete ? "rgba(34,197,94,0.15)" : isActive ? "rgba(245,158,11,0.15)" : "rgba(9,9,11,0.8)",
                 }}
               >
-                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: isComplete ? "#22c55e" : isActive ? "#f59e0b" : "#3f3f46" }} />
+                <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: isComplete ? "#22c55e" : isActive ? "#715BFF" : "#3f3f46" }} />
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
@@ -44,7 +44,7 @@ export function MotionReplayRail({ nodes }: { nodes: RailNode[] }) {
                 transition={{ delay: index * 0.1 + 0.05, type: "spring", stiffness: 100, damping: 20 }}
                 className="mt-3 text-center"
               >
-                <Link href={node.href} className={`inline-flex items-center gap-1 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${isActive ? "text-amber-300" : "text-zinc-500 hover:text-zinc-300"}`}>
+                <Link href={node.href} className={`inline-flex items-center gap-1 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${isActive ? "text-violet-300" : "text-zinc-500 hover:text-zinc-300"}`}>
                   {node.label}
                   {isActive && <ArrowRight className="h-3 w-3" />}
                 </Link>

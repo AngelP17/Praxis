@@ -147,11 +147,11 @@ export default function RecommendationsPage() {
                 <h1 className="mt-2 text-2xl font-semibold text-zinc-50">Intelligent Automation Queue</h1>
                 <p className="mt-2 text-sm text-zinc-400">Accept or reject recommendation records directly through <span className="mono-data">/api/recommendations/{`{id}`}/accept|reject</span>.</p>
               </div>
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/70 bg-zinc-900/70 text-amber-200">
+              <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/70 bg-zinc-900/70 text-violet-200">
                 <Sparkle size={16} />
               </div>
             </div>
-            {notice ? <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">{notice}</div> : null}
+            {notice ? <div className="mt-3 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{notice}</div> : null}
           </section>
 
           <section className="praxis-v2-panel p-4 sm:p-5 py-20">

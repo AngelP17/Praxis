@@ -8,9 +8,9 @@ export function HeroSection() {
   return (
     <section className="relative px-4 py-24 sm:px-6 md:py-32 lg:px-8">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-x-[4%] top-[16%] h-px bg-gradient-to-r from-transparent via-amber-400/45 to-transparent" />
-        <div className="absolute bottom-[16%] left-[8%] right-[8%] h-px bg-gradient-to-r from-transparent via-amber-400/20 to-transparent" />
-        <div className="absolute left-[12%] top-[28%] h-[34%] w-px bg-gradient-to-b from-transparent via-amber-400/30 to-transparent" />
+        <div className="absolute inset-x-[4%] top-[16%] h-px bg-gradient-to-r from-transparent via-violet-400/45 to-transparent" />
+        <div className="absolute bottom-[16%] left-[8%] right-[8%] h-px bg-gradient-to-r from-transparent via-violet-400/20 to-transparent" />
+        <div className="absolute left-[12%] top-[28%] h-[34%] w-px bg-gradient-to-b from-transparent via-violet-400/30 to-transparent" />
         <div className="absolute inset-0 bg-[url('https://picsum.photos/seed/praxis-industrial-forensics/1920/1080')] bg-cover bg-center opacity-[0.11] mix-blend-luminosity contrast-125 grayscale" />
       </div>
 
@@ -33,7 +33,7 @@ export function HeroSection() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <Link
                 href="/command-center"
-                className="inline-flex min-h-11 items-center gap-2.5 rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-zinc-950 transition-all duration-300 hover:scale-105 hover:bg-amber-400"
+                className="inline-flex min-h-11 items-center gap-2.5 rounded-full bg-violet-500 px-6 py-3 text-sm font-semibold text-zinc-950 transition-all duration-300 hover:scale-105 hover:bg-violet-400"
               >
                 Run Incident Demo
                 <ArrowRight size={16} />

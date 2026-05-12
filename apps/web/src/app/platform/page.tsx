@@ -149,7 +149,7 @@ export default function PlatformOverviewPage() {
                   <ArrowsClockwise size={15} />
                   Refresh
                 </button>
-                <button onClick={() => void triggerChaos("degraded")} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-amber-500/35 bg-amber-500/12 px-5 py-2.5 text-sm text-amber-100 transition-transform duration-500 hover:scale-105 hover:bg-amber-500/18">
+                <button onClick={() => void triggerChaos("degraded")} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-violet-500/35 bg-violet-500/12 px-5 py-2.5 text-sm text-violet-100 transition-transform duration-500 hover:scale-105 hover:bg-violet-500/18">
                   <WarningDiamond size={15} />
                   Chaos Degraded
                 </button>
@@ -159,7 +159,7 @@ export default function PlatformOverviewPage() {
                 </button>
               </div>
             </div>
-            {warning ? <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-3 text-sm text-amber-100">{warning}</div> : null}
+            {warning ? <div className="mt-6 rounded-xl border border-violet-500/30 bg-violet-500/10 px-5 py-3 text-sm text-violet-100">{warning}</div> : null}
             {chaosMessage ? <div className="mt-5 rounded-xl border border-zinc-600/50 bg-zinc-800/60 px-5 py-3 text-sm text-zinc-200">{chaosMessage}</div> : null}
           </section>
 
@@ -177,7 +177,7 @@ export default function PlatformOverviewPage() {
               <div className="praxis-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
                 <div className="flex items-center justify-between">
                   <div className="praxis-v2-eyebrow-enhanced">Topology</div>
-                  <Network size={16} className="text-amber-200" />
+                  <Network size={16} className="text-violet-200" />
                 </div>
                 {!topology || topology.nodes.length === 0 ? (
                   <div className="mt-6">
@@ -189,7 +189,7 @@ export default function PlatformOverviewPage() {
                       <div key={node.id} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-base font-medium text-zinc-100">{node.label}</div>
-                          <span className={`rounded-full border px-3 py-1 text-xs font-medium ${node.status === "healthy" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-100" : "border-amber-500/40 bg-amber-500/15 text-amber-100"}`}>{node.status}</span>
+                          <span className={`rounded-full border px-3 py-1 text-xs font-medium ${node.status === "healthy" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-100" : "border-violet-500/40 bg-violet-500/15 text-violet-100"}`}>{node.status}</span>
                         </div>
                         <div className="mt-2 text-sm text-zinc-400">{node.role}</div>
                       </div>
@@ -201,7 +201,7 @@ export default function PlatformOverviewPage() {
               <div className="praxis-v2-panel-enhanced card-hover-physics p-6 transition-transform duration-500 hover:scale-105 sm:p-8">
                 <div className="flex items-center justify-between">
                   <div className="praxis-v2-eyebrow-enhanced">Controls & Evidence</div>
-                  <Siren size={16} className="text-amber-200" />
+                  <Siren size={16} className="text-violet-200" />
                 </div>
                 {controls.length === 0 ? (
                   <div className="mt-6 space-y-3">
@@ -213,7 +213,7 @@ export default function PlatformOverviewPage() {
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-3">
                             <div className="truncate text-base font-medium text-zinc-100">{artifact.label}</div>
-                            <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs ${artifact.severity === "crit" ? "border-rose-500/40 bg-rose-500/15 text-rose-100" : artifact.severity === "warn" ? "border-amber-500/40 bg-amber-500/15 text-amber-100" : artifact.severity === "ok" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-100" : "border-zinc-600/60 bg-zinc-800/60 text-zinc-400"}`}>{artifact.severity}</span>
+                            <span className={`shrink-0 rounded-full border px-2.5 py-0.5 text-xs ${artifact.severity === "crit" ? "border-rose-500/40 bg-rose-500/15 text-rose-100" : artifact.severity === "warn" ? "border-violet-500/40 bg-violet-500/15 text-violet-100" : artifact.severity === "ok" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-100" : "border-zinc-600/60 bg-zinc-800/60 text-zinc-400"}`}>{artifact.severity}</span>
                           </div>
                           <div className="mt-1.5 flex items-center gap-2 text-xs text-zinc-500">
                             <span className="mono-data">{artifact.path}</span>

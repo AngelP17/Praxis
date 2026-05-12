@@ -25,7 +25,7 @@ const workbookTabs = [
   {
     name: "Executive Summary",
     description: "Queue totals, SLA pressure, incident counts, and a stakeholder-friendly top-line readout.",
-    accent: "#f59e0b",
+    accent: "#715BFF",
   },
   {
     name: "Operational Queue",
@@ -35,7 +35,7 @@ const workbookTabs = [
   {
     name: "Incident Clusters",
     description: "Grouped operational patterns with common cause, scope, and impact summary.",
-    accent: "#f59e0b",
+    accent: "#715BFF",
   },
   {
     name: "Decision Intelligence",
@@ -176,8 +176,8 @@ export default function ReportsPage() {
   }
 
   const reportHighlights = [
-    { label: "Total Tickets", value: metrics?.totalTickets ?? 0, note: "All time", color: "#f59e0b", icon: Sparkle },
-    { label: "Open Queue", value: metrics?.openTickets ?? 0, note: "Active cases", color: "#f59e0b", icon: Scan },
+    { label: "Total Tickets", value: metrics?.totalTickets ?? 0, note: "All time", color: "#715BFF", icon: Sparkle },
+    { label: "Open Queue", value: metrics?.openTickets ?? 0, note: "Active cases", color: "#715BFF", icon: Scan },
     { label: "Resolved This Week", value: metrics?.resolvedThisWeek ?? 0, note: "Last 7 days", color: "#22c55e", icon: ShieldCheck },
   ];
 
@@ -190,7 +190,7 @@ export default function ReportsPage() {
             <div className="border-b border-zinc-800/70 bg-black/20 px-5 py-5 sm:px-8">
               <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                 <div className="max-w-5xl">
-                  <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-amber-300">Reports & Export</div>
+                  <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-violet-300">Reports & Export</div>
                   <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
                     Reporting integrated with the operational platform
                   </h1>
@@ -204,12 +204,12 @@ export default function ReportsPage() {
                     type="button"
                     onClick={handleWorkbookDownload}
                     disabled={isDownloading}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
+                    className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
                   >
                     <Table size={16} />
                     {isDownloading ? "Preparing workbook..." : "Download Workbook"}
                   </button>
-                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10 hover:scale-105 transition-transform duration-500">
+                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-violet-500/30 hover:bg-violet-500/10 hover:scale-105 transition-transform duration-500">
                     <Scan size={16} />
                     Command Center
                   </Link>
@@ -292,24 +292,24 @@ export default function ReportsPage() {
                 <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
                   <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">Follow-On Surfaces</div>
                   <div className="mt-5 grid gap-3">
-                    <Link href="/dashboard" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
+                    <Link href="/dashboard" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
                       <span>System Dashboard</span>
                       <ArrowRight size={16} className="text-zinc-500" />
                     </Link>
-                    <Link href="/command-center" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
+                    <Link href="/command-center" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
                       <span>Return to live queue</span>
                       <ArrowRight size={16} className="text-zinc-500" />
                     </Link>
-                    <Link href="/board" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
+                    <Link href="/board" className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/60 px-4 py-3 text-sm text-zinc-200 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500">
                       <span>Open workflow board</span>
                       <ArrowRight size={16} className="text-zinc-500" />
                     </Link>
                   </div>
                 </div>
 
-                <div className="rounded-[1.5rem] border border-amber-500/20 bg-amber-500/10 p-5 sm:p-6">
-                  <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-amber-300">Export Behavior</div>
-                  <p className="mt-4 text-sm leading-7 text-amber-100">
+                <div className="rounded-[1.5rem] border border-violet-500/20 bg-violet-500/10 p-5 sm:p-6">
+                  <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-violet-300">Export Behavior</div>
+                  <p className="mt-4 text-sm leading-7 text-violet-100">
                     The download action stays live. If the backend feed is down, the workbook request fails without breaking the page.
                   </p>
                 </div>

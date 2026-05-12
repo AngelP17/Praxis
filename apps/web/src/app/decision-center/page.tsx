@@ -197,7 +197,7 @@ export default function DecisionCenterPage() {
                 Refresh
               </button>
             </div>
-            {notice ? <div className="mt-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-3 text-sm text-amber-100">{notice}</div> : null}
+            {notice ? <div className="mt-6 rounded-xl border border-violet-500/30 bg-violet-500/10 px-5 py-3 text-sm text-violet-100">{notice}</div> : null}
           </section>
 
           <section className="py-24 sm:py-32">
@@ -211,11 +211,11 @@ export default function DecisionCenterPage() {
                         <button
                           key={ticket.ticket_id}
                           onClick={() => setSelectedTicket(ticket.ticket_id)}
-                          className="card-hover-physics w-full rounded-xl border border-amber-500/45 bg-amber-500/14 px-4 py-4 text-left shadow-md shadow-amber-500/8 transition-transform duration-500 hover:scale-105"
+                          className="card-hover-physics w-full rounded-xl border border-violet-500/45 bg-violet-500/14 px-4 py-4 text-left shadow-md shadow-violet-500/8 transition-transform duration-500 hover:scale-105"
                         >
                           <div className="flex items-center justify-between gap-3">
                             <span className="mono-data text-sm font-medium text-zinc-100">{ticket.ticket_id}</span>
-                            <span className="mono-data text-sm text-amber-200 font-medium">{ticket.priority_score ?? 0}</span>
+                            <span className="mono-data text-sm text-violet-200 font-medium">{ticket.priority_score ?? 0}</span>
                           </div>
                           <div className="mt-2 text-base text-zinc-300">{ticket.title}</div>
                         </button>
@@ -227,7 +227,7 @@ export default function DecisionCenterPage() {
                         >
                           <div className="flex items-center justify-between gap-3">
                             <span className="mono-data text-sm font-medium text-zinc-100">{ticket.ticket_id}</span>
-                            <span className="mono-data text-sm text-amber-200 font-medium">{ticket.priority_score ?? 0}</span>
+                            <span className="mono-data text-sm text-violet-200 font-medium">{ticket.priority_score ?? 0}</span>
                           </div>
                           <div className="mt-2 text-base text-zinc-300">{ticket.title}</div>
                         </button>
@@ -268,7 +268,7 @@ export default function DecisionCenterPage() {
 
                       <div className="mt-7 rounded-xl border border-zinc-700/60 bg-zinc-800/50 p-5">
                         <div className="inline-flex items-center gap-2 text-sm font-medium text-zinc-300">
-                          <Brain size={16} className="text-amber-200" />
+                          <Brain size={16} className="text-violet-200" />
                           Recommendations
                         </div>
                         <div className="mt-6 space-y-4">

@@ -98,19 +98,19 @@ export default function EventIngestionPage() {
                   <div className="praxis-v2-eyebrow">Event Ingestion</div>
                   <h1 className="mt-2 text-2xl font-semibold text-zinc-50">Real-time Signal Intake</h1>
                 </div>
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/70 bg-zinc-900/70 text-amber-200">
+                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/70 bg-zinc-900/70 text-violet-200">
                   <UploadSimple size={16} />
                 </div>
               </div>
               <p className="mt-2 text-sm text-zinc-400">Submit synthetic operations events directly into <span className="mono-data">/api/events/ingest</span>.</p>
-              {notice ? <div className="mt-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100">{notice}</div> : null}
+              {notice ? <div className="mt-3 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{notice}</div> : null}
               <div className="mt-4 grid gap-3 sm:grid-cols-2 grid-flow-dense">
                 <Field label="Source" value={source} onChange={setSource} />
                 <Field label="Event Type" value={eventType} onChange={setEventType} />
                 <Field label="Severity" value={severity} onChange={setSeverity} />
                 <Field label="Site" value={site} onChange={setSite} />
               </div>
-              <button type="submit" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-amber-500 px-5 py-2 text-sm font-medium text-zinc-950 hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
+              <button type="submit" className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-violet-500 px-5 py-2 text-sm font-medium text-zinc-950 hover:bg-violet-400 hover:scale-105 transition-transform duration-500">
                 <Pulse size={14} />
                 Ingest Event
               </button>
@@ -149,7 +149,7 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
       <input
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 px-3 text-sm text-zinc-100 outline-none transition focus:border-amber-400/45"
+        className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 px-3 text-sm text-zinc-100 outline-none transition focus:border-violet-400/45"
       />
     </label>
   );

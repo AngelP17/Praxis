@@ -23,8 +23,8 @@ export function ForensicAccordion({ items }: { items: AccordionItem[] }) {
             </div>
           </div>
           <div className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-            <div className="absolute inset-x-0 bottom-0 h-px bg-amber-300/45" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-amber-500/8" />
+            <div className="absolute inset-x-0 bottom-0 h-px bg-violet-300/45" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-violet-500/8" />
           </div>
         </article>
       ))}

@@ -61,18 +61,18 @@ export function IncidentDetailPanel({
       className="legacy-card rounded-[1.5rem] p-5 sm:p-6"
     >
       {(mode === "demo" || mode === "stale") && (
-        <div className="mb-4 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+        <div className="mb-4 rounded-xl border border-violet-500/20 bg-violet-500/10 px-3 py-2 text-xs text-violet-100">
           {mode === "demo" ? "Operations snapshot active" : "Using stale live detail"}
         </div>
       )}
       <div className="flex items-start justify-between gap-4 border-b border-zinc-800/70 pb-4">
         <div>
-          <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-amber-300">Case Inspector</div>
+          <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-violet-300">Case Inspector</div>
           <h2 className="mt-2 text-lg font-semibold text-white">{ticket.title}</h2>
         </div>
         <Link
           href={`/tickets/${ticket.ticketId}`}
-          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-amber-400/30 hover:scale-105 transition-transform duration-500"
+          className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700/60 bg-zinc-900/60 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-violet-400/30 hover:scale-105 transition-transform duration-500"
         >
           <ArrowUpRight className="h-3.5 w-3.5" />
           Open
@@ -87,8 +87,8 @@ export function IncidentDetailPanel({
       </div>
 
       {linkedIncident && (
-        <div className="mt-4 rounded-xl border border-amber-500/10 bg-amber-500/[0.04] p-4">
-          <div className="text-[10px] uppercase tracking-wider text-amber-400/80">Linked Incident</div>
+        <div className="mt-4 rounded-xl border border-violet-500/10 bg-violet-500/[0.04] p-4">
+          <div className="text-[10px] uppercase tracking-wider text-violet-400/80">Linked Incident</div>
           <p className="mt-1 text-sm font-medium text-zinc-200">{linkedIncident.title}</p>
           <div className="mt-2 flex gap-4 text-[11px] text-zinc-500">
             <span className="mono-data">{linkedIncident.id}</span>

@@ -12,9 +12,9 @@ export type MotionSignalItem = {
 };
 
 function toneClass(tone: MotionSignalItem["tone"], selected: boolean) {
-  if (selected) return "border-amber-400/45 bg-amber-500/10";
+  if (selected) return "border-violet-400/45 bg-violet-500/10";
   if (tone === "critical") return "border-rose-400/35 bg-rose-500/8";
-  if (tone === "high") return "border-amber-400/28 bg-zinc-900/85";
+  if (tone === "high") return "border-violet-400/28 bg-zinc-900/85";
   return "border-zinc-700/70 bg-zinc-900/75";
 }
 
@@ -47,7 +47,7 @@ export function MotionSignalQueue({
             >
               <div className="flex items-start justify-between gap-2">
                 <span className="mono-data text-[12px] text-zinc-100">{item.id}</span>
-                <span className="mono-data text-[11px] text-amber-200">{item.priority}</span>
+                <span className="mono-data text-[11px] text-violet-200">{item.priority}</span>
               </div>
               <div className="mt-1.5 line-clamp-2 text-xs leading-5 text-zinc-200">{item.title}</div>
               <div className="mt-2 flex items-center justify-between gap-2 text-[11px] text-zinc-500">

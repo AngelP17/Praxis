@@ -52,7 +52,7 @@ export function BentoSection({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2 md:row-span-2"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:scale-[1.015] hover:border-violet-500/40 hover:bg-zinc-700/40 md:col-span-2 md:row-span-2"
           >
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(245,158,11,0.1),transparent_50%)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
             <div className="relative z-10 flex h-full flex-col justify-between">
@@ -81,7 +81,7 @@ export function BentoSection({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.04 }}
-            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-6 transition-all duration-500 hover:scale-[1.015] hover:border-violet-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <div className="relative z-10">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">System Health</div>
@@ -110,7 +110,7 @@ export function BentoSection({
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-zinc-300">SLA Risk</span>
-                  <span className="mono-data text-sm text-amber-300">{displayMetrics.sla_breach_risk}</span>
+                  <span className="mono-data text-sm text-violet-300">{displayMetrics.sla_breach_risk}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-zinc-300">Incident Clusters</span>
@@ -125,12 +125,12 @@ export function BentoSection({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.08 }}
-            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-5 transition-all duration-500 hover:scale-[1.015] hover:border-violet-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <div className="relative z-10 grid grid-flow-dense grid-cols-2 gap-4">
               <div>
                 <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
-                  <Pulse size={11} className="text-amber-300" />
+                  <Pulse size={11} className="text-violet-300" />
                   Throughput
                 </div>
                 <div className="mono-data mt-3 text-2xl text-zinc-100">
@@ -140,7 +140,7 @@ export function BentoSection({
               </div>
               <div>
                 <div className="inline-flex items-center gap-1.5 text-[10px] text-zinc-400">
-                  <Gauge size={11} className="text-amber-300" />
+                  <Gauge size={11} className="text-violet-300" />
                   Decision Latency
                 </div>
                 <div className="mono-data mt-3 text-2xl text-zinc-100">
@@ -156,7 +156,7 @@ export function BentoSection({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.16 }}
-            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-1 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-1 transition-all duration-500 hover:scale-[1.015] hover:border-violet-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <ForensicAccordion
               items={[
@@ -173,7 +173,7 @@ export function BentoSection({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
             transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
-            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-4 transition-all duration-500 hover:scale-[1.015] hover:border-amber-500/40 hover:bg-zinc-700/40 md:col-span-2"
+            className="bento-card group relative col-span-4 overflow-hidden rounded-2xl border border-zinc-600/40 bg-zinc-800/50 p-4 transition-all duration-500 hover:scale-[1.015] hover:border-violet-500/40 hover:bg-zinc-700/40 md:col-span-2"
           >
             <div className="mono-data mb-3 text-[10px] uppercase tracking-[0.18em] text-zinc-400">Live Lane</div>
             <SignalMarquee
@@ -187,7 +187,7 @@ export function BentoSection({
           <div className="mt-8">
             <div className="mb-4 flex items-center justify-between">
               <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-400">Recent Incidents</div>
-              <Link href="/incidents" className="text-[11px] text-amber-300 transition hover:text-amber-200 hover:scale-105 transition-transform duration-500">
+              <Link href="/incidents" className="text-[11px] text-violet-300 transition hover:text-violet-200 hover:scale-105 transition-transform duration-500">
                 View all incidents
               </Link>
             </div>
@@ -196,14 +196,14 @@ export function BentoSection({
                 <Link
                   key={incident.id}
                   href={`/incidents/${incident.id}`}
-                  className="group flex items-center justify-between rounded-xl border border-zinc-600/40 bg-zinc-800/50 px-5 py-4 transition hover:border-amber-500/40 hover:bg-zinc-700/40 hover:scale-105 transition-transform duration-500"
+                  className="group flex items-center justify-between rounded-xl border border-zinc-600/40 bg-zinc-800/50 px-5 py-4 transition hover:border-violet-500/40 hover:bg-zinc-700/40 hover:scale-105 transition-transform duration-500"
                 >
                   <div className="min-w-0">
                     <div className="flex items-center gap-3">
                       <span className="mono-data text-[10px] text-zinc-400">{incident.id}</span>
                       <span className={`rounded-full border px-2 py-0.5 text-[10px] ${
                         incident.status === "Investigating" ? "border-rose-500/20 bg-rose-500/10 text-rose-200" :
-                        incident.status === "Mitigating" ? "border-amber-500/20 bg-amber-500/10 text-amber-200" :
+                        incident.status === "Mitigating" ? "border-violet-500/20 bg-violet-500/10 text-violet-200" :
                         "border-emerald-500/20 bg-emerald-500/10 text-emerald-200"
                       }`}>
                         {incident.status}

@@ -10,7 +10,7 @@ export type ReplayNode = {
 
 function nodeTone(state: ReplayNode["state"]) {
   if (state === "complete") return "border-emerald-400/45 bg-emerald-500/15 text-emerald-100";
-  if (state === "active") return "border-amber-400/45 bg-amber-500/15 text-amber-100";
+  if (state === "active") return "border-violet-400/45 bg-violet-500/15 text-violet-100";
   return "border-zinc-700/80 bg-zinc-900/75 text-zinc-300";
 }
 
@@ -19,7 +19,7 @@ export function MotionReplayRail({ nodes }: { nodes: ReplayNode[] }) {
     <div className="rounded-2xl border border-zinc-800/80 bg-zinc-950/80 p-4">
       <div className="relative">
         <motion.div
-          className="absolute left-0 right-0 top-[18px] h-px origin-left bg-amber-300/40"
+          className="absolute left-0 right-0 top-[18px] h-px origin-left bg-violet-300/40"
           initial={{ scaleX: 0, opacity: 0 }}
           animate={{ scaleX: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.1 }}

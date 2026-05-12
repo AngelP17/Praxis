@@ -9,8 +9,8 @@ type StatusPulseProps = {
 
 function tone(mode: StatusPulseProps["mode"]) {
   if (mode === "live") return { dot: "bg-emerald-400", ring: "bg-emerald-400/30", text: "text-emerald-200" };
-  if (mode === "demo") return { dot: "bg-amber-300", ring: "bg-amber-300/30", text: "text-amber-100" };
-  if (mode === "stale") return { dot: "bg-amber-300", ring: "bg-amber-300/20", text: "text-amber-100" };
+  if (mode === "demo") return { dot: "bg-violet-300", ring: "bg-violet-300/30", text: "text-violet-100" };
+  if (mode === "stale") return { dot: "bg-violet-300", ring: "bg-violet-300/20", text: "text-violet-100" };
   return { dot: "bg-rose-400", ring: "bg-rose-400/25", text: "text-rose-100" };
 }
 

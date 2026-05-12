@@ -23,7 +23,7 @@ export function NavBar() {
     <header className="fixed top-4 left-1/2 z-50 w-[calc(100%-2rem)] max-w-5xl -translate-x-1/2">
       <nav className="flex items-center justify-between rounded-full border border-zinc-800/70 bg-zinc-950/60 px-5 py-3 backdrop-blur-xl shadow-[0_24px_80px_rgba(0,0,0,0.3)]">
         <div className="inline-flex items-center gap-2.5">
-          <ShieldChevron size={16} className="text-amber-300" />
+          <ShieldChevron size={16} className="text-violet-300" />
           <span className="font-display text-sm font-medium tracking-tight text-zinc-100">
             Praxis
           </span>

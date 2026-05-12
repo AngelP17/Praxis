@@ -186,14 +186,14 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
 const typeStyles: Record<NotificationType, { bg: string; border: string; icon: typeof CheckCircle }> = {
   success: { bg: "bg-emerald-500/10", border: "border-emerald-500/30", icon: CheckCircle },
   error: { bg: "bg-rose-500/10", border: "border-rose-500/30", icon: WarningCircle },
-  warning: { bg: "bg-amber-500/10", border: "border-amber-500/30", icon: WarningCircle },
+  warning: { bg: "bg-violet-500/10", border: "border-violet-500/30", icon: WarningCircle },
   info: { bg: "bg-slate-500/10", border: "border-slate-500/30", icon: Info },
 };
 
 const typeColors: Record<NotificationType, string> = {
   success: "text-emerald-400",
   error: "text-rose-400",
-  warning: "text-amber-400",
+  warning: "text-violet-400",
   info: "text-slate-400",
 };
 
@@ -228,7 +228,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
       >
         <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[10px] font-bold text-black">
+          <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-violet-500 text-[10px] font-bold text-black">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -248,7 +248,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
                   <button
                     type="button"
                     onClick={markAllAsRead}
-                    className="text-xs text-amber-400 hover:text-amber-300 hover:scale-105 transition-transform duration-500"
+                    className="text-xs text-violet-400 hover:text-violet-300 hover:scale-105 transition-transform duration-500"
                   >
                     Mark all read
                   </button>
@@ -316,7 +316,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
                         <X className="h-3 w-3" />
                       </button>
                       {!notif.read && (
-                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-amber-500" />
+                        <span className="absolute left-1.5 top-1/2 -translate-y-1/2 h-1.5 w-1.5 rounded-full bg-violet-500" />
                       )}
                     </div>
                   );

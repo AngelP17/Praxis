@@ -40,8 +40,8 @@ const columns: BoardColumn[] = [
     key: "IN PROGRESS",
     label: "In Progress",
     description: "Assigned cases with active operator work underway.",
-    accent: "#f59e0b",
-    tone: "border-amber-500/20 bg-amber-500/8 text-amber-200",
+    accent: "#715BFF",
+    tone: "border-violet-500/20 bg-violet-500/8 text-violet-200",
   },
   {
     key: "IN REVIEW",
@@ -79,9 +79,9 @@ function priorityTone(priority: string) {
     case "critical":
       return "border-rose-500/20 bg-rose-500/10 text-rose-200";
     case "high":
-      return "border-orange-500/20 bg-orange-500/10 text-orange-200";
+      return "border-violet-500/20 bg-violet-500/10 text-violet-200";
     case "medium":
-      return "border-amber-500/20 bg-amber-500/10 text-amber-200";
+      return "border-violet-500/20 bg-violet-500/10 text-violet-200";
     default:
       return "border-zinc-700/60 bg-zinc-800/70 text-zinc-200";
   }
@@ -152,9 +152,9 @@ export default function BoardPage() {
   const throughputCount = grouped["DONE"].length;
 
   const stats = [
-    { label: "Open Queue", value: openCount, note: "Cases requiring active handling", icon: Ticket, color: "#f59e0b" },
-    { label: "In Progress", value: activeCount, note: "Cases in execution now", icon: SquaresFour, color: "#f59e0b" },
-    { label: "Awaiting Review", value: reviewCount, note: "Waiting on detail or validation", icon: Scan, color: "#f59e0b" },
+    { label: "Open Queue", value: openCount, note: "Cases requiring active handling", icon: Ticket, color: "#715BFF" },
+    { label: "In Progress", value: activeCount, note: "Cases in execution now", icon: SquaresFour, color: "#715BFF" },
+    { label: "Awaiting Review", value: reviewCount, note: "Waiting on detail or validation", icon: Scan, color: "#715BFF" },
     { label: "Throughput", value: throughputCount, note: "Resolved or closed work", icon: ArrowRight, color: "#22c55e" },
   ];
 
@@ -169,7 +169,7 @@ export default function BoardPage() {
             <div className="border-b border-zinc-800/70 bg-black/20 px-5 py-5 sm:px-8">
               <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                 <div className="max-w-5xl">
-                  <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-amber-300">
+                  <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-violet-300">
                     Workflow Tracking
                   </div>
                   <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
@@ -181,19 +181,19 @@ export default function BoardPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
+                  <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 hover:scale-105 transition-transform duration-500">
                     <Plus size={16} />
                     New Ticket
                   </Link>
-                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10 hover:scale-105 transition-transform duration-500">
+                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-violet-500/30 hover:bg-violet-500/10 hover:scale-105 transition-transform duration-500">
                     <Scan size={16} />
                     Command Center
                   </Link>
-                  <Link href="/reports" className="inline-flex items-center gap-2 rounded-2xl bg-amber-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-amber-400 hover:scale-105 transition-transform duration-500">
+                  <Link href="/reports" className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 hover:scale-105 transition-transform duration-500">
                     <Lightning size={16} />
                     Reports
                   </Link>
-                  <Link href="/admin" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-amber-500/30 hover:bg-amber-500/10 hover:scale-105 transition-transform duration-500">
+                  <Link href="/admin" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition hover:border-violet-500/30 hover:bg-violet-500/10 hover:scale-105 transition-transform duration-500">
                     <Shield size={16} />
                     Admin
                   </Link>
@@ -239,7 +239,7 @@ export default function BoardPage() {
                             <Link
                               key={ticket.ticket_id}
                               href={`/tickets/${ticket.ticket_id}`}
-                              className="block rounded-[1.15rem] border border-zinc-800 bg-zinc-950/60 p-4 transition hover:border-amber-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500"
+                              className="block rounded-[1.15rem] border border-zinc-800 bg-zinc-950/60 p-4 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500"
                             >
                               <div className="flex items-center justify-between gap-3">
                                 <div className="mono-data text-[11px] uppercase tracking-[0.24em] text-zinc-500">

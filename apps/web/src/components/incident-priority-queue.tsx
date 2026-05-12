@@ -9,8 +9,8 @@ import type { Ticket } from "@/types";
 function priorityColor(priority: string) {
   switch (priority.toLowerCase()) {
     case "critical": return "#f43f5e";
-    case "high": return "#f97316";
-    case "medium": return "#f59e0b";
+    case "high": return "#715BFF";
+    case "medium": return "#715BFF";
     default: return "#71717a";
   }
 }
@@ -18,8 +18,8 @@ function priorityColor(priority: string) {
 function priorityBorder(priority: string) {
   switch (priority.toLowerCase()) {
     case "critical": return "border-rose-500/20 hover:border-rose-500/40";
-    case "high": return "border-orange-500/20 hover:border-orange-500/40";
-    case "medium": return "border-amber-500/20 hover:border-amber-500/40";
+    case "high": return "border-violet-500/20 hover:border-violet-500/40";
+    case "medium": return "border-violet-500/20 hover:border-violet-500/40";
     default: return "border-zinc-800 hover:border-zinc-700";
   }
 }
@@ -58,7 +58,7 @@ export function IncidentPriorityQueue({
               onClick={() => setFilter(f)}
               className={`rounded-full px-3 py-1 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${
                 filter === f
-                  ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
+                  ? "bg-violet-500/15 text-violet-200 border border-violet-500/20"
                   : "text-zinc-500 hover:text-zinc-300 border border-transparent"
               }`}
             >
@@ -86,7 +86,7 @@ export function IncidentPriorityQueue({
                   type="button"
                   onClick={() => onSelect(ticket.ticket_id)}
                   className={`w-full text-left rounded-[1.1rem] border bg-zinc-950/50 p-3.5 transition hover:scale-105 transition-transform duration-500 ${
-                    isSelected ? "border-amber-500/30 bg-amber-500/[0.06]" : priorityBorder(ticket.priority_raw)
+                    isSelected ? "border-violet-500/30 bg-violet-500/[0.06]" : priorityBorder(ticket.priority_raw)
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
@@ -124,7 +124,7 @@ export function IncidentPriorityQueue({
       <div className="mt-4 border-t border-zinc-800/50 pt-4">
         <Link
           href="/tickets/new"
-          className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-300 transition hover:border-amber-500/20 hover:bg-zinc-900/60 hover:scale-105 transition-transform duration-500"
+          className="flex items-center justify-between rounded-[1.1rem] border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-300 transition hover:border-violet-500/20 hover:bg-zinc-900/60 hover:scale-105 transition-transform duration-500"
         >
           <span>Create new ticket</span>
           <CaretRight className="h-4 w-4 text-zinc-500" />
