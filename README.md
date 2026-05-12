@@ -16,6 +16,18 @@ In one run, Praxis loads a manufacturing solution pack, streams messy events thr
 
 ---
 
+## Screenshots
+
+| Landing | Field Workbench | Proof Object |
+|---------|----------------|--------------|
+| ![Landing](screenshots/praxis/01-praxis-landing.png) | ![Field Workbench](screenshots/praxis/02-field-workbench.png) | ![Proof Object](screenshots/praxis/03-proof-object.png) |
+
+| Executive Readout | Solution Packs | Command Center |
+|-------------------|----------------|----------------|
+| ![Executive Readout](screenshots/praxis/04-executive-readout.png) | ![Solution Packs](screenshots/praxis/05-solution-packs.png) | ![Command Center](screenshots/praxis/08-command-center.png) |
+
+---
+
 ## Why Praxis Exists
 
 Enterprises do not fail because they lack dashboards.
