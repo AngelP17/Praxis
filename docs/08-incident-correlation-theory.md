@@ -50,8 +50,15 @@ Events with score > 0.75 are grouped into the same incident.
 
 ## Incident Lifecycle
 
-```
-Detected -> Grouped -> Scored -> Routed -> Active -> Resolved -> Archived
+```mermaid
+flowchart LR
+    A[Detected] --> B[Grouped]
+    B --> C[Scored]
+    C --> D[Routed]
+    D --> E[Active]
+    E --> F[Resolved]
+    F --> G[Archived]
+    E --> C
 ```
 
 ### Detected

@@ -57,7 +57,7 @@ function BrandLogo({ theme, t }) {
       </div>
       <div style={{ position: 'absolute', left: 24, bottom: 18, right: 24,
                     fontFamily: 'var(--p-body)', fontSize: 13, color: p.mute, lineHeight: 1.5, maxWidth: 540 }}>
-        The Praxis mark is a six-point radial converging on a center node — focus, deployment and intelligence in motion. A single accented arm signals forward vector and decision direction.
+        The Praxis mark is a six-point radial form converging on a center node — focus, deployment, and intelligence in motion. Mono-first execution keeps the mark credible across light, dark, and high-density product surfaces.
       </div>
     </Board>
   );

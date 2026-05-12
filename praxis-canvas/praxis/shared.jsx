@@ -68,7 +68,7 @@ function usePraxisTheme(t) {
 const PRAXIS_ARMS = [
   // [angle°, length, halfWidth]
   [ -8,  46, 7 ],   // top
-  [ 50,  44, 8 ],   // UPPER-RIGHT — accent arm
+  [ 50,  44, 8 ],   // upper-right arm
   [ 110, 30, 6 ],   // right-down
   [ 172, 40, 7 ],   // bottom
   [ 222, 30, 6 ],   // lower-left

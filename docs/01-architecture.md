@@ -6,9 +6,15 @@ Praxis is a full-stack operational intelligence platform that transforms noisy t
 
 ## Core Flow
 
-```
-Signal Ingestion -> Event Normalization -> Praxis Decision Engine ->
-Incident Correlation -> Praxis Workflow -> Human Feedback -> Replay/Audit
+```mermaid
+flowchart LR
+    A[Signal Ingestion] --> B[Event Normalization]
+    B --> C[Praxis Decision Engine]
+    C --> D[Incident Correlation]
+    D --> E[Praxis Workflow]
+    E --> F[Human Feedback]
+    F --> G[Replay/Audit]
+    F --> B
 ```
 
 ## Services

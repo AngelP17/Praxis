@@ -324,16 +324,21 @@ praxis/
 
 ### Benchmarks
 
-All 6 benchmark scenarios pass:
+The benchmark suite validates all solution packs end-to-end:
 
-| ID | Scenario | Expected Root Cause | Result |
-|----|----------|---------------------|--------|
-| B1 | Press Line 3 Vibration Cascade | `bearing_degradation` | **PASS** |
-| B2 | Kubernetes Ingress Degradation | `ingress_controller_backpressure` | **PASS** |
-| B3 | IAM Policy Drift | `policy_drift` | **PASS** |
-| B4 | Sensor Calibration Offset | `calibration_offset` | **PASS** |
-| B5 | Contradictory Evidence | confidence drop + review flag | **PASS** |
-| B6 | Missing Evidence | suppressed + review flag | **PASS** |
+| Pack | Scenario | Events | Proof Valid | Value Case |
+|------|----------|--------|-------------|------------|
+| `manufacturing-printer-gpo` | Printer GPO deployment drift | 12 | **PASS** | $38.4K |
+| `erp-access-disruption` | SSO/ERP access provisioning failure | 6 | **PASS** | $67.2K |
+| `k8s-ingress-degradation` | Ingress config rollback conflict | 6 | **PASS** | $94.5K |
+
+Run benchmarks:
+
+```bash
+make praxis-benchmark
+```
+
+The benchmark framework is extensible — additional scenarios (press-line vibration, IAM policy drift, sensor calibration, contradictory evidence, missing evidence) can be added as new solution packs under `solution-packs/`.
 
 ---
 

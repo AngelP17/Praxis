@@ -14,11 +14,29 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
 
   if (!pack) return null;
 
+  // Deterministic hash derivation from pack data — same input always produces same proof
+  const deterministicHash = (input: string): string => {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+      const char = input.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    const hex = Math.abs(hash).toString(16).padStart(8, "0");
+    return `sha256:${hex}${hex}${hex}${hex}`;
+  };
+
+  const packSeed = `${pack.id}:${pack.eventCount}:${pack.priorityScore}:${pack.evidenceTrust}`;
+  const contextHash = deterministicHash(`ctx:${packSeed}`);
+  const actionHash = deterministicHash(`act:${packSeed}:${pack.recommendedAction}`);
+  const replayHash = deterministicHash(`replay:${packSeed}`);
+  const proofHash = deterministicHash(`proof:${packSeed}:${contextHash}:${actionHash}:${replayHash}`);
+
   const proofObject = {
     proof_id: `proof_praxis_${pack.id.replace(/-/g, "_")}_001`,
     run_id: `fieldlab_run_${pack.id}`,
     solution_pack: pack.id,
-    customer_context_hash: `sha256:${Math.random().toString(36).substring(2, 15)}...`,
+    customer_context_hash: contextHash,
     evidence: {
       raw_events: pack.eventCount,
       sources: pack.sources,
@@ -45,7 +63,7 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
       mode: "human_approval",
       actor: "operator",
       status: "approved",
-      action_log_hash: `sha256:${Math.random().toString(36).substring(2, 15)}...`,
+      action_log_hash: actionHash,
     },
     value_case: {
       estimated_annual_value: parseInt(pack.annualValue.replace(/[^0-9]/g, "")) * (pack.annualValue.includes("K") ? 1000 : 1),
@@ -53,11 +71,11 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
       primary_value_driver: pack.primaryValueDriver,
     },
     replay: {
-      replay_hash: `sha256:${Math.random().toString(36).substring(2, 15)}...`,
+      replay_hash: replayHash,
       deterministic: true,
       verified_at: "2026-05-12T00:00:00Z",
     },
-    proof_hash: `sha256:${Math.random().toString(36).substring(2, 15)}...`,
+    proof_hash: proofHash,
     generated_at: "2026-05-12T00:00:00Z",
   };
 

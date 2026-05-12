@@ -34,8 +34,12 @@ Point-in-time captures of service topology, configuration, and resource utilizat
 
 ## How Evidence Enters Praxis
 
-```
-Kubernetes Event -> Platform Service -> Normalization -> Evidence Artifact -> Incident Link
+```mermaid
+flowchart LR
+    A[Kubernetes Event] --> B[Platform Service]
+    B --> C[Normalization]
+    C --> D[Evidence Artifact]
+    D --> E[Incident Link]
 ```
 
 1. Kubernetes generates an alert

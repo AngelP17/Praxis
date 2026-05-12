@@ -50,8 +50,9 @@ export interface PraxisProof {
 
 export interface ProofVerificationResponse {
   valid: boolean;
+  status: string;
   errors: string[];
-  proof_id: string;
+  proof_hash: string;
 }
 
 export const proofsApi = {

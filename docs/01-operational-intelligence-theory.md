@@ -28,8 +28,14 @@ A dashboard tells you that CPU is high. Operational intelligence tells you that 
 
 Praxis treats every incident as a **decision lifecycle**:
 
-```
-Signal -> Context -> Decision -> Action -> Feedback -> Replay
+```mermaid
+flowchart LR
+    A[Signal] --> B[Context]
+    B --> C[Decision]
+    C --> D[Action]
+    D --> E[Feedback]
+    E --> F[Replay]
+    E --> B
 ```
 
 This is not a linear pipeline. It is a closed loop where every stage feeds back into the system's understanding of what matters.
