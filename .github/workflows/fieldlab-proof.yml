@@ -20,6 +20,10 @@ jobs:
       - name: Run solution pack validation
         run: |
           python scripts/validate_solution_pack.py solution-packs/manufacturing-printer-gpo
+      - name: Verify Docker is available
+        run: docker info > /dev/null 2>&1 || (echo "Docker is not available" && exit 1)
+      - name: Pull Floci image
+        run: docker pull floci/floci:latest
       - name: Start Floci
         run: |
           cd infrastructure/floci
@@ -27,12 +31,12 @@ jobs:
       - name: Wait for Floci to be healthy
         run: |
           echo "Waiting for Floci to be ready on port 4566..."
-          for i in $(seq 1 30); do
+          for i in $(seq 1 45); do
             if curl -s http://localhost:4566/_floci/health > /dev/null 2>&1; then
               echo "Floci is healthy."
               exit 0
             fi
-            echo "  Attempt $i/30..."
+            echo "  Attempt $i/45..."
             sleep 2
           done
           echo "Floci did not become healthy in time."
