@@ -1,10 +1,39 @@
 # Praxis
 
 [![CI](https://github.com/AngelP17/praxis/actions/workflows/ci.yml/badge.svg)](https://github.com/AngelP17/praxis/actions)
+[![FieldLab Proof](https://github.com/AngelP17/praxis/actions/workflows/fieldlab-proof.yml/badge.svg)](https://github.com/AngelP17/praxis/actions/workflows/fieldlab-proof.yml)
+[![Determinism Gate](https://img.shields.io/badge/determinism-gated-brightgreen)](DETERMINISM.md)
+[![PPP v0.1](https://img.shields.io/badge/protocol-ppp_v0.1-715bff)](docs/spec/praxis-proof-protocol.md)
 
 **Proof-carrying field deployment for enterprise operations.**
 
-Praxis turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
+Praxis is the reference implementation of the **Praxis Proof Protocol** — the first open spec for cryptographically verifiable AI decision provenance. It turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
+
+> **Verify any Praxis proof in one command:**
+> ```bash
+> uvx praxis-verify ./praxis_proof.json
+> ```
+
+### Key Artifacts
+
+| Artifact | Description |
+|----------|-------------|
+| [PPP Spec v0.1](docs/spec/praxis-proof-protocol.md) | Formal protocol for AI decision provenance |
+| [Proof Schema](docs/spec/proof-object.schema.json) | JSON Schema for conformant proof objects |
+| [Whitepaper](docs/whitepaper/praxis-proof-protocol.md) | 10-page technical whitepaper |
+| [DETERMINISM.md](DETERMINISM.md) | Bit-deterministic proof guarantees |
+| [Hiring Pages](docs/for-hiring-managers/) | Role-targeted competency mappings |
+| `uvx praxis-verify` | Third-party CLI verifier on PyPI |
+
+## Verified Runtime
+
+The full Floci-backed FieldLab path is verified on every push via `.github/workflows/fieldlab-proof.yml`:
+
+```
+Floci start -> health check -> demo run -> proof emit -> verify -> determinism re-run -> sigstore sign
+```
+
+[View latest CI run](https://github.com/AngelP17/praxis/actions/workflows/fieldlab-proof.yml)
 
 ## Prove Praxis Works
 

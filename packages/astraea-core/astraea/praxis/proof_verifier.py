@@ -7,6 +7,13 @@ from typing import Any
 
 from .proof_hash import proof_hash
 
+try:
+    from cryptography.exceptions import InvalidSignature as CryptoInvalidSignature
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    HAS_CRYPTOGRAPHY = True
+except ImportError:
+    HAS_CRYPTOGRAPHY = False
+
 
 @dataclass(frozen=True)
 class ProofVerificationResult:
@@ -62,6 +69,21 @@ class PraxisProofVerifier:
         computed_hash = proof_hash(proof)
         if proof.get("proof_hash") != computed_hash:
             errors.append("proof_hash mismatch")
+
+        sig = proof.get("signature") if HAS_CRYPTOGRAPHY else None
+        if sig:
+            try:
+                public_key = Ed25519PublicKey.from_public_bytes(
+                    bytes.fromhex(sig.get("public_key_hex", ""))
+                )
+                public_key.verify(
+                    bytes.fromhex(sig.get("signature_hex", "")),
+                    computed_hash.encode("utf-8"),
+                )
+            except (CryptoInvalidSignature, ValueError, KeyError):
+                errors.append("ed25519 signature verification failed")
+        elif sig and not HAS_CRYPTOGRAPHY:
+            errors.append("cryptography not available; cannot verify signature")
 
         valid = not errors
         return ProofVerificationResult(

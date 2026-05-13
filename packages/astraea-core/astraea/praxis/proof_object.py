@@ -13,6 +13,7 @@ from typing import Any
 from .evidence_trust import Evidence, EvidenceTrustScorer
 from .ontology_compiler import OntologyCompiler
 from .proof_hash import proof_hash, sha256_digest
+from .signing import load_signing_key, sign_proof
 
 DEFAULT_VERIFIED_AT = "2026-05-12T00:00:00Z"
 
@@ -29,7 +30,12 @@ class ProofInputs:
 class PraxisProofBuilder:
     """Build canonical Praxis proof objects from solution-pack demo inputs."""
 
-    def build(self, inputs: ProofInputs) -> dict[str, Any]:
+    def build(
+        self,
+        inputs: ProofInputs,
+        sign: bool = False,
+        signing_key_path: str | None = None,
+    ) -> dict[str, Any]:
         generated_at = inputs.generated_at or DEFAULT_VERIFIED_AT
         run_id = inputs.run_id or f"fieldlab_run_{inputs.solution_pack}"
         ontology = OntologyCompiler().compile(inputs.events, "solution_pack", {})
@@ -95,6 +101,12 @@ class PraxisProofBuilder:
             "generated_at": generated_at,
         }
         proof["proof_hash"] = proof_hash(proof)
+
+        if sign:
+            key = load_signing_key(signing_key_path)
+            if key:
+                proof = sign_proof(proof, key)
+
         return proof
 
     def _pack_config(self, solution_pack: str) -> dict[str, Any]:

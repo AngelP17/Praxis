@@ -20,6 +20,8 @@ import {
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { getWorkflowRun, getWorkflowRuns } from "@/lib/praxis-workflow";
+import { PipelineLive } from "@/components/praxis/PipelineLive";
+import { CurlWidget } from "@/components/praxis/CurlWidget";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -722,6 +724,27 @@ export function PraxisExperience({ initialScreen = "overview" }: { initialScreen
         <div className="mx-auto max-w-7xl">
           <h2 className="mb-14 max-w-5xl font-display text-[clamp(2.8rem,5vw,5.6rem)] font-medium leading-[0.96] tracking-normal">End-to-end storyboard, from select to readout.</h2>
           <Storyboard />
+        </div>
+      </section>
+
+      <section id="earn-proof" className="px-5 py-32 md:px-10 md:py-48">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div>
+              <h2 className="max-w-4xl font-display text-[clamp(2.8rem,5vw,5.6rem)] font-medium leading-[0.96] tracking-normal">
+                Generate a signed
+                <span className="mx-2 inline-flex h-[0.72em] min-w-[2.4em] translate-y-[0.06em] items-center justify-center rounded-full bg-[linear-gradient(110deg,var(--praxis-violet),var(--praxis-mint))] px-[0.28em] align-middle text-[0.44em] font-medium text-[var(--praxis-bg)] shadow-[0_0_44px_rgba(113,91,255,0.28)]">proof</span>
+                in 30 seconds.
+              </h2>
+              <p className="mt-6 max-w-xl text-base leading-7 text-[var(--praxis-muted)]">
+                Press the button below. Watch the full FieldLab pipeline execute in real time — S3 archive, SQS queue, DynamoDB state, EventBridge transitions, SHA-256 hash chain, Ed25519 signature. Download a verifiable proof object that anyone can independently verify.
+              </p>
+            </div>
+            <div className="shrink-0">
+              <CurlWidget proofHash={flagshipRun.proofHashPreview} />
+            </div>
+          </div>
+          <PipelineLive packId="manufacturing-printer-gpo" />
         </div>
       </section>
 

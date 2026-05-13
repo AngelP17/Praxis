@@ -43,11 +43,20 @@ jobs:
       - name: Verify proof
         run: |
           python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json
+      - name: Determinism gate (re-run + compare hashes)
+        run: |
+          python scripts/check_replay_determinism.py --solution-pack manufacturing-printer-gpo
       - name: Run benchmarks
         run: |
           python scripts/run_benchmarks.py
       - name: Run praxis algorithm smoke tests
         run: python scripts/smoke_test_algorithms.py
+      - name: Sigstore sign the proof artifact
+        run: |
+          pip install sigstore
+          python -m sigstore sign artifacts/latest/praxis_proof.json \
+            --output-artifact artifacts/latest/praxis_proof.json.sigstore
+        continue-on-error: true
       - name: Stop Floci
         if: always()
         run: |

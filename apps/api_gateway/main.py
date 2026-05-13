@@ -20,6 +20,9 @@ from apps.api_gateway.routes.recommendations import router as recommendations_ro
 from apps.api_gateway.routes.audit import router as audit_router
 from apps.api_gateway.routes.platform import router as platform_router
 from apps.api_gateway.routes.proofs import router as proofs_router
+from apps.api_gateway.routes.proofs_sse import router as proofs_sse_router
+from apps.api_gateway.routes.proofs_replay import router as proofs_replay_router
+from apps.api_gateway.routes.health import router as health_router
 from apps.api_gateway.routes.replay import router as replay_router
 from apps.api_gateway.routes.reports import router as reports_router
 from apps.api_gateway.routes.tickets import router as tickets_router
@@ -87,6 +90,9 @@ app.include_router(
 )
 app.include_router(discovery_router, prefix="/api/discovery", tags=["discovery"])
 app.include_router(proofs_router, prefix="/api/proofs", tags=["proofs"])
+app.include_router(proofs_sse_router, tags=["proofs-sse"])
+app.include_router(proofs_replay_router, tags=["proofs-replay"])
+app.include_router(health_router, tags=["health"])
 
 
 @app.get("/health")

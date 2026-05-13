@@ -6,6 +6,7 @@ from .ontology_compiler import OntologyCompiler
 from .praxis_decision_engine import PraxisDecisionEngine
 from .proof_object import PraxisProofBuilder, ProofInputs
 from .proof_verifier import PraxisProofVerifier, ProofVerificationResult
+from .signing import SigningKey, generate_signing_key, load_signing_key, sign_proof
 from .use_case_score import UseCaseScorer
 from .value_of_information import ValueOfInformation
 
@@ -20,6 +21,10 @@ __all__ = [
     "PraxisProofVerifier",
     "ProofInputs",
     "ProofVerificationResult",
+    "SigningKey",
     "UseCaseScorer",
     "ValueOfInformation",
+    "generate_signing_key",
+    "load_signing_key",
+    "sign_proof",
 ]
