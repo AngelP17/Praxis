@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { PraxisLanding } from "@/components/praxis/landing/PraxisLanding";
 
 export default function HomePage() {
-  return <PraxisExperience />;
+  return <PraxisLanding />;
 }
