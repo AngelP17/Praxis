@@ -9,7 +9,6 @@ import { getDemoIncident } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
-import { SignalMarquee } from "@/components/praxis/legacy-workbench-v2/motion/signal-marquee";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 
 type IncidentDetailPayload = {
@@ -309,15 +308,26 @@ export default function IncidentDetailPage() {
         </section>
 
         <section className="mt-4 py-20">
-          <SignalMarquee
-            items={[
-              payload.incident.title,
-              "priority 96 / confidence 0.92",
-              "root cause bearing degradation",
-              "route mechanical team",
-              "replay hash sha256:inc-4821c9a2f",
-            ]}
-          />
+          <div className="overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-surface)]">
+            <div className="praxis-marquee flex min-w-max items-center gap-8 px-4 py-[10px]">
+              {[
+                payload.incident.title,
+                "priority 96 / confidence 0.92",
+                "root cause bearing degradation",
+                "route mechanical team",
+                "replay hash sha256:inc-4821c9a2f",
+                payload.incident.title,
+                "priority 96 / confidence 0.92",
+                "root cause bearing degradation",
+                "route mechanical team",
+                "replay hash sha256:inc-4821c9a2f",
+              ].map((label, i) => (
+                <div key={i} className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">
+                  {label}
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         <footer className="mt-4 pb-1">

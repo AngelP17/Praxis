@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { PackCatalog } from "@/components/praxis/workbench/PackCatalog";
 
 export default function SolutionPacksPage() {
-  return <PraxisExperience initialScreen="solution-packs" />;
+  return <PackCatalog />;
 }

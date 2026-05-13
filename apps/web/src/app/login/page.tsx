@@ -6,7 +6,6 @@ import { Eye, EyeSlash, ShieldChevron, SignIn, WarningCircle } from "@phosphor-i
 
 import { ACCESS_TOKEN_KEY, USER_STORAGE_KEY } from "@/lib/auth";
 import { useToast } from "@/components/notifications";
-import { MagneticActionButton } from "@/components/praxis/legacy-workbench-v2/motion/magnetic-action-button";
 
 function resolveApi(path: string) {
   const base = process.env.NEXT_PUBLIC_API_URL;
@@ -185,10 +184,15 @@ export default function LoginPage() {
               </div>
             ) : null}
 
-            <MagneticActionButton type="submit" disabled={isSubmitting} className="w-full">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex w-full items-center justify-center gap-2 px-5 py-3 font-mono text-[11px] uppercase tracking-[0.1em] transition-transform hover:scale-[1.02] disabled:opacity-50"
+              style={{ background: "var(--praxis-plasma)", color: "var(--praxis-obsidian)" }}
+            >
               <SignIn size={15} />
               {isSubmitting ? "Authorizing..." : "Open Command Center"}
-            </MagneticActionButton>
+            </button>
           </form>
 
           <div className="mt-5 rounded-xl border border-zinc-700/70 bg-zinc-900/70 px-3.5 py-3 text-xs leading-6 text-zinc-400">

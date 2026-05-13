@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { OverviewBoard } from "@/components/praxis/workbench/OverviewBoard";
 
 export default function FieldWorkbenchPage() {
-  return <PraxisExperience initialScreen="overview" />;
+  return <OverviewBoard packId="manufacturing-printer-gpo" />;
 }

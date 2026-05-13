@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { ReadoutBoard } from "@/components/praxis/workbench/ReadoutBoard";
 
 export default function ExecutiveReadoutPage() {
-  return <PraxisExperience initialScreen="readout" />;
+  return <ReadoutBoard packId="manufacturing-printer-gpo" />;
 }
