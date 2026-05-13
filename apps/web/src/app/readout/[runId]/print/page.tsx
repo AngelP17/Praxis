@@ -46,19 +46,19 @@ export default function ReadoutPrintPage() {
         </header>
 
         <main className="mx-auto max-w-4xl space-y-10 p-6 print:p-8 print:max-w-none">
-          <section className="print:border-b print:border-gray-200 print:pb-8 print:mb-8">
+          <section className="py-32 print:py-0 print:border-b print:border-gray-200 print:pb-8 print:mb-8">
             <div className="hidden print:block text-sm text-gray-500 mb-2">
               Praxis Proof Protocol v0.1 · {new Date().toISOString().split("T")[0]}
             </div>
             <ExecutiveReadout packId={packId} />
           </section>
 
-          <section className="print:page-break-before">
+          <section className="py-32 print:py-0 print:page-break-before">
             <h2 className="mb-4 font-display text-2xl font-medium print:text-xl print:text-black">Value Case</h2>
             <ValueCasePanel packId={packId} />
           </section>
 
-          <section className="print:page-break-before">
+          <section className="py-32 print:py-0 print:page-break-before">
             <h2 className="mb-4 font-display text-2xl font-medium print:text-xl print:text-black">Expansion Opportunities</h2>
             <ExpansionMap packId={packId} />
           </section>

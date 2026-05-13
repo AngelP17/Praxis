@@ -86,7 +86,7 @@ export function ProofDiff() {
         Proof Object Diff
       </div>
 
-      <div className="mt-6 grid grid-cols-2 gap-4">
+      <div className="mt-6 grid grid-cols-2 grid-flow-dense gap-4">
         <div>
           <div className="flex items-center justify-between mb-2">
             <span className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Proof A</span>
@@ -146,7 +146,7 @@ export function ProofDiff() {
             {diffs.map((diff) => (
               <div key={diff.path} className="border-b border-[var(--praxis-line)] p-3">
                 <div className="font-mono text-[10px] uppercase text-[var(--praxis-violet)]">{diff.path}</div>
-                <div className="mt-1 grid grid-cols-2 gap-4">
+                <div className="mt-1 grid grid-cols-2 grid-flow-dense gap-4">
                   <div className="break-all font-mono text-[10px] text-[var(--praxis-crit)]">
                     <X className="inline h-3 w-3 mr-1" />
                     {diff.left || "(missing)"}

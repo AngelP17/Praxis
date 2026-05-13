@@ -15,12 +15,35 @@
   --color-text-primary: #f4f4f5;
   --color-text-secondary: #a1a1aa;
   --color-text-muted: #52525b;
-  --color-accent: #715BFF;
-  --color-accent-dim: rgba(113, 91, 255, 0.08);
+  --color-accent: #8B5CFF;
+  --color-accent-dim: rgba(139, 92, 255, 0.08);
   --color-slate: #86819F;
   --color-emerald: #3EFFA8;
   --color-rose: #EF4444;
-  --color-signal: #715BFF;
+  --color-signal: #8B5CFF;
+}
+
+/* Praxis canvas tokens — source of truth: praxis-canvas/praxis/Praxis-Brand-Replication.md §11 + Praxis Hi-Fi.html */
+:root {
+  --praxis-obsidian: #0A0A14;
+  --praxis-surface: #13121F;
+  --praxis-surface-2: #1C1A2E;
+  --praxis-line: #2A263F;
+  --praxis-hairline: rgba(255, 255, 255, 0.08);
+  --praxis-bone: #F1EDDF;
+  --praxis-mute: #86819F;
+  --praxis-faint: #48455A;
+  --praxis-plasma: #8B5CFF;
+  --praxis-argon: #3EFFA8;
+  --praxis-crit: #FF5E78;
+
+  /* legacy aliases — kept for backward compat with existing components */
+  --praxis-bg: var(--praxis-obsidian);
+  --praxis-panel: var(--praxis-surface);
+  --praxis-panel-alt: var(--praxis-surface-2);
+  --praxis-muted: var(--praxis-mute);
+  --praxis-violet: var(--praxis-plasma);
+  --praxis-mint: var(--praxis-argon);
 }
 
 @font-face {
@@ -44,19 +67,9 @@
 }
 
 .praxis-theme {
-  --praxis-bg: #0a0a14;
-  --praxis-panel: #13121f;
-  --praxis-panel-alt: #1c1a2e;
-  --praxis-line: #2a263f;
-  --praxis-bone: #f1eddf;
-  --praxis-muted: #86819f;
-  --praxis-faint: #48455a;
-  --praxis-violet: #715bff;
-  --praxis-mint: #3effa8;
-  --praxis-crit: #ef4444;
   --font-display: var(--font-outfit), "Geist", system-ui, sans-serif;
   background:
-    radial-gradient(circle at 78% 12%, rgba(113, 91, 255, 0.18), transparent 28%),
+    radial-gradient(circle at 78% 12%, rgba(139, 92, 255, 0.18), transparent 28%),
     radial-gradient(circle at 12% 70%, rgba(62, 255, 168, 0.08), transparent 26%),
     var(--praxis-bg);
 }

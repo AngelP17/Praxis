@@ -1,15 +1,16 @@
 "use client";
 
-const PLASMA = "#8B5CFF";
-const ARGON = "#3EFFA8";
-const BONE = "#F1EDDF";
-const OBSIDIAN = "#0A0A14";
-const SURFACE = "#13121F";
-const SURFACE_2 = "#1C1A2E";
-const LINE = "#2A263F";
-const MUTE = "#86819F";
-const FAINT = "#48455A";
-const CRIT = "#FF5E78";
+// Tokens sourced from globals.css `:root` (canvas-faithful values).
+const PLASMA = "var(--praxis-plasma)";
+const ARGON = "var(--praxis-argon)";
+const BONE = "var(--praxis-bone)";
+const OBSIDIAN = "var(--praxis-obsidian)";
+const SURFACE = "var(--praxis-surface)";
+const SURFACE_2 = "var(--praxis-surface-2)";
+const LINE = "var(--praxis-line)";
+const MUTE = "var(--praxis-mute)";
+const FAINT = "var(--praxis-faint)";
+const CRIT = "var(--praxis-crit)";
 
 function ScreenChrome({ runId, screenLabel }: { runId: string; screenLabel: string }) {
   return (

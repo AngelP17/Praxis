@@ -5,11 +5,12 @@ import noEmojiInCode from "./rules/no-emoji-in-code";
 import requireMinimalSectionSpacing from "./rules/require-minimal-section-spacing";
 import invisibleButtonTextCheck from "./rules/invisible-button-text-check";
 import requireHoverPhysics from "./rules/require-hover-physics";
+import noRawHex from "./rules/no-raw-hex";
 
 const plugin = {
   meta: {
     name: "eslint-plugin-gpt-taste",
-    version: "1.0.0",
+    version: "1.1.0",
   },
   rules: {
     "no-meta-labels": noMetaLabels,
@@ -19,6 +20,7 @@ const plugin = {
     "require-minimal-section-spacing": requireMinimalSectionSpacing,
     "invisible-button-text-check": invisibleButtonTextCheck,
     "require-hover-physics": requireHoverPhysics,
+    "no-raw-hex": noRawHex,
   },
   configs: {
     recommended: {
@@ -31,6 +33,7 @@ const plugin = {
         "gpt-taste/require-minimal-section-spacing": "warn",
         "gpt-taste/invisible-button-text-check": "error",
         "gpt-taste/require-hover-physics": "warn",
+        "gpt-taste/no-raw-hex": "warn",
       },
     },
     strict: {
@@ -43,6 +46,7 @@ const plugin = {
         "gpt-taste/require-minimal-section-spacing": "error",
         "gpt-taste/invisible-button-text-check": "error",
         "gpt-taste/require-hover-physics": "error",
+        "gpt-taste/no-raw-hex": "error",
       },
     },
   },

@@ -44,9 +44,9 @@ export const SvIco = {
   Brand: (p: IconProps = {}) => (
     <svg viewBox="0 0 32 32" width={p.size ?? 22} height={p.size ?? 22} fill="none" className={p.className}>
       <rect x="2" y="2" width="28" height="28" stroke="currentColor" strokeWidth={1} opacity={0.6}/>
-      <path d="M6 22 L12 8 L20 26 L26 12" stroke="#E5A83B" strokeWidth={1.6} fill="none"/>
-      <circle cx="12" cy="8" r="1.6" fill="#E5A83B"/>
-      <circle cx="20" cy="26" r="1.6" fill="#E5A83B"/>
+      <path d="M6 22 L12 8 L20 26 L26 12" stroke="var(--praxis-plasma)" strokeWidth={1.6} fill="none"/>
+      <circle cx="12" cy="8" r="1.6" fill="var(--praxis-plasma)"/>
+      <circle cx="20" cy="26" r="1.6" fill="var(--praxis-plasma)"/>
     </svg>
   ),
 };

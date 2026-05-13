@@ -11,14 +11,16 @@ import { HiFiOverviewPanel, HiFiDecisionPanel, HiFiReadoutPanel } from "./HiFiPa
 
 gsap.registerPlugin(ScrollTrigger);
 
-const PLASMA = "#8B5CFF";
-const ARGON = "#3EFFA8";
-const BONE = "#F1EDDF";
-const OBSIDIAN = "#0A0A14";
-const SURFACE = "#13121F";
-const LINE = "#2A263F";
-const MUTE = "#86819F";
-const FAINT = "#48455A";
+// Tokens sourced from globals.css `:root` (canvas-faithful values).
+// Do not inline hex here — update globals.css and reference the var.
+const PLASMA = "var(--praxis-plasma)";
+const ARGON = "var(--praxis-argon)";
+const BONE = "var(--praxis-bone)";
+const OBSIDIAN = "var(--praxis-obsidian)";
+const SURFACE = "var(--praxis-surface)";
+const LINE = "var(--praxis-line)";
+const MUTE = "var(--praxis-mute)";
+const FAINT = "var(--praxis-faint)";
 
 function PraxisMark({ size = 22 }: { size?: number }) {
   return (
@@ -250,7 +252,7 @@ function CapabilitiesBento() {
 
             <div
               className="pointer-events-none absolute -bottom-20 -right-16 h-[260px] w-[260px] rounded-full"
-              style={{ background: `radial-gradient(closest-side, ${PLASMA}66, transparent)`, filter: "blur(20px)" }}
+              style={{ background: `radial-gradient(closest-side, color-mix(in srgb, ${PLASMA} 40%, transparent), transparent)`, filter: "blur(20px)" }}
             />
             <Link
               href="/ontology"

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "lint:gpt-taste": "ESLINT_USE_FLAT_CONFIG=false eslint -c .gpt-taste.eslintrc.cjs --ext .tsx,.ts,.jsx,.js src/",
-    "lint:gpt-taste:ci": "ESLINT_USE_FLAT_CONFIG=false eslint -c .gpt-taste.eslintrc.cjs --ext .tsx,.ts,.jsx,.js --format json src/",
+    "lint:gpt-taste:ci": "ESLINT_USE_FLAT_CONFIG=false eslint -c .gpt-taste.eslintrc.cjs --ext .tsx,.ts,.jsx,.js --max-warnings=0 src/",
+    "lint:gpt-taste:json": "ESLINT_USE_FLAT_CONFIG=false eslint -c .gpt-taste.eslintrc.cjs --ext .tsx,.ts,.jsx,.js --format json src/",
     "typecheck": "tsc --noEmit",
     "test:smoke": "playwright test tests/*.smoke.spec.ts"
   },

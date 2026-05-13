@@ -96,7 +96,7 @@ export function ProofProtocolHero({ packId = "manufacturing-printer-gpo" }: { pa
   );
 
   return (
-    <section ref={rootRef} className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
+    <section ref={rootRef} className="relative isolate w-full overflow-x-hidden py-32 bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(113,91,255,0.34),transparent_34%),radial-gradient(circle_at_78%_34%,rgba(62,255,168,0.14),transparent_28%),linear-gradient(180deg,#0A0A14_0%,#13121F_54%,#0A0A14_100%)]" />
       <div className="absolute inset-0 -z-10 opacity-35 [background-image:linear-gradient(rgba(241,237,223,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.08)_1px,transparent_1px)] [background-size:72px_72px] [mask-image:radial-gradient(circle_at_center,black,transparent_74%)]" />
 

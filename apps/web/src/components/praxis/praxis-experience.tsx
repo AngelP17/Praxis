@@ -105,7 +105,7 @@ function WorkbenchShell({ screen }: { screen: PraxisScreenId }) {
   return (
     <div
       data-praxis-screen={screen}
-      className="grid min-h-[640px] overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-bg)] text-[var(--praxis-bone)] md:grid-cols-[224px_1fr]"
+      className="grid grid-flow-dense min-h-[640px] overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-bg)] text-[var(--praxis-bone)] md:grid-cols-[224px_1fr]"
     >
       <aside className="hidden border-r border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 md:flex md:flex-col">
         <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ function WorkbenchShell({ screen }: { screen: PraxisScreenId }) {
           {workbenchNav.map(([id, item, href]) => {
             const active = id === screen;
             return (
-              <Link key={item} href={href} className={`border-l-2 px-4 py-2.5 text-sm transition-colors ${active ? "border-[var(--praxis-violet)] bg-[rgba(113,91,255,0.12)] text-[var(--praxis-bone)]" : "border-transparent text-[var(--praxis-muted)] hover:text-[var(--praxis-bone)]"}`}>
+              <Link key={item} href={href} className={`border-l-2 px-4 py-2.5 text-sm transition-transform hover:translate-x-1 ${active ? "border-[var(--praxis-violet)] bg-[rgba(113,91,255,0.12)] text-[var(--praxis-bone)]" : "border-transparent text-[var(--praxis-muted)] hover:text-[var(--praxis-bone)]"}`}>
                 {item}
               </Link>
             );
@@ -154,7 +154,7 @@ function OverviewScreen() {
           <h3 className="font-display text-2xl font-medium">Operational Overview</h3>
           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{run.site} · {run.businessProcess}</p>
         </div>
-        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Export readout</button>
+        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Export readout</button>
       </header>
       <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-4">
         {[
@@ -217,7 +217,7 @@ function SolutionPacksScreen() {
           <h3 className="font-display text-3xl font-medium">Solution Pack Launcher</h3>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--praxis-muted)]">Repeatable GTM demos with scenario files, sample events, security answers, ROI assumptions, and implementation plans.</p>
         </div>
-        <button className="bg-[var(--praxis-bone)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Validate pack</button>
+        <button className="bg-[var(--praxis-bone)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Validate pack</button>
       </header>
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         {workflowRuns.map((run) => (
@@ -246,7 +246,7 @@ function SolutionPacksScreen() {
         ))}
         <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 lg:col-span-12">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Pack contents</div>
-          <div className="mt-5 grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
+          <div className="mt-5 grid grid-cols-2 grid-flow-dense gap-3 text-sm md:grid-cols-3">
             {["scenario", "context", "events", "ontology", "demo script", "roi model", "objections", "security", "implementation"].map((item) => (
               <div key={item} className="border border-[var(--praxis-line)] px-3 py-2 text-[var(--praxis-muted)]">{item}</div>
             ))}
@@ -267,7 +267,7 @@ function FieldLabScreen() {
           <h3 className="font-display text-3xl font-medium">FieldLab Environment</h3>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--praxis-muted)]">Floci-backed local AWS substrate for queues, archives, state, workflow events, and replay proof before production access.</p>
         </div>
-        <button className="bg-[var(--praxis-mint)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Start run</button>
+        <button className="bg-[var(--praxis-mint)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Start run</button>
       </header>
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-5 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
@@ -278,7 +278,7 @@ function FieldLabScreen() {
         </article>
         <article className="lg:col-span-7 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Workflow services</div>
-          <div className="mt-6 grid gap-3 md:grid-cols-2">
+          <div className="mt-6 grid grid-flow-dense gap-3 md:grid-cols-2">
             {run.services.map((resource) => (
               <div key={resource.resource} className="border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
                 <div className="flex justify-between font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)]">
@@ -316,12 +316,12 @@ function OntologyScreen() {
           <h3 className="font-display text-3xl font-medium">Operational Ontology</h3>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--praxis-muted)]">Messy records become objects, links, action types, value metrics, confidence, and discovery gaps.</p>
         </div>
-        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Compile</button>
+        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Compile</button>
       </header>
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph</div>
-          <div className="mt-8 grid grid-cols-2 gap-4">
+          <div className="mt-8 grid grid-cols-2 grid-flow-dense gap-4">
             {run.ontologyObjects.map((node) => (
               <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
                 <TreeStructure className="h-6 w-6 text-[var(--praxis-mint)]" />
@@ -361,7 +361,7 @@ function DecisionScreen() {
           <h3 className="font-display text-2xl font-medium">Decision · {run.ontologyObjects.find((object) => object.type === "Incident")?.key}</h3>
           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-violet)]">review required</p>
         </div>
-        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Route action</button>
+        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Route action</button>
       </header>
       <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-[0.9fr_1.1fr]">
         <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
@@ -370,7 +370,7 @@ function DecisionScreen() {
           <p className="mt-5 max-w-md text-sm leading-6 text-[var(--praxis-muted)]">
             {run.pack.rootCause.replace(/_/g, " ")} is affecting {run.businessProcess.toLowerCase()} and needs assisted human-approved routing.
           </p>
-          <div className="mt-8 grid grid-cols-2 gap-3">
+          <div className="mt-8 grid grid-cols-2 grid-flow-dense gap-3">
             <div className="border border-[var(--praxis-line)] p-4">
               <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Evidence trust</div>
               <div className="mt-2 font-display text-4xl text-[var(--praxis-mint)]">{run.pack.evidenceTrust.toFixed(2)}</div>
@@ -386,7 +386,7 @@ function DecisionScreen() {
           <div className="mt-6 space-y-4">
             {run.decisionWeights.map(({ label, value, weight }) => (
               <div key={label}>
-                <div className="mb-2 grid grid-cols-[1fr_auto_auto] gap-4 font-mono text-[10px] uppercase tracking-[0.08em]">
+                <div className="mb-2 grid grid-cols-[1fr_auto_auto] grid-flow-dense gap-4 font-mono text-[10px] uppercase tracking-[0.08em]">
                   <span className="text-[var(--praxis-muted)]">{label}</span>
                   <span>{value}</span>
                   <span className="text-[var(--praxis-muted)]">w {weight}</span>
@@ -417,7 +417,7 @@ function DiscoveryScreen() {
           <h3 className="font-display text-3xl font-medium">Discovery · VOI</h3>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--praxis-muted)]">When confidence is low, Praxis ranks the next customer question by business impact and decision sensitivity.</p>
         </div>
-        <button className="bg-[var(--praxis-bone)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Open brief</button>
+        <button className="bg-[var(--praxis-bone)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Open brief</button>
       </header>
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-5 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
@@ -432,7 +432,7 @@ function DiscoveryScreen() {
               "What approval path is allowed before production writeback?",
               `Which stakeholder owns ${run.businessProcess.toLowerCase()} recovery?`,
             ]).map((question, index) => (
-              <div key={question} className="grid gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 md:grid-cols-[1fr_auto]">
+              <div key={question} className="grid grid-flow-dense gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 md:grid-cols-[1fr_auto]">
                 <div>
                   <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-violet)]">question_{index + 1}</div>
                   <div className="mt-2 text-sm">{question}</div>
@@ -457,7 +457,7 @@ function ValueCaseScreen() {
           <h3 className="font-display text-3xl font-medium">Value Case Builder</h3>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--praxis-muted)]">ROI assumptions, formulas, confidence, and evidence references become a CFO-ready value case.</p>
         </div>
-        <button className="bg-[var(--praxis-mint)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Recalculate</button>
+        <button className="bg-[var(--praxis-mint)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Recalculate</button>
       </header>
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
@@ -468,7 +468,7 @@ function ValueCaseScreen() {
         </article>
         <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Assumptions</div>
-          <div className="mt-6 grid gap-3 md:grid-cols-2">
+          <div className="mt-6 grid grid-flow-dense gap-3 md:grid-cols-2">
             {run.assumptions.map(({ label, value }) => (
               <div key={label} className="flex items-end justify-between border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
                 <span className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{label}</span>
@@ -492,7 +492,7 @@ function ExpansionScreen() {
           <h3 className="font-display text-3xl font-medium">Expansion Map</h3>
           <p className="mt-2 max-w-xl text-sm leading-6 text-[var(--praxis-muted)]">The first workflow expands through shared data models, stakeholder overlap, implementation reuse, and executive visibility.</p>
         </div>
-        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Prioritize</button>
+        <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)] transition-transform hover:scale-105">Prioritize</button>
       </header>
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-5 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
@@ -504,7 +504,7 @@ function ExpansionScreen() {
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Adjacent use cases</div>
           <div className="mt-6 space-y-3">
             {run.expansion.map(({ label, score }) => (
-              <div key={label} className="grid grid-cols-[1fr_auto] gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
+              <div key={label} className="grid grid-cols-[1fr_auto] grid-flow-dense gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
                 <span className="text-sm">{label}</span>
                 <span className="font-display text-3xl text-[var(--praxis-mint)]">{score}</span>
               </div>
@@ -520,7 +520,7 @@ function ReadoutScreen() {
   const run = flagshipRun;
 
   return (
-    <div className="grid min-h-[640px] gap-4 p-6 lg:grid-cols-[1.15fr_0.85fr]">
+    <div className="grid grid-flow-dense min-h-[640px] gap-4 p-6 lg:grid-cols-[1.15fr_0.85fr]">
       <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-8">
           <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">Executive readout · {run.runId}</div>
           <h3 className="mt-8 max-w-3xl font-display text-6xl font-medium leading-[0.96] tracking-normal">
