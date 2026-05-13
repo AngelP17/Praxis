@@ -1,20 +1,15 @@
 "use client";
 
 import { BracketsCurly, Copy, Check } from "@phosphor-icons/react";
-import { useState } from "react";
-import { getPackById } from "@/lib/praxis-api";
+import { useEffect, useState } from "react";
+import { getPackById, proofsApi } from "@/lib/praxis-api";
+import type { PraxisProof } from "@/lib/praxis-api";
 
 interface ProofObjectViewerProps {
   packId?: string;
 }
 
-export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: ProofObjectViewerProps) {
-  const pack = getPackById(packId);
-  const [copied, setCopied] = useState(false);
-
-  if (!pack) return null;
-
-  // Deterministic hash derivation from pack data — same input always produces same proof
+function buildLocalProof(pack: NonNullable<ReturnType<typeof getPackById>>): PraxisProof {
   const deterministicHash = (input: string): string => {
     let hash = 0;
     for (let i = 0; i < input.length; i++) {
@@ -32,7 +27,7 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
   const replayHash = deterministicHash(`replay:${packSeed}`);
   const proofHash = deterministicHash(`proof:${packSeed}:${contextHash}:${actionHash}:${replayHash}`);
 
-  const proofObject = {
+  return {
     proof_id: `proof_praxis_${pack.id.replace(/-/g, "_")}_001`,
     run_id: `fieldlab_run_${pack.id}`,
     solution_pack: pack.id,
@@ -78,10 +73,53 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
     proof_hash: proofHash,
     generated_at: "2026-05-12T00:00:00Z",
   };
+}
 
-  const jsonString = JSON.stringify(proofObject, null, 2);
+export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: ProofObjectViewerProps) {
+  const pack = getPackById(packId);
+  const [copied, setCopied] = useState(false);
+  const [proofObject, setProofObject] = useState<PraxisProof | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [source, setSource] = useState<"api" | "offline">("offline");
+
+  useEffect(() => {
+    if (!pack) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(false);
+    setSource("offline");
+
+    proofsApi
+      .getByPack(packId)
+      .then((res) => {
+        if (!cancelled) {
+          setProofObject(res.data);
+          setSource("api");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setProofObject(buildLocalProof(pack));
+          setError(true);
+          setSource("offline");
+        }
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [packId, pack]);
+
+  if (!pack) return null;
+
+  const jsonString = proofObject ? JSON.stringify(proofObject, null, 2) : "";
 
   const handleCopy = async () => {
+    if (!jsonString) return;
     await navigator.clipboard.writeText(jsonString);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -96,19 +134,28 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
         </div>
         <button
           onClick={handleCopy}
-          className="flex items-center gap-2 border border-[var(--praxis-line)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)] transition-colors hover:text-[var(--praxis-bone)]"
+          disabled={!proofObject}
+          className="flex items-center gap-2 border border-[var(--praxis-line)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)] transition-colors hover:text-[var(--praxis-bone)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {copied ? <Check className="h-3 w-3 text-[var(--praxis-mint)]" /> : <Copy className="h-3 w-3" />}
           {copied ? "Copied" : "Copy JSON"}
         </button>
       </div>
-      <pre className="mt-5 overflow-auto rounded border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 font-mono text-xs leading-relaxed text-[var(--praxis-muted)]">
-        {jsonString}
-      </pre>
+      {loading ? (
+        <div className="mt-5 overflow-auto rounded border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 font-mono text-xs leading-relaxed text-[var(--praxis-muted)]">
+          Loading proof object…
+        </div>
+      ) : (
+        <pre className="mt-5 overflow-auto rounded border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 font-mono text-xs leading-relaxed text-[var(--praxis-muted)]">
+          {jsonString}
+        </pre>
+      )}
       <div className="mt-4 flex items-center gap-4 font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--praxis-muted)]">
         <span className="flex items-center gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--praxis-mint)]" />
-          Deterministic
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${source === "api" ? "bg-[var(--praxis-mint)]" : "bg-[var(--praxis-bone)]"}`}
+          />
+          {source === "api" ? "Live (API)" : "Deterministic (offline)"}
         </span>
         <span className="flex items-center gap-1">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--praxis-violet)]" />

@@ -8,15 +8,15 @@ function BrandHero({ theme, t }) {
   return (
     <Board theme={theme} num="01" title="Brand Hero" subtitle="Praxis Brand Guidelines · v1.0">
       <div style={{ position: 'relative', height: '100%' }}>
-        <PatternBg kind={t.pattern} accent={p.accent} accent2={p.accent2} warn={p.warn} />
+        <PatternBg kind={t.pattern} accent={p.accent} accent2={p.accent2} warn={p.signal} />
         <div style={{ position: 'absolute', left: 56, top: 88, right: 56, color: p.text, zIndex: 2 }}>
-          <PraxisLockup variant={t.logoVariant} size={88} color={p.text} accent={p.warn} weight={500} />
+          <PraxisLockup variant={t.logoVariant} size={88} color={p.text} accent={p.text} weight={500} />
           <div style={{ marginTop: 56, fontFamily: 'var(--p-display)', fontSize: 120,
                         lineHeight: 0.92, letterSpacing: '-0.04em', fontWeight: 500,
                         maxWidth: 760, textWrap: 'balance' }}>
             Forward&#8209;deployed<br/>operational<br/>intelligence.
           </div>
-          <div style={{ marginTop: 28, height: 2, width: 96, background: p.warn }} />
+          <div style={{ marginTop: 28, height: 2, width: 96, background: p.signal }} />
           <div style={{ marginTop: 22, fontFamily: 'var(--p-mono)', fontSize: 13, color: p.mute,
                         textTransform: 'uppercase', letterSpacing: '.12em' }}>
             Brand guidelines · 2026 · v1.0
@@ -41,11 +41,11 @@ function BrandLogo({ theme, t }) {
     <Board theme={theme} num="02" title="Primary Logo" subtitle="Lockups & marks">
       <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', height: '100%', gap: 0 }}>
         <Cell label="Primary lockup" style={{ borderRight: `1px solid ${p.line}` }}>
-          <PraxisLockup variant={t.logoVariant} size={110} color={p.text} accent={p.warn} weight={500} />
+          <PraxisLockup variant={t.logoVariant} size={110} color={p.text} accent={p.text} weight={500} />
         </Cell>
         <div style={{ display: 'grid', gridTemplateRows: '1fr 1fr 1fr' }}>
           <Cell label="Icon mark">
-            <PraxisMark variant={t.logoVariant} size={84} color={p.text} accent={p.warn} />
+            <PraxisMark variant={t.logoVariant} size={84} color={p.text} accent={p.text} />
           </Cell>
           <Cell label="Mono — light on dark" style={{ background: p.bg, borderTop: `1px solid ${p.line}` }}>
             <PraxisLockup variant={t.logoVariant} size={60} color={p.text} accent={p.text} weight={500} />
@@ -80,20 +80,20 @@ function BrandConstruction({ theme, t }) {
             {/* corner x marks */}
             {[[0,0],[1,0],[0,1],[1,1]].map(([x,y],i)=>(
               <span key={i} style={{ position: 'absolute', [x?'right':'left']: -6, [y?'bottom':'top']: -6,
-                                     fontFamily: 'var(--p-mono)', fontSize: 14, color: p.warn }}>x</span>
+                                     fontFamily: 'var(--p-mono)', fontSize: 14, color: p.signal }}>x</span>
             ))}
-            <PraxisLockup variant={t.logoVariant} size={64} color={p.text} accent={p.warn} weight={500} />
+            <PraxisLockup variant={t.logoVariant} size={64} color={p.text} accent={p.text} weight={500} />
           </div>
           <div style={{ marginTop: 40 }}>
             <div style={{ fontFamily: 'var(--p-mono)', fontSize: 10, color: p.mute,
                           textTransform: 'uppercase', letterSpacing: '.12em', marginBottom: 12 }}>Minimum size</div>
             <div style={{ display: 'flex', gap: 36, alignItems: 'flex-end' }}>
               <div style={{ textAlign: 'center' }}>
-                <PraxisLockup variant={t.logoVariant} size={24} color={p.text} accent={p.warn} weight={500} />
+                <PraxisLockup variant={t.logoVariant} size={24} color={p.text} accent={p.text} weight={500} />
                 <div style={{ fontFamily: 'var(--p-mono)', fontSize: 10, color: p.mute, marginTop: 8 }}>24px lockup</div>
               </div>
               <div style={{ textAlign: 'center' }}>
-                <PraxisMark variant={t.logoVariant} size={16} color={p.text} accent={p.warn} />
+                <PraxisMark variant={t.logoVariant} size={16} color={p.text} accent={p.text} />
                 <div style={{ fontFamily: 'var(--p-mono)', fontSize: 10, color: p.mute, marginTop: 8 }}>16px mark</div>
               </div>
             </div>
@@ -117,7 +117,7 @@ function BrandConstruction({ theme, t }) {
               </g>
             </svg>
             <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <PraxisMark variant={t.logoVariant} size={160} color={p.text} accent={p.warn} />
+              <PraxisMark variant={t.logoVariant} size={160} color={p.text} accent={p.text} />
             </div>
           </div>
         </div>
@@ -238,7 +238,7 @@ function BrandPattern({ theme, t }) {
           <div key={kind} style={{ background: p.surface, border: `1px solid ${p.line}`, position: 'relative',
                                    display: 'flex', flexDirection: 'column' }}>
             <div style={{ position: 'relative', flex: 1, color: p.text, overflow: 'hidden' }}>
-              <PatternBg kind={kind} accent={p.accent} accent2={p.accent2} warn={p.warn} />
+              <PatternBg kind={kind} accent={p.accent} accent2={p.accent2} warn={p.signal} />
             </div>
             <div style={{ padding: 14, borderTop: `1px solid ${p.line}`, color: p.text }}>
               <div style={{ fontFamily: 'var(--p-display)', fontSize: 17, fontWeight: 500 }}>{name}</div>
