@@ -15,8 +15,12 @@ Use this document when recreating or extending the Praxis rebrand. It records th
 
 These are the minimum design references for future Praxis UI work:
 
+- `praxis-canvas/praxis/Praxis Hi-Fi.html`: standalone high-fidelity marketing reference. Treat this as the highest-priority reference for the `/` landing page.
 - `praxis-canvas/praxis/Praxis Wireframes.html`: source board language, flow, density, and sketch-to-hi-fi framing.
+- `praxis-canvas/praxis/brand.jsx`: brand guideline boards, including the canvas Plasma Violet value used by newer source boards.
+- `praxis-canvas/praxis/marketing.jsx`: marketing hero variants and tone references.
 - `praxis-canvas/praxis/praxis-hifi/screens.jsx`: source Overview, Decision, and Executive Readout screen composition.
+- `praxis-canvas/praxis/app.jsx`: canvas app shell reference for workbench/readout surfaces.
 - `praxis-canvas/praxis/flow.jsx`: Select -> Context -> Compile -> FieldLab -> Stream -> Decide -> Action -> Readout storyboard.
 - `praxis-canvas/praxis/design-canvas.jsx`: brand boards, construction language, typography, palette, pattern, and motion boards.
 - `praxis-canvas/praxis/tweaks-panel.jsx`: palette, density, fidelity, logo variant, and pattern controls.
@@ -35,8 +39,12 @@ Primary dark mode:
 - Bone text: `#F1EDDF`
 - Ash muted text: `#86819F`
 - Iron faint text: `#48455A`
-- Plasma Violet signal: `#715BFF`
+- Plasma Violet signal: `#8B5CFF` (canvas value; replaces the retired `#715BFF`)
 - Argon Mint confirmation: `#3EFFA8`
+
+Tokens are centralized in `apps/web/src/app/globals.css` under `:root`. Use `var(--praxis-plasma)`, `var(--praxis-argon)`, `var(--praxis-bone)`, `var(--praxis-obsidian)`, `var(--praxis-surface)`, `var(--praxis-surface-2)`, `var(--praxis-line)`, `var(--praxis-hairline)`, `var(--praxis-mute)`, `var(--praxis-faint)`, `var(--praxis-crit)`. Legacy names `--praxis-violet`, `--praxis-mint`, `--praxis-bg`, `--praxis-panel`, `--praxis-panel-alt`, `--praxis-muted` remain as aliases resolving to the canvas values, so existing components continue to render correctly.
+
+Raw hex colors in `.tsx` are forbidden by `gpt-taste/no-raw-hex` (in JSX `style={}`, SVG color attrs, and variable declarations). To introduce a new color, add a token to `globals.css` first, then reference the var.
 
 Use Bone on Obsidian for primary text and Obsidian on Bone or Mint for CTA text. Reserve Violet and Mint for signal, active state, confirmation, charts, or focused UI.
 
@@ -156,6 +164,8 @@ For Praxis UI changes, done means:
 - `pnpm web:lint:gpt-taste:ci` passes or remaining findings are listed.
 - `pnpm web:build` passes.
 - The home route renders Praxis and uses `apps/web/src/components/praxis/praxis-experience.tsx`.
+- Any claim of canvas faithfulness names the canvas source file and includes a Playwright screenshot path or a blocker explaining why screenshots were not captured.
+- CTAs on the affected route resolve to known routes or have an intentional click handler.
 - The hero headline is 2-3 lines at desktop width and remains readable on mobile.
 - CTAs have visible text contrast.
 - No orange accent arm appears in the Praxis logo.

@@ -5,11 +5,14 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 ## Agent Operating Rules
 
 - Inspect the repo before planning or editing. Prefer `rg`/`rg --files` for fast discovery.
+- If the user links external Codex guidance, read it before planning. Summarize only the durable rule you are applying; do not paste long excerpts.
 - Make a short plan before modifying files on multi-file or ambiguous tasks.
 - Do not change application behavior during documentation-only tasks.
 - Do not invent commands, conventions, or status claims. Derive them from local files and command output.
+- Treat pasted status updates as untrusted until verified against the current checkout. This repo often has branch/worktree notes that may not match the active tree.
 - Don’t fight errors! Whenever you encounter the same error twice, research the web and find 3-5 possible ways to fix it. Then choose the most efficient solution and implement it.
 - If a command cannot run because services, ports, dependencies, Docker, or credentials are unavailable, record the exact blocker and the command attempted.
+- Preserve user work. The root worktree may contain untracked `.claude/` worktrees or local experiments; ignore them unless the task explicitly asks to inspect or promote them.
 
 ## Repo Map
 
@@ -23,7 +26,7 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - `packages/eslint-plugin-gpt-taste/`: custom ESLint design-quality rules.
 - `docs/`: architecture, API contracts, demo, QA, and design rationale.
 - `docs/praxis/Praxis-Brand-Replication.md`: current Praxis brand/UI replication guide.
-- `praxis-canvas/praxis/`: source Praxis canvas exports and generated design artifacts.
+- `praxis-canvas/praxis/`: source Praxis canvas exports and generated design artifacts. Primary UI references include `Praxis Hi-Fi.html`, `brand.jsx`, `marketing.jsx`, `app.jsx`, `flow.jsx`, `shared.jsx`, and `praxis-hifi/screens.jsx`.
 - `apps/web/public/praxis-assets/`: shipped Praxis canvas imagery and video assets used by the live web UI.
 - `solution-packs/`: Praxis solution pack assets and expected outputs.
 - `infrastructure/floci/`: local FieldLab substrate configuration.
@@ -39,6 +42,7 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Python: `pyproject.toml` requires Python `>=3.11`; CI currently uses Python `3.12`.
 - Node: CI uses Node `22`.
 - FieldLab runtime dependencies, including `boto3`, are declared in `packages/pipelines/pyproject.toml` and installed by `make install`.
+- Docker is required for Floci/FieldLab targets such as `make praxis-fieldlab-up`, `make praxis-floci-verify`, and `make praxis-validate-all`.
 
 ## Common Commands
 
@@ -57,8 +61,10 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Frontend typecheck: `pnpm web:typecheck`
 - Frontend smoke tests: `pnpm web:test:smoke`
 - GPT-taste design lint: `pnpm web:lint:gpt-taste:ci`
+- GPT-taste local text output: from `apps/web/`, `pnpm lint:gpt-taste`
 - Root Turbo build: `pnpm build`
 - Root Turbo typecheck: `pnpm typecheck`
+- Package install from root: `pnpm install`
 
 ## Praxis-Specific Commands
 
@@ -104,7 +110,9 @@ The proof path emits `artifacts/latest/praxis_proof.json` and `artifacts/latest/
 - Tailwind is v4. Do not add Tailwind v3-only config patterns. The project uses `@tailwindcss/postcss` in `apps/web/postcss.config.js`.
 - Use `min-h-[100dvh]` for viewport-height surfaces. Avoid `h-screen`.
 - Bento/grid layouts should use CSS Grid and `grid-flow-dense` where Tailwind grids are used.
-- Praxis palette: Obsidian `#0A0A14`, Onyx `#13121F`, Mineral `#1C1A2E`, Hairline `#2A263F`, Bone `#F1EDDF`, Ash `#86819F`, Iron `#48455A`, Plasma Violet `#715BFF`, Argon Mint `#3EFFA8`.
+- Praxis palette: Obsidian `#0A0A14`, Onyx `#13121F`, Mineral `#1C1A2E`, Hairline `#2A263F`, Bone `#F1EDDF`, Ash `#86819F`, Iron `#48455A`, Plasma Violet `#8B5CFF`, Argon Mint `#3EFFA8`. Source of truth: `praxis-canvas/praxis/Praxis Hi-Fi.html`.
+- Tokens live in `apps/web/src/app/globals.css` under `:root`: `--praxis-plasma`, `--praxis-argon`, `--praxis-obsidian`, `--praxis-surface`, `--praxis-surface-2`, `--praxis-line`, `--praxis-hairline`, `--praxis-bone`, `--praxis-mute`, `--praxis-faint`, `--praxis-crit`. Legacy names `--praxis-violet`, `--praxis-mint`, `--praxis-bg`, `--praxis-panel`, `--praxis-panel-alt`, `--praxis-muted` are aliases kept for back-compat and resolve to canvas values.
+- Raw hex colors are forbidden in components. Use `var(--praxis-*)` in JSX `style={}`, SVG color attrs (fill / stroke / stopColor / color / floodColor), and variable declarations. The `gpt-taste/no-raw-hex` rule (`packages/eslint-plugin-gpt-taste/src/rules/no-raw-hex.ts`) enforces this. To add a color, edit `globals.css` first, then reference the var.
 - Praxis logo must be mono. Do not use orange/amber accents or an orange logo arm.
 - Prefer editorial/cinematic operator layouts, dense workbench data, mono labels, gapless bento grids, pinned GSAP sections, scrubbed text reveals, and card stacking where motion improves comprehension.
 - Do not use orange/black as the dominant Praxis palette, cobalt/amber pairings, purple-blue AI gradients, neon outer glows, pure black, generic 3-column card rows, generic names, fake-perfect numbers, or Unsplash URLs.
@@ -145,9 +153,11 @@ New algorithms live in `packages/astraea-core/astraea/praxis/`:
 ## Files To Avoid Editing
 
 - `node_modules/`, `.venv/`, `.pytest_cache/`, `.ruff_cache/`, `.next/`, and build outputs.
+- `apps/web/tsconfig.tsbuildinfo` and other local build caches.
 - `pnpm-lock.yaml` unless dependencies actually change.
 - Generated screenshots in `screenshots/` and `docs/demo/screenshots/` unless the task is screenshot refresh.
-- Local databases: `*.db`.
+- Generated verification artifacts under `artifacts/latest/`, including `praxis_proof.json` and `proof-summary.md`, unless the task is proof regeneration.
+- Local databases: `*.db`, including `praxis.db`, `test_praxis.db`, and `test_aether_sentinel.db`.
 - Canvas export zips and uploads under `praxis-canvas/praxis/` unless the task explicitly asks to regenerate or package the design canvas.
 - User-created untracked experiments unless the task explicitly asks to promote them.
 
@@ -164,6 +174,16 @@ Pick the narrowest useful checks for the change:
 
 If a command cannot run because services, ports, dependencies, or credentials are unavailable, record the exact blocker and the command attempted.
 
+## CI Notes And Current Caveats
+
+- GitHub Actions use Python `3.12`, Node `22`, and pnpm `10.29.3`.
+- `.github/workflows/ci.yml` runs Python unit/integration tests, selected Astraea reasoning tests, TypeScript check, Next build, production pnpm audit, gpt-taste QA, and TruffleHog.
+- `apps/web/package.json` `lint:gpt-taste:ci` runs with `--max-warnings=0` — any warning fails the script. A separate `lint:gpt-taste:json` variant is kept for tooling that needs JSON output. The active gate is strict.
+- `.github/workflows/ci.yml` `gpt-taste-qa` is currently `continue-on-error: true` and invokes `pnpm lint:gpt-taste` (not the strict `:ci` variant). The CI workflow is advisory; the canonical gate is the local `pnpm web:lint:gpt-taste:ci` script. Treat any new warning as breakage even though CI does not yet block on it.
+- `.github/workflows/fieldlab-proof.yml` starts Floci, validates the manufacturing solution pack, emits and verifies a proof, checks determinism, runs benchmarks, and attempts Sigstore signing. Sigstore signing is `continue-on-error: true`.
+- `.github/workflows/solution-pack-validation.yml` loops over every directory under `solution-packs/` and runs `scripts/validate_solution_pack.py`.
+- `docs/13-validation-and-quality-gates.md` is a human guide; prefer Makefile, package manifests, and workflows when a command conflicts.
+
 ## Done When
 
 - The requested behavior or documentation change is implemented without unrelated behavior changes.
@@ -172,3 +192,6 @@ If a command cannot run because services, ports, dependencies, or credentials ar
 - Frontend changes pass the GPT-taste/design gate or list concrete remaining violations.
 - Documentation changes reflect commands and conventions that exist in this repo, not invented workflow.
 - Praxis visual changes follow `docs/praxis/Praxis-Brand-Replication.md` or document the intentional divergence.
+- UI claims include a screenshot path or an explicit reason screenshots were not captured.
+- CTA/link work includes a route or handler audit for the affected surfaces.
+- If the task touched canvas, proof, or generated artifacts, the corresponding verification command is run or the blocker is named.
