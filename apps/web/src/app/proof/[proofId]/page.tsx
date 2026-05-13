@@ -8,10 +8,13 @@ import { NextBestQuestions } from "@/components/praxis/NextBestQuestions";
 import { ActionApprovalPanel } from "@/components/praxis/ActionApprovalPanel";
 import { ProofObjectViewer } from "@/components/praxis/ProofObjectViewer";
 import { ProofProtocolHero } from "@/components/praxis/ProofProtocolHero";
+import { PackSwitcher } from "@/components/praxis/PackSwitcher";
+import { ProofDiff } from "@/components/praxis/ProofDiff";
 import Link from "next/link";
 import { ArrowLeft, BracketsCurly } from "@phosphor-icons/react";
 
-function resolvePackId(proofId: string): string {
+function resolvePackId(proofId: string, queryPack: string | null): string {
+  if (queryPack) return queryPack;
   if (proofId.includes("erp")) return "erp-access-disruption";
   if (proofId.includes("k8s") || proofId.includes("ingress")) return "k8s-ingress-degradation";
   return "manufacturing-printer-gpo";
@@ -21,7 +24,8 @@ export default function ProofDetailPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const proofId = (params.proofId as string) ?? "unknown";
-  const packId = resolvePackId(proofId);
+  const queryPack = searchParams.get("pack");
+  const packId = resolvePackId(proofId, queryPack);
   const preferOfflineProof = searchParams.get("proofSource") === "offline";
 
   return (
@@ -54,6 +58,13 @@ export default function ProofDetailPage() {
           <section className="grid grid-flow-dense grid-cols-1 gap-6 py-20 lg:grid-cols-2">
             <ActionApprovalPanel packId={packId} />
             <ProofObjectViewer packId={packId} preferOffline={preferOfflineProof} />
+          </section>
+          <section className="py-20">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display text-2xl font-medium">Compare Proofs</h2>
+              <PackSwitcher activePackId={packId} />
+            </div>
+            <ProofDiff />
           </section>
         </main>
       </div>

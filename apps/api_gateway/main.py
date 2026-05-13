@@ -7,6 +7,7 @@ from apps.api_gateway.config import settings
 from apps.api_gateway.deps import init_db
 from apps.api_gateway.logging_config import configure_logging, get_logger
 from apps.api_gateway.middleware.rate_limit import RateLimitMiddleware
+from apps.api_gateway.middleware.proof_rate_limit import ProofRateLimitMiddleware
 from apps.api_gateway.routes.attachments import router as attachments_router
 from apps.api_gateway.routes.assets import router as assets_router
 from apps.api_gateway.routes.auth import router as auth_router
@@ -32,6 +33,7 @@ from apps.api_gateway.routes.ontology import router as ontology_router
 from apps.api_gateway.routes.value_cases import router as value_cases_router
 from apps.api_gateway.routes.deployment_plans import router as deployment_plans_router
 from apps.api_gateway.routes.discovery import router as discovery_router
+from apps.api_gateway.routes.pack_metrics import router as pack_metrics_router
 
 
 @asynccontextmanager
@@ -53,6 +55,7 @@ app = FastAPI(
 )
 
 app.add_middleware(RateLimitMiddleware)
+app.add_middleware(ProofRateLimitMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -93,6 +96,7 @@ app.include_router(proofs_router, prefix="/api/proofs", tags=["proofs"])
 app.include_router(proofs_sse_router, tags=["proofs-sse"])
 app.include_router(proofs_replay_router, tags=["proofs-replay"])
 app.include_router(health_router, tags=["health"])
+app.include_router(pack_metrics_router, tags=["pack-metrics"])
 
 
 @app.get("/health")

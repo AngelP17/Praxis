@@ -508,3 +508,58 @@ body {
 .btn-enhanced:active {
   transform: scale(0.98);
 }
+
+/* Accessibility: prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .praxis-marquee {
+    animation: none;
+  }
+
+  .sv3-pulse,
+  .sv3-pulse.signal,
+  .sv3-pulse.amber,
+  .sv3-pulse.crit {
+    animation: none;
+  }
+}
+
+/* Screen reader only utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Print styles */
+@media print {
+  nav,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  ::selection {
+    background: rgba(0, 0, 0, 0.1);
+    color: inherit;
+  }
+}
