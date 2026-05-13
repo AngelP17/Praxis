@@ -56,9 +56,9 @@ pnpm web:lint:gpt-taste:ci
 - `pnpm web:test:smoke` runs Playwright smoke specs in `apps/web/tests/*.smoke.spec.ts`.
 - `pnpm web:lint:gpt-taste:ci` runs the custom GPT-taste ESLint config.
 
-`pnpm web:lint:gpt-taste:ci` runs with `--max-warnings=0`. Any warning fails the script — this is the canonical local gate. A separate `lint:gpt-taste:json` variant is available for tooling that needs JSON output (it does not enforce the warning cap and exists only for reporting).
+`pnpm web:lint:gpt-taste:ci` runs with `--max-warnings=0`. Any warning fails the script. A separate `lint:gpt-taste:json` variant is available for tooling that needs JSON output (it does not enforce the warning cap and exists only for reporting).
 
-CI caveat: `.github/workflows/ci.yml` `gpt-taste-qa` invokes `pnpm lint:gpt-taste` (the non-strict text variant) and is marked `continue-on-error: true`. The CI job is therefore advisory. Run the strict `:ci` script locally and treat its failure as the authoritative signal until the workflow is hardened.
+`.github/workflows/ci.yml` `gpt-taste-qa` invokes `pnpm lint:gpt-taste:ci` and is a blocking job — any warning fails the workflow.
 
 For readable local GPT-taste output:
 

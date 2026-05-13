@@ -113,7 +113,6 @@ jobs:
 
   gpt-taste-qa:
     runs-on: ubuntu-latest
-    continue-on-error: true
     defaults:
       run:
         working-directory: apps/web
@@ -132,9 +131,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
       - name: Build gpt-taste plugin
-        run: cd ../../packages/eslint-plugin-gpt-taste && npm install && npm run build
-      - name: Run gpt-taste validation
-        run: pnpm lint:gpt-taste
+        run: pnpm --filter eslint-plugin-gpt-taste build
+      - name: Run gpt-taste validation (strict, --max-warnings=0)
+        run: pnpm lint:gpt-taste:ci
 
   secret-scan:
     runs-on: ubuntu-latest

@@ -178,8 +178,8 @@ If a command cannot run because services, ports, dependencies, or credentials ar
 
 - GitHub Actions use Python `3.12`, Node `22`, and pnpm `10.29.3`.
 - `.github/workflows/ci.yml` runs Python unit/integration tests, selected Astraea reasoning tests, TypeScript check, Next build, production pnpm audit, gpt-taste QA, and TruffleHog.
-- `apps/web/package.json` `lint:gpt-taste:ci` runs with `--max-warnings=0` — any warning fails the script. A separate `lint:gpt-taste:json` variant is kept for tooling that needs JSON output. The active gate is strict.
-- `.github/workflows/ci.yml` `gpt-taste-qa` is currently `continue-on-error: true` and invokes `pnpm lint:gpt-taste` (not the strict `:ci` variant). The CI workflow is advisory; the canonical gate is the local `pnpm web:lint:gpt-taste:ci` script. Treat any new warning as breakage even though CI does not yet block on it.
+- `apps/web/package.json` `lint:gpt-taste:ci` runs with `--max-warnings=0` — any warning fails the script. A separate `lint:gpt-taste:json` variant is kept for tooling that needs JSON output.
+- `.github/workflows/ci.yml` `gpt-taste-qa` invokes `pnpm lint:gpt-taste:ci` and is a hard gate — `continue-on-error` is removed. Any GPT-taste warning fails CI.
 - `.github/workflows/fieldlab-proof.yml` starts Floci, validates the manufacturing solution pack, emits and verifies a proof, checks determinism, runs benchmarks, and attempts Sigstore signing. Sigstore signing is `continue-on-error: true`.
 - `.github/workflows/solution-pack-validation.yml` loops over every directory under `solution-packs/` and runs `scripts/validate_solution_pack.py`.
 - `docs/13-validation-and-quality-gates.md` is a human guide; prefer Makefile, package manifests, and workflows when a command conflicts.
