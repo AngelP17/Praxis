@@ -29,3 +29,4 @@ coverage/
 # Standalone demo artifacts (data ported to TypeScript)
 AetherSentinel.html
 seed.js
+.vercel
