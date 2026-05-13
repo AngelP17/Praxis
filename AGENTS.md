@@ -2,6 +2,15 @@
 
 This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deployed operational intelligence platform. Before editing, inspect the local files relevant to the task and preserve existing behavior unless the user explicitly asks for behavior changes.
 
+## Agent Operating Rules
+
+- Inspect the repo before planning or editing. Prefer `rg`/`rg --files` for fast discovery.
+- Make a short plan before modifying files on multi-file or ambiguous tasks.
+- Do not change application behavior during documentation-only tasks.
+- Do not invent commands, conventions, or status claims. Derive them from local files and command output.
+- Don’t fight errors! Whenever you encounter the same error twice, research the web and find 3-5 possible ways to fix it. Then choose the most efficient solution and implement it.
+- If a command cannot run because services, ports, dependencies, Docker, or credentials are unavailable, record the exact blocker and the command attempted.
+
 ## Repo Map
 
 - `apps/web/`: Next.js 16, React 19, Tailwind CSS v4 frontend.
@@ -29,6 +38,7 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Frontend package manager: `pnpm@10.29.3` from the root `package.json`.
 - Python: `pyproject.toml` requires Python `>=3.11`; CI currently uses Python `3.12`.
 - Node: CI uses Node `22`.
+- FieldLab runtime dependencies, including `boto3`, are declared in `packages/pipelines/pyproject.toml` and installed by `make install`.
 
 ## Common Commands
 
@@ -57,7 +67,32 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Run flagship demo: `make praxis-demo`
 - Validate solution pack: `make praxis-validate-pack`
 - Generate executive readout: `make praxis-readout RUN_ID=<id>`
+- Generate and verify proof object: `make praxis-proof`
+- Run solution-pack benchmarks: `make praxis-benchmark`
 - Praxis algorithm tests: `make praxis-test`
+- Verify Floci runtime: `make praxis-floci-verify`
+- Verify Praxis canvas/design references: `make praxis-canvas-verify`
+- Verify active proof code has no fake hashes: `make praxis-proof-hashes`
+- Run full Praxis validation suite: `make praxis-validate-all`
+
+## End-To-End Runtime Proof
+
+Use this sequence when the task is to prove Praxis works end to end:
+
+```bash
+make install
+make praxis-fieldlab-up
+make praxis-proof
+make praxis-benchmark
+make praxis-floci-verify
+make praxis-canvas-verify
+make praxis-proof-hashes
+make praxis-fieldlab-down
+```
+
+For the strict combined gate, run `make praxis-validate-all` after `make praxis-fieldlab-up`. It chains Python lint, core/integration tests, benchmarks, Floci verification, canvas integrity, and proof-hash integrity. If Floci is not running, `make praxis-floci-verify` and `make praxis-validate-all` are expected to fail; start it with `make praxis-fieldlab-up` first.
+
+The proof path emits `artifacts/latest/praxis_proof.json` and `artifacts/latest/proof-summary.md`. Treat those as generated verification artifacts.
 
 ## Frontend Design System
 
@@ -81,6 +116,7 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Human-in-the-loop is a product constraint. Do not add unilateral automation paths unless explicitly requested.
 - Prefer shared domain models in `packages/domain/` and existing service APIs over duplicating shapes.
 - Raw events are intended to be immutable; decision records and evidence are audit artifacts.
+- The Floci-backed FieldLab path uses `packages/pipelines/pipelines/fieldlab/floci_*.py`, `apps/api_gateway/services/fieldlab_service.py`, and `scripts/run_fieldlab_demo.py`. Keep SQS/S3/DynamoDB/EventBridge behavior deterministic and locally reproducible.
 - SQLite files such as `praxis.db`, `test_praxis.db`, and `.venv/` are local artifacts and should not be edited manually.
 
 ## New Praxis API Routes
@@ -122,6 +158,8 @@ Pick the narrowest useful checks for the change:
 - Python-only changes: `make lint` and `make test`.
 - Frontend route/component changes: `pnpm web:typecheck`, `pnpm web:lint:gpt-taste:ci`, and `pnpm web:build`.
 - Full-stack/demo changes: `make demo-seed` and `make demo-validate` after services are running.
+- FieldLab/proof changes: `make praxis-fieldlab-up`, `make praxis-proof`, `make praxis-floci-verify`, `make praxis-benchmark`, then `make praxis-fieldlab-down`.
+- Documentation-only changes: run targeted text searches plus the narrowest relevant checks, such as `make praxis-canvas-verify` when touching design docs or `make praxis-proof-hashes` when touching proof docs.
 - Screenshot or visual changes: run the web app, inspect affected pages, and refresh screenshots only when requested.
 
 If a command cannot run because services, ports, dependencies, or credentials are unavailable, record the exact blocker and the command attempted.

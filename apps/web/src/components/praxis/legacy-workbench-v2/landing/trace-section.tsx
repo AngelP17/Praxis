@@ -122,7 +122,7 @@ export function TraceSection() {
                 className="absolute inset-0 bg-cover bg-center opacity-20 grayscale contrast-125 transition-transform duration-700 ease-out group-hover:scale-105"
                 style={{ backgroundImage: `url('https://picsum.photos/seed/praxis-${step.id}/960/640')` }}
               />
-              <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/90 via-zinc-950/72 to-amber-950/18" />
+              <div className="absolute inset-0 bg-gradient-to-br from-zinc-950/90 via-zinc-950/72 to-violet-950/18" />
               <div className="flex items-baseline gap-4">
                 <span className="mono-data text-[10px] text-zinc-500">0{index + 1}</span>
                 <h3 className="font-display text-xl font-medium text-zinc-200">{step.title}</h3>

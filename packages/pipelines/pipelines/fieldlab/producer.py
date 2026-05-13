@@ -6,8 +6,20 @@ class FieldLabProducer:
     def __init__(self, endpoint_url: str = "http://localhost:4566", region: str = "us-east-1"):
         self.endpoint_url = endpoint_url
         self.region = region
-        self.sqs = boto3.client("sqs", endpoint_url=endpoint_url, region_name=region)
-        self.s3 = boto3.client("s3", endpoint_url=endpoint_url, region_name=region)
+        self.sqs = boto3.client(
+            "sqs",
+            endpoint_url=endpoint_url,
+            region_name=region,
+            aws_access_key_id="test",
+            aws_secret_access_key="test",
+        )
+        self.s3 = boto3.client(
+            "s3",
+            endpoint_url=endpoint_url,
+            region_name=region,
+            aws_access_key_id="test",
+            aws_secret_access_key="test",
+        )
         self.queue_url = f"{endpoint_url}/000000000000/praxis-incident-events"
 
     def send_event(self, event: dict) -> dict:
@@ -31,7 +43,11 @@ class FieldLabProducer:
 
     def publish_eventbridge(self, detail_type: str, detail: dict) -> dict:
         events_client = boto3.client(
-            "events", endpoint_url=self.endpoint_url, region_name=self.region
+            "events",
+            endpoint_url=self.endpoint_url,
+            region_name=self.region,
+            aws_access_key_id="test",
+            aws_secret_access_key="test",
         )
         response = events_client.put_events(
             Entries=[

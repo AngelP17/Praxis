@@ -68,7 +68,7 @@ export function ActionApprovalPanel({ packId = "manufacturing-printer-gpo" }: Ac
       <div className="mt-6 flex gap-3">
         <button
           onClick={() => setStatus("approved")}
-          className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] ${
+          className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] transition-transform duration-700 hover:scale-105 ${
             status === "approved"
               ? "bg-[var(--praxis-mint)] text-[var(--praxis-bg)]"
               : "border border-[var(--praxis-mint)] text-[var(--praxis-mint)]"
@@ -78,7 +78,7 @@ export function ActionApprovalPanel({ packId = "manufacturing-printer-gpo" }: Ac
         </button>
         <button
           onClick={() => setStatus("rejected")}
-          className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] ${
+          className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] transition-transform duration-700 hover:scale-105 ${
             status === "rejected"
               ? "bg-[var(--praxis-crit)] text-[var(--praxis-bg)]"
               : "border border-[var(--praxis-crit)] text-[var(--praxis-crit)]"

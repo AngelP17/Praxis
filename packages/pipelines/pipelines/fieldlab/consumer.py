@@ -6,7 +6,13 @@ class FieldLabConsumer:
     def __init__(self, endpoint_url: str = "http://localhost:4566", region: str = "us-east-1"):
         self.endpoint_url = endpoint_url
         self.region = region
-        self.sqs = boto3.client("sqs", endpoint_url=endpoint_url, region_name=region)
+        self.sqs = boto3.client(
+            "sqs",
+            endpoint_url=endpoint_url,
+            region_name=region,
+            aws_access_key_id="test",
+            aws_secret_access_key="test",
+        )
         self.queue_url = f"{endpoint_url}/000000000000/praxis-incident-events"
 
     def receive_events(self, max_messages: int = 10) -> list[dict]:

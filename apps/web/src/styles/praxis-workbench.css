@@ -1,6 +1,6 @@
 /* Praxis Workbench — flagship visual layer.
  * Adds the mockup's industrial vocabulary on top of globals.css:
- * square plates with amber hairlines, hash-rail timeline, waveform/sparkline
+ * square plates with signal hairlines, hash-rail timeline, waveform/sparkline
  * patterns, magnetic CTA, scenario strip, flow rail. Additive — does not
  * replace v2 styles. Apply by wrapping a surface in .sv3.
  */
@@ -11,10 +11,15 @@
   --sv3-plate-2: #1C1A2E;
   --sv3-line: rgba(241,237,223,0.06);
   --sv3-line-strong: rgba(241,237,223,0.10);
-  --sv3-amber: #715BFF;
-  --sv3-amber-soft: rgba(113,91,255,0.16);
-  --sv3-amber-line: rgba(113,91,255,0.32);
-  --sv3-amber-glow: rgba(113,91,255,0.45);
+  --sv3-signal: #715BFF;
+  --sv3-signal-soft: rgba(113,91,255,0.16);
+  --sv3-signal-line: rgba(113,91,255,0.32);
+  --sv3-signal-glow: rgba(113,91,255,0.45);
+  /* --sv3-amber aliases map to Plasma Violet signal (semantic signal/warning state, not amber color) */
+  --sv3-amber: var(--sv3-signal);
+  --sv3-amber-soft: var(--sv3-signal-soft);
+  --sv3-amber-line: var(--sv3-signal-line);
+  --sv3-amber-glow: var(--sv3-signal-glow);
   --sv3-fg: #F1EDDF;
   --sv3-muted: #86819F;
   --sv3-subtle: #48455A;
@@ -39,7 +44,8 @@
   text-transform: uppercase;
   color: var(--sv3-subtle);
 }
-.sv3 .label-amber { color: var(--sv3-amber); }
+.sv3 .label-signal,
+.sv3 .label-amber { color: var(--sv3-signal); }
 
 /* Industrial grid background — apply with .sv3-bg on a positioned wrapper */
 .sv3-bg {
@@ -68,13 +74,14 @@
 
 /* Hairlines */
 .sv3 .sv3-hr { height: 1px; background: var(--sv3-line); }
+.sv3 .sv3-hr-signal,
 .sv3 .sv3-hr-amber {
   height: 1px;
-  background: linear-gradient(to right, transparent, var(--sv3-amber-line) 8%, var(--sv3-amber-line) 92%, transparent);
+  background: linear-gradient(to right, transparent, var(--sv3-signal-line) 8%, var(--sv3-signal-line) 92%, transparent);
 }
 .sv3 .sv3-vhr { width: 1px; background: var(--sv3-line); }
 
-/* Plates — square, hairline, optional amber edge */
+/* Plates — square, hairline, optional signal edge */
 .sv3-plate {
   background: linear-gradient(180deg, var(--sv3-plate) 0%, var(--sv3-plate-2) 100%);
   border: 1px solid var(--sv3-line);
@@ -82,8 +89,9 @@
   border-radius: 2px;
 }
 .sv3-plate-crisp { border-color: var(--sv3-line-strong); }
+.sv3-plate-signal,
 .sv3-plate-amber {
-  border-color: var(--sv3-amber-line);
+  border-color: var(--sv3-signal-line);
   box-shadow: inset 0 1px 0 rgba(113,91,255,0.10);
 }
 
@@ -94,7 +102,8 @@
   box-shadow: 0 0 0 0 rgba(74,222,128,0.6);
   animation: sv3PulseOk 2.4s ease-out infinite;
 }
-.sv3-pulse.amber { background: var(--sv3-amber); animation-name: sv3PulseAmber; }
+.sv3-pulse.signal,
+.sv3-pulse.amber { background: var(--sv3-signal); animation-name: sv3PulseSignal; }
 .sv3-pulse.crit  { background: var(--sv3-crit);  animation-name: sv3PulseCrit; }
 .sv3-pulse.warn  { background: var(--sv3-warn);  animation: none; }
 .sv3-pulse.stale { background: var(--sv3-subtle); animation: none; }
@@ -104,10 +113,10 @@
   70%  { box-shadow: 0 0 0 10px rgba(74,222,128,0); }
   100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
 }
-@keyframes sv3PulseAmber {
-  0%   { box-shadow: 0 0 0 0 var(--sv3-amber-glow); }
-  70%  { box-shadow: 0 0 0 12px rgba(229,168,59,0); }
-  100% { box-shadow: 0 0 0 0 rgba(229,168,59,0); }
+@keyframes sv3PulseSignal {
+  0%   { box-shadow: 0 0 0 0 var(--sv3-signal-glow); }
+  70%  { box-shadow: 0 0 0 12px rgba(113,91,255,0); }
+  100% { box-shadow: 0 0 0 0 rgba(113,91,255,0); }
 }
 @keyframes sv3PulseCrit {
   0%   { box-shadow: 0 0 0 0 rgba(239,68,68,0.55); }
@@ -133,31 +142,31 @@
   position: relative;
   display: inline-flex; align-items: center; gap: 12px;
   padding: 14px 22px;
-  background: var(--sv3-amber);
+  background: var(--sv3-signal);
   color: #0B0B0C;
   font-family: var(--font-sans), "Geist", system-ui, sans-serif;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.02em;
-  border: 1px solid var(--sv3-amber);
+  border: 1px solid var(--sv3-signal);
   border-radius: 2px;
   cursor: pointer;
   transition: transform 200ms cubic-bezier(0.16,1,0.3,1), box-shadow 200ms;
   will-change: transform;
 }
-.sv3-cta:hover  { box-shadow: 0 0 50px rgba(229,168,59,0.35); }
+.sv3-cta:hover  { box-shadow: 0 0 50px rgba(113,91,255,0.35); }
 .sv3-cta:active { transform: scale(0.97); }
 .sv3-cta.ghost {
   background: transparent;
   color: var(--sv3-fg);
   border-color: var(--sv3-line-strong);
 }
-.sv3-cta.ghost:hover { border-color: var(--sv3-amber-line); color: var(--sv3-amber); }
+.sv3-cta.ghost:hover { border-color: var(--sv3-signal-line); color: var(--sv3-signal); }
 
 /* Plate corner accents */
 .sv3-corner {
   position: absolute; width: 10px; height: 10px;
-  border: 1px solid var(--sv3-amber-line);
+  border: 1px solid var(--sv3-signal-line);
   pointer-events: none;
 }
 
@@ -165,12 +174,12 @@
 .sv3-prio { position: relative; height: 3px; background: rgba(255,255,255,0.06); overflow: hidden; border-radius: 1px; }
 .sv3-prio > i {
   position: absolute; left: 0; top: 0; bottom: 0;
-  background: var(--sv3-amber);
+  background: var(--sv3-signal);
 }
 
 /* Waveform (vertical bars) */
 .sv3-wave { display: flex; align-items: flex-end; gap: 2px; height: 28px; }
-.sv3-wave i { display: inline-block; width: 3px; background: var(--sv3-amber); opacity: 0.85; }
+.sv3-wave i { display: inline-block; width: 3px; background: var(--sv3-signal); opacity: 0.85; }
 
 /* Chips */
 .sv3-chip {
@@ -185,14 +194,15 @@
   border-radius: 2px;
   background: rgba(255,255,255,0.02);
 }
-.sv3-chip.amber { color: var(--sv3-amber); border-color: var(--sv3-amber-line); background: var(--sv3-amber-soft); }
+.sv3-chip.signal,
+.sv3-chip.amber { color: var(--sv3-signal); border-color: var(--sv3-signal-line); background: var(--sv3-signal-soft); }
 .sv3-chip.ok    { color: var(--sv3-ok);    border-color: rgba(74,222,128,0.35); }
 .sv3-chip.crit  { color: var(--sv3-crit);  border-color: rgba(239,68,68,0.35); }
-.sv3-chip.warn  { color: var(--sv3-warn);  border-color: rgba(245,197,66,0.35); }
+.sv3-chip.warn  { color: var(--sv3-warn);  border-color: rgba(113,91,255,0.35); }
 .sv3-chip.info  { color: var(--sv3-info);  border-color: rgba(96,165,250,0.35); }
 
 /* Hatching for AUDIT-MODE-style tags */
-.sv3-hatch { background-image: repeating-linear-gradient(45deg, rgba(229,168,59,0.20) 0 6px, transparent 6px 12px); }
+.sv3-hatch { background-image: repeating-linear-gradient(45deg, rgba(113,91,255,0.20) 0 6px, transparent 6px 12px); }
 
 /* Hide scrollbars inside dense panels */
 .sv3-noscroll::-webkit-scrollbar { display: none; }
@@ -201,8 +211,8 @@
 /* Compatibility layer while older routes migrate to V3 components */
 .ops-shell {
   background:
-    radial-gradient(1200px 600px at 90% -10%, rgba(229,168,59,0.10), transparent 55%),
-    radial-gradient(900px 500px at 0% 100%, rgba(229,168,59,0.04), transparent 60%),
+    radial-gradient(1200px 600px at 90% -10%, rgba(113,91,255,0.10), transparent 55%),
+    radial-gradient(900px 500px at 0% 100%, rgba(62,255,168,0.04), transparent 60%),
     var(--sv3-bg, #0e0e0f);
 }
 
@@ -234,7 +244,7 @@
 
 .praxis-v2-eyebrow,
 .praxis-v2-eyebrow-enhanced {
-  color: var(--sv3-amber, #e5a83b) !important;
+  color: var(--sv3-signal, #715BFF) !important;
   font-size: 10px !important;
 }
 
@@ -277,7 +287,7 @@
   height: 72%;
   pointer-events: none;
   background:
-    linear-gradient(90deg, rgba(229,168,59,0.12), transparent 22%),
+    linear-gradient(90deg, rgba(113,91,255,0.12), transparent 22%),
     url("https://picsum.photos/seed/praxis-factory-forensics/1400/900");
   background-size: cover;
   background-position: center;
@@ -310,10 +320,10 @@
   right: -12vw;
   top: 4%;
   pointer-events: none;
-  border: 1px solid rgba(229,168,59,0.13);
+  border: 1px solid rgba(113,91,255,0.13);
   background:
-    radial-gradient(circle, transparent 42%, rgba(229,168,59,0.08) 43%, transparent 44%),
-    radial-gradient(circle, rgba(229,168,59,0.08), transparent 58%);
+    radial-gradient(circle, transparent 42%, rgba(113,91,255,0.08) 43%, transparent 44%),
+    radial-gradient(circle, rgba(113,91,255,0.08), transparent 58%);
   opacity: 0.9;
   animation: sv3SlowTurn 28s linear infinite;
 }
@@ -330,7 +340,7 @@
   width: clamp(88px, 10vw, 168px);
   height: clamp(36px, 4vw, 58px);
   margin: 0 0.18em;
-  border: 1px solid var(--sv3-amber-line);
+  border: 1px solid var(--sv3-signal-line);
   vertical-align: middle;
   background-size: cover;
   background-position: center;
@@ -377,7 +387,7 @@
 
 .sv3-orbit-ring {
   position: absolute;
-  border: 1px solid rgba(229,168,59,0.18);
+  border: 1px solid rgba(113,91,255,0.18);
 }
 
 .sv3-orbit-ring-a {
@@ -393,8 +403,8 @@
   position: absolute;
   width: 9px;
   height: 9px;
-  background: var(--sv3-amber);
-  box-shadow: 0 0 0 5px rgba(229,168,59,0.1);
+  background: var(--sv3-signal);
+  box-shadow: 0 0 0 5px rgba(113,91,255,0.1);
 }
 
 .sv3-orbit-node-a {

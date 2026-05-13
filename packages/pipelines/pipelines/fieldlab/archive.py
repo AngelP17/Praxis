@@ -7,8 +7,20 @@ class FieldLabArchive:
     def __init__(self, endpoint_url: str = "http://localhost:4566", region: str = "us-east-1"):
         self.endpoint_url = endpoint_url
         self.region = region
-        self.s3 = boto3.client("s3", endpoint_url=endpoint_url, region_name=region)
-        self.dynamodb = boto3.client("dynamodb", endpoint_url=endpoint_url, region_name=region)
+        self.s3 = boto3.client(
+            "s3",
+            endpoint_url=endpoint_url,
+            region_name=region,
+            aws_access_key_id="test",
+            aws_secret_access_key="test",
+        )
+        self.dynamodb = boto3.client(
+            "dynamodb",
+            endpoint_url=endpoint_url,
+            region_name=region,
+            aws_access_key_id="test",
+            aws_secret_access_key="test",
+        )
 
     def archive_event(self, event: dict) -> dict:
         timestamp = datetime.utcnow().strftime("%Y/%m/%d/%H%M%S")

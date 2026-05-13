@@ -19,10 +19,9 @@ import {
 } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { getWorkflowRun, getWorkflowRuns } from "@/lib/praxis-workflow";
 
 gsap.registerPlugin(ScrollTrigger);
-
-const flow = ["Select", "Context", "Compile", "FieldLab", "Stream", "Decide", "Action", "Readout"];
 
 export type PraxisScreenId =
   | "overview"
@@ -47,20 +46,8 @@ const workbenchNav: Array<[PraxisScreenId, string, string]> = [
   ["readout", "Executive Readout", "/executive-readout"],
 ];
 
-const solutionPacks = [
-  ["Manufacturing Printer GPO", "Director of Operations", "0.86", "$38.4K", "pilot now"],
-  ["ERP Access Disruption", "IT Manager", "0.74", "$56.2K", "demo + scope"],
-  ["K8s Ingress Degradation", "SRE Lead", "0.69", "$92.0K", "demo + scope"],
-  ["Machine Cascade Maintenance", "Plant Engineer", "0.81", "$110K", "pilot now"],
-];
-
-const decisionWeights = [
-  ["operational severity", 82, 16],
-  ["business criticality", 91, 14],
-  ["customer impact", 74, 13],
-  ["recurrence risk", 68, 12],
-  ["evidence trust", 82, 5],
-];
+const flagshipRun = getWorkflowRun("manufacturing-printer-gpo");
+const workflowRuns = getWorkflowRuns();
 
 function PraxisMark({ className = "" }: { className?: string }) {
   return (
@@ -114,7 +101,10 @@ function PraxisNav() {
 
 function WorkbenchShell({ screen }: { screen: PraxisScreenId }) {
   return (
-    <div className="grid min-h-[640px] overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-bg)] text-[var(--praxis-bone)] md:grid-cols-[224px_1fr]">
+    <div
+      data-praxis-screen={screen}
+      className="grid min-h-[640px] overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-bg)] text-[var(--praxis-bone)] md:grid-cols-[224px_1fr]"
+    >
       <aside className="hidden border-r border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 md:flex md:flex-col">
         <div className="flex items-center gap-3">
           <PraxisMark className="h-7 w-7" />
@@ -152,20 +142,23 @@ function WorkbenchShell({ screen }: { screen: PraxisScreenId }) {
 }
 
 function OverviewScreen() {
+  const run = flagshipRun;
+  const highSeverityEvents = run.events.filter((event) => event.severity === "high");
+
   return (
     <div className="flex min-h-[640px] flex-col">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--praxis-line)] px-6 py-4">
         <div>
           <h3 className="font-display text-2xl font-medium">Operational Overview</h3>
-          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Real-time posture · 7 sites · 24 active runs</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{run.site} · {run.businessProcess}</p>
         </div>
         <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Export readout</button>
       </header>
       <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-4">
         {[
-          ["Mission Readiness", "98.6%", "+2.4% vs yesterday", "var(--praxis-mint)"],
-          ["Active Operations", "24", "across 7 theaters", "var(--praxis-violet)"],
-          ["Signal Quality", "93.2%", "stable", "var(--praxis-mint)"],
+          ["Evidence Trust", run.pack.evidenceTrust.toFixed(2), `${run.pack.sources.length} sources scored`, "var(--praxis-mint)"],
+          ["Priority", run.pack.priorityScore.toFixed(2), "human review required", "var(--praxis-violet)"],
+          ["Mapping", run.pack.mappingConfidence.toFixed(2), `${run.pack.objectsCreated} objects · ${run.pack.linksCreated} links`, "var(--praxis-mint)"],
         ].map(([label, value, delta, color]) => (
           <article key={label} className="group min-h-36 overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 transition-transform duration-700 hover:scale-[1.02]">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{label}</div>
@@ -175,15 +168,15 @@ function OverviewScreen() {
           </article>
         ))}
         <article className="row-span-2 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5">
-          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Alerts requiring action</div>
-          <div className="mt-4 font-display text-4xl font-medium">3 open</div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Signals requiring action</div>
+          <div className="mt-4 font-display text-4xl font-medium">{highSeverityEvents.length} high</div>
           <div className="mt-6 space-y-3">
-            {["Network Anomaly", "Device Offline", "Intel Update"].map((item, index) => (
-              <div key={item} className="flex items-center gap-3 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-3">
-                <span className={`h-2 w-2 rounded-full ${index === 1 ? "bg-[var(--praxis-crit)]" : "bg-[var(--praxis-mint)]"}`} />
+            {run.events.slice(0, 3).map((event) => (
+              <div key={`${event.timestamp}-${event.type}`} className="flex items-center gap-3 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-3">
+                <span className={`h-2 w-2 rounded-full ${event.severity === "high" ? "bg-[var(--praxis-crit)]" : "bg-[var(--praxis-mint)]"}`} />
                 <div>
-                  <div className="text-sm">{item}</div>
-                  <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Georgia plant</div>
+                  <div className="text-sm">{event.type}</div>
+                  <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{event.source}</div>
                 </div>
               </div>
             ))}
@@ -191,17 +184,22 @@ function OverviewScreen() {
         </article>
         <article className="min-h-64 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 lg:col-span-3">
           <div className="flex justify-between gap-4">
-            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Signal density · last 24h</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Signal density · {run.runId}</div>
             <div className="font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--praxis-muted)]">Signals · Decisions · Actions</div>
           </div>
           <div className="mt-8 h-44">
             <Spark />
           </div>
         </article>
-        {["Assets Online", "Incidents", "Data Ingested", "Response Time"].map((item, index) => (
+        {[
+          ["Events", String(run.pack.eventCount)],
+          ["Objects", String(run.pack.objectsCreated)],
+          ["Links", String(run.pack.linksCreated)],
+          ["Replay", run.proofHashPreview],
+        ].map(([item, value]) => (
           <article key={item} className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{item}</div>
-            <div className="mt-4 font-display text-4xl font-medium">{["1,248", "12", "4.7 TB", "02:34"][index]}</div>
+            <div className={`mt-4 break-words font-display font-medium ${item === "Replay" ? "text-lg leading-6 text-[var(--praxis-mint)]" : "text-4xl"}`}>{value}</div>
           </article>
         ))}
       </div>
@@ -220,30 +218,31 @@ function SolutionPacksScreen() {
         <button className="bg-[var(--praxis-bone)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Validate pack</button>
       </header>
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
-        {solutionPacks.map(([name, buyer, score, value, bucket], index) => (
-          <article key={name} className={`group min-h-56 overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 transition-transform duration-700 hover:scale-[1.02] ${index === 0 ? "lg:col-span-6 lg:row-span-2" : "lg:col-span-3"}`}>
+        {workflowRuns.map((run) => (
+          <article key={run.pack.id} className="group min-h-80 overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 transition-transform duration-700 hover:scale-[1.02] lg:col-span-4">
             <div className="flex items-start justify-between gap-4">
               <Stack className="h-8 w-8 text-[var(--praxis-mint)]" weight="duotone" />
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{bucket}</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{run.pack.status}</span>
             </div>
-            <h4 className={`${index === 0 ? "mt-14 text-5xl" : "mt-10 text-3xl"} font-display font-medium leading-none`}>{name}</h4>
-            <div className="mt-7 grid grid-cols-3 gap-3">
-              <div>
+            <h4 className="mt-12 max-w-full break-words font-display text-[clamp(1.55rem,2.2vw,2.45rem)] font-medium leading-none">{run.pack.name}</h4>
+            <div className="mt-7 grid grid-flow-dense grid-cols-2 gap-3">
+              <div className="col-span-2">
                 <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Buyer</div>
-                <div className="mt-1 text-sm">{buyer}</div>
+                <div className="mt-1 text-sm leading-snug">{run.pack.buyer}</div>
               </div>
               <div>
                 <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Score</div>
-                <div className="mt-1 font-display text-3xl text-[var(--praxis-violet)]">{score}</div>
+                <div className="mt-1 font-display text-[clamp(1.7rem,2.4vw,2.15rem)] text-[var(--praxis-violet)]">{run.pack.score}</div>
               </div>
               <div>
                 <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Value</div>
-                <div className="mt-1 font-display text-3xl text-[var(--praxis-mint)]">{value}</div>
+                <div className="mt-1 font-display text-[clamp(1.7rem,2.4vw,2.15rem)] text-[var(--praxis-mint)]">{run.pack.annualValue}</div>
               </div>
             </div>
+            <p className="mt-6 line-clamp-3 text-sm leading-6 text-[var(--praxis-muted)]">{run.workflowSummary}</p>
           </article>
         ))}
-        <article className="lg:col-span-6 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5">
+        <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 lg:col-span-12">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Pack contents</div>
           <div className="mt-5 grid grid-cols-2 gap-3 text-sm md:grid-cols-3">
             {["scenario", "context", "events", "ontology", "demo script", "roi model", "objections", "security", "implementation"].map((item) => (
@@ -257,6 +256,8 @@ function SolutionPacksScreen() {
 }
 
 function FieldLabScreen() {
+  const run = flagshipRun;
+
   return (
     <div className="min-h-[640px] p-6">
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-[var(--praxis-line)] pb-5">
@@ -269,35 +270,31 @@ function FieldLabScreen() {
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-5 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <Circuitry className="h-10 w-10 text-[var(--praxis-violet)]" weight="duotone" />
-          <h4 className="mt-10 font-display text-5xl font-medium leading-none">localhost:4566</h4>
-          <p className="mt-5 text-sm leading-6 text-[var(--praxis-muted)]">No cloud credentials. No customer production mutation. Everything is replayable from raw event archive to executive artifact.</p>
+          <h4 className="mt-10 font-display text-5xl font-medium leading-none">{run.fieldlabEndpoint}</h4>
+          <p className="mt-5 text-sm leading-6 text-[var(--praxis-muted)]">{run.pack.eventCount} realistic events flow through queue refs, raw event archive, state writes, workflow transitions, and a signed proof artifact.</p>
           <Spark color="var(--praxis-mint)" />
         </article>
         <article className="lg:col-span-7 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Workflow services</div>
           <div className="mt-6 grid gap-3 md:grid-cols-2">
-            {[
-              ["SQS", "praxis-incident-events", "streaming"],
-              ["S3", "praxis-audit-artifacts", "archiving"],
-              ["DynamoDB", "PraxisIncidentState", "state"],
-              ["EventBridge", "praxis-workflow-events", "routing"],
-            ].map(([service, name, status]) => (
-              <div key={name} className="border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
+            {run.services.map((resource) => (
+              <div key={resource.resource} className="border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
                 <div className="flex justify-between font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)]">
-                  <span>{service}</span>
-                  <span className="text-[var(--praxis-mint)]">{status}</span>
+                  <span>{resource.service}</span>
+                  <span className="text-[var(--praxis-mint)]">{resource.status}</span>
                 </div>
-                <div className="mt-4 font-display text-2xl">{name}</div>
+                <div className="mt-4 font-display text-2xl">{resource.resource}</div>
               </div>
             ))}
           </div>
         </article>
         <article className="lg:col-span-12 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5">
           <div className="grid grid-flow-dense gap-3 md:grid-cols-6">
-            {flow.slice(2).map((item, index) => (
-              <div key={item} className="border border-[var(--praxis-line)] p-4">
-                <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">run {index + 1}</div>
-                <div className="mt-4 font-display text-2xl">{item}</div>
+            {run.timeline.slice(2).map((step) => (
+              <div key={step.label} className="border border-[var(--praxis-line)] p-4">
+                <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{step.timestamp}</div>
+                <div className="mt-4 font-display text-2xl">{step.label}</div>
+                <div className="mt-2 text-xs leading-5 text-[var(--praxis-muted)]">{step.detail}</div>
               </div>
             ))}
           </div>
@@ -308,7 +305,8 @@ function FieldLabScreen() {
 }
 
 function OntologyScreen() {
-  const nodes = ["Site", "Asset", "Incident", "Ticket", "Vendor", "Runbook", "Stakeholder", "BusinessProcess"];
+  const run = flagshipRun;
+
   return (
     <div className="min-h-[640px] p-6">
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-[var(--praxis-line)] pb-5">
@@ -321,24 +319,27 @@ function OntologyScreen() {
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph</div>
-          <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
-            {nodes.map((node, index) => (
-              <div key={node} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
+          <div className="mt-8 grid grid-cols-2 gap-4">
+            {run.ontologyObjects.map((node) => (
+              <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
                 <TreeStructure className="h-6 w-6 text-[var(--praxis-mint)]" />
-                <div className="mt-5 font-display text-2xl">{node}</div>
-                <div className="mt-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{index + 2} links</div>
+                <div className="mt-5 font-display text-2xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
+                <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{node.links} links · {node.key}</div>
               </div>
             ))}
           </div>
         </article>
         <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Mapping confidence</div>
-          <div className="mt-5 font-display text-7xl text-[var(--praxis-mint)]">0.78</div>
+          <div className="mt-5 font-display text-7xl text-[var(--praxis-mint)]">{run.pack.mappingConfidence.toFixed(2)}</div>
           <div className="mt-8 space-y-4">
-            {["schema coverage", "field consistency", "relationship density", "source reliability", "semantic match"].map((item, index) => (
-              <div key={item}>
-                <div className="mb-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{item}</div>
-                <div className="h-2 bg-[var(--praxis-line)]"><div className="h-full bg-[var(--praxis-violet)]" style={{ width: `${86 - index * 7}%` }} /></div>
+            {run.mappingFactors.map((factor) => (
+              <div key={factor.label}>
+                <div className="mb-2 flex justify-between font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+                  <span>{factor.label}</span>
+                  <span>{factor.value}%</span>
+                </div>
+                <div className="h-2 bg-[var(--praxis-line)]"><div className="h-full bg-[var(--praxis-violet)]" style={{ width: `${factor.value}%` }} /></div>
               </div>
             ))}
           </div>
@@ -349,11 +350,13 @@ function OntologyScreen() {
 }
 
 function DecisionScreen() {
+  const run = flagshipRun;
+
   return (
     <div className="flex min-h-[640px] flex-col">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--praxis-line)] px-6 py-4">
         <div>
-          <h3 className="font-display text-2xl font-medium">Decision · GA-PRINT-GPO-042</h3>
+          <h3 className="font-display text-2xl font-medium">Decision · {run.ontologyObjects.find((object) => object.type === "Incident")?.key}</h3>
           <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-violet)]">review required</p>
         </div>
         <button className="bg-[var(--praxis-violet)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bg)]">Route action</button>
@@ -361,14 +364,14 @@ function DecisionScreen() {
       <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-[0.9fr_1.1fr]">
         <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Praxis priority</div>
-          <div className="mt-5 font-display text-8xl font-medium text-[var(--praxis-violet)]">0.74</div>
+          <div className="mt-5 font-display text-8xl font-medium text-[var(--praxis-violet)]">{run.pack.priorityScore.toFixed(2)}</div>
           <p className="mt-5 max-w-md text-sm leading-6 text-[var(--praxis-muted)]">
-            Printer deployment policy drift is delaying shipping documentation and needs assisted human-approved routing.
+            {run.pack.rootCause.replace(/_/g, " ")} is affecting {run.businessProcess.toLowerCase()} and needs assisted human-approved routing.
           </p>
           <div className="mt-8 grid grid-cols-2 gap-3">
             <div className="border border-[var(--praxis-line)] p-4">
               <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Evidence trust</div>
-              <div className="mt-2 font-display text-4xl text-[var(--praxis-mint)]">0.82</div>
+              <div className="mt-2 font-display text-4xl text-[var(--praxis-mint)]">{run.pack.evidenceTrust.toFixed(2)}</div>
             </div>
             <div className="border border-[var(--praxis-line)] p-4">
               <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Mode</div>
@@ -379,7 +382,7 @@ function DecisionScreen() {
         <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Rationale weights</div>
           <div className="mt-6 space-y-4">
-            {decisionWeights.map(([label, value, weight]) => (
+            {run.decisionWeights.map(({ label, value, weight }) => (
               <div key={label}>
                 <div className="mb-2 grid grid-cols-[1fr_auto_auto] gap-4 font-mono text-[10px] uppercase tracking-[0.08em]">
                   <span className="text-[var(--praxis-muted)]">{label}</span>
@@ -394,7 +397,7 @@ function DecisionScreen() {
           </div>
           <div className="mt-8 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Next best question</div>
-            <p className="mt-3 text-sm text-[var(--praxis-bone)]">How many production minutes were lost or delayed?</p>
+            <p className="mt-3 text-sm text-[var(--praxis-bone)]">{run.pack.nextBestQuestions[0]}</p>
           </div>
         </article>
       </div>
@@ -403,6 +406,8 @@ function DecisionScreen() {
 }
 
 function DiscoveryScreen() {
+  const run = flagshipRun;
+
   return (
     <div className="min-h-[640px] p-6">
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-[var(--praxis-line)] pb-5">
@@ -421,18 +426,16 @@ function DiscoveryScreen() {
         <article className="lg:col-span-7 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Next best questions</div>
           <div className="mt-6 space-y-3">
-            {[
-              ["downtime_minutes", "How many production minutes were lost or delayed?", "0.18"],
-              ["asset_owner", "Who owns the affected asset or system?", "0.11"],
-              ["vendor_sla", "What SLA applies to the current vendor?", "0.09"],
-              ["affected_department", "Which department absorbs the operational delay?", "0.07"],
-            ].map(([field, question, gain]) => (
-              <div key={field} className="grid gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 md:grid-cols-[1fr_auto]">
+            {run.pack.nextBestQuestions.concat([
+              "What approval path is allowed before production writeback?",
+              `Which stakeholder owns ${run.businessProcess.toLowerCase()} recovery?`,
+            ]).map((question, index) => (
+              <div key={question} className="grid gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 md:grid-cols-[1fr_auto]">
                 <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-violet)]">{field}</div>
+                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-violet)]">question_{index + 1}</div>
                   <div className="mt-2 text-sm">{question}</div>
                 </div>
-                <div className="font-display text-3xl text-[var(--praxis-mint)]">{gain}</div>
+                <div className="font-display text-3xl text-[var(--praxis-mint)]">{(0.18 - index * 0.03).toFixed(2)}</div>
               </div>
             ))}
           </div>
@@ -443,6 +446,8 @@ function DiscoveryScreen() {
 }
 
 function ValueCaseScreen() {
+  const run = flagshipRun;
+
   return (
     <div className="min-h-[640px] p-6">
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-[var(--praxis-line)] pb-5">
@@ -455,21 +460,14 @@ function ValueCaseScreen() {
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <FileText className="h-10 w-10 text-[var(--praxis-mint)]" weight="duotone" />
-          <div className="mt-10 font-display text-7xl text-[var(--praxis-mint)]">$38.4K</div>
+          <div className="mt-10 font-display text-7xl text-[var(--praxis-mint)]">{run.pack.annualValue}</div>
           <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">estimated annual value</div>
-          <p className="mt-7 text-sm leading-6 text-[var(--praxis-muted)]">Based on 12 monthly incidents, triage reduction, labor cost, and shipment delay avoidance.</p>
+          <p className="mt-7 text-sm leading-6 text-[var(--praxis-muted)]">Based on {run.assumptions[0].value} recurring incidents, triage reduction, labor cost, and {run.pack.primaryValueDriver}.</p>
         </article>
         <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Assumptions</div>
           <div className="mt-6 grid gap-3 md:grid-cols-2">
-            {[
-              ["incidents per month", "12"],
-              ["minutes lost per incident", "35"],
-              ["loaded labor rate", "$48/hr"],
-              ["shipment delay cost", "$250/hr"],
-              ["current triage", "45 min"],
-              ["praxis triage", "12 min"],
-            ].map(([label, value]) => (
+            {run.assumptions.map(({ label, value }) => (
               <div key={label} className="flex items-end justify-between border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
                 <span className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{label}</span>
                 <span className="font-display text-3xl">{value}</span>
@@ -483,6 +481,8 @@ function ValueCaseScreen() {
 }
 
 function ExpansionScreen() {
+  const run = flagshipRun;
+
   return (
     <div className="min-h-[640px] p-6">
       <header className="flex flex-wrap items-center justify-between gap-5 border-b border-[var(--praxis-line)] pb-5">
@@ -495,20 +495,13 @@ function ExpansionScreen() {
       <div className="mt-6 grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="lg:col-span-5 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <MapTrifold className="h-10 w-10 text-[var(--praxis-violet)]" weight="duotone" />
-          <h4 className="mt-10 font-display text-5xl font-medium leading-none">Printer GPO failure</h4>
-          <p className="mt-5 text-sm leading-6 text-[var(--praxis-muted)]">Initial proof path for manufacturing operations, IT management, and CFO value narrative.</p>
+          <h4 className="mt-10 font-display text-5xl font-medium leading-none">{run.pack.name}</h4>
+          <p className="mt-5 text-sm leading-6 text-[var(--praxis-muted)]">{run.workflowSummary}</p>
         </article>
         <article className="lg:col-span-7 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Adjacent use cases</div>
           <div className="mt-6 space-y-3">
-            {[
-              ["asset inventory accuracy", "0.82"],
-              ["vendor SLA tracking", "0.78"],
-              ["ticket routing", "0.73"],
-              ["ERP access incidents", "0.68"],
-              ["plant downtime reporting", "0.66"],
-              ["security quarantine workflow", "0.61"],
-            ].map(([label, score]) => (
+            {run.expansion.map(({ label, score }) => (
               <div key={label} className="grid grid-cols-[1fr_auto] gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
                 <span className="text-sm">{label}</span>
                 <span className="font-display text-3xl text-[var(--praxis-mint)]">{score}</span>
@@ -522,28 +515,30 @@ function ExpansionScreen() {
 }
 
 function ReadoutScreen() {
+  const run = flagshipRun;
+
   return (
     <div className="grid min-h-[640px] gap-4 p-6 lg:grid-cols-[1.15fr_0.85fr]">
       <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-8">
-        <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">Executive readout</div>
-        <h3 className="mt-8 max-w-3xl font-display text-6xl font-medium leading-[0.96] tracking-normal">
-          Printer GPO failure costs <span className="text-[var(--praxis-mint)]">$38.4K</span> per year.
-        </h3>
-        <p className="mt-8 max-w-xl text-base leading-7 text-[var(--praxis-muted)]">
-          Praxis found repeat deployment drift, linked it to shipping documentation delays, and produced an approval-safe remediation path with replayable evidence.
-        </p>
-        <div className="mt-10 grid grid-flow-dense gap-3 md:grid-cols-3">
-          {["Evidence trust 0.82", "Priority 0.74", "Human approval required"].map((item) => (
+          <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">Executive readout · {run.runId}</div>
+          <h3 className="mt-8 max-w-3xl font-display text-6xl font-medium leading-[0.96] tracking-normal">
+            {run.pack.name} risks <span className="text-[var(--praxis-mint)]">{run.pack.annualValue}</span> per year.
+          </h3>
+          <p className="mt-8 max-w-xl text-base leading-7 text-[var(--praxis-muted)]">
+            Praxis found {run.pack.rootCause.replace(/_/g, " ")}, linked it to {run.businessProcess.toLowerCase()}, and produced an approval-safe remediation path with replayable evidence.
+          </p>
+          <div className="mt-10 grid grid-flow-dense gap-3 md:grid-cols-3">
+            {[`Evidence trust ${run.pack.evidenceTrust.toFixed(2)}`, `Priority ${run.pack.priorityScore.toFixed(2)}`, "Human approval required"].map((item) => (
             <div key={item} className="border border-[var(--praxis-line)] p-4 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)]">{item}</div>
           ))}
         </div>
       </article>
       <aside className="space-y-4">
-        {[
-          ["Action", "Validate Point and Print policy, GPO read permissions, and local IP printer drift."],
-          ["Expansion", "Asset governance, vendor SLA tracking, endpoint configuration drift."],
-          ["Deployment", "Start read-only, prove in FieldLab, then enable assisted action with approval."],
-        ].map(([title, copy]) => (
+          {[
+            ["Action", run.pack.recommendedAction.replace(/_/g, " ")],
+            ["Expansion", run.expansion.slice(0, 3).map((item) => item.label).join(", ")],
+            ["Deployment", "Start read-only, prove in FieldLab, then enable assisted action with approval."],
+          ].map(([title, copy]) => (
           <article key={title} className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5">
             <div className="font-display text-2xl font-medium">{title}</div>
             <p className="mt-3 text-sm leading-6 text-[var(--praxis-muted)]">{copy}</p>
@@ -578,17 +573,20 @@ function BentoCard({
 }
 
 function Storyboard() {
+  const run = flagshipRun;
+
   return (
     <div className="grid grid-flow-dense gap-3 md:grid-cols-4">
-      {flow.map((item, index) => (
-        <article key={item} className="min-h-44 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-4">
+      {run.timeline.map((step, index) => (
+        <article key={step.label} className="min-h-44 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-4">
           <div className="flex justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">
-            <span>Step {String(index + 1).padStart(2, "0")}</span>
-            <span className={index > 4 ? "text-[var(--praxis-mint)]" : "text-[var(--praxis-violet)]"}>{index > 4 ? "proof" : "field"}</span>
+            <span>{step.timestamp}</span>
+            <span className={step.status === "completed" ? "text-[var(--praxis-mint)]" : "text-[var(--praxis-violet)]"}>{step.status}</span>
           </div>
-          <h3 className="mt-8 font-display text-3xl font-medium">{item}</h3>
+          <h3 className="mt-8 font-display text-3xl font-medium">{step.label}</h3>
+          <p className="mt-3 text-xs leading-5 text-[var(--praxis-muted)]">{step.detail}</p>
           <div className="mt-8 h-1 bg-[var(--praxis-line)]">
-            <div className="h-full bg-[var(--praxis-violet)]" style={{ width: `${((index + 1) / flow.length) * 100}%` }} />
+            <div className="h-full bg-[var(--praxis-violet)]" style={{ width: `${((index + 1) / run.timeline.length) * 100}%` }} />
           </div>
         </article>
       ))}
@@ -684,19 +682,20 @@ export function PraxisExperience({ initialScreen = "overview" }: { initialScreen
             <h2 className="max-w-4xl font-display text-[clamp(2.8rem,5vw,5.6rem)] font-medium leading-[0.96] tracking-normal">Solution packs become GTM assets.</h2>
             <p className="max-w-md text-sm leading-6 text-[var(--praxis-muted)]">Pulled from the canvas catalog pattern: qualification score, buyer, value, and launch posture in one compact card.</p>
           </div>
-          <div className="grid grid-flow-dense gap-4 md:grid-cols-4">
-            {solutionPacks.map(([name, buyer, score, value, bucket]) => (
-              <article key={name} className="group min-h-64 overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 transition-transform duration-700 hover:scale-[1.025]">
-                <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{buyer}</div>
-                <h3 className="mt-5 min-h-20 font-display text-3xl font-medium leading-none">{name}</h3>
+          <div className="grid grid-flow-dense gap-4 md:grid-cols-3">
+            {workflowRuns.map((run) => (
+              <article key={run.pack.id} className="group min-h-64 overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 transition-transform duration-700 hover:scale-[1.025]">
+                <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">{run.pack.buyer}</div>
+                <h3 className="mt-5 min-h-20 font-display text-3xl font-medium leading-none">{run.pack.name}</h3>
+                <p className="line-clamp-3 text-xs leading-5 text-[var(--praxis-muted)]">{run.workflowSummary}</p>
                 <div className="mt-8 flex items-end justify-between">
                   <div>
                     <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">score</div>
-                    <div className="font-display text-4xl text-[var(--praxis-violet)]">{score}</div>
+                    <div className="font-display text-4xl text-[var(--praxis-violet)]">{run.pack.score}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{bucket}</div>
-                    <div className="font-display text-3xl text-[var(--praxis-mint)]">{value}</div>
+                    <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{run.pack.status}</div>
+                    <div className="font-display text-3xl text-[var(--praxis-mint)]">{run.pack.annualValue}</div>
                   </div>
                 </div>
               </article>

@@ -1,6 +1,7 @@
 "use client";
 
 import { Clock, CheckCircle, Warning, Circle, ArrowRight } from "@phosphor-icons/react";
+import { getWorkflowRun } from "@/lib/praxis-workflow";
 
 interface TimelineStep {
   label: string;
@@ -9,17 +10,6 @@ interface TimelineStep {
   detail: string;
 }
 
-const steps: TimelineStep[] = [
-  { label: "Select", status: "completed", timestamp: "08:00:00", detail: "manufacturing-printer-gpo" },
-  { label: "Context", status: "completed", timestamp: "08:00:02", detail: "12 events loaded" },
-  { label: "Compile", status: "completed", timestamp: "08:00:05", detail: "9 objects, 14 links" },
-  { label: "FieldLab", status: "active", timestamp: "08:00:08", detail: "streaming to localhost:4566" },
-  { label: "Stream", status: "pending", timestamp: "—", detail: "SQS + S3 + DynamoDB" },
-  { label: "Decide", status: "pending", timestamp: "—", detail: "priority score pending" },
-  { label: "Action", status: "pending", timestamp: "—", detail: "human approval gate" },
-  { label: "Readout", status: "pending", timestamp: "—", detail: "executive value case" },
-];
-
 function StepIcon({ status }: { status: TimelineStep["status"] }) {
   if (status === "completed") return <CheckCircle className="h-5 w-5 text-[var(--praxis-mint)]" weight="fill" />;
   if (status === "active") return <Clock className="h-5 w-5 text-[var(--praxis-violet)] animate-pulse" weight="fill" />;
@@ -27,7 +17,9 @@ function StepIcon({ status }: { status: TimelineStep["status"] }) {
   return <Circle className="h-5 w-5 text-[var(--praxis-muted)]" />;
 }
 
-export function FieldLabTimeline() {
+export function FieldLabTimeline({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
+  const steps = getWorkflowRun(packId).timeline;
+
   return (
     <div className="grid grid-flow-dense gap-3 md:grid-cols-4 lg:grid-cols-8">
       {steps.map((step, index) => (

@@ -40,7 +40,7 @@ export function ExecutiveReadout({ packId = "manufacturing-printer-gpo" }: Execu
   ];
 
   return (
-    <div className="grid min-h-[640px] gap-4 lg:grid-cols-[1.15fr_0.85fr]">
+    <div className="grid grid-flow-dense min-h-[640px] gap-4 lg:grid-cols-[1.15fr_0.85fr]">
       <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-8">
         <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">Executive readout</div>
         <h3 className="mt-8 max-w-3xl font-display text-5xl font-medium leading-[0.96] tracking-normal lg:text-6xl">

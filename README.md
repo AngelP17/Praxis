@@ -6,11 +6,20 @@
 
 Praxis turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
 
-## Watch Praxis Work
+## Prove Praxis Works
 
-[3-minute demo](apps/web/public/demo/praxis-3-minute-demo.mp4)
+Praxis is verified through a local FieldLab run, not a pre-recorded video. The flagship proof path loads the manufacturing solution pack, streams messy events through the Floci-backed FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.
 
-In one run, Praxis loads a manufacturing solution pack, streams messy events through FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.
+```bash
+make install
+make praxis-fieldlab-up
+make praxis-proof
+make praxis-benchmark
+make praxis-floci-verify
+make praxis-fieldlab-down
+```
+
+The proof path emits `artifacts/latest/praxis_proof.json` and `artifacts/latest/proof-summary.md`.
 
 > **Tag:** `praxis-v1` — Field-Deployed Decision Platform
 
@@ -72,7 +81,7 @@ Dashboards show state. **Praxis drives operational decisions.**
 # 1. Install everything
 make install
 
-# 2. Start the full stack
+# 2. Start the full stack for the UI/API demo
 make demo
 
 # 3. Seed a known scenario
@@ -82,7 +91,9 @@ make demo-seed
 make demo-validate
 
 # Or run the proof-first artifact path
+make praxis-fieldlab-up
 make praxis-proof
+make praxis-fieldlab-down
 ```
 
 A plant reports repeated printer failures affecting shipping paperwork. Praxis ingests the signal, maps it to the operational ontology, identifies the affected business process, scores the evidence, routes a human-approved action, generates an audit trail, and builds a value case for standardizing printer deployment governance.
@@ -296,9 +307,7 @@ praxis/
 ├── solution-packs/        # Repeatable demo systems
 │   ├── manufacturing-printer-gpo/
 │   ├── erp-access-disruption/
-│   ├── k8s-ingress-degradation/
-│   ├── email-quarantine-disruption/
-│   └── machine-cascade-maintenance/
+│   └── k8s-ingress-degradation/
 ├── infrastructure/
 │   ├── floci/             # FieldLab: docker-compose, terraform, bootstrap
 │   ├── db/                # SQLAlchemy models, migrations
@@ -320,19 +329,22 @@ praxis/
 
 ## Quality Gates
 
-| Gate | Command | Status |
-|------|---------|--------|
-| Python tests (core) | `make test` | 13 passed |
-| Python tests (reasoning) | `pytest tests/astraea/` | 29 passed |
-| Python integration | `pytest tests/integration/` | 8 passed |
-| TypeScript check | `pnpm web:typecheck` | Pass |
-| Next.js build | `pnpm web:build` | 17/17 pages |
-| GPT-taste lint | `pnpm web:lint:gpt-taste:ci` | Pass |
-| Smoke tests | `pnpm web:test:smoke` | 6/6 passed |
-| CTA audit | `pnpm web:test:smoke cta-audit.smoke.spec.ts` | 4/4 passed |
-| Audit | `pnpm --dir apps/web audit --prod` | 0 vulnerabilities |
-| Lint | `make lint` | Pass |
-| Demo validation | `make demo-validate` | End-to-end verified |
+| Gate | Command | Notes |
+|------|---------|-------|
+| Python lint | `make lint` | Runs Ruff over `apps`, `packages`, and `services` |
+| Python tests | `make test` | Runs unit and integration tests configured in the Makefile |
+| Praxis algorithm/integration tests | `make praxis-test` | Runs `tests/praxis` and `tests/integration` |
+| TypeScript check | `pnpm web:typecheck` | Next.js/React type safety |
+| Next.js build | `pnpm web:build` | Production web build |
+| GPT-taste lint | `pnpm web:lint:gpt-taste:ci` | Praxis design-quality gate |
+| Smoke tests | `pnpm web:test:smoke` | Web smoke coverage |
+| Demo validation | `make demo-validate` | Requires demo services and seeded data |
+| Proof generation and verification | `make praxis-proof` | Emits and verifies `artifacts/latest/praxis_proof.json` |
+| Benchmark suite | `make praxis-benchmark` | Validates all current solution packs |
+| Floci runtime check | `make praxis-floci-verify` | Requires `make praxis-fieldlab-up` |
+| Canvas integrity | `make praxis-canvas-verify` | Checks Praxis canvas/source references |
+| Proof hash integrity | `make praxis-proof-hashes` | Checks active proof code for fake hashes |
+| Full Praxis validation | `make praxis-validate-all` | Requires Floci running |
 
 ### Benchmarks
 
@@ -351,6 +363,18 @@ make praxis-benchmark
 ```
 
 The benchmark framework is extensible — additional scenarios (press-line vibration, IAM policy drift, sensor calibration, contradictory evidence, missing evidence) can be added as new solution packs under `solution-packs/`.
+
+### FieldLab Runtime Verification
+
+Use this when you need a durable local proof that Praxis is exercising the full FieldLab path:
+
+```bash
+make praxis-fieldlab-up
+make praxis-validate-all
+make praxis-fieldlab-down
+```
+
+`make praxis-validate-all` chains Python lint, tests, benchmarks, Floci runtime verification, canvas integrity, and proof-hash integrity. If the Floci container is not running or Docker is unavailable, the Floci verification step should fail loudly instead of silently falling back.
 
 ---
 

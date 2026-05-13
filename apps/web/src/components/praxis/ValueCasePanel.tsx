@@ -2,6 +2,7 @@
 
 import { FileText, TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
 import { getPackById } from "@/lib/praxis-api";
+import { getWorkflowRun } from "@/lib/praxis-workflow";
 
 interface ValueCasePanelProps {
   packId?: string;
@@ -13,36 +14,6 @@ interface Assumption {
   impact: "high" | "medium" | "low";
 }
 
-function getAssumptions(packId: string): Assumption[] {
-  const packs: Record<string, Assumption[]> = {
-    "manufacturing-printer-gpo": [
-      { label: "incidents per month", value: "12", impact: "high" },
-      { label: "minutes lost per incident", value: "35", impact: "high" },
-      { label: "loaded labor rate", value: "$48/hr", impact: "medium" },
-      { label: "shipment delay cost", value: "$250/hr", impact: "high" },
-      { label: "current triage", value: "45 min", impact: "medium" },
-      { label: "praxis triage", value: "12 min", impact: "medium" },
-    ],
-    "erp-access-disruption": [
-      { label: "incidents per month", value: "8", impact: "high" },
-      { label: "downtime minutes", value: "52", impact: "high" },
-      { label: "blocked orders per incident", value: "37", impact: "high" },
-      { label: "loaded labor rate", value: "$62/hr", impact: "medium" },
-      { label: "order cost per hour", value: "$420/hr", impact: "high" },
-      { label: "escalation reduction", value: "60%", impact: "medium" },
-    ],
-    "k8s-ingress-degradation": [
-      { label: "incidents per quarter", value: "5", impact: "high" },
-      { label: "incident minutes", value: "41", impact: "medium" },
-      { label: "failed requests per incident", value: "12,400", impact: "high" },
-      { label: "request cost", value: "$1.25", impact: "medium" },
-      { label: "sre triage hours", value: "3.2", impact: "medium" },
-      { label: "mttr reduction", value: "45%", impact: "high" },
-    ],
-  };
-  return packs[packId] || packs["manufacturing-printer-gpo"];
-}
-
 function ImpactIcon({ impact }: { impact: Assumption["impact"] }) {
   if (impact === "high") return <TrendUp className="h-3 w-3 text-[var(--praxis-crit)]" />;
   if (impact === "medium") return <Minus className="h-3 w-3 text-[var(--praxis-muted)]" />;
@@ -51,7 +22,11 @@ function ImpactIcon({ impact }: { impact: Assumption["impact"] }) {
 
 export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCasePanelProps) {
   const pack = getPackById(packId);
-  const assumptions = getAssumptions(packId);
+  const run = getWorkflowRun(packId);
+  const assumptions: Assumption[] = run.assumptions.map((item, index) => ({
+    ...item,
+    impact: index === 0 || index === 1 || index === 3 ? "high" : "medium",
+  }));
 
   if (!pack) return null;
 
@@ -77,7 +52,7 @@ export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCa
       </article>
       <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Assumptions</div>
-        <div className="mt-6 grid gap-3 md:grid-cols-2">
+        <div className="mt-6 grid grid-flow-dense gap-3 md:grid-cols-2">
           {assumptions.map((a) => (
             <div key={a.label} className="flex items-end justify-between border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
               <div>

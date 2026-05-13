@@ -45,7 +45,7 @@ export function DecisionExplanationPanel({
         }}
       >
         <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <Shield size={12} className="text-amber-200" />
+          <Shield size={12} style={{ color: "var(--praxis-violet)" }} />
           <span className="label" style={{ fontSize: 10 }}>Why this decision holds</span>
           {integrity && (
             <span className="mono" style={{ fontSize: 10, color: "var(--sv3-amber)" }}>

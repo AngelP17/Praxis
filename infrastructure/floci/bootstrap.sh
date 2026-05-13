@@ -6,6 +6,10 @@ echo ""
 
 # Wait for Floci to be ready
 echo "Waiting for Floci to be ready..."
+export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID:-test}"
+export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY:-test}"
+export AWS_DEFAULT_REGION="${AWS_DEFAULT_REGION:-us-east-1}"
+
 for i in $(seq 1 30); do
   if curl -s http://localhost:4566/_floci/health > /dev/null 2>&1; then
     echo "Floci is ready."

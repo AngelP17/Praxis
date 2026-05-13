@@ -13,7 +13,15 @@ async function wait(ms) {
 }
 
 async function capture(page, fileName, route, options = {}) {
-  const { waitForText, waitForSelector, postWaitMs = 2000, fullPage = false } = options;
+  const {
+    waitForText,
+    waitForSelector,
+    screenshotSelector,
+    scrollToText,
+    scrollToSelector,
+    postWaitMs = 2000,
+    fullPage = false,
+  } = options;
   
   console.log(`Capturing ${fileName} from ${route}...`);
   await page.goto(`${BASE_URL}${route}`, { waitUntil: "domcontentloaded" });
@@ -33,13 +41,41 @@ async function capture(page, fileName, route, options = {}) {
       console.log(`  Text '${waitForText}' not found, continuing...`);
     }
   }
+
+  if (scrollToSelector) {
+    try {
+      await page.locator(scrollToSelector).first().scrollIntoViewIfNeeded({ timeout: 15000 });
+    } catch (e) {
+      console.log(`  Selector '${scrollToSelector}' not scrolled, continuing...`);
+    }
+  }
+
+  if (scrollToText) {
+    try {
+      await page.getByText(scrollToText, { exact: false }).first().scrollIntoViewIfNeeded({
+        timeout: 15000,
+      });
+    } catch (e) {
+      console.log(`  Text '${scrollToText}' not scrolled, continuing...`);
+    }
+  }
   
   await wait(postWaitMs);
   
-  await page.screenshot({
-    path: path.join(OUT_DIR, fileName),
-    fullPage,
-  });
+  if (screenshotSelector) {
+    const navOverride = await page.addStyleTag({
+      content: "nav.fixed { display: none !important; }",
+    });
+    await page.locator(screenshotSelector).first().screenshot({
+      path: path.join(OUT_DIR, fileName),
+    });
+    await navOverride.evaluate((node) => node.remove());
+  } else {
+    await page.screenshot({
+      path: path.join(OUT_DIR, fileName),
+      fullPage,
+    });
+  }
   console.log(`  Saved ${fileName}`);
 }
 
@@ -66,12 +102,14 @@ async function main() {
     
     // 2. Field Workbench
     await capture(page, "02-field-workbench.png", "/field-workbench", {
-      waitForText: "Field Workbench",
+      waitForText: "Operational Overview",
+      scrollToText: "Operational Overview",
+      screenshotSelector: '[data-praxis-screen="overview"]',
       postWaitMs: 2500,
     });
     
     // 3. Proof Object
-    await capture(page, "03-proof-object.png", "/proof/manufacturing-printer-gpo", {
+    await capture(page, "03-proof-object.png", "/proof/manufacturing-printer-gpo?proofSource=offline", {
       waitForText: "Proof object",
       postWaitMs: 2500,
     });
@@ -84,19 +122,25 @@ async function main() {
     
     // 5. Solution Packs
     await capture(page, "05-solution-packs.png", "/solution-packs", {
-      waitForText: "Solution Packs",
+      waitForText: "Solution Pack Launcher",
+      scrollToText: "Solution Pack Launcher",
+      screenshotSelector: '[data-praxis-screen="solution-packs"]',
       postWaitMs: 2500,
     });
     
     // 6. Ontology
     await capture(page, "06-ontology.png", "/ontology", {
-      waitForText: "Ontology",
+      waitForText: "Operational Ontology",
+      scrollToText: "Operational Ontology",
+      screenshotSelector: '[data-praxis-screen="ontology"]',
       postWaitMs: 2500,
     });
     
     // 7. Value Case
     await capture(page, "07-value-case.png", "/value-case", {
-      waitForText: "Value",
+      waitForText: "Value Case Builder",
+      scrollToText: "Value Case Builder",
+      screenshotSelector: '[data-praxis-screen="value-case"]',
       postWaitMs: 2500,
     });
     

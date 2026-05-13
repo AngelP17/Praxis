@@ -35,7 +35,7 @@ export function ReplayHashRail({
           <p className="mt-1 text-xs text-zinc-400">Signal → Decision → Workflow → Feedback → Replay</p>
         </div>
         <div className="inline-flex items-center gap-2 rounded-lg border border-zinc-700/70 bg-zinc-900/75 px-3 py-1.5 text-xs text-zinc-300">
-          <Hash size={13} className="text-amber-200" />
+          <Hash size={13} className="text-violet-200" />
           <span className="mono-data">{replayHashFor(ticket)}</span>
         </div>
       </div>

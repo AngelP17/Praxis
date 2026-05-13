@@ -65,7 +65,7 @@ export function EvidenceTrustPanel({ packId = "manufacturing-printer-gpo" }: Evi
           {pack?.evidenceTrust.toFixed(3) ?? "0.820"}
         </div>
       </div>
-      <div className="mt-6 grid gap-3 md:grid-cols-2">
+      <div className="mt-6 grid grid-flow-dense gap-3 md:grid-cols-2">
         {dimensions.map((dim) => (
           <div key={dim.label} className="border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
             <div className="flex items-center justify-between">

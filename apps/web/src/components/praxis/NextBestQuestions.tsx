@@ -51,7 +51,7 @@ export function NextBestQuestions({ packId = "manufacturing-printer-gpo" }: Next
         {questions.map((q, index) => (
           <div
             key={q.field}
-            className="grid gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 md:grid-cols-[1fr_auto]"
+            className="grid grid-flow-dense gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 md:grid-cols-[1fr_auto]"
           >
             <div>
               <div className="flex items-center gap-2">

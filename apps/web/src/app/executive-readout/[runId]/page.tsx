@@ -24,7 +24,7 @@ export default function ExecutiveReadoutRunPage() {
       <div className="min-h-[100dvh] bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
         <header className="border-b border-[var(--praxis-line)] bg-[var(--praxis-panel)] px-6 py-4">
           <div className="mx-auto flex max-w-7xl items-center gap-4">
-            <Link href="/field-workbench" className="text-[var(--praxis-muted)] transition-colors hover:text-[var(--praxis-bone)]">
+            <Link href="/field-workbench" className="text-[var(--praxis-muted)] transition-transform duration-500 hover:scale-105 hover:text-[var(--praxis-bone)]">
               <ArrowLeft className="h-5 w-5" />
             </Link>
             <FileText className="h-6 w-6 text-[var(--praxis-mint)]" />
@@ -37,14 +37,14 @@ export default function ExecutiveReadoutRunPage() {
           </div>
         </header>
         <main className="mx-auto max-w-7xl space-y-6 p-6">
-          <section>
+          <section className="py-24">
             <ExecutiveReadout packId={packId} />
           </section>
-          <section>
+          <section className="py-24">
             <h2 className="mb-4 font-display text-2xl font-medium">Value Case</h2>
             <ValueCasePanel packId={packId} />
           </section>
-          <section>
+          <section className="py-24">
             <h2 className="mb-4 font-display text-2xl font-medium">Expansion Opportunities</h2>
             <ExpansionMap packId={packId} />
           </section>

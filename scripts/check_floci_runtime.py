@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Check if Floci local AWS runtime is healthy and responsive."""
 
+import os
 import subprocess
 import sys
 import urllib.request
@@ -23,12 +24,17 @@ def check_health() -> bool:
 def run_aws(service: str, cmd: list[str]) -> tuple[bool, str]:
     """Run an AWS CLI command against Floci endpoint and return (ok, output)."""
     try:
+        env = os.environ.copy()
+        env.setdefault("AWS_ACCESS_KEY_ID", "test")
+        env.setdefault("AWS_SECRET_ACCESS_KEY", "test")
+        env.setdefault("AWS_DEFAULT_REGION", "us-east-1")
         result = subprocess.run(
             ["aws", "--endpoint-url", FLOCI_URL, service] + cmd,
             capture_output=True,
             text=True,
             timeout=15,
             check=False,
+            env=env,
         )
         return result.returncode == 0, result.stdout + result.stderr
     except FileNotFoundError as e:

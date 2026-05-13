@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Ingestion and processing pipelines for Praxis"
 requires-python = ">=3.11"
 dependencies = [
+    "boto3>=1.34.0",
     "pandas>=2.2.0",
     "openpyxl>=3.1.2",
 ]

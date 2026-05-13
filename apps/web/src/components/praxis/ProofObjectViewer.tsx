@@ -3,29 +3,20 @@
 import { BracketsCurly, Copy, Check } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { getPackById, proofsApi } from "@/lib/praxis-api";
+import { proofHash } from "@/lib/praxis-hash";
 import type { PraxisProof } from "@/lib/praxis-api";
 
 interface ProofObjectViewerProps {
   packId?: string;
+  preferOffline?: boolean;
 }
 
 function buildLocalProof(pack: NonNullable<ReturnType<typeof getPackById>>): PraxisProof {
-  const deterministicHash = (input: string): string => {
-    let hash = 0;
-    for (let i = 0; i < input.length; i++) {
-      const char = input.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    const hex = Math.abs(hash).toString(16).padStart(8, "0");
-    return `sha256:${hex}${hex}${hex}${hex}`;
-  };
-
   const packSeed = `${pack.id}:${pack.eventCount}:${pack.priorityScore}:${pack.evidenceTrust}`;
-  const contextHash = deterministicHash(`ctx:${packSeed}`);
-  const actionHash = deterministicHash(`act:${packSeed}:${pack.recommendedAction}`);
-  const replayHash = deterministicHash(`replay:${packSeed}`);
-  const proofHash = deterministicHash(`proof:${packSeed}:${contextHash}:${actionHash}:${replayHash}`);
+  const contextHash = proofHash(`ctx:${packSeed}`);
+  const actionHash = proofHash(`act:${packSeed}:${pack.recommendedAction}`);
+  const replayHash = proofHash(`replay:${packSeed}`);
+  const completeProofHash = proofHash(`proof:${packSeed}:${contextHash}:${actionHash}:${replayHash}`);
 
   return {
     proof_id: `proof_praxis_${pack.id.replace(/-/g, "_")}_001`,
@@ -70,12 +61,15 @@ function buildLocalProof(pack: NonNullable<ReturnType<typeof getPackById>>): Pra
       deterministic: true,
       verified_at: "2026-05-12T00:00:00Z",
     },
-    proof_hash: proofHash,
+    proof_hash: completeProofHash,
     generated_at: "2026-05-12T00:00:00Z",
   };
 }
 
-export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: ProofObjectViewerProps) {
+export function ProofObjectViewer({
+  packId = "manufacturing-printer-gpo",
+  preferOffline = false,
+}: ProofObjectViewerProps) {
   const pack = getPackById(packId);
   const [copied, setCopied] = useState(false);
   const [proofObject, setProofObject] = useState<PraxisProof | null>(null);
@@ -89,6 +83,12 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
     setLoading(true);
     setError(false);
     setSource("offline");
+
+    if (preferOffline) {
+      setProofObject(buildLocalProof(pack));
+      setLoading(false);
+      return;
+    }
 
     proofsApi
       .getByPack(packId)
@@ -135,7 +135,7 @@ export function ProofObjectViewer({ packId = "manufacturing-printer-gpo" }: Proo
         <button
           onClick={handleCopy}
           disabled={!proofObject}
-          className="flex items-center gap-2 border border-[var(--praxis-line)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)] transition-colors hover:text-[var(--praxis-bone)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center gap-2 border border-[var(--praxis-line)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)] transition-all duration-700 hover:scale-105 hover:text-[var(--praxis-bone)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           {copied ? <Check className="h-3 w-3 text-[var(--praxis-mint)]" /> : <Copy className="h-3 w-3" />}
           {copied ? "Copied" : "Copy JSON"}
