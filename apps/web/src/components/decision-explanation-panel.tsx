@@ -15,8 +15,8 @@ export function DecisionExplanationPanel({
 
   if (!explanation) {
     return (
-      <div className="sv3-plate" style={{ padding: 12 }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--sv3-muted)" }}>
+      <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.92),rgba(10,10,20,0.88))]" style={{ padding: 12 }}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, color: "var(--praxis-mute)" }}>
           <Info size={12} />
           <span className="label" style={{ fontSize: 10 }}>Explanation pending</span>
         </div>
@@ -31,24 +31,27 @@ export function DecisionExplanationPanel({
   const calibration = explanation.calibration_trace ?? [];
 
   return (
-    <div className="sv3-plate" style={{ padding: 0, overflow: "hidden" }}>
+    <div
+      className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.94),rgba(10,10,20,0.88))]"
+      style={{ padding: 0 }}
+    >
       <button
         type="button"
         onClick={() => setExpanded((v) => !v)}
-        className="hover:opacity-80 hover:scale-[1.01] transition-all duration-300"
+        className="transition-all duration-500 hover:opacity-90 hover:scale-[1.01]"
         style={{
           width: "100%", textAlign: "left",
           padding: "10px 14px",
           background: "transparent", border: 0, cursor: "pointer",
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          color: "var(--sv3-fg)",
+          color: "var(--praxis-bone)",
         }}
       >
         <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <Shield size={12} style={{ color: "var(--praxis-violet)" }} />
+          <Shield size={12} style={{ color: "var(--praxis-plasma)" }} />
           <span className="label" style={{ fontSize: 10 }}>Why this decision holds</span>
           {integrity && (
-            <span className="mono" style={{ fontSize: 10, color: "var(--sv3-amber)" }}>
+            <span className="mono" style={{ fontSize: 10, color: "var(--praxis-plasma)" }}>
               I{integrity.integrity_score.toFixed(2)}
             </span>
           )}
@@ -77,12 +80,12 @@ export function DecisionExplanationPanel({
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {factors.map((f) => (
-                  <div key={f.node_id} className="sv3-plate" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div key={f.node_id} className="border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)]" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                     <div>
-                      <span className="mono" style={{ fontSize: 10, color: "var(--sv3-muted)" }}>{f.node_id}</span>
-                      <span className="label" style={{ fontSize: 9, marginLeft: 8, color: "var(--sv3-subtle)" }}>{f.node_type}</span>
+                      <span className="mono" style={{ fontSize: 10, color: "var(--praxis-mute)" }}>{f.node_id}</span>
+                      <span className="label" style={{ fontSize: 9, marginLeft: 8, color: "var(--praxis-muted)" }}>{f.node_type}</span>
                     </div>
-                    <div className="mono" style={{ fontSize: 10, color: "var(--sv3-amber)" }}>
+                    <div className="mono" style={{ fontSize: 10, color: "var(--praxis-plasma)" }}>
                       W{f.provenance_weight.toFixed(2)} &middot; C{f.confidence.toFixed(2)}
                     </div>
                   </div>
@@ -97,13 +100,13 @@ export function DecisionExplanationPanel({
               <div style={{ display: "inline-flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                 <ArrowsCounterClockwise size={11} />
                 <span className="label" style={{ fontSize: 9 }}>Counterfactual replay</span>
-                <span className="mono" style={{ fontSize: 10, color: "var(--sv3-muted)" }}>S{counterfactuals.stability_score.toFixed(2)}</span>
+                <span className="mono" style={{ fontSize: 10, color: "var(--praxis-mute)" }}>S{counterfactuals.stability_score.toFixed(2)}</span>
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {counterfactuals.perturbations.slice(0, 3).map((p, i) => (
-                  <div key={i} className="sv3-plate" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 11, color: "var(--sv3-fg)" }}>{p.name}</span>
-                    <span className="mono" style={{ fontSize: 10, color: p.score_delta < 0 ? "var(--sv3-warn)" : "var(--sv3-ok)" }}>
+                  <div key={i} className="border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)]" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 11, color: "var(--praxis-bone)" }}>{p.name}</span>
+                    <span className="mono" style={{ fontSize: 10, color: p.score_delta < 0 ? "var(--praxis-crit)" : "var(--praxis-argon)" }}>
                       {p.score_delta > 0 ? "+" : ""}{p.score_delta.toFixed(3)}
                     </span>
                   </div>
@@ -121,9 +124,9 @@ export function DecisionExplanationPanel({
               </div>
               <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 {calibration.map((c, i) => (
-                  <div key={i} className="sv3-plate" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <span style={{ fontSize: 11, color: "var(--sv3-fg)" }}>{c.operator_id} &middot; {c.feedback_type}</span>
-                    <span className="mono" style={{ fontSize: 10, color: "var(--sv3-muted)" }}>
+                  <div key={i} className="border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)]" style={{ padding: "6px 10px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span style={{ fontSize: 11, color: "var(--praxis-bone)" }}>{c.operator_id} &middot; {c.feedback_type}</span>
+                    <span className="mono" style={{ fontSize: 10, color: "var(--praxis-mute)" }}>
                       {c.calibration_delta > 0 ? "+" : ""}{c.calibration_delta.toFixed(3)}
                     </span>
                   </div>
@@ -134,7 +137,7 @@ export function DecisionExplanationPanel({
 
           {/* Missing evidence */}
           {missing.length > 0 && (
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--sv3-warn)" }}>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "var(--praxis-crit)" }}>
               <Info size={11} />
               <span className="label" style={{ fontSize: 9, color: "inherit" }}>Missing evidence: {missing.join(", ")}</span>
             </div>
@@ -147,9 +150,9 @@ export function DecisionExplanationPanel({
 
 function Metric({ label, value, amber }: { label: string; value: number; amber?: boolean }) {
   return (
-    <div className="sv3-plate" style={{ padding: "6px 8px", textAlign: "center" }}>
+    <div className="border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)]" style={{ padding: "6px 8px", textAlign: "center" }}>
       <div className="label" style={{ fontSize: 8 }}>{label}</div>
-      <div className="mono" style={{ fontSize: 13, marginTop: 4, color: amber ? "var(--sv3-amber)" : "var(--sv3-fg)" }}>
+      <div className="mono" style={{ fontSize: 13, marginTop: 4, color: amber ? "var(--praxis-plasma)" : "var(--praxis-bone)" }}>
         {value.toFixed(2)}
       </div>
     </div>

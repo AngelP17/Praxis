@@ -44,8 +44,9 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
   };
 
   return (
-    <aside className="ops-rail sv3 z-20 hidden border-r border-[var(--sv3-line)] bg-[rgba(10,10,20,0.88)] px-2 py-4 backdrop-blur lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:flex-col">
-      <div className="mx-auto flex h-11 w-11 items-center justify-center border border-[var(--sv3-amber-line)] bg-[var(--sv3-amber-soft)] text-[var(--sv3-amber)]">
+    <aside className="ops-rail relative z-20 hidden border-r border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.98))] px-2 py-4 text-[var(--praxis-bone)] backdrop-blur lg:sticky lg:top-0 lg:flex lg:h-[100dvh] lg:flex-col">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(139,92,255,0.18),transparent_70%)]" />
+      <div className="mx-auto flex h-11 w-11 items-center justify-center border border-[var(--praxis-plasma)] bg-[color-mix(in_srgb,var(--praxis-plasma)_16%,transparent)] text-[var(--praxis-plasma)] shadow-[0_0_24px_rgba(139,92,255,0.18)]">
         <Lightning weight="fill" className="h-5 w-5" />
       </div>
 
@@ -57,12 +58,16 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
             <Link
               key={item.label}
               href={item.href}
-              className={`group flex items-center gap-3 border px-4 py-3 text-sm transition hover:scale-105 transition-transform duration-500 ${
+              className={`group relative overflow-hidden border px-4 py-3 text-sm transition-transform duration-700 hover:translate-x-1 ${
                 isActive
-                  ? "border-[var(--sv3-amber-line)] bg-[var(--sv3-amber-soft)] text-[var(--sv3-amber)]"
-                  : "border-transparent text-[var(--sv3-muted)] hover:border-[var(--sv3-line-strong)] hover:bg-white/[0.03] hover:text-[var(--sv3-fg)]"
+                  ? "border-[var(--praxis-plasma)] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--praxis-plasma)_16%,transparent),rgba(19,18,31,0.74))] text-[var(--praxis-bone)]"
+                  : "border-[var(--praxis-line)] bg-[rgba(19,18,31,0.42)] text-[var(--praxis-mute)] hover:border-[var(--praxis-hairline)] hover:bg-[rgba(19,18,31,0.7)] hover:text-[var(--praxis-bone)]"
               }`}
             >
+              <span
+                className="absolute inset-y-0 left-0 w-[2px] bg-[var(--praxis-plasma)] opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+                style={{ opacity: isActive ? 1 : undefined }}
+              />
               <Icon className="h-4 w-4 shrink-0" weight={isActive ? "fill" : "regular"} />
               <span className="ops-rail-label font-medium">{item.label}</span>
             </Link>
@@ -74,12 +79,12 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
         <button
           type="button"
           onClick={handleLogout}
-          className="group flex w-full items-center gap-3 border border-transparent px-4 py-3 text-sm text-[var(--sv3-muted)] transition hover:border-rose-400/20 hover:bg-rose-500/10 hover:text-rose-200 hover:scale-105 transition-transform duration-500"
+          className="group flex w-full items-center gap-3 border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.42)] px-4 py-3 text-sm text-[var(--praxis-mute)] transition-transform duration-700 hover:translate-x-1 hover:border-[var(--praxis-crit)] hover:bg-[color-mix(in_srgb,var(--praxis-crit)_12%,transparent)] hover:text-[var(--praxis-bone)]"
         >
           <SignOut className="h-4 w-4 shrink-0" />
           <span className="ops-rail-label font-medium">Logout</span>
         </button>
-        <div className="mx-auto mt-4 flex h-10 w-10 items-center justify-center border border-[var(--sv3-amber-line)] bg-[var(--sv3-amber)] text-xs font-bold text-[var(--praxis-bg)]">
+        <div className="mx-auto mt-4 flex h-10 w-10 items-center justify-center border border-[var(--praxis-plasma)] bg-[linear-gradient(135deg,var(--praxis-plasma),var(--praxis-argon))] text-xs font-bold text-[var(--praxis-obsidian)]">
           AP
         </div>
       </div>
