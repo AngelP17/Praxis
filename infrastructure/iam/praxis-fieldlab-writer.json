@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "s3:PutObject",
+        "s3:DeleteObject",
+        "dynamodb:PutItem",
+        "dynamodb:UpdateItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:BatchWriteItem",
+        "sqs:SendMessage",
+        "sqs:DeleteMessage",
+        "sqs:PurgeQueue",
+        "sqs:CreateQueue",
+        "events:PutEvents",
+        "events:CreateEventBus"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

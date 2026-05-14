@@ -24,9 +24,18 @@ class Settings(BaseSettings):
     # Rate limiting
     RATE_LIMIT_PER_MINUTE: int = 600
 
+    # Lambda compute
+    USE_LAMBDA_COMPUTE: bool = False  # Set to True for production Lambda compute
+
     # Logging
     LOG_LEVEL: str = "INFO"
     LOG_FORMAT: str = "console"  # "json" or "console"
+
+    # Floci configuration
+    FLOCI_ENDPOINT: str = "http://localhost:4566"
+    AWS_REGION: str = "us-east-1"
+    AWS_ACCESS_KEY_ID: str = "test"
+    AWS_SECRET_ACCESS_KEY: str = "test"
 
     # Service URLs
     DECISION_SERVICE_URL: str = "http://localhost:8001"

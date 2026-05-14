@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, GitPullRequest, ShieldCheck, User, Warning, X } from "@phosphor-icons/react";
+import { Check, GitPullRequest, User, Warning, X } from "@phosphor-icons/react";
 import type { PraxisProof } from "@/lib/praxis-client";
+import { PraxisMark } from "./PraxisMark";
 
 interface ActionApprovalPanelProps {
   proof?: PraxisProof | null;
@@ -15,7 +16,7 @@ export function ActionApprovalPanel({ proof, disabled = false, onAction }: Actio
   return (
     <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
       <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
-        <ShieldCheck className="h-4 w-4 text-[var(--praxis-violet)]" />
+        <PraxisMark size={16} />
         Action approval gate
       </div>
 

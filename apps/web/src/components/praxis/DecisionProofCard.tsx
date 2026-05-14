@@ -1,8 +1,9 @@
 "use client";
 
-import { ShieldCheck, Warning, GitCommit } from "@phosphor-icons/react";
+import { Warning, GitCommit } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
+import { PraxisMark } from "./PraxisMark";
 
 interface DecisionProofCardProps {
   packId?: string;
@@ -32,7 +33,7 @@ export function DecisionProofCard({ packId = "manufacturing-printer-gpo" }: Deci
     <div className="grid grid-flow-dense gap-4 lg:grid-cols-[0.9fr_1.1fr]">
       <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
         <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
-          <ShieldCheck className="h-4 w-4 text-[var(--praxis-violet)]" />
+          <PraxisMark size={16} />
           Praxis priority
         </div>
         <div className="mt-5 font-display text-8xl font-medium text-[var(--praxis-violet)]">

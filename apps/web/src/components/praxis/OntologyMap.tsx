@@ -1,26 +1,27 @@
 "use client";
 
 import {
-  TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives, ShieldCheck,
+  TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives,
 } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
+import { PraxisMark } from "./PraxisMark";
 
-const iconByType: Record<string, typeof TreeStructure> = {
+const iconByType: Record<string, any> = {
   Action: Lightning,
   Asset: HardDrives,
   BusinessProcess: LinkIcon,
   ERPModule: Factory,
   GitOpsBranch: TreeStructure,
-  IdentityProvider: ShieldCheck,
+  IdentityProvider: PraxisMark,
   Incident: Lightning,
   IngressRule: LinkIcon,
   Region: Globe,
   Runbook: TreeStructure,
   Service: HardDrives,
   Site: Globe,
-  SLO: ShieldCheck,
+  SLO: PraxisMark,
   Stakeholder: Users,
-  Ticket: ShieldCheck,
+  Ticket: PraxisMark,
   UserGroup: Users,
   Vendor: Factory,
 };
@@ -38,6 +39,13 @@ const SOURCE_TYPE_MAP: Record<string, string> = {
   praxis: "Action",
   print_server: "Asset",
 };
+
+function renderIcon(Icon: any) {
+  if (Icon === PraxisMark) {
+    return <PraxisMark size={24} />;
+  }
+  return <Icon className="h-6 w-6 text-[var(--praxis-mint)]" />;
+}
 
 export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
   const { proof } = useProof(packId);
@@ -71,10 +79,9 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph</div>
         <div className="mt-8 grid grid-flow-dense grid-cols-2 gap-4">
           {nodes.map((node) => {
-            const Icon = node.Icon;
             return (
               <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
-                <Icon className="h-6 w-6 text-[var(--praxis-mint)]" />
+                {renderIcon(node.Icon)}
                 <div className="mt-5 font-display text-2xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
                 <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
                   {node.links} links · {node.key}

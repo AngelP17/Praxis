@@ -2,12 +2,13 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, BracketsCurly, CheckCircle, GitCommit, ShieldCheck, TerminalWindow } from "@phosphor-icons/react";
+import { ArrowRight, BracketsCurly, CheckCircle, GitCommit, TerminalWindow } from "@phosphor-icons/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { PraxisLogo } from "./PraxisLogo";
 import { useProof } from "@/lib/hooks/useProof";
+import { PraxisMark } from "./PraxisMark";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -167,9 +168,9 @@ export function ProofProtocolHero({ packId = "manufacturing-printer-gpo" }: { pa
         </article>
 
         <article className="ppp-bento-card group bg-[rgba(10,10,20,0.94)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-5 md:p-8">
-          <ShieldCheck className="h-7 w-7 text-[var(--praxis-violet)]" weight="duotone" />
+          <PraxisMark size={28} />
           <h2 className="mt-10 font-display text-4xl font-medium leading-none tracking-normal">Floci runtime ready</h2>
-          <p className="mt-5 text-sm leading-7 text-[var(--praxis-muted)]">SQS, S3, DynamoDB, and EventBridge form the local FieldLab substrate.</p>
+          <p className="mt-5 text-sm leading-7 text-[var(--praxis-muted)]">SQS, S3, DynamoDB and EventBridge form from local FieldLab substrate.</p>
         </article>
 
         <article className="ppp-bento-card group overflow-hidden bg-[rgba(28,26,46,0.94)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-12 md:p-8">

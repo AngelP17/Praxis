@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { CheckCircle, Database, Envelope, ShieldCheck, BracketsCurly, ArrowRight } from "@phosphor-icons/react";
+import { CheckCircle, Database, Envelope, BracketsCurly, ArrowRight } from "@phosphor-icons/react";
+import { PraxisMark } from "./PraxisMark";
 
 interface StageEvent {
   stage: string;
@@ -28,13 +29,13 @@ interface CompletedEvent {
   verify_command: string;
 }
 
-const STAGE_ICONS: Record<string, typeof Database> = {
+const STAGE_ICONS: Record<string, any> = {
   "s3.write": Database,
   "sqs.send": Envelope,
   "dynamo.put": Database,
   "events.emit": Envelope,
   "proof.hash": BracketsCurly,
-  "proof.sign": ShieldCheck,
+  "proof.sign": PraxisMark,
 };
 
 function StageDot({ active }: { active: boolean }) {
@@ -45,6 +46,13 @@ function StageDot({ active }: { active: boolean }) {
       }`}
     />
   );
+};
+
+function renderStageIcon(Icon: any) {
+  if (Icon === PraxisMark) {
+    return <PraxisMark size={20} />;
+  }
+  return <Icon className="h-5 w-5 text-[var(--praxis-violet)]" />;
 }
 
 export function PipelineLive({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
@@ -116,15 +124,14 @@ export function PipelineLive({ packId = "manufacturing-printer-gpo" }: { packId?
           </div>
         )}
 
-        {stages.map((stage) => {
-          const Icon = STAGE_ICONS[stage.stage] || Database;
+          {stages.map((stage) => {
           return (
             <div
               key={stage.stage}
               className="flex items-center gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4"
             >
               <StageDot active />
-              <Icon className="h-5 w-5 text-[var(--praxis-violet)]" />
+              {renderStageIcon(STAGE_ICONS[stage.stage] || Database)}
               <div className="flex-1">
                 <div className="text-sm">{stage.label}</div>
                 <div className="mt-1 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">

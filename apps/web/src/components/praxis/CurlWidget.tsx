@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { BracketsCurly, Check, Copy, ShieldCheck } from "@phosphor-icons/react";
+import { BracketsCurly, Check, Copy } from "@phosphor-icons/react";
+import { PraxisMark } from "./PraxisMark";
 
 interface CurlWidgetProps {
   proofHash?: string;
@@ -69,8 +70,8 @@ export function CurlWidget({
                 ? "border-[var(--praxis-crit)] bg-[rgba(239,68,68,0.04)] text-[var(--praxis-crit)]"
                 : "border-[var(--praxis-line)] text-[var(--praxis-muted)] hover:scale-105"
           }`}
-        >
-          <ShieldCheck className="h-4 w-4" />
+          >
+          <PraxisMark size={16} />
           {determinismChecked
             ? determinismResult
               ? "Determinism Verified — Hashes Match"

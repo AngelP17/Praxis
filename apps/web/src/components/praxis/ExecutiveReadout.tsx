@@ -1,17 +1,24 @@
 "use client";
 
-import { FileText, CheckCircle, ArrowRight, ShieldCheck, GitBranch, Rocket } from "@phosphor-icons/react";
+import { FileText, CheckCircle, ArrowRight, GitBranch, Rocket } from "@phosphor-icons/react";
 import { getPackById } from "@/lib/praxis-api";
+import { PraxisMark } from "./PraxisMark";
 
 interface ExecutiveReadoutProps {
   packId?: string;
+}
+
+interface ReadoutSection {
+  title: string;
+  icon: any;
+  content: string;
 }
 
 export function ExecutiveReadout({ packId = "manufacturing-printer-gpo" }: ExecutiveReadoutProps) {
   const pack = getPackById(packId);
   if (!pack) return null;
 
-  const readoutSections = [
+  const readoutSections: ReadoutSection[] = [
     {
       title: "Problem",
       icon: FileText,
@@ -19,7 +26,7 @@ export function ExecutiveReadout({ packId = "manufacturing-printer-gpo" }: Execu
     },
     {
       title: "Operational Impact",
-      icon: ShieldCheck,
+      icon: PraxisMark,
       content: `Evidence trust score of ${pack.evidenceTrust.toFixed(2)} with ${pack.sources.length} corroborating sources. Priority score ${pack.priorityScore.toFixed(2)} indicates high business criticality requiring human review.`,
     },
     {
@@ -38,6 +45,13 @@ export function ExecutiveReadout({ packId = "manufacturing-printer-gpo" }: Execu
       content: `${pack.annualValue} annualized value with ${(pack.valueConfidence * 100).toFixed(0)}% confidence. Primary driver: ${pack.primaryValueDriver}.`,
     },
   ];
+
+  function renderSectionIcon(Icon: any) {
+    if (Icon === PraxisMark) {
+      return <PraxisMark size={16} />;
+    }
+    return <Icon className="h-4 w-4 text-[var(--praxis-violet)]" />;
+  }
 
   return (
     <div className="grid grid-flow-dense min-h-[640px] gap-4 lg:grid-cols-[1.15fr_0.85fr]">
@@ -62,18 +76,15 @@ export function ExecutiveReadout({ packId = "manufacturing-printer-gpo" }: Execu
         </div>
 
         <div className="mt-10 space-y-6">
-          {readoutSections.map((section) => {
-            const Icon = section.icon;
-            return (
+          {readoutSections.map((section) => (
               <div key={section.title} className="border-l-2 border-[var(--praxis-violet)] pl-5">
                 <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4 text-[var(--praxis-violet)]" />
+                  {renderSectionIcon(section.icon)}
                   <span className="font-display text-xl font-medium">{section.title}</span>
                 </div>
                 <p className="mt-2 text-sm leading-6 text-[var(--praxis-muted)]">{section.content}</p>
               </div>
-            );
-          })}
+            ))}
         </div>
       </article>
 

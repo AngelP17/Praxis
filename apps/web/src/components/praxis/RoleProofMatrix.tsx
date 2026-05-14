@@ -12,6 +12,7 @@ const roles = [
   ["Infrastructure Solutions Engineer", "S3/SQS/DynamoDB/EventBridge run path"],
   ["Industrial AI Engineer", "evidence trust, VOI, human approval"],
   ["Technical Solutions Consultant", "value case, expansion, executive readout"],
+  ["Hiring Manager", "candidate verification, proof authenticity, compliance check"],
 ] as const;
 
 export function RoleProofMatrix({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {

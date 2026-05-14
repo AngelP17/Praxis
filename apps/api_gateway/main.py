@@ -1,5 +1,6 @@
 from contextlib import asynccontextmanager
 
+import boto3
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -8,6 +9,8 @@ from apps.api_gateway.deps import init_db
 from apps.api_gateway.logging_config import configure_logging, get_logger
 from apps.api_gateway.middleware.rate_limit import RateLimitMiddleware
 from apps.api_gateway.middleware.proof_rate_limit import ProofRateLimitMiddleware
+from apps.api_gateway.middleware.cloudwatch_logging import CloudWatchMiddleware
+from apps.api_gateway.middleware.metrics import MetricsMiddleware
 from apps.api_gateway.routes.attachments import router as attachments_router
 from apps.api_gateway.routes.assets import router as assets_router
 from apps.api_gateway.routes.auth import router as auth_router
@@ -34,6 +37,7 @@ from apps.api_gateway.routes.value_cases import router as value_cases_router
 from apps.api_gateway.routes.deployment_plans import router as deployment_plans_router
 from apps.api_gateway.routes.discovery import router as discovery_router
 from apps.api_gateway.routes.pack_metrics import router as pack_metrics_router
+from apps.api_gateway.routes.floci_health import router as floci_health_router
 
 
 @asynccontextmanager
@@ -41,9 +45,20 @@ async def lifespan(app: FastAPI):
     configure_logging()
     logger = get_logger("main")
     logger.info("praxis_api_starting", version="2.0.0", env=settings.ENV)
+
+    cw_client = boto3.client(
+        "cloudwatch",
+        endpoint_url=settings.FLOCI_ENDPOINT,
+        region_name=settings.AWS_REGION,
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+    )
+    app.state.cw_client = cw_client
+
     if settings.AUTO_INIT_DB:
         init_db()
         logger.info("database_initialized")
+
     yield
 
 
@@ -56,6 +71,8 @@ app = FastAPI(
 
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(ProofRateLimitMiddleware)
+app.add_middleware(CloudWatchMiddleware, get_cw_client=lambda: app.state.cw_client)
+app.add_middleware(MetricsMiddleware)
 
 app.add_middleware(
     CORSMiddleware,
@@ -68,11 +85,7 @@ app.add_middleware(
 app.include_router(tickets_router, prefix="/api/tickets", tags=["tickets"])
 app.include_router(incidents_router, prefix="/api/incidents", tags=["incidents"])
 app.include_router(decisions_router, prefix="/api/decisions", tags=["decisions"])
-app.include_router(
-    recommendations_router,
-    prefix="/api/recommendations",
-    tags=["recommendations"],
-)
+app.include_router(recommendations_router, prefix="/api/recommendations", tags=["recommendations"])
 app.include_router(reports_router, prefix="/api/reports", tags=["reports"])
 app.include_router(replay_router, prefix="/api/replay", tags=["replay"])
 app.include_router(metrics_router, prefix="/api/metrics", tags=["metrics"])
@@ -88,15 +101,14 @@ app.include_router(fieldlab_router, prefix="/api/fieldlab", tags=["fieldlab"])
 app.include_router(solution_packs_router, prefix="/api/solution-packs", tags=["solution-packs"])
 app.include_router(ontology_router, prefix="/api/ontology", tags=["ontology"])
 app.include_router(value_cases_router, prefix="/api/value-cases", tags=["value-cases"])
-app.include_router(
-    deployment_plans_router, prefix="/api/deployment-plans", tags=["deployment-plans"]
-)
+app.include_router(deployment_plans_router, prefix="/api/deployment-plans", tags=["deployment-plans"])
 app.include_router(discovery_router, prefix="/api/discovery", tags=["discovery"])
 app.include_router(proofs_router, prefix="/api/proofs", tags=["proofs"])
 app.include_router(proofs_sse_router, tags=["proofs-sse"])
 app.include_router(proofs_replay_router, tags=["proofs-replay"])
 app.include_router(health_router, tags=["health"])
 app.include_router(pack_metrics_router, tags=["pack-metrics"])
+app.include_router(floci_health_router, tags=["floci-health"])
 
 
 @app.get("/health")
@@ -106,8 +118,4 @@ async def health_check():
 
 @app.get("/")
 async def root():
-    return {
-        "service": "Praxis API",
-        "version": "2.0.0",
-        "docs": "/docs",
-    }
+    return {"service": "Praxis API", "version": "2.0.0", "docs": "/docs"}

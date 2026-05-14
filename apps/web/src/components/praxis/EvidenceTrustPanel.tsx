@@ -1,7 +1,8 @@
 "use client";
 
-import { ShieldCheck, TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
+import { TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
 import { getPackById } from "@/lib/praxis-api";
+import { PraxisMark } from "./PraxisMark";
 
 interface EvidenceTrustPanelProps {
   packId?: string;
@@ -56,9 +57,9 @@ export function EvidenceTrustPanel({ packId = "manufacturing-printer-gpo" }: Evi
 
   return (
     <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
-          <ShieldCheck className="h-4 w-4 text-[var(--praxis-violet)]" />
+          <PraxisMark size={16} />
           Evidence trust breakdown
         </div>
         <div className="font-display text-3xl text-[var(--praxis-mint)]">

@@ -9,7 +9,6 @@ import {
   Database,
   GitBranch,
   Play,
-  ShieldCheck,
   Stack,
 } from "@phosphor-icons/react";
 import {
@@ -216,7 +215,7 @@ export function PraxisExperience({ initialScreen = "overview" }: { initialScreen
               ))}
             </div>
           </Panel>
-          <Panel title="Next Best Questions" icon={<ShieldCheck className="h-4 w-4" />}>
+          <Panel title="Next Best Questions" icon={<PraxisMark size={16} />}>
             <ol className="space-y-2">
               {(activeProof?.decision.next_best_questions ?? []).map((question, index) => (
                 <li key={`${questionText(question)}-${index}`} className="border border-[var(--praxis-line)] p-3 text-sm text-[var(--praxis-muted)]">

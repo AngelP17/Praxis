@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'Praxis FieldLab Lambda Compute Layer - Production-ready serverless proof computation'
+
+Parameters:
+  Environment:
+    Type: String
+    Default: 'dev'
+    AllowedValues:
+      - dev
+      - staging
+      - production
+    Description: 'Deployment environment'
+
+Resources:
+  PraxisProofComputeFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub 'praxis-proof-compute-${Environment}'
+      Description: 'Serverless Lambda function for Praxis proof computation using real algorithm stack'
+      Handler: lambda_handler.lambda_handler
+      Runtime: python3.12
+      Timeout: 900
+      MemorySize: 1024
+      PackageType: Zip
+      CodeUri: ./packages/fieldlab/lambda_handler.zip
+      Environment:
+        Variables:
+          LOG_LEVEL: !Sub 'INFO-${Environment}'
+          FLOCI_ENDPOINT: !Sub 'http://localhost:4566-${Environment}'
+          AWS_REGION: !Sub 'us-east-1-${Environment}'
+      ReservedConcurrentExecutions: 10
+      DeadLetterQueue: !Ref ErrorQueue
+
+  ErrorQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub 'praxis-proof-errors-${Environment}'
+      VisibilityTimeout: 300
+      MessageRetentionPeriod: 1209600
+
+  PraxisProofComputeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    DependsOn: PraxisProofComputeFunction
+    Properties:
+      AlarmName: !Sub 'praxis-proof-compute-errors-${Environment}'
+      AlarmDescription: 'Alert on Lambda function errors or timeouts'
+      MetricName: !Sub 'Errors'
+      Namespace: !Sub 'AWS/Lambda'
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 5
+      ComparisonOperator: GreaterThanThreshold
+
+Outputs:
+  PraxisProofComputeFunctionArn:
+    Description: 'ARN of the Lambda function for invoking via API Gateway'
+    Value: !GetAtt PraxisProofComputeFunction.Arn
+    Export:
+      Name: PraxisProofComputeFunctionArn
