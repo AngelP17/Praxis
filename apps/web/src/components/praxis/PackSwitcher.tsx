@@ -1,8 +1,8 @@
 "use client";
 
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { Stack } from "@phosphor-icons/react";
-import { SOLUTION_PACKS } from "@/lib/praxis-api";
+import { usePathname, useRouter } from "next/navigation";
+import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 
 interface PackSwitcherProps {
   activePackId: string;
@@ -12,6 +12,7 @@ interface PackSwitcherProps {
 export function PackSwitcher({ activePackId, variant = "inline" }: PackSwitcherProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { packs } = useSolutionPacks();
 
   const handleChange = (packId: string) => {
     const params = new URLSearchParams();
@@ -25,10 +26,10 @@ export function PackSwitcher({ activePackId, variant = "inline" }: PackSwitcherP
         <Stack className="h-4 w-4 text-[var(--praxis-violet)]" />
         <select
           value={activePackId}
-          onChange={(e) => handleChange(e.target.value)}
-          className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)] focus:outline-none focus:border-[var(--praxis-violet)]"
+          onChange={(event) => handleChange(event.target.value)}
+          className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)] focus:border-[var(--praxis-violet)] focus:outline-none"
         >
-          {SOLUTION_PACKS.map((pack) => (
+          {packs.map((pack) => (
             <option key={pack.id} value={pack.id}>
               {pack.name}
             </option>
@@ -40,11 +41,12 @@ export function PackSwitcher({ activePackId, variant = "inline" }: PackSwitcherP
 
   return (
     <div className="flex flex-wrap gap-2">
-      {SOLUTION_PACKS.map((pack) => (
+      {packs.map((pack) => (
         <button
           key={pack.id}
+          type="button"
           onClick={() => handleChange(pack.id)}
-          className={`px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] transition-all duration-700 ${
+          className={`px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] transition-transform hover:scale-105 ${
             pack.id === activePackId
               ? "bg-[var(--praxis-violet)] text-[var(--praxis-bg)]"
               : "border border-[var(--praxis-line)] text-[var(--praxis-muted)] hover:scale-105 hover:border-[var(--praxis-violet)]"

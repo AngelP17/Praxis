@@ -1,25 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { ShieldCheck, X, Check, User, GitPullRequest, Clock } from "@phosphor-icons/react";
-import { getPackById } from "@/lib/praxis-api";
+import { Check, GitPullRequest, ShieldCheck, User, Warning, X } from "@phosphor-icons/react";
+import type { PraxisProof } from "@/lib/praxis-client";
 
 interface ActionApprovalPanelProps {
-  packId?: string;
+  proof?: PraxisProof | null;
+  disabled?: boolean;
+  onAction?: (status: "approved" | "rejected" | "request_evidence" | "escalated") => void;
 }
 
-export function ActionApprovalPanel({ packId = "manufacturing-printer-gpo" }: ActionApprovalPanelProps) {
-  const pack = getPackById(packId);
-  const [status, setStatus] = useState<"pending" | "approved" | "rejected">("pending");
-
-  if (!pack) return null;
-
-  const actionModes = [
-    { mode: "READ_ONLY", label: "Read only", desc: "Observe without mutation", active: false },
-    { mode: "HUMAN_APPROVAL", label: "Human approval", desc: "Operator review required", active: true },
-    { mode: "ASSISTED_ACTION", label: "Assisted", desc: "AI-guided with checkpoints", active: false },
-    { mode: "WRITEBACK", label: "Writeback", desc: "Simulated in FieldLab only", active: false },
-  ];
+export function ActionApprovalPanel({ proof, disabled = false, onAction }: ActionApprovalPanelProps) {
+  const action = proof?.action;
 
   return (
     <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
@@ -33,71 +24,46 @@ export function ActionApprovalPanel({ packId = "manufacturing-printer-gpo" }: Ac
           <GitPullRequest className="h-3 w-3" />
           Recommended action
         </div>
-        <p className="mt-3 text-lg font-medium">{pack.recommendedAction.replace(/_/g, " ")}</p>
+        <p className="mt-3 text-lg font-medium">
+          {(action?.recommended_action ?? "Run FieldLab to compute an action").replace(/_/g, " ")}
+        </p>
         <div className="mt-4 flex flex-wrap gap-4">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
             <User className="h-3 w-3" />
-            Actor: operator
+            Actor: {action?.actor ?? "operator"}
           </div>
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            <Clock className="h-3 w-3" />
-            Mode: human_approval
+            <Warning className="h-3 w-3" />
+            Mode: {action?.mode ?? "pending"}
           </div>
         </div>
       </div>
 
-      <div className="mt-6 space-y-2">
-        {actionModes.map((m) => (
-          <div
-            key={m.mode}
-            className={`flex items-center justify-between border p-3 ${
-              m.active
-                ? "border-[var(--praxis-violet)] bg-[rgba(113,91,255,0.08)]"
-                : "border-[var(--praxis-line)] bg-[var(--praxis-bg)]"
-            }`}
+      <div className="mt-6 grid grid-flow-dense gap-3 sm:grid-cols-2">
+        {([
+          ["approved", "Approve", Check],
+          ["rejected", "Reject", X],
+          ["request_evidence", "Request evidence", Warning],
+          ["escalated", "Escalate", GitPullRequest],
+        ] as const).map(([status, label, Icon]) => (
+          <button
+            key={status as string}
+            type="button"
+            disabled={disabled || !proof}
+            onClick={() => onAction?.(status as "approved" | "rejected" | "request_evidence" | "escalated")}
+            className="flex min-h-11 items-center justify-center gap-2 border border-[var(--praxis-line)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)] transition hover:scale-105 hover:border-[var(--praxis-violet)] hover:text-[var(--praxis-bone)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100"
           >
-            <div>
-              <div className="text-sm">{m.label}</div>
-              <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">{m.desc}</div>
-            </div>
-            {m.active && <span className="font-mono text-[10px] uppercase text-[var(--praxis-violet)]">Active</span>}
-          </div>
+            <Icon className="h-3 w-3" />
+            {label}
+          </button>
         ))}
       </div>
 
-      <div className="mt-6 flex gap-3">
-        <button
-          onClick={() => setStatus("approved")}
-          className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] transition-transform duration-700 hover:scale-105 ${
-            status === "approved"
-              ? "bg-[var(--praxis-mint)] text-[var(--praxis-bg)]"
-              : "border border-[var(--praxis-mint)] text-[var(--praxis-mint)]"
-          }`}
-        >
-          <Check className="h-3 w-3" /> Approve
-        </button>
-        <button
-          onClick={() => setStatus("rejected")}
-          className={`flex items-center gap-2 px-4 py-2 font-mono text-[10px] uppercase tracking-[0.1em] transition-transform duration-700 hover:scale-105 ${
-            status === "rejected"
-              ? "bg-[var(--praxis-crit)] text-[var(--praxis-bg)]"
-              : "border border-[var(--praxis-crit)] text-[var(--praxis-crit)]"
-          }`}
-        >
-          <X className="h-3 w-3" /> Reject
-        </button>
-      </div>
-
-      {status !== "pending" && (
-        <div className={`mt-4 border p-3 ${status === "approved" ? "border-[var(--praxis-mint)]" : "border-[var(--praxis-crit)]"}`}>
-          <div className="font-mono text-[10px] uppercase tracking-[0.1em]">
-            Status: <span className={status === "approved" ? "text-[var(--praxis-mint)]" : "text-[var(--praxis-crit)]"}>{status}</span>
-          </div>
-          <div className="mt-1 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            Action logged · Hash: sha256:9f3...e2a
-          </div>
+      {action?.action_log_hash ? (
+        <div className="mt-4 border border-[var(--praxis-line)] p-3 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-muted)]">
+          Action hash <span className="text-[var(--praxis-bone)]">{action.action_log_hash}</span>
         </div>
-      )}
+      ) : null}
     </article>
   );
 }

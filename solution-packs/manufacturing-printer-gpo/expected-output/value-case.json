@@ -3,5 +3,9 @@
   "confidence": 0.7601,
   "estimated_annual_value": 38481.6,
   "primary_value_driver": "Reduce repeated printer incidents and provide audit-ready ownership workflow",
-  "solution_pack_id": "manufacturing-printer-gpo"
+  "roi_calculations": {
+    "annual_value": 24801.6,
+    "monthly_delay_cost_avoided": 1750.0,
+    "monthly_labor_cost_saved": 316.8
+  }
 }

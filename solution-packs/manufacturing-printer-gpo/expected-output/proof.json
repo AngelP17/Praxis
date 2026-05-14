@@ -114,11 +114,11 @@
     "mapping_confidence": 0.5733,
     "objects_created": 5
   },
-  "proof_hash": "sha256:4a111f3c5b60d3df4b458de8fcf08148c392b6394f54498e1df8bf179f5f1add",
+  "proof_hash": "sha256:f76f26dcb71a9e4c077eb1bde1fae0cb9f9a8d0a528c21c740a0181fc0ece3f3",
   "proof_id": "proof_praxis_manufacturing_printer_gpo_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:f27f7ad81e8163c2b4ac323aa42818b9fe7dc9d42c601628de106141696da8a9",
+    "replay_hash": "sha256:fe9f6453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed40f",
     "verified_at": "2026-05-12T00:00:00Z"
   },
   "run_id": "fieldlab_run_manufacturing-printer-gpo",

@@ -3,5 +3,7 @@
   "confidence": 0.7661,
   "estimated_annual_value": 34944.0,
   "primary_value_driver": "Restore governed ERP access and prove reduced fulfillment delay",
-  "solution_pack_id": "erp-access-disruption"
+  "roi_calculations": {
+    "annual_value": 34944.0
+  }
 }

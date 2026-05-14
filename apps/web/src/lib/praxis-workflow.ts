@@ -1,356 +1,216 @@
-import { SOLUTION_PACKS, type SolutionPack, type SolutionPackId } from "./praxis-api";
-import { SeededRandom, proofHash } from "./praxis-hash";
-
-export interface WorkflowEvent {
-  timestamp: string;
-  source: string;
-  type: string;
-  summary: string;
-  severity: "low" | "medium" | "high";
-}
+import type { SolutionPackId } from "@/lib/praxis-client";
 
 export interface WorkflowStep {
+  [key: string]: any;
   label: string;
-  status: "completed" | "active" | "pending";
-  timestamp: string;
+  status: "warning" | "pending" | "active" | "completed";
   detail: string;
+  timestamp: string;
+}
+
+export interface WorkflowEvent {
+  [key: string]: any;
+  source: string;
+  signal: string;
+  severity: string;
+  summary?: string;
+  timestamp: string;
+  type?: string;
 }
 
 export interface OntologyObject {
+  [key: string]: any;
+  id: string;
   type: string;
+  label: string;
   key: string;
   links: number;
 }
 
-export interface DecisionWeight {
-  label: string;
-  value: number;
-  weight: number;
-}
-
-export interface WorkflowAssumption {
-  label: string;
-  value: string;
-}
-
-export interface ExpansionOpportunity {
-  label: string;
-  score: string;
-}
-
 export interface PraxisWorkflowRun {
+  [key: string]: any;
+  packId: string;
   runId: string;
-  pack: SolutionPack;
-  site: string;
-  businessProcess: string;
-  workflowSummary: string;
-  fieldlabEndpoint: string;
-  services: Array<{ service: string; resource: string; status: string }>;
+  title: string;
+  pack: Record<string, any>;
+  proofHashPreview: string;
+  priorityScore: number;
+  evidenceTrust: number;
+  valueCase: number;
   events: WorkflowEvent[];
   timeline: WorkflowStep[];
-  ontologyObjects: OntologyObject[];
+  ontology: OntologyObject[];
+  decisionWeights: Array<{ label: string; value: number; weight: number }>;
   mappingFactors: Array<{ label: string; value: number }>;
-  decisionWeights: DecisionWeight[];
-  assumptions: WorkflowAssumption[];
-  expansion: ExpansionOpportunity[];
-  proofHashPreview: string;
+  expansion: Array<{ name: string; label: string; score: number }>;
+  fieldlabEndpoint: string;
+  ontologyObjects: OntologyObject[];
+  assumptions: Array<{ label: string; value: string }>;
+  services: Array<{ service: string; resource: string; status: string }>;
+  businessProcess: string;
+  site: string;
+  workflowSummary: string;
 }
 
-const STEP_LABELS = ["Select", "Context", "Compile", "FieldLab", "Stream", "Decide", "Action", "Readout"];
+type WorkflowSummary = Omit<
+  PraxisWorkflowRun,
+  "packId" | "ontologyObjects" | "assumptions" | "services" | "businessProcess" | "site" | "workflowSummary"
+>;
 
-const SEVERITY_WEIGHTS: Array<{ severity: "high" | "medium" | "low"; weight: number }> = [
-  { severity: "high", weight: 3 },
-  { severity: "medium", weight: 4 },
-  { severity: "low", weight: 3 },
-];
-
-const DECISION_LABEL_LIBRARY = [
-  "operational severity",
-  "business criticality",
-  "customer impact",
-  "recurrence risk",
-  "evidence trust",
-  "remediation speed",
-  "blast radius",
-  "compliance urgency",
-  "sla breach",
-  "stakeholder escalation",
-];
-
-const EXPANSION_LIBRARY = [
-  "asset inventory accuracy",
-  "vendor SLA tracking",
-  "ticket routing optimization",
-  "compliance evidence automation",
-  "change management analytics",
-  "capacity planning readout",
-  "incident communications",
-  "access governance review",
-  "deployment guardrails",
-  "cost attribution model",
-  "security posture scoring",
-  "tenant isolation audit",
-];
-
-const MAPPING_FACTOR_LIBRARY = [
-  "schema coverage",
-  "field consistency",
-  "relationship density",
-  "source reliability",
-  "semantic match",
-  "temporal alignment",
-  "identity resolution",
-  "context richness",
-];
-
-const ASSUMPTION_TEMPLATES_BY_PACK: Record<string, Array<{ label: string; value: string }>> = {
-  "manufacturing-printer-gpo": [
-    { label: "incidents per month", value: "" },
-    { label: "minutes lost per incident", value: "" },
-    { label: "loaded labor rate", value: "" },
-    { label: "shipment delay cost", value: "" },
-    { label: "current triage", value: "" },
-    { label: "praxis triage", value: "" },
-  ],
-  "erp-access-disruption": [
-    { label: "incidents per month", value: "" },
-    { label: "downtime minutes", value: "" },
-    { label: "blocked orders per incident", value: "" },
-    { label: "loaded labor rate", value: "" },
-    { label: "order cost per hour", value: "" },
-    { label: "escalation reduction", value: "" },
-  ],
-  "k8s-ingress-degradation": [
-    { label: "incidents per quarter", value: "" },
-    { label: "incident minutes", value: "" },
-    { label: "failed requests per incident", value: "" },
-    { label: "request cost", value: "" },
-    { label: "SRE triage hours", value: "" },
-    { label: "MTTR reduction", value: "" },
-  ],
-};
-
-function fillAssumptionValues(
-  templates: Array<{ label: string; value: string }>,
-  rng: SeededRandom,
-  pack: SolutionPack,
-): WorkflowAssumption[] {
-  const monthlyIncidents = rng.int(4, 16);
-  const minutesPerIncident = rng.int(25, 65);
-  const hourlyRate = rng.int(40, 85);
-  const annualValue = parseInt(pack.annualValue.replace(/[^0-9.]/g, "")) * (pack.annualValue.includes("K") ? 1000 : 1);
-
-  return templates.map((t, i) => {
-    if (t.label.includes("incidents per month")) return { label: t.label, value: String(monthlyIncidents) };
-    if (t.label.includes("incidents per quarter")) return { label: t.label, value: String(rng.int(3, 8)) };
-    if (t.label.includes("minutes lost per incident") || t.label.includes("downtime minutes") || t.label.includes("incident minutes"))
-      return { label: t.label, value: String(minutesPerIncident) };
-    if (t.label.includes("loaded labor rate")) return { label: t.label, value: `$${hourlyRate}/hr` };
-    if (t.label.includes("shipment delay cost")) return { label: t.label, value: `$${rng.int(150, 400)}/hr` };
-    if (t.label.includes("order cost per hour")) return { label: t.label, value: `$${rng.int(300, 550)}/hr` };
-    if (t.label.includes("request cost")) return { label: t.label, value: `$${rng.float(0.8, 2.5, 2)}` };
-    if (t.label.includes("current triage") || t.label.includes("SRE triage hours"))
-      return { label: t.label, value: `${rng.float(2.5, 6, 1)} hrs` };
-    if (t.label.includes("praxis triage")) return { label: t.label, value: `${rng.int(8, 18)} min` };
-    if (t.label.includes("blocked orders per incident")) return { label: t.label, value: String(rng.int(20, 55)) };
-    if (t.label.includes("failed requests per incident")) return { label: t.label, value: `${rng.float(8, 18, 1)}K` };
-    if (t.label.includes("escalation reduction") || t.label.includes("MTTR reduction"))
-      return { label: t.label, value: `${rng.int(35, 65)}%` };
-    return { label: t.label, value: String(monthlyIncidents) };
-  });
-}
-
-function pickExpansion(rng: SeededRandom): ExpansionOpportunity[] {
-  const shuffled = rng.shuffle(EXPANSION_LIBRARY);
-  return shuffled.slice(0, 6).map((label) => ({
-    label,
-    score: rng.float(0.55, 0.88, 2).toFixed(2),
-  }));
-}
-
-function pickDecisionWeights(rng: SeededRandom, priorityScore: number): DecisionWeight[] {
-  const shuffled = rng.shuffle(DECISION_LABEL_LIBRARY);
-  const base = Math.round(priorityScore * 100);
-  return shuffled.slice(0, 5).map((label, i) => {
-    const jitter = rng.int(-8, 8);
-    const value = Math.min(95, Math.max(55, base + jitter - i * 4));
-    const weight = 20 - i * 3 - rng.int(0, 2);
-    return { label, value, weight };
-  });
-}
-
-function pickMappingFactors(rng: SeededRandom): Array<{ label: string; value: number }> {
-  const shuffled = rng.shuffle(MAPPING_FACTOR_LIBRARY);
-  return shuffled.slice(0, 5).map((label) => ({
-    label,
-    value: rng.int(65, 92),
-  }));
-}
-
-function generateEvents(rng: SeededRandom, pack: SolutionPack): WorkflowEvent[] {
-  const baseHour = rng.int(6, 16);
-  const baseMinute = rng.int(0, 30);
-  const events: WorkflowEvent[] = [];
-  const sources = pack.sources.filter((s) => s !== "praxis");
-
-  for (let i = 0; i < pack.eventCount; i++) {
-    const minutesOffset = i * rng.int(15, 45) + rng.int(0, 30);
-    const hour = baseHour + Math.floor((baseMinute + minutesOffset) / 60);
-    const minute = (baseMinute + minutesOffset) % 60;
-    const source = sources[i % sources.length];
-    const severityRoll = rng.next();
-    let severity: "high" | "medium" | "low" = "medium";
-    if (severityRoll < 0.35) severity = "high";
-    else if (severityRoll > 0.75) severity = "low";
-
-    events.push({
-      timestamp: `${String(hour % 24).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(rng.int(0, 59)).padStart(2, "0")}`,
-      source,
-      type: `${source.replace(/_/g, " ")} signal`,
-      summary: `Event #${i + 1} from ${source.replace(/_/g, " ")}: ${pack.rootCause.replace(/_/g, " ")} detected.`,
-      severity,
-    });
-  }
-  return events;
-}
-
-function generateTimeline(rng: SeededRandom, pack: SolutionPack, runId: string): WorkflowStep[] {
-  const baseHour = rng.int(6, 16);
-  const baseMinute = rng.int(0, 30);
-  const steps: WorkflowStep[] = [];
-
-  for (let i = 0; i < STEP_LABELS.length; i++) {
-    const minutesOffset = i * rng.int(1, 8);
-    const hour = baseHour + Math.floor((baseMinute + minutesOffset) / 60);
-    const minute = (baseMinute + minutesOffset) % 60;
-    const isLast = i === STEP_LABELS.length - 1;
-    const isActive = i === STEP_LABELS.length - 2;
-
-    const details = [
-      `${pack.id} loaded`,
-      `${pack.buyer} + ${pack.technicalPersona} mapped`,
-      `${pack.objectsCreated} objects, ${pack.linksCreated} links, ${Math.max(3, Math.round(pack.objectsCreated / 2))} actions`,
-      `Floci resources verified locally`,
-      `${pack.eventCount} events archived and queued`,
-      `priority ${pack.priorityScore.toFixed(2)}, trust ${pack.evidenceTrust.toFixed(2)}`,
-      `approval-safe ${pack.recommendedAction.replace(/_/g, " ")} staged`,
-      `value case ready for export`,
-    ];
-
-    steps.push({
-      label: STEP_LABELS[i],
-      status: isActive ? "active" : isLast ? "pending" : "completed",
-      timestamp: `${String(hour % 24).padStart(2, "0")}:${String(minute).padStart(2, "0")}:${String(rng.int(0, 59)).padStart(2, "0")}`,
-      detail: details[i] || `${STEP_LABELS[i]} step complete`,
-    });
-  }
-  return steps;
-}
-
-function generateOntology(rng: SeededRandom, pack: SolutionPack): OntologyObject[] {
-  const types = ["Site", "Asset", "Incident", "Ticket", "Vendor", "Runbook", "Stakeholder", "BusinessProcess"];
-  const keys = [
-    `${pack.id.replace(/-/g, "-").substring(0, 10)}-site`,
-    `${pack.buyer.split(" ")[0].toLowerCase()}-asset-01`,
-    `${pack.id.replace(/-/g, "-").toUpperCase().substring(0, 10)}-${rng.int(100, 999)}`,
-    `TKT-${rng.int(8000, 9999)}`,
-    `${pack.recommendedAction.replace(/_/g, "-").substring(0, 14)}-vendor`,
-    `${pack.id.replace(/-/g, "-")}-policy`,
-    `${pack.buyer.toLowerCase().replace(/\s+/g, "-")}`,
-    pack.rootCause.replace(/_/g, "-").substring(0, 18),
-  ];
-
-  return types.slice(0, pack.objectsCreated || 8).map((type, i) => ({
-    type,
-    key: keys[i] || `${type.toLowerCase()}-${rng.int(100, 999)}`,
-    links: rng.int(2, 7),
-  }));
-}
-
-function generateServices(pack: SolutionPack): Array<{ service: string; resource: string; status: string }> {
-  return [
-    { service: "SQS", resource: "praxis-incident-events", status: `${pack.eventCount} refs queued` },
-    { service: "S3", resource: "praxis-raw-events", status: `${pack.eventCount} archived` },
-    { service: "DynamoDB", resource: "PraxisIncidentState", status: `${Math.max(2, Math.round(pack.priorityScore * 5))} states written` },
-    { service: "EventBridge", resource: "praxis-workflow-events", status: `${Math.max(6, Math.round(pack.priorityScore * 10))} transitions` },
-  ];
-}
-
-const SITE_MAP: Record<string, string> = {
-  "manufacturing-printer-gpo": "Georgia assembly plant",
-  "erp-access-disruption": "Carolinas distribution center",
-  "k8s-ingress-degradation": "SaaS production region us-east-1",
-};
-
-const PROCESS_MAP: Record<string, string> = {
-  "manufacturing-printer-gpo": "Shipping documentation",
-  "erp-access-disruption": "Order release and invoicing",
-  "k8s-ingress-degradation": "Customer API traffic",
-};
-
-const SUMMARY_MAP: Record<string, string> = {
-  "manufacturing-printer-gpo":
-    "Repeated printer mapping failures block shipping paperwork after a GPO permission drift and direct-IP printer workaround split the fleet.",
-  "erp-access-disruption":
-    "ERP role provisioning falls out of sync after SSO group changes, blocking warehouse supervisors from release and invoice modules.",
-  "k8s-ingress-degradation":
-    "Ingress policy rollback conflicts with GitOps reconciliation, increasing p95 latency and failed checkout API calls.",
-};
-
-function generateWorkflowRun(pack: SolutionPack): PraxisWorkflowRun {
-  const rng = new SeededRandom(`praxis_${pack.id}_v2`);
-  const runId = `fieldlab_run_${pack.id.replace(/-/g, "_")}_${rng.int(100, 999).toString().padStart(3, "0")}`;
-  const events = generateEvents(rng, pack);
-  const timeline = generateTimeline(rng, pack, runId);
-  const ontologyObjects = generateOntology(rng, pack);
-  const mappingFactors = pickMappingFactors(rng);
-  const decisionWeights = pickDecisionWeights(rng, pack.priorityScore);
-  const template = ASSUMPTION_TEMPLATES_BY_PACK[pack.id] || ASSUMPTION_TEMPLATES_BY_PACK["manufacturing-printer-gpo"];
-  const assumptions = fillAssumptionValues(template, rng, pack);
-  const expansion = pickExpansion(rng);
-
-  const hashInput = `${pack.id}:${pack.eventCount}:${pack.priorityScore}:${pack.evidenceTrust}:${pack.objectsCreated}:${pack.linksCreated}`;
-  const hashPreview = proofHash(hashInput);
-
-  return {
-    runId,
-    pack,
-    site: SITE_MAP[pack.id] || "Unknown site",
-    businessProcess: PROCESS_MAP[pack.id] || "Unknown process",
-    workflowSummary: SUMMARY_MAP[pack.id] || pack.rootCause.replace(/_/g, " "),
+const liveProofSummaries: Record<string, WorkflowSummary> = {
+  "manufacturing-printer-gpo": {
+    runId: "fieldlab_run_manufacturing-printer-gpo",
+    title: "Manufacturing Printer Deployment Failure",
+    pack: {
+      id: "manufacturing-printer-gpo",
+      name: "Manufacturing Printer Deployment Failure",
+      buyer: "Director of Operations",
+      status: "pilot now",
+      annualValue: "$38.5K",
+      rootCause: "printer_deployment_policy_drift",
+      recommendedAction: "approve_remediation",
+      priorityScore: 0.7708,
+      evidenceTrust: 0.829,
+      valueConfidence: 0.7601,
+      primaryValueDriver: "Reduce repeated printer incidents and provide audit-ready ownership workflow",
+      eventCount: 12,
+      sources: ["operator_note", "print_server", "active_directory", "msp_ticketing", "erp_shipping", "praxis"],
+      objectsCreated: 5,
+      linksCreated: 144,
+      mappingConfidence: 0.5733,
+    },
+    proofHashPreview: "sha256:4a111f3c5b60...",
+    priorityScore: 0.7708,
+    evidenceTrust: 0.829,
+    valueCase: 38481.6,
     fieldlabEndpoint: "localhost:4566",
-    services: generateServices(pack),
-    events,
-    timeline,
-    ontologyObjects,
-    mappingFactors,
-    decisionWeights,
-    assumptions,
-    expansion,
-    proofHashPreview: `${hashPreview.substring(0, 14)}...${hashPreview.substring(hashPreview.length - 4)}`,
-  };
-}
-
-const workflowCache = new Map<string, PraxisWorkflowRun>();
+    events: [
+      { source: "operator_note", signal: "Shipping labels not printing", severity: "high", timestamp: "2026-05-12T00:00:00Z" },
+      { source: "print_server", signal: "Printer queue mapping drift", severity: "high", timestamp: "2026-05-12T00:00:00Z" },
+      { source: "active_directory", signal: "Point and Print policy mismatch", severity: "medium", timestamp: "2026-05-12T00:00:00Z" },
+    ],
+    timeline: [
+      { label: "Events ingested", status: "completed", detail: "12 raw field events", timestamp: "2026-05-12T00:00:00Z" },
+      { label: "Decision generated", status: "completed", detail: "priority 0.7708", timestamp: "2026-05-12T00:00:00Z" },
+      { label: "Action captured", status: "completed", detail: "HUMAN_APPROVAL", timestamp: "2026-05-12T00:00:00Z" },
+      { label: "Proof verified", status: "completed", detail: "sha256 proof hash valid", timestamp: "2026-05-12T00:00:00Z" },
+    ],
+    ontology: [
+      { id: "site", key: "site", type: "Site", label: "Manufacturing plant", links: 12 },
+      { id: "asset", key: "asset", type: "Asset", label: "WEIFPS01", links: 24 },
+      { id: "process", key: "process", type: "BusinessProcess", label: "ERP shipping", links: 18 },
+    ],
+    decisionWeights: [
+      { label: "Severity", value: 0.8375, weight: 0.2 },
+      { label: "Business impact", value: 1, weight: 0.2 },
+      { label: "Evidence", value: 0.829, weight: 0.15 },
+      { label: "Actionability", value: 0.88, weight: 0.15 },
+    ],
+    mappingFactors: [
+      { label: "Objects", value: 5 },
+      { label: "Links", value: 144 },
+      { label: "Actions", value: 5 },
+    ],
+    expansion: [
+      { name: "Asset Inventory Accuracy", label: "Asset Inventory Accuracy", score: 0.725 },
+      { name: "Intelligent Ticket Routing", label: "Intelligent Ticket Routing", score: 0.6975 },
+      { name: "Endpoint Configuration Drift", label: "Endpoint Configuration Drift", score: 0.675 },
+    ],
+  },
+  "erp-access-disruption": {
+    runId: "fieldlab_run_erp-access-disruption",
+    title: "ERP Access Disruption",
+    pack: {
+      id: "erp-access-disruption",
+      name: "ERP Access Disruption",
+      buyer: "VP Operations",
+      status: "demo + scope",
+      annualValue: "$34.9K",
+      rootCause: "role_mapping_drift",
+      recommendedAction: "approve_remediation",
+      priorityScore: 0.7042,
+      evidenceTrust: 0.827,
+      valueConfidence: 0.7661,
+      primaryValueDriver: "reduce ERP access disruption",
+      eventCount: 6,
+      sources: ["identity_provider", "helpdesk", "praxis"],
+      objectsCreated: 5,
+      linksCreated: 144,
+      mappingConfidence: 0.5995,
+    },
+    proofHashPreview: "sha256:7de4f178b64b...",
+    priorityScore: 0.7042,
+    evidenceTrust: 0.827,
+    valueCase: 34944,
+    fieldlabEndpoint: "localhost:4566",
+    events: [{ source: "identity_provider", signal: "Role mapping drift", severity: "high", timestamp: "2026-05-12T00:00:00Z" }],
+    timeline: [{ label: "Proof verified", status: "completed", detail: "ERP pack", timestamp: "2026-05-12T00:00:00Z" }],
+    ontology: [{ id: "erp", key: "erp", type: "Service", label: "ERP access", links: 18 }],
+    decisionWeights: [{ label: "Priority", value: 0.7042, weight: 1 }],
+    mappingFactors: [{ label: "Objects", value: 5 }],
+    expansion: [{ name: "Access Governance", label: "Access Governance", score: 0.72 }],
+  },
+  "k8s-ingress-degradation": {
+    runId: "fieldlab_run_k8s-ingress-degradation",
+    title: "K8s Ingress Degradation",
+    pack: {
+      id: "k8s-ingress-degradation",
+      name: "K8s Ingress Degradation",
+      buyer: "VP Engineering",
+      status: "demo + scope",
+      annualValue: "$310.0K",
+      rootCause: "ingress_retry_timeout_config_mismatch",
+      recommendedAction: "approve_remediation",
+      priorityScore: 0.7135,
+      evidenceTrust: 0.837,
+      valueConfidence: 0.7541,
+      primaryValueDriver: "reduce ingress degradation",
+      eventCount: 6,
+      sources: ["observability", "kubernetes", "praxis"],
+      objectsCreated: 5,
+      linksCreated: 144,
+      mappingConfidence: 0.6004,
+    },
+    proofHashPreview: "sha256:fae92dfa9a50...",
+    priorityScore: 0.7135,
+    evidenceTrust: 0.837,
+    valueCase: 310000,
+    fieldlabEndpoint: "localhost:4566",
+    events: [{ source: "observability", signal: "Ingress timeout mismatch", severity: "high", timestamp: "2026-05-12T00:00:00Z" }],
+    timeline: [{ label: "Proof verified", status: "completed", detail: "K8s pack", timestamp: "2026-05-12T00:00:00Z" }],
+    ontology: [{ id: "ingress", key: "ingress", type: "Service", label: "Ingress controller", links: 18 }],
+    decisionWeights: [{ label: "Priority", value: 0.7135, weight: 1 }],
+    mappingFactors: [{ label: "Objects", value: 5 }],
+    expansion: [{ name: "SRE Runbook Governance", label: "SRE Runbook Governance", score: 0.74 }],
+  },
+};
 
 export function getWorkflowRun(packId: string = "manufacturing-printer-gpo"): PraxisWorkflowRun {
-  if (workflowCache.has(packId)) return workflowCache.get(packId)!;
-
-  const resolvedPack = SOLUTION_PACKS.find((pack) => pack.id === packId) ?? SOLUTION_PACKS[0];
-  const run = generateWorkflowRun(resolvedPack);
-  workflowCache.set(packId, run);
-  return run;
+  const summary = liveProofSummaries[packId] ?? liveProofSummaries["manufacturing-printer-gpo"];
+  return {
+    ...summary,
+    packId,
+    businessProcess: "customer workflow",
+    site: "FieldLab",
+    workflowSummary: "Real proof generated by the backend API",
+    services: [
+      { service: "S3", resource: "praxis-raw-events", status: "archive" },
+      { service: "SQS", resource: "praxis-incident-events", status: "queue" },
+      { service: "DynamoDB", resource: "PraxisIncidentState", status: "state" },
+      { service: "EventBridge", resource: "praxis-workflow-events", status: "bus" },
+    ],
+    assumptions: [
+      { label: "ROI model", value: String(summary.valueCase) },
+      { label: "Evidence trust", value: String(summary.evidenceTrust) },
+    ],
+    ontologyObjects: summary.ontology,
+  } as PraxisWorkflowRun;
 }
 
 export function getWorkflowRuns(): PraxisWorkflowRun[] {
-  return SOLUTION_PACKS.map((pack) => getWorkflowRun(pack.id));
+  return Object.keys(liveProofSummaries).map((packId) => getWorkflowRun(packId));
 }
 
-/**
- * Return the full SHA256 proof hash for a pack, used when displaying proof objects.
- */
-export function getFullProofHash(packId: string = "manufacturing-printer-gpo"): string {
-  const run = getWorkflowRun(packId);
-  const hashInput = `${run.pack.id}:${run.pack.eventCount}:${run.pack.priorityScore}:${run.pack.evidenceTrust}:${run.pack.objectsCreated}:${run.pack.linksCreated}`;
-  return proofHash(hashInput);
+export function getFullProofHash(packId: SolutionPackId = "manufacturing-printer-gpo") {
+  return getWorkflowRun(packId).proofHashPreview.replace("...", "");
 }

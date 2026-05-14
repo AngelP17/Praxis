@@ -7,9 +7,21 @@ import json
 from typing import Any
 
 
+def normalize_numbers(payload: Any) -> Any:
+    """Normalize JSON numbers so Python and browser round-trips hash identically."""
+    if isinstance(payload, dict):
+        return {key: normalize_numbers(value) for key, value in payload.items()}
+    if isinstance(payload, list):
+        return [normalize_numbers(value) for value in payload]
+    if isinstance(payload, float) and payload.is_integer():
+        return int(payload)
+    return payload
+
+
 def canonical_json(payload: Any) -> str:
     """Return stable JSON for hash/replay comparisons."""
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    normalized = normalize_numbers(payload)
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
 
 
 def sha256_digest(payload: Any) -> str:

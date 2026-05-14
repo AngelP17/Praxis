@@ -57,11 +57,11 @@
     "mapping_confidence": 0.6004,
     "objects_created": 7
   },
-  "proof_hash": "sha256:fae92dfa9a50a63b149ccc992a03d8bc6e0c0cac84493ca2b601c5bec42cd243",
+  "proof_hash": "sha256:aae99da304c95ff8a30fabcec4777b1040d0ca4ab4b12e3a33779197928a6674",
   "proof_id": "proof_praxis_k8s_ingress_degradation_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:f76f435e02d973415b73983855c495a7a63962c8bf3bace5a0c6c3fd4b192821",
+    "replay_hash": "sha256:662602232b834d9a537ae6990fd8e9e2122a4edb9fa142a3a8e9eae2139150be",
     "verified_at": "2026-05-12T00:00:00Z"
   },
   "run_id": "fieldlab_run_k8s-ingress-degradation",
