@@ -21,6 +21,31 @@ This documentation set explains the theory, architecture, and operational model 
 | [13-validation-and-quality-gates.md](13-validation-and-quality-gates.md) | How quality is verified | 3 min |
 | [14-limitations-and-future-work.md](14-limitations-and-future-work.md) | Honest limitations and roadmap | 3 min |
 
+## Architecture Deep Dives
+
+| Doc | Purpose | Read Time |
+|-----|---------|-----------|
+| [architecture/floci-runtime.md](architecture/floci-runtime.md) | Floci local AWS runtime architecture | 5 min |
+| [architecture/cloudwatch-observability.md](architecture/cloudwatch-observability.md) | CloudWatch metrics, alarms, logging | 4 min |
+| [architecture/dynamodb-streams.md](architecture/dynamodb-streams.md) | DynamoDB Streams change capture | 3 min |
+| [architecture/deployment-guide.md](architecture/deployment-guide.md) | Full dev → staging → prod deployment path | 5 min |
+| [architecture/data-flow.md](architecture/data-flow.md) | End-to-end data flow with FieldLab | 4 min |
+| [architecture/decision-engine.md](architecture/decision-engine.md) | 10-factor scoring + evidence trust | 5 min |
+| [architecture/system-overview.md](architecture/system-overview.md) | System-level component topology | 4 min |
+| [architecture/incident-clustering.md](architecture/incident-clustering.md) | Incident grouping and deduplication | 3 min |
+| [architecture/replay-flow.md](architecture/replay-flow.md) | Replay and audit flow | 3 min |
+| [architecture/reporting.md](architecture/reporting.md) | Reporting architecture | 3 min |
+
+## Infrastructure
+
+| Doc | Purpose |
+|-----|---------|
+| [infrastructure/lambda/README.md](../infrastructure/lambda/README.md) | Lambda compute deployment |
+| [infrastructure/iam/README.md](../infrastructure/iam/README.md) | IAM role policies |
+| [infrastructure/k8s/README.md](../infrastructure/k8s/README.md) | Kubernetes deployment manifests |
+| [infrastructure/floci/README.md](../infrastructure/floci/README.md) | Floci runtime setup |
+| [infrastructure/terraform/README.md](../infrastructure/terraform/README.md) | Terraform IaC for EKS |
+
 ## Architecture Decision Records
 
 | ADR | Decision |

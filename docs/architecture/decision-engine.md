@@ -1,135 +1,76 @@
-# Decision Engine
+# Praxis Decision Engine
 
-## Overview
-
-The decision engine transforms a ticket's features into a priority score, a root cause hypothesis, and ranked action recommendations.
+The `PraxisDecisionEngine` performs deterministic 10-factor priority scoring backed by evidence trust grading.
 
 ```mermaid
-flowchart TD
-    A[Ticket + Context] --> B[Feature Extraction]
-    B --> C[Severity]
-    B --> D[Urgency]
-    B --> E[Business Impact]
-    B --> F[SLA Risk]
-    B --> G[Recurrence]
-    B --> H[Dependency Criticality]
-    B --> I[Actionability]
-    B --> J[Uncertainty]
-    C --> K[Priority Score]
-    D --> K
-    E --> K
-    F --> K
-    G --> K
-    H --> K
-    I --> K
-    J --> K
-    K --> L[Root Cause Hypothesis]
-    L --> M[Recommendation Ranking]
-    M --> N[Decision Record]
+flowchart LR
+    subgraph Inputs["Input Signals"]
+        Features["EventFeatureExtractor<br/>normalized features"]
+        Ontology["OntologyCompiler<br/>objects + links"]
+        Context["Customer Context<br/>business metrics"]
+    end
+
+    subgraph Engine["PraxisDecisionEngine"]
+        direction TB
+        Severity["1. Severity Score<br/>critical=1.0, high=0.9, ..."]
+        Impact["2. Business Impact<br/>shipments, downtime, orders"]
+        Trust["3. Evidence Trust<br/>6-dimension quality"]
+        Recurrence["4. Recurrence<br/>repeat event count"]
+        Escalation["5. Escalation<br/>vendor + support flags"]
+        RootCause["6. Root Cause<br/>identified vs unknown"]
+        Workaround["7. Workaround<br/>available vs none"]
+        OntologyMap["8. Ontology Mapping<br/>objects + links completeness"]
+        ValueEstimate["9. Value Estimate<br/>ROI from RoiCalculator"]
+        CustomerFit["10. Customer Fit<br/>context match score"]
+
+        Severity --> Priority["Priority Score<br/>weighted ensemble"]
+        Impact --> Priority
+        Trust --> Priority
+        Recurrence --> Priority
+        Escalation --> Priority
+        RootCause --> Priority
+        Workaround --> Priority
+        OntologyMap --> Priority
+        ValueEstimate --> Priority
+        CustomerFit --> Priority
+    end
+
+    subgraph Outputs["Decision Output"]
+        Score["priority_score: 0.7708"]
+        Hypothesis["root_cause_hypothesis"]
+        Review["requires_human_review: true"]
+        Questions["next_best_questions<br/>(VOI ranked)"]
+        Confidence["confidence"]
+    end
+
+    Features --> Engine
+    Ontology --> Engine
+    Context --> Engine
+    Engine --> Outputs
 ```
 
-## Priority Score Formula
+## Evidence Trust (6 Dimensions)
 
-```
-priority_score =
-  (0.22 × severity_score) +
-  (0.18 × urgency_score) +
-  (0.20 × business_impact_score) +
-  (0.14 × sla_risk_score) +
-  (0.10 × recurrence_score) +
-  (0.08 × dependency_criticality_score) +
-  (0.08 × actionability_score) −
-  (0.10 × uncertainty_penalty)
-```
+| Dimension | Weight | Description |
+|-----------|--------|-------------|
+| Source Reliability | 20% | Number of corroborating sources |
+| Freshness | 15% | How recent the events are |
+| Corroboration | 15% | Cross-system signal alignment |
+| Completeness | 15% | Whether business impact is captured |
+| Consistency | 15% | Absence of contradictions |
+| Auditability | 20% | Chain of custody completeness |
 
-All sub-scores normalized to **0..100**.
+## Human-in-the-Loop
 
-## Sub-Score Definitions
+The engine never auto-remediates. When `priority_score > 0.65`, it flags `requires_human_review: true` and surfaces VOI-ranked questions to guide evidence collection.
 
-### Severity Score (0–100)
-Maps raw priority + keyword detection:
-- account unlock → 15–30
-- printer/scanner → 20–40
-- email forwarding/shared mailbox → 35–55
-- ERP/Epicor issue → 60–85
-- network/infra outage → 75–100
+## Test Coverage
 
-### Urgency Score (0–100)
-- age_pressure: linearly increasing with ticket age
-- burstiness: rapid comment/follow-up spike signal
-- blocked_user_signal: workflow-blocking language
-- time_window_modifier: after-hours tickets get boost
-
-### Business Impact Score (0–100)
-- site_weight: production site > back-office site
-- asset_criticality: linked asset's criticality rating
-- user_scope: number of affected users
-- cluster_amplification: related tickets amplify impact
-
-### SLA Risk Score (0–100)
-```
-sla_risk_score = min(100, 100 × (elapsed_hours / sla_target_hours) × backlog_modifier)
-```
-
-### Recurrence Score (0–100)
-Same asset/category/site pattern frequency in prior 90 days.
-
-### Dependency Criticality Score (0–100)
-Keyword-based scoring based on ticket content:
-- ERP/server/production/network/VPN keywords → 80
-- Email/printer/account/access keywords → 45
-- Default for other tickets → 25
-
-### Actionability Score (0–100)
-- presence of diagnostic info → +25
-- known runbook exists
-- similar resolved cases available → +25 max
-- category clarity → +20
-- base score → 30
-
-### Uncertainty Penalty (0–50)
-- incomplete text → +10
-- no asset/site match → +15
-- low similar-case support → +10
-- category ambiguity → +10
-- conflicting rules → +5
-
-## Root Cause Classes
-
-| Class | Keywords |
-|---|---|
-| access_identity | unlock, access, permissions, NTFS, credential |
-| email_messaging | outlook, email, inbox, microsoft 365, exchange |
-| shared_mailbox_forwarding | shared mailbox, delegate, forwarding |
-| printer_scanner | printer, print, scanner, copier |
-| file_share_permissions | share, permissions, NTFS, file access |
-| erp_application | Epicor, SAP, Oracle, ERP, MRP |
-| workstation_endpoint | laptop, desktop, workstation, PC |
-| network_connectivity | VPN, network, internet, connectivity, WiFi |
-| infrastructure_service | server, datacenter, DNS, DHCP, domain |
-| security_spam_block | spam, phishing, blocked, security alert |
-| production_system_integration | PLC, SCADA, MES, integration, API |
-| unknown | fallback when no class matches |
-
-## Recommendation Contract
-
-Each decision yields 3–5 ranked recommendations:
-
-```json
-{
-  "ticket_id": "IT-20250001",
-  "priority_score": 81.4,
-  "root_cause_hypothesis": "shared_mailbox_forwarding",
-  "recommendations": [
-    {
-      "rank": 1,
-      "action_type": "apply_runbook",
-      "action_label": "Apply shared mailbox forwarding migration runbook",
-      "risk_level": "low",
-      "confidence": 0.88,
-      "expected_benefit": "Reduce reassignment and resolve within 2h",
-      "rationale": "Pattern matches 11 resolved prior cases in same category"
-    }
-  ]
-}
+```bash
+.venv/bin/pytest tests/praxis/test_evidence_trust.py -v
+# test_perfect_evidence
+# test_low_evidence
+# test_score_from_dict
+# test_requires_human_review
+# test_trust_level
 ```
