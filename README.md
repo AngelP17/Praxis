@@ -35,6 +35,8 @@ Floci start -> health check -> demo run -> proof emit -> verify -> determinism r
 
 [View latest CI run](https://github.com/AngelP17/praxis/actions/workflows/fieldlab-proof.yml)
 
+The web app also ships a Next.js `app/api` bridge for frontend stability. In local development it proxies the web UI to the FastAPI gateway; on Vercel it serves deterministic demo payloads for proofs, solution packs, Floci health, replay checks, and pipeline streaming so the flagship surfaces do not 404 when the backend is not deployed beside the frontend.
+
 ## Prove Praxis Works
 
 Praxis is verified through a local FieldLab run, not a pre-recorded video. The flagship proof path loads the manufacturing solution pack, streams messy events through the Floci-backed FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.
@@ -246,16 +248,16 @@ Shows how a pilot expands into a bigger account, scoring adjacent use cases by s
 | `/` | Landing page with live metrics | All |
 | `/dashboard` | System health bento overview | Operator |
 | `/command-center` | Primary operator work queue with decision explanations | Operator |
+| `/console` | Live pipeline console with Floci health and verifier controls | Operator |
 | `/incidents/[id]` | Incident detail with timeline | Operator |
 | `/decision-center` | Decision center with counterfactual deltas | Operator |
 | `/field-workbench` | End-to-end customer workflow from discovery to readout | FDSE |
 | `/solution-packs` | Catalog of repeatable demo packs | GTM Engineer |
-| `/solution-packs/[id]` | Launch a specific customer scenario | Solutions Engineer |
 | `/fieldlab` | Floci-backed local environment status and event flow | Platform/SE |
 | `/ontology` | Operational object graph, links, and actions | FDSE |
 | `/value-case` | ROI calculator and assumptions | GTM Engineer |
-| `/deployment-plan` | Technical rollout plan and risk register | Solutions Engineer |
 | `/executive-readout` | CFO/COO-ready summary | GTM/SE |
+| `/proof/[proofId]` | Cinematic proof detail, verifier flow, and diff workflow | Solutions Engineer |
 | `/platform` | SRE control plane — SLOs, topology, chaos | Platform |
 | `/assets` | Infrastructure asset inventory | Operator |
 | `/audit` | Audit trail viewer and export | Operator |

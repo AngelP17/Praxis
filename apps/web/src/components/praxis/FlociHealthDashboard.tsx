@@ -9,15 +9,20 @@ interface ServiceHealth {
   uptime: string;
 }
 
+const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+
+const DEMO_SERVICES: Record<string, ServiceHealth> = {
+  s3: { name: "S3", status: "healthy", uptime: "2h 34m" },
+  sqs: { name: "SQS", status: "healthy", uptime: "2h 34m" },
+  dynamodb: { name: "DynamoDB", status: "healthy", uptime: "2h 34m" },
+  eventbridge: { name: "EventBridge", status: "healthy", uptime: "2h 34m" },
+};
+
 export default function FlociHealthDashboard() {
-  const [health, setHealth] = useState<Record<string, ServiceHealth>>({
-    s3: { name: "S3", status: "healthy", uptime: "2h 34m" },
-    sqs: { name: "SQS", status: "healthy", uptime: "2h 34m" },
-    dynamodb: { name: "DynamoDB", status: "healthy", uptime: "2h 34m" },
-    eventbridge: { name: "EventBridge", status: "healthy", uptime: "2h 34m" },
-  });
+  const [health, setHealth] = useState<Record<string, ServiceHealth>>(DEMO_SERVICES);
 
   const checkHealth = async () => {
+    if (IS_DEMO) return;
     try {
       const response = await fetch("/api/floci/health");
       const data = await response.json();
@@ -34,8 +39,9 @@ export default function FlociHealthDashboard() {
   };
 
   useEffect(() => {
+    if (IS_DEMO) return;
     checkHealth();
-    const interval = setInterval(checkHealth, 30000); // Check every 30 seconds
+    const interval = setInterval(checkHealth, 30000);
     return () => clearInterval(interval);
   }, []);
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { HardDrives, Envelope, Database, Lightning } from "@phosphor-icons/react";
+import { DEMO_HEALTH } from "@/lib/praxis-demo-data";
 
 interface ServiceStatus {
   status: string;
@@ -22,6 +23,8 @@ const SERVICE_ICONS: Record<string, typeof Database> = {
   events: Lightning,
 };
 
+const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+
 function ServiceDot({ status }: { status: string }) {
   const color =
     status === "healthy"
@@ -33,14 +36,21 @@ function ServiceDot({ status }: { status: string }) {
 }
 
 export function FlociHealth() {
-  const [health, setHealth] = useState<FlociHealthData | null>(null);
+  const [health, setHealth] = useState<FlociHealthData | null>(
+    IS_DEMO ? (DEMO_HEALTH as FlociHealthData) : null,
+  );
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
+    if (IS_DEMO) {
+      setHealth(DEMO_HEALTH as FlociHealthData);
+      return;
+    }
+
     let cancelled = false;
     const poll = async () => {
       try {
-        const res = await fetch("/health/floci");
+        const res = await fetch("/api/health/floci");
         if (!cancelled && res.ok) {
           setHealth(await res.json());
         }

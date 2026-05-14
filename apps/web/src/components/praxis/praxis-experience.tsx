@@ -30,7 +30,7 @@ import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { useFieldLabRun } from "@/lib/hooks/useFieldLabRun";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
-import { formatCurrency, formatPercent, questionText, type PraxisProof } from "@/lib/praxis-client";
+import { formatCurrency, formatPercent, questionText, type PraxisProof, type ProofVerificationResponse, type SolutionPack } from "@/lib/praxis-client";
 
 export type PraxisScreenId =
   | "overview"
@@ -68,28 +68,49 @@ function proofValue(proof: PraxisProof | null) {
   return proof?.value_case.estimated_annual_value ?? 0;
 }
 
-export function PraxisExperience({ initialScreen = "overview" }: { initialScreen?: PraxisScreenId }) {
+export function PraxisExperience({
+  initialScreen = "overview",
+  embedded = false,
+  externalProof,
+  externalVerification,
+  externalPacks,
+}: {
+  initialScreen?: PraxisScreenId;
+  embedded?: boolean;
+  externalProof?: PraxisProof | null;
+  externalVerification?: ProofVerificationResponse | null;
+  externalPacks?: SolutionPack[];
+}) {
   const searchParams = useSearchParams();
   const queryPack = searchParams.get("pack") ?? "manufacturing-printer-gpo";
-  const { packs, loading: packsLoading, error: packsError, reload } = useSolutionPacks();
-  const { proof, verification, loading: proofLoading, error: proofError } = useProof(queryPack);
+  const skipFetch = embedded && externalProof !== undefined;
+  const { packs: fetchedPacks, loading: packsLoading, error: packsError, reload } = useSolutionPacks();
+  const { proof: fetchedProof, verification: fetchedVerification, loading: proofLoading, error: proofError } = useProof(skipFetch ? "" : queryPack);
+  const packs = externalPacks ?? fetchedPacks;
+  const proof = externalProof ?? fetchedProof;
+  const verification = externalVerification ?? fetchedVerification;
   const fieldlab = useFieldLabRun(queryPack);
   const activeProof = fieldlab.result?.proof ?? proof;
   const activePack = packs.find((pack) => pack.id === queryPack);
   const chart = metricData(activeProof);
+  const RootTag = embedded ? "section" : "main";
+  const containerClassName = `min-h-[100dvh] bg-[var(--praxis-bg)] text-[var(--praxis-bone)] ${embedded ? "overflow-x-hidden" : ""}`;
 
-  if (packsLoading || proofLoading) return <main className="min-h-[100dvh] bg-[var(--praxis-bg)] p-6 pt-28 text-[var(--praxis-bone)]"><LoadingSkeleton /></main>;
+  if (packsLoading || proofLoading) {
+    return <RootTag className="min-h-[100dvh] bg-[var(--praxis-bg)] p-6 pt-28 text-[var(--praxis-bone)]"><LoadingSkeleton /></RootTag>;
+  }
   if (packsError || proofError) {
     return (
-      <main className="min-h-[100dvh] bg-[var(--praxis-bg)] p-6 pt-28 text-[var(--praxis-bone)]">
+      <RootTag className="min-h-[100dvh] bg-[var(--praxis-bg)] p-6 pt-28 text-[var(--praxis-bone)]">
         <ErrorState title="Praxis API unavailable" message={(packsError ?? proofError)?.message ?? "Could not load live Praxis data."} onRetry={reload} />
-      </main>
+      </RootTag>
     );
   }
 
   return (
-    <main className="min-h-[100dvh] bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
-      <DemoBanner />
+    <RootTag className={containerClassName}>
+      {!embedded ? <DemoBanner /> : null}
+      {!embedded ? (
       <nav className="fixed left-1/2 top-5 z-50 flex w-[min(1180px,calc(100%-32px))] -translate-x-1/2 items-center justify-between border border-[var(--praxis-line)] bg-[color-mix(in_srgb,var(--praxis-bg)_82%,transparent)] px-4 py-3 backdrop-blur-xl">
         <Link href="/" className="flex items-center gap-3 transition-transform hover:scale-105" style={{ color: "var(--praxis-bone)" }}>
           <PraxisMark size={22} />
@@ -108,8 +129,9 @@ export function PraxisExperience({ initialScreen = "overview" }: { initialScreen
         </div>
         <PackSwitcher activePackId={queryPack} variant="nav" />
       </nav>
+      ) : null}
 
-      <section className="mx-auto grid grid-flow-dense w-[min(1180px,calc(100%-32px))] gap-8 py-32 lg:grid-cols-[1.1fr_0.9fr]">
+      <section className="mx-auto grid grid-flow-dense w-[min(1180px,calc(100%-32px))] gap-8 py-24 md:py-32 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <div className="font-mono text-[11px] uppercase tracking-[0.24em] text-[var(--praxis-violet)]">
             Live FieldLab proof system
@@ -229,7 +251,7 @@ export function PraxisExperience({ initialScreen = "overview" }: { initialScreen
         </div>
         <ProofObjectViewer packId={queryPack} proof={activeProof} verification={verification} />
       </section>
-    </main>
+    </RootTag>
   );
 }
 

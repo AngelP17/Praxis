@@ -83,6 +83,34 @@
   animation: praxis-marquee 34s linear infinite;
 }
 
+@keyframes ppp-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ppp-hero-copy {
+  animation: ppp-fade-up 1.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.ppp-hero-copy:nth-child(2) { animation-delay: 0.14s; }
+.ppp-hero-copy:nth-child(3) { animation-delay: 0.28s; }
+.ppp-hero-copy:nth-child(4) { animation-delay: 0.42s; }
+.ppp-hero-copy:nth-child(5) { animation-delay: 0.56s; }
+.ppp-hero-copy:nth-child(6) { animation-delay: 0.70s; }
+
+.ppp-stat {
+  animation: ppp-fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.ppp-stat:nth-child(1) { animation-delay: 0.6s; }
+.ppp-stat:nth-child(2) { animation-delay: 0.66s; }
+.ppp-stat:nth-child(3) { animation-delay: 0.72s; }
+.ppp-stat:nth-child(4) { animation-delay: 0.78s; }
+
 @keyframes praxis-marquee {
   from {
     transform: translateX(0);
@@ -103,6 +131,10 @@ body {
     radial-gradient(circle at top right, rgba(113, 91, 255, 0.06), transparent 26%),
     radial-gradient(circle at bottom left, rgba(113, 91, 255, 0.03), transparent 30%),
     var(--color-bg-deep);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {

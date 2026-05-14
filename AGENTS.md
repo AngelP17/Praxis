@@ -17,6 +17,7 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 ## Repo Map
 
 - `apps/web/`: Next.js 16, React 19, Tailwind CSS v4 frontend.
+- `apps/web/src/app/api/`: Next.js route handlers that proxy the web app to the FastAPI gateway in local dev and return deterministic demo data on Vercel.
 - `apps/api_gateway/`: FastAPI API gateway and route orchestration.
 - `services/decision-service/`: deterministic decision service.
 - `services/platform-service/`: platform/SRE evidence service.

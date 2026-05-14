@@ -6,7 +6,7 @@ import {
   type PraxisProof,
   type ProofVerificationResponse,
 } from "@/lib/praxis-client";
-import { DEMO_PROOF } from "@/lib/praxis-demo-data";
+import { getDemoProof } from "@/lib/praxis-demo-data";
 
 const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
 
@@ -17,14 +17,19 @@ export function useProof(packId: string) {
   const [error, setError] = useState<Error | null>(null);
 
   const load = useCallback(() => {
+    if (!packId) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     setVerification(null);
 
     if (IS_DEMO) {
       // On Vercel, show static demo data — API Gateway deploys separately
-      setProof(DEMO_PROOF);
-      setVerification({ valid: true, proof_hash: DEMO_PROOF.proof_hash, status: "verified", errors: [] });
+      const demoProof = getDemoProof(packId);
+      setProof(demoProof);
+      setVerification({ valid: true, proof_hash: demoProof.proof_hash, status: "verified", errors: [] });
       setLoading(false);
       return;
     }

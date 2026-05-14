@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { CheckCircle, Database, Envelope, BracketsCurly, ArrowRight } from "@phosphor-icons/react";
 import { PraxisMark } from "./PraxisMark";
+import { DEMO_PIPELINE_STAGES, getDemoPipelineCompletion, getDemoProof } from "@/lib/praxis-demo-data";
 
 interface StageEvent {
   stage: string;
@@ -38,6 +39,8 @@ const STAGE_ICONS: Record<string, any> = {
   "proof.sign": PraxisMark,
 };
 
+const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+
 function StageDot({ active }: { active: boolean }) {
   return (
     <span
@@ -46,7 +49,7 @@ function StageDot({ active }: { active: boolean }) {
       }`}
     />
   );
-};
+}
 
 function renderStageIcon(Icon: any) {
   if (Icon === PraxisMark) {
@@ -55,17 +58,65 @@ function renderStageIcon(Icon: any) {
   return <Icon className="h-5 w-5 text-[var(--praxis-violet)]" />;
 }
 
-export function PipelineLive({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
+export function PipelineLive({
+  packId = "manufacturing-printer-gpo",
+  demo = IS_DEMO,
+}: { packId?: string; demo?: boolean }) {
   const [stages, setStages] = useState<StageEvent[]>([]);
   const [completed, setCompleted] = useState<CompletedEvent | null>(null);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const timeoutsRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    return () => {
+      timeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      timeoutsRef.current = [];
+    };
+  }, []);
 
   const startPipeline = useCallback(() => {
     setRunning(true);
     setStages([]);
     setCompleted(null);
     setError(null);
+
+    if (demo) {
+      const proof = getDemoProof(packId);
+      const runId = proof.run_id;
+      timeoutsRef.current.forEach((timeoutId) => window.clearTimeout(timeoutId));
+      timeoutsRef.current = [];
+
+      DEMO_PIPELINE_STAGES.forEach((stage, index) => {
+        const timeoutId = window.setTimeout(() => {
+          setStages((prev) => {
+            const existing = prev.find((item) => item.stage === stage.stage);
+            if (existing) return prev;
+            return [
+              ...prev,
+              {
+                stage: stage.stage,
+                label: stage.label,
+                index,
+                total: DEMO_PIPELINE_STAGES.length,
+                progress: (index + 1) / DEMO_PIPELINE_STAGES.length,
+                run_id: runId,
+                stage_hash: `${proof.proof_hash.slice(0, 15)}${index}`,
+                timestamp: Date.now(),
+              },
+            ].sort((a, b) => a.index - b.index);
+          });
+
+          if (index === DEMO_PIPELINE_STAGES.length - 1) {
+            setCompleted(getDemoPipelineCompletion(packId, runId));
+            setRunning(false);
+          }
+        }, (index + 1) * 500);
+
+        timeoutsRef.current.push(timeoutId);
+      });
+      return;
+    }
 
     const eventSource = new EventSource(`/api/proofs/${packId}/stream`);
 
@@ -89,7 +140,7 @@ export function PipelineLive({ packId = "manufacturing-printer-gpo" }: { packId?
       setRunning(false);
       eventSource.close();
     };
-  }, [packId]);
+  }, [demo, packId]);
 
   return (
     <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">

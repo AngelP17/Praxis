@@ -1,6 +1,14 @@
 "use client";
 
 import { api } from "@/lib/api";
+import {
+  DEMO_PACKS,
+  getDemoActionCapture,
+  getDemoExecuteResponse,
+  getDemoProof,
+  getDemoRun,
+  getDemoTimeline,
+} from "@/lib/praxis-demo-data";
 
 const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
 
@@ -141,34 +149,47 @@ export interface ActionCaptureResponse {
 
 export const praxisClient = {
   listSolutionPacks: async () => {
-    if (IS_DEMO) return [] as SolutionPack[];
+    if (IS_DEMO) return DEMO_PACKS;
     return (await api.get<SolutionPack[]>("/solution-packs")).data;
   },
   getSolutionPack: async (packId: string) => {
-    if (IS_DEMO) return null as unknown as SolutionPack;
+    if (IS_DEMO) return DEMO_PACKS.find((pack) => pack.id === packId) ?? DEMO_PACKS[0];
     return (await api.get<SolutionPack>(`/solution-packs/${packId}`)).data;
   },
   createRun: async (packId: string) => {
-    if (IS_DEMO) return { run_id: `demo_${packId}`, solution_pack_id: packId, customer_profile: {}, status: "created", floci_endpoint: "demo" } as FieldLabRun;
+    if (IS_DEMO) return getDemoRun(packId);
     return (await api.post<FieldLabRun>("/fieldlab/runs", { solution_pack_id: packId })).data;
   },
   executeRun: async (runId: string) => {
-    if (IS_DEMO) return { run_id: runId, status: "executed", proof: {} as PraxisProof, decisions_generated: 1, priority_score: 0, evidence_trust: 0, root_cause_hypothesis: "", ontology_objects: 0, actions_captured: 0, action_mode: "demo", estimated_annual_value: 0 } as FieldLabExecuteResponse;
+    if (IS_DEMO) {
+      const packId = runId.replace(/^demo_/, "") || "manufacturing-printer-gpo";
+      return getDemoExecuteResponse(packId, runId);
+    }
     return (await api.post<FieldLabExecuteResponse>(`/fieldlab/runs/${runId}/execute`)).data;
   },
   getRunTimeline: async (runId: string) => {
-    if (IS_DEMO) return { run_id: runId, events: [], status: "demo", solution_pack_id: "", metadata: {} } as unknown as FieldLabTimeline;
+    if (IS_DEMO) {
+      const packId = runId.replace(/^demo_/, "") || "manufacturing-printer-gpo";
+      return getDemoTimeline(packId, runId);
+    }
     return (await api.get<FieldLabTimeline>(`/fieldlab/runs/${runId}/events`)).data;
   },
   captureAction: async (
     runId: string,
     action: { action: string; status: string; actor?: string; note?: string },
   ) => {
-    if (IS_DEMO) return { run_id: runId, status: "captured", action: action.action, proof_hash: "" } as unknown as ActionCaptureResponse;
+    if (IS_DEMO) {
+      const packId = runId.replace(/^demo_/, "") || "manufacturing-printer-gpo";
+      return getDemoActionCapture(
+        runId,
+        packId,
+        action.status as "approved" | "rejected" | "request_evidence" | "escalated",
+      );
+    }
     return (await api.post<ActionCaptureResponse>(`/fieldlab/runs/${runId}/action`, action)).data;
   },
   getProofByPack: async (packId: string) => {
-    if (IS_DEMO) return {} as PraxisProof;
+    if (IS_DEMO) return getDemoProof(packId);
     return (await api.get<PraxisProof>(`/proofs/${packId}`)).data;
   },
   verifyProof: async (proof: PraxisProof) => {

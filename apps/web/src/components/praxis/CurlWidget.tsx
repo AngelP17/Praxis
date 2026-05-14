@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { BracketsCurly, Check, Copy } from "@phosphor-icons/react";
 import { PraxisMark } from "./PraxisMark";
+import { getDemoProof } from "@/lib/praxis-demo-data";
 
 interface CurlWidgetProps {
   proofHash?: string;
@@ -15,8 +16,9 @@ export function CurlWidget({
   packId = "manufacturing-printer-gpo",
   showDeterminism = true,
 }: CurlWidgetProps) {
+  const isDemo = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const [copied, setCopied] = useState(false);
-  const [determinismChecked, setDeterminismChecked] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [determinismResult, setDeterminismResult] = useState<boolean | null>(null);
 
   const verifyCommand = `uvx praxis-verify artifacts/latest/${packId}/praxis_proof.json`;
@@ -28,10 +30,18 @@ export function CurlWidget({
   };
 
   const handleDeterminismCheck = useCallback(async () => {
-    setDeterminismChecked(true);
+    setChecking(true);
     setDeterminismResult(null);
+
+    if (isDemo) {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setDeterminismResult(true);
+      setChecking(false);
+      return;
+    }
+
     try {
-      const res = await fetch(`/api/proofs/${packId}/replay`);
+      const res = await fetch(`/api/proofs/${packId}/replay`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         setDeterminismResult(data.equal === true);
@@ -40,8 +50,12 @@ export function CurlWidget({
       }
     } catch {
       setDeterminismResult(false);
+    } finally {
+      setChecking(false);
     }
-  }, [packId]);
+  }, [isDemo, packId]);
+
+  const resolvedProofHash = proofHash || getDemoProof(packId).proof_hash;
 
   return (
     <div className="space-y-4">
@@ -62,7 +76,7 @@ export function CurlWidget({
       {showDeterminism && (
         <button
           onClick={handleDeterminismCheck}
-          disabled={determinismChecked}
+          disabled={checking}
           className={`flex items-center gap-2 w-full border p-3 font-mono text-[10px] uppercase tracking-[0.1em] transition-all duration-700 ${
             determinismResult === true
               ? "border-[var(--praxis-mint)] bg-[rgba(62,255,168,0.04)] text-[var(--praxis-mint)]"
@@ -72,9 +86,11 @@ export function CurlWidget({
           }`}
           >
           <PraxisMark size={16} />
-          {determinismChecked
+          {checking
+            ? "Checking replay determinism"
+            : determinismResult !== null
             ? determinismResult
-              ? "Determinism Verified — Hashes Match"
+              ? `Determinism Verified — ${resolvedProofHash.slice(0, 22)}…`
               : "Determinism Failed — Hashes Diverge"
             : "Check Replay Determinism"}
         </button>
