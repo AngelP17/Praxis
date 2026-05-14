@@ -48,8 +48,8 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
       packName={packName}
       topbar={<TopbarTitle title="Operator Console" subtitle="Live pipeline · Floci health · Active runs" right={topbarRight} />}
     >
-      <div className="grid grid-cols-1 grid-flow-dense gap-[18px] p-6 lg:grid-cols-12">
-        <article className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-6 lg:col-span-8">
+      <div className="grid grid-cols-1 grid-flow-dense gap-[18px] p-6 md:p-8 lg:grid-cols-12">
+        <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.01] lg:col-span-8">
           <div className="mb-4 flex items-center justify-between">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Live pipeline &middot; {packName}</div>
             <Pill tone="argon">streaming</Pill>
@@ -58,7 +58,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
         </article>
 
         <aside className="flex flex-col gap-[14px] lg:col-span-4">
-          <article className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-5">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5 transition-transform duration-700 ease-out hover:scale-[1.01]">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Active solution pack</div>
             <h3 className="mt-3 font-display text-[22px] font-medium tracking-[-0.015em]">{packName}</h3>
             <p className="mt-2 text-[13px] leading-6 text-[var(--praxis-mute)]">
@@ -81,7 +81,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
             <PrimaryAction href={`/proof/${runId}`}>Inspect proof</PrimaryAction>
           </article>
 
-          <article className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-5">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5 transition-transform duration-700 ease-out hover:scale-[1.01]">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Verify independently</div>
             <p className="mt-2 text-[13px] leading-6 text-[var(--praxis-mute)]">
               Anyone can verify this proof using the open-source Praxis verifier.
@@ -101,7 +101,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
           </div>
           <div className="grid grid-cols-2 grid-flow-dense gap-3 md:grid-cols-4">
             {FLOCI_SERVICES.map((svc) => (
-              <article key={svc.service} className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-4">
+              <article key={svc.service} className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-4 transition-transform duration-700 ease-out hover:scale-[1.02]">
                 <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-mute)]">{svc.service}</div>
                 <div className="mt-3 font-display text-[22px] tracking-[-0.015em]">{svc.resource}</div>
                 <div className="mt-1 font-mono text-[10px] uppercase" style={{ color: "var(--praxis-argon)" }}>{svc.status}</div>
@@ -119,7 +119,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
           </div>
           <div className="grid grid-cols-1 grid-flow-dense gap-3 md:grid-cols-3">
             {packs.map((p) => (
-              <Link key={p.id} href={`/field-workbench?pack=${p.id}`} className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-4 transition-transform hover:-translate-y-[2px]">
+              <Link key={p.id} href={`/field-workbench?pack=${p.id}`} className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-4 transition-transform duration-700 ease-out hover:-translate-y-[2px] hover:scale-[1.02]">
                 <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-mute)]">{p.id}</div>
                 <div className="mt-2 font-display text-[16px] font-medium tracking-[-0.01em]">{p.name}</div>
                 <div className="mt-3 flex justify-between font-mono text-[10px] text-[var(--praxis-mute)]">

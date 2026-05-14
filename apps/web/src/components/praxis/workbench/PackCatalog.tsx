@@ -17,13 +17,13 @@ export function PackCatalog() {
     <WorkbenchShell
       topbar={<TopbarTitle title="Solution Packs" subtitle="Live catalog from /api/solution-packs" right={topbarRight} />}
     >
-      <div className="p-6">
+      <div className="p-6 md:p-8">
         <div className="flex flex-col">
           {packs.map((pack) => (
             <Link
               key={pack.id}
               href={`/fieldlab?pack=${pack.id}`}
-              className="grid grid-cols-12 grid-flow-dense items-center gap-3 border-b border-[var(--praxis-line)] py-4 transition-transform hover:translate-x-1 hover:scale-[1.01]"
+              className="mb-3 grid grid-cols-12 grid-flow-dense items-center gap-3 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] px-4 py-5 transition-transform duration-700 ease-out hover:translate-x-1 hover:scale-[1.01]"
             >
               <div className="col-span-12 md:col-span-5">
                 <div className="font-display text-[18px] font-medium tracking-[-0.01em]">{pack.name}</div>

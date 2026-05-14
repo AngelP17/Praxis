@@ -60,7 +60,7 @@ export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; 
       topbar={<TopbarTitle title={`Decision · ${runId_.toUpperCase()}`} subtitle="review required" right={topbarRight} />}
     >
       <div className="grid grid-cols-1 grid-flow-dense gap-[18px] overflow-hidden p-6 lg:grid-cols-[1.25fr_1fr]">
-        <article className="flex flex-col gap-[18px] border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-6">
+        <article className="flex flex-col gap-[18px] overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.01]">
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Praxis priority</div>
@@ -114,7 +114,7 @@ export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; 
         </article>
 
         <div className="flex min-h-0 flex-col gap-[14px] overflow-hidden">
-          <article className="relative overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-[22px]">
+          <article className="relative overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[22px] transition-transform duration-700 ease-out hover:scale-[1.01]">
             <div
               className="pointer-events-none absolute -right-8 -top-8 h-[180px] w-[180px]"
               style={{ background: "radial-gradient(closest-side, color-mix(in srgb, var(--praxis-plasma) 35%, transparent), transparent)", filter: "blur(20px)" }}
@@ -132,7 +132,7 @@ export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; 
             </div>
           </article>
 
-          <article className="flex-1 overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-5">
+          <article className="flex-1 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5 transition-transform duration-700 ease-out hover:scale-[1.01]">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
               Evidence trail &middot; {evidenceItems.length} sources &middot; trust {trust.toFixed(2)}
             </div>
@@ -154,7 +154,7 @@ export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; 
             </div>
           </article>
 
-          <article className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-5">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5 transition-transform duration-700 ease-out hover:scale-[1.01]">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Proof object &middot; signed</div>
             <div className="mt-3 grid grid-flow-dense grid-cols-2 gap-2 font-mono text-[10px] text-[var(--praxis-mute)]">
               <div>proof_hash <span className="text-[var(--praxis-bone)]">{proofShort}&hellip;</span></div>

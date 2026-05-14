@@ -36,7 +36,7 @@ function Bars({ data, color, w = 120, h = 36, gap = 3 }: { data: number[]; color
 
 function MetricCard({ label, value, delta, deltaColor, chart }: { label: string; value: string; delta: string; deltaColor?: string; chart?: React.ReactNode }) {
   return (
-    <article className="flex min-h-[124px] flex-col gap-[10px] border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-[18px]">
+    <article className="flex min-h-[124px] flex-col gap-[10px] overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.02]">
       <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{label}</div>
       <div className="font-display text-[38px] font-medium leading-none tracking-[-0.025em]">{value}</div>
       <div className="mt-auto flex items-center justify-between">
@@ -54,7 +54,7 @@ function SignalDensityChart() {
     return pts.join(" ");
   };
   return (
-    <article className="col-span-1 flex min-h-[230px] flex-col gap-3 border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-[18px] md:col-span-3">
+    <article className="col-span-1 flex min-h-[230px] flex-col gap-3 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.01] md:col-span-3">
       <div className="flex justify-between">
         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Signal density &middot; last 24h</div>
         <div className="flex gap-[14px] font-mono text-[10px] text-[var(--praxis-mute)]">
@@ -150,14 +150,14 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
           chart={<Spark data={[8, 9, 7, 10, 9, 11, 10, 12, 11, 13, 12]} color="var(--praxis-argon)" />}
         />
 
-        <article className="row-span-2 border border-[var(--praxis-line)] bg-[var(--praxis-surface)] p-[18px]">
+        <article className="row-span-2 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.01]">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Alerts &middot; requiring action</div>
           <div className="mt-2 font-display text-[30px] font-medium">{alerts.length} open</div>
           <div className="mt-4 flex flex-col gap-[10px]">
             {alerts.map((e, i) => {
               const color = e.severity === "high" ? "var(--praxis-crit)" : e.severity === "medium" ? "var(--praxis-plasma)" : "var(--praxis-argon)";
               return (
-                <Link key={i} href={`/proof/${runId_}`} className="flex items-center gap-3 border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-3 py-[10px] transition-transform hover:translate-x-1">
+                <Link key={i} href={`/proof/${runId_}`} className="flex items-center gap-3 border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-3 py-[10px] transition-transform duration-700 ease-out hover:translate-x-1 hover:scale-[1.01]">
                   <span className="block h-[7px] w-[7px] shrink-0 rounded-full" style={{ background: color, boxShadow: `0 0 12px ${color}` }} />
                   <div className="min-w-0">
                     <div className="truncate text-[12.5px] font-medium">{e.summary}</div>

@@ -106,7 +106,7 @@ export function ProofProtocolHero({ packId = "manufacturing-printer-gpo", proof 
   );
 
   return (
-    <section ref={rootRef} className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
+    <section ref={rootRef} className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] py-20 md:py-24 text-[var(--praxis-bone)]">
       {/* ambient glow orbs */}
       <div className="ppp-glow pointer-events-none absolute left-1/2 top-[18%] -z-10 h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(139,92,255,0.28),transparent_60%)] blur-[1px]" />
       <div className="ppp-glow pointer-events-none absolute right-[10%] top-[32%] -z-10 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(62,255,168,0.14),transparent_60%)] blur-[1px]" />
@@ -123,9 +123,9 @@ export function ProofProtocolHero({ packId = "manufacturing-printer-gpo", proof 
           <span className="font-display text-lg font-medium tracking-normal">praxis</span>
         </Link>
         <div className="hidden items-center gap-6 md:flex">
-          <Link href="/console" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-colors hover:text-[var(--praxis-bone)]">Console</Link>
-          <Link href="/dashboard" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-colors hover:text-[var(--praxis-bone)]">Dashboard</Link>
-          <Link href="/proof/diff" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-colors hover:text-[var(--praxis-bone)]">Diff</Link>
+          <Link href="/console" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-transform duration-700 hover:scale-105 hover:text-[var(--praxis-bone)]">Console</Link>
+          <Link href="/dashboard" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-transform duration-700 hover:scale-105 hover:text-[var(--praxis-bone)]">Dashboard</Link>
+          <Link href="/proof/diff" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-transform duration-700 hover:scale-105 hover:text-[var(--praxis-bone)]">Diff</Link>
           <div className="flex items-center gap-2 rounded-full border border-[rgba(241,237,223,0.14)] bg-[rgba(19,18,31,0.66)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)] backdrop-blur-xl">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--praxis-mint)] shadow-[0_0_6px_rgba(62,255,168,0.6)]" />
             CI green · {runId.substring(0, 20)}
