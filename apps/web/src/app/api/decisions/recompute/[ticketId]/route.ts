@@ -1,0 +1,10 @@
+import { NextResponse } from "next/server";
+import { proxyBackend } from "@/app/api/_lib/praxis-server";
+import { getDemoDecision } from "@/app/api/_lib/ops-demo";
+
+export async function POST(_: Request, { params }: { params: Promise<{ ticketId: string }> }) {
+  const { ticketId } = await params;
+  return proxyBackend(`/api/decisions/recompute/${ticketId}`, { method: "POST" }, () =>
+    NextResponse.json(getDemoDecision(ticketId)),
+  );
+}

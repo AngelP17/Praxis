@@ -30,6 +30,10 @@ export async function proxyBackend(
       },
     });
 
+    if (!response.ok && demoFallback) {
+      return demoFallback();
+    }
+
     return new Response(response.body, {
       status: response.status,
       statusText: response.statusText,

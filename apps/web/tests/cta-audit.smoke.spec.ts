@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 test("all shipped routes render without dead error walls", async ({ page }) => {
   const routes = [
     { path: "/", expected: "Praxis" },
-    { path: "/dashboard", expected: "Dashboard" },
+    { path: "/dashboard", expected: "Operational Overview" },
     { path: "/command-center", expected: "Signal Queue" },
     { path: "/incidents", expected: "Incidents" },
     { path: "/incidents/IR-2026-041", expected: "Timeline Reconstruction" },
