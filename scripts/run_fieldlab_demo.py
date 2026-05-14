@@ -118,21 +118,33 @@ def main():
     print(f"   Endpoint: {args.floci_endpoint}")
     run_id = f"fieldlab_run_{args.solution_pack}"
     if use_floci:
-        provisioned = resources.provision_all()
-        created = sum(1 for r in provisioned if r["status"] == "created")
-        exists = sum(1 for r in provisioned if r["status"] == "exists")
-        print(f"   Resources: {created} created, {exists} already exist")
-        store.write_run_state(run_id, args.solution_pack, "started", {"event_count": len(events)})
-        bus.run_started(run_id, args.solution_pack)
+        try:
+            provisioned = resources.provision_all()
+            created = sum(1 for r in provisioned if r["status"] == "created")
+            exists = sum(1 for r in provisioned if r["status"] == "exists")
+            print(f"   Resources: {created} created, {exists} already exist")
+            store.write_run_state(
+                run_id, args.solution_pack, "started", {"event_count": len(events)}
+            )
+            bus.run_started(run_id, args.solution_pack)
+        except Exception as exc:
+            print(f"   WARNING: Floci provisioning failed: {exc}")
+            print("   Falling back to deterministic local narration.")
+            use_floci = False
     print()
 
     print("5. Stream Events through Floci")
     if use_floci:
-        result = sink.ingest_solution_pack_events(run_id, args.solution_pack, events)
-        print(f"   SQS: {len(result['sqs'])} events queued")
-        print(f"   S3:  {result['s3']['key']} archived")
-        print(f"   EventBridge: {result['workflow']['status']}")
-    else:
+        try:
+            result = sink.ingest_solution_pack_events(run_id, args.solution_pack, events)
+            print(f"   SQS: {len(result['sqs'])} events queued")
+            print(f"   S3:  {result['s3']['key']} archived")
+            print(f"   EventBridge: {result['workflow']['status']}")
+        except Exception as exc:
+            print(f"   WARNING: Floci ingest failed: {exc}")
+            print("   Falling back to deterministic local event narration.")
+            use_floci = False
+    if not use_floci:
         for i, event in enumerate(events, 1):
             print(
                 f"   [{i}/{len(events)}] {event.get('event_type', 'unknown')}: {event.get('description', '')[:80]}"
