@@ -21,6 +21,7 @@ import {
   YAxis,
 } from "recharts";
 import { ActionApprovalPanel } from "@/components/praxis/ActionApprovalPanel";
+import { DemoBanner } from "@/components/praxis/DemoBanner";
 import { PackSwitcher } from "@/components/praxis/PackSwitcher";
 import { PraxisMark } from "@/components/praxis/PraxisMark";
 import { ProofObjectViewer } from "@/components/praxis/ProofObjectViewer";
@@ -88,6 +89,7 @@ export function PraxisExperience({ initialScreen = "overview" }: { initialScreen
 
   return (
     <main className="min-h-[100dvh] bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
+      <DemoBanner />
       <nav className="fixed left-1/2 top-5 z-50 flex w-[min(1180px,calc(100%-32px))] -translate-x-1/2 items-center justify-between border border-[var(--praxis-line)] bg-[color-mix(in_srgb,var(--praxis-bg)_82%,transparent)] px-4 py-3 backdrop-blur-xl">
         <Link href="/" className="flex items-center gap-3 transition-transform hover:scale-105" style={{ color: "var(--praxis-bone)" }}>
           <PraxisMark size={22} />

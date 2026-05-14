@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CheckCircle, Warning, XCircle } from "@phosphor-icons/react";
 
 interface ServiceHealth {
   name: string;
@@ -54,19 +55,19 @@ export default function FlociHealthDashboard() {
   const getStatusIcon = (status: ServiceHealth["status"]) => {
     switch (status) {
       case "healthy":
-        return "✓";
+        return <CheckCircle className="h-5 w-5 text-[var(--praxis-mint)]" weight="fill" />;
       case "degraded":
-        return "⚠";
+        return <Warning className="h-5 w-5 text-[var(--praxis-violet)]" weight="fill" />;
       case "unhealthy":
-        return "✗";
+        return <XCircle className="h-5 w-5 text-[var(--praxis-crit)]" weight="fill" />;
       default:
-        return "?";
+        return null;
     }
   };
 
   return (
     <main className="min-h-[100dvh] bg-[var(--praxis-bg)] p-8 text-[var(--praxis-bone)]">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto w-full max-w-5xl">
         <div className="mb-8">
           <h1 className="font-display text-5xl font-medium tracking-normal">
             Floci Health Dashboard
