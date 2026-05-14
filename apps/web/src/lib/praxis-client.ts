@@ -2,6 +2,8 @@
 
 import { api } from "@/lib/api";
 
+const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+
 export type SolutionPackId = string;
 
 export interface SolutionPack {
@@ -138,22 +140,41 @@ export interface ActionCaptureResponse {
 }
 
 export const praxisClient = {
-  listSolutionPacks: async () => (await api.get<SolutionPack[]>("/solution-packs")).data,
-  getSolutionPack: async (packId: string) =>
-    (await api.get<SolutionPack>(`/solution-packs/${packId}`)).data,
-  createRun: async (packId: string) =>
-    (await api.post<FieldLabRun>("/fieldlab/runs", { solution_pack_id: packId })).data,
-  executeRun: async (runId: string) =>
-    (await api.post<FieldLabExecuteResponse>(`/fieldlab/runs/${runId}/execute`)).data,
-  getRunTimeline: async (runId: string) =>
-    (await api.get<FieldLabTimeline>(`/fieldlab/runs/${runId}/events`)).data,
+  listSolutionPacks: async () => {
+    if (IS_DEMO) return [] as SolutionPack[];
+    return (await api.get<SolutionPack[]>("/solution-packs")).data;
+  },
+  getSolutionPack: async (packId: string) => {
+    if (IS_DEMO) return null as unknown as SolutionPack;
+    return (await api.get<SolutionPack>(`/solution-packs/${packId}`)).data;
+  },
+  createRun: async (packId: string) => {
+    if (IS_DEMO) return { run_id: `demo_${packId}`, solution_pack_id: packId, customer_profile: {}, status: "created", floci_endpoint: "demo" } as FieldLabRun;
+    return (await api.post<FieldLabRun>("/fieldlab/runs", { solution_pack_id: packId })).data;
+  },
+  executeRun: async (runId: string) => {
+    if (IS_DEMO) return { run_id: runId, status: "executed", proof: {} as PraxisProof, decisions_generated: 1, priority_score: 0, evidence_trust: 0, root_cause_hypothesis: "", ontology_objects: 0, actions_captured: 0, action_mode: "demo", estimated_annual_value: 0 } as FieldLabExecuteResponse;
+    return (await api.post<FieldLabExecuteResponse>(`/fieldlab/runs/${runId}/execute`)).data;
+  },
+  getRunTimeline: async (runId: string) => {
+    if (IS_DEMO) return { run_id: runId, events: [], status: "demo", solution_pack_id: "", metadata: {} } as unknown as FieldLabTimeline;
+    return (await api.get<FieldLabTimeline>(`/fieldlab/runs/${runId}/events`)).data;
+  },
   captureAction: async (
     runId: string,
     action: { action: string; status: string; actor?: string; note?: string },
-  ) => (await api.post<ActionCaptureResponse>(`/fieldlab/runs/${runId}/action`, action)).data,
-  getProofByPack: async (packId: string) => (await api.get<PraxisProof>(`/proofs/${packId}`)).data,
-  verifyProof: async (proof: PraxisProof) =>
-    (await api.post<ProofVerificationResponse>("/proofs/verify", proof)).data,
+  ) => {
+    if (IS_DEMO) return { run_id: runId, status: "captured", action: action.action, proof_hash: "" } as unknown as ActionCaptureResponse;
+    return (await api.post<ActionCaptureResponse>(`/fieldlab/runs/${runId}/action`, action)).data;
+  },
+  getProofByPack: async (packId: string) => {
+    if (IS_DEMO) return {} as PraxisProof;
+    return (await api.get<PraxisProof>(`/proofs/${packId}`)).data;
+  },
+  verifyProof: async (proof: PraxisProof) => {
+    if (IS_DEMO) return { valid: true, proof_hash: proof.proof_hash || "", status: "verified", errors: [] } as ProofVerificationResponse;
+    return (await api.post<ProofVerificationResponse>("/proofs/verify", proof)).data;
+  },
 };
 
 export function formatCurrency(value: number): string {
