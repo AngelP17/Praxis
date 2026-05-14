@@ -56,9 +56,16 @@ _rate_limiter = ProofRateLimiter()
 
 
 class ProofRateLimitMiddleware(BaseHTTPMiddleware):
+    MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
+
     async def dispatch(self, request: Request, call_next: Callable) -> Response:
         if not request.url.path.startswith("/api/proofs"):
             return await call_next(request)
+
+        if request.method not in self.MUTATING_METHODS:
+            response = await call_next(request)
+            response.headers["X-RateLimit-Limit"] = str(_rate_limiter.max_requests)
+            return response
 
         allowed, remaining = _rate_limiter.allow(request)
         if not allowed:

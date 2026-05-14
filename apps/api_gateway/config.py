@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     USERS_FILE: str | None = None
 
     # Rate limiting
-    RATE_LIMIT_PER_MINUTE: int = 120
+    RATE_LIMIT_PER_MINUTE: int = 600
 
     # Logging
     LOG_LEVEL: str = "INFO"
