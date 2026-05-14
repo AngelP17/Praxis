@@ -10,6 +10,8 @@ import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
+import { CommandShell } from "@/components/command-shell";
+import { SystemStatusRail } from "@/components/system-status-rail";
 
 type IncidentDetailPayload = {
   incident: {
@@ -121,63 +123,61 @@ export default function IncidentDetailPage() {
 
   if (status === "loading") {
     return (
-      <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-        <div className="praxis-v2-grid" />
-        <div className="praxis-v2-noise" />
-        <div className="praxis-v2-amber-field" />
-        <div className="relative z-10 mx-auto max-w-[1580px]">
-          <LoadingSkeleton />
+      <CommandShell>
+        <SystemStatusRail activeLabel="Incidents" />
+        <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1580px]">
+            <LoadingSkeleton />
+          </div>
         </div>
-      </main>
+      </CommandShell>
     );
   }
 
   if (status === "error" || !payload) {
     return (
-      <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-        <div className="praxis-v2-grid" />
-        <div className="praxis-v2-noise" />
-        <div className="praxis-v2-amber-field" />
-        <div className="relative z-10 mx-auto max-w-[1580px]">
-          <ErrorState title="Incident detail unavailable" message={notice || "Could not load incident payload."} onRetry={() => void loadIncident()} />
+      <CommandShell>
+        <SystemStatusRail activeLabel="Incidents" />
+        <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1580px]">
+            <ErrorState title="Incident detail unavailable" message={notice || "Could not load incident payload."} onRetry={() => void loadIncident()} />
+          </div>
         </div>
-      </main>
+      </CommandShell>
     );
   }
 
   return (
-    <main className="sv3 sv3-bg min-h-[100dvh] overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
-      <div className="praxis-v2-grid" />
-      <div className="praxis-v2-noise" />
-      <div className="praxis-v2-amber-field" />
-
+    <CommandShell>
+      <SystemStatusRail activeLabel="Incidents" />
+      <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
-        <section className="praxis-v2-panel-strong p-5 sm:p-6 py-20">
+        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.94),rgba(10,10,20,0.88))] px-5 py-20 sm:px-6 md:py-24">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <div className="praxis-v2-eyebrow">Incident Detail</div>
-              <h1 className="mt-2 text-2xl font-semibold tracking-tight text-zinc-50 sm:text-3xl">{payload.incident.title}</h1>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-zinc-300">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Incident Detail</div>
+              <h1 className="mt-2 max-w-5xl font-display text-2xl font-semibold tracking-tight text-[var(--praxis-bone)] sm:text-3xl">{payload.incident.title}</h1>
+              <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--praxis-muted)]">
                 Forensic incident context with timeline reconstruction, deterministic recommendation, and closure control.
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/command-center"
-                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                className="inline-flex min-h-10 items-center border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-105 hover:border-[var(--praxis-plasma)]"
               >
                 Command center
               </Link>
               <button
                 onClick={() => void resolveIncident()}
                 disabled={resolving}
-                className="inline-flex min-h-10 items-center rounded-full border border-emerald-500/35 bg-emerald-500/12 px-4 py-2 text-sm text-emerald-100 transition hover:bg-emerald-500/18 disabled:opacity-60 hover:scale-105 transition-transform duration-500"
+                className="inline-flex min-h-10 items-center border border-[var(--praxis-argon)] bg-[color-mix(in_srgb,var(--praxis-argon)_12%,transparent)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-105 hover:bg-[color-mix(in_srgb,var(--praxis-argon)_18%,transparent)] disabled:opacity-60"
               >
                 {resolving ? "Resolving..." : "Resolve Incident"}
               </button>
               <Link
                 href="/replay/INC-4821"
-                className="inline-flex min-h-10 items-center rounded-full border border-zinc-700/70 bg-zinc-900/75 px-4 py-2 text-sm text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                className="inline-flex min-h-10 items-center border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-105 hover:border-[var(--praxis-plasma)]"
               >
                 Replay
               </Link>
@@ -185,7 +185,7 @@ export default function IncidentDetailPage() {
           </div>
 
           {notice ? (
-            <div className="mt-4 rounded-xl border border-violet-500/25 bg-violet-500/10 px-4 py-2.5 text-sm text-violet-100">{notice}</div>
+            <div className="mt-4 border border-[var(--praxis-plasma)] bg-[color-mix(in_srgb,var(--praxis-plasma)_12%,transparent)] px-4 py-2.5 text-sm text-[var(--praxis-bone)]">{notice}</div>
           ) : null}
 
           <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4 grid-flow-dense">
@@ -198,19 +198,19 @@ export default function IncidentDetailPage() {
 
         <section className="mt-4 grid grid-cols-12 gap-4 grid-flow-dense py-20">
           <div className="col-span-12 xl:col-span-7">
-            <div className="praxis-v2-panel h-full p-4 sm:p-5">
-              <div className="praxis-v2-eyebrow">Incident Focus</div>
-              <p className="mt-3 text-sm leading-7 text-zinc-300">{payload.common_cause}</p>
-              <div className="mt-4 rounded-xl border border-violet-500/30 bg-violet-500/12 p-4">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-violet-100">Praxis recommendation</div>
-                <p className="mt-2 text-sm leading-7 text-violet-50">{payload.recommended_action}</p>
+            <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.92),rgba(10,10,20,0.86))] p-4 sm:p-5">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Incident Focus</div>
+              <p className="mt-3 text-sm leading-7 text-[var(--praxis-muted)]">{payload.common_cause}</p>
+              <div className="mt-4 border border-[var(--praxis-plasma)] bg-[color-mix(in_srgb,var(--praxis-plasma)_12%,transparent)] p-4">
+                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--praxis-bone)]">Praxis recommendation</div>
+                <p className="mt-2 text-sm leading-7 text-[var(--praxis-bone)]">{payload.recommended_action}</p>
               </div>
 
               <div className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 grid-flow-dense">
                 {["SLO burn rate", "Kubernetes event window", "Forensic waveform capture", "Operator response runbook"].map((item, index) => (
-                  <div key={item} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
-                    <div className="inline-flex items-center gap-1.5 text-xs text-zinc-300">
-                      {index % 2 === 0 ? <ChartLine size={13} className="text-violet-200" /> : <Waveform size={13} className="text-violet-200" />}
+                  <div key={item} className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] px-3 py-2.5">
+                    <div className="inline-flex items-center gap-1.5 text-xs text-[var(--praxis-bone)]">
+                      {index % 2 === 0 ? <ChartLine size={13} className="text-[var(--praxis-plasma)]" /> : <Waveform size={13} className="text-[var(--praxis-plasma)]" />}
                       {item}
                     </div>
                   </div>
@@ -220,7 +220,7 @@ export default function IncidentDetailPage() {
           </div>
 
           <div className="col-span-12 xl:col-span-5 space-y-4">
-            <div className="praxis-v2-panel p-4 sm:p-5">
+            <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.92),rgba(10,10,20,0.86))] p-4 sm:p-5">
               <DecisionExplanationPanel
                 explanation={{
                   integrity_score: {
@@ -252,29 +252,29 @@ export default function IncidentDetailPage() {
               />
             </div>
 
-            <div className="praxis-v2-panel h-full p-4 sm:p-5">
-              <div className="praxis-v2-eyebrow">Timeline Reconstruction</div>
+            <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.92),rgba(10,10,20,0.86))] p-4 sm:p-5">
+              <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Timeline Reconstruction</div>
               <div className="mt-3 space-y-2">
                 {(timeline?.timeline || []).map((item, index) => (
-                  <div key={`${item.phase}-${index}`} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5">
+                  <div key={`${item.phase}-${index}`} className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] px-3 py-2.5">
                     <div className="flex items-center justify-between gap-2">
-                      <div className="text-sm capitalize text-zinc-100">{item.phase}</div>
-                      <span className="mono-data text-[11px] text-zinc-500">{item.timestamp || "--"}</span>
+                      <div className="text-sm capitalize text-[var(--praxis-bone)]">{item.phase}</div>
+                      <span className="font-mono text-[11px] text-[var(--praxis-mute)]">{item.timestamp || "--"}</span>
                     </div>
-                    <div className="mt-1 text-xs text-zinc-400">{item.detail}</div>
+                    <div className="mt-1 text-xs text-[var(--praxis-muted)]">{item.detail}</div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-3 rounded-xl border border-zinc-800/80 bg-zinc-950/80 p-3">
-                <div className="praxis-v2-eyebrow">Incident Ledger</div>
+              <div className="mt-3 border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.68)] p-3">
+                <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Incident Ledger</div>
                 <div className="mt-2 space-y-2">
                   <LedgerItem label="Replay hash" value="sha256:inc-4821c9a2f" />
                   <LedgerItem label="Root cause" value="bearing degradation" />
                   <LedgerItem label="Workflow route" value="Mechanical response lane" />
                 </div>
-                <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-zinc-700/70 bg-zinc-900/75 px-3 py-2 text-xs text-zinc-300">
-                  <ShieldCheck size={13} className="text-emerald-300" />
+                <div className="mt-3 inline-flex items-center gap-1.5 border border-[var(--praxis-argon)] bg-[color-mix(in_srgb,var(--praxis-argon)_10%,transparent)] px-3 py-2 text-xs text-[var(--praxis-bone)]">
+                  <ShieldCheck size={13} className="text-[var(--praxis-argon)]" />
                   Human-reviewed before closure
                 </div>
               </div>
@@ -282,23 +282,23 @@ export default function IncidentDetailPage() {
           </div>
         </section>
 
-        <section className="mt-4 praxis-v2-panel p-4 sm:p-5 py-20">
+        <section className="mt-4 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.92),rgba(10,10,20,0.86))] p-4 sm:p-5 py-20 md:py-24">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="praxis-v2-eyebrow">Correlated Tickets</div>
-            <div className="mono-data text-[11px] text-zinc-500">{payload.tickets.length} linked records</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Correlated Tickets</div>
+            <div className="font-mono text-[11px] text-[var(--praxis-mute)]">{payload.tickets.length} linked records</div>
           </div>
           <div className="mt-3 space-y-2">
             {payload.tickets.map((ticket) => (
               <Link
                 key={ticket.ticket_id}
                 href={`/tickets/${ticket.ticket_id}`}
-                className="grid gap-2 rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2.5 transition hover:border-violet-400/35 hover:scale-105 transition-transform duration-500 md:grid-cols-[130px,minmax(0,1fr),180px] grid-flow-dense"
+                className="grid gap-2 overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] px-3 py-2.5 transition-transform duration-700 hover:scale-[1.02] hover:border-[var(--praxis-plasma)] md:grid-cols-[130px,minmax(0,1fr),180px] grid-flow-dense"
               >
-                <div className="mono-data text-xs text-zinc-100">{ticket.ticket_id}</div>
-                <div className="text-sm text-zinc-300">{ticket.title}</div>
+                <div className="font-mono text-xs text-[var(--praxis-bone)]">{ticket.ticket_id}</div>
+                <div className="text-sm text-[var(--praxis-muted)]">{ticket.title}</div>
                 <div className="flex items-center gap-2 md:justify-end">
-                  <span className="rounded-full border border-zinc-700 px-2 py-0.5 text-[10px] text-zinc-300">{ticket.status}</span>
-                  <span className="mono-data rounded-full border border-violet-500/25 bg-violet-500/10 px-2 py-0.5 text-[10px] text-violet-100">
+                  <span className="border border-[var(--praxis-line)] px-2 py-0.5 text-[10px] text-[var(--praxis-bone)]">{ticket.status}</span>
+                  <span className="font-mono border border-[var(--praxis-plasma)] bg-[color-mix(in_srgb,var(--praxis-plasma)_12%,transparent)] px-2 py-0.5 text-[10px] text-[var(--praxis-bone)]">
                     {score(ticket.priority_score)}
                   </span>
                 </div>
@@ -331,32 +331,33 @@ export default function IncidentDetailPage() {
         </section>
 
         <footer className="mt-4 pb-1">
-          <div className="praxis-v2-panel px-4 py-2.5 text-xs text-zinc-400">
+          <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.88)] px-4 py-2.5 text-xs text-[var(--praxis-muted)]">
             <div className="inline-flex items-center gap-1.5">
-              <Hash size={12} className="text-violet-200" />
+              <Hash size={12} className="text-[var(--praxis-plasma)]" />
               Incident linked to replay hash chain and audit export.
             </div>
           </div>
         </footer>
       </div>
-    </main>
+      </div>
+    </CommandShell>
   );
 }
 
 function Stat({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
-    <div className="rounded-xl border border-zinc-700/70 bg-zinc-900/75 p-3.5">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">{label}</div>
-      <div className={`mt-1.5 text-lg font-semibold text-zinc-100 ${mono ? "mono-data" : ""}`}>{value}</div>
+    <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] p-3.5">
+      <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">{label}</div>
+      <div className={`mt-1.5 text-lg font-semibold text-[var(--praxis-bone)] ${mono ? "font-mono" : ""}`}>{value}</div>
     </div>
   );
 }
 
 function LedgerItem({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-zinc-800/80 bg-zinc-900/75 px-3 py-2">
-      <div className="text-[10px] uppercase tracking-[0.16em] text-zinc-500">{label}</div>
-      <div className="mono-data mt-1 text-xs text-zinc-100">{value}</div>
+    <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.72)] px-3 py-2">
+      <div className="text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">{label}</div>
+      <div className="mt-1 font-mono text-xs text-[var(--praxis-bone)]">{value}</div>
     </div>
   );
 }

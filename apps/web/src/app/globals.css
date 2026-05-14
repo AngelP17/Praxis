@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "../styles/praxis-workbench.css";
 
 @theme {
   --font-sans: "Geist", system-ui, -apple-system, sans-serif;
@@ -569,12 +568,6 @@ body {
     animation: none;
   }
 
-  .sv3-pulse,
-  .sv3-pulse.signal,
-  .sv3-pulse.amber,
-  .sv3-pulse.crit {
-    animation: none;
-  }
 }
 
 /* Screen reader only utility */
