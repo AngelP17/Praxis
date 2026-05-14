@@ -1,7 +1,14 @@
 """Floci client — thin boto3 wrapper for local AWS emulation."""
 
 import boto3
+from botocore.config import Config as BotoConfig
 from typing import Any
+
+_FLOCI_CONFIG = BotoConfig(
+    connect_timeout=5,
+    read_timeout=5,
+    retries={"max_attempts": 1},
+)
 
 
 class FlociClient:
@@ -28,6 +35,7 @@ class FlociClient:
                 region_name=self.region,
                 aws_access_key_id=self.access_key_id,
                 aws_secret_access_key=self.secret_access_key,
+                config=_FLOCI_CONFIG,
             )
         return self._clients[service]
 
@@ -55,6 +63,7 @@ class FlociClient:
             region_name=self.region,
             aws_access_key_id=self.access_key_id,
             aws_secret_access_key=self.secret_access_key,
+            config=_FLOCI_CONFIG,
         )
 
     def healthcheck(self) -> dict:

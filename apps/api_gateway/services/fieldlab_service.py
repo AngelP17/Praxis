@@ -1,4 +1,5 @@
 import json
+import time
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -17,19 +18,44 @@ from astraea.praxis import ExpansionGraph, PraxisProofBuilder, ProofInputs
 
 ROOT = Path(__file__).resolve().parents[3]
 
+# In-process store used when Floci is unavailable
+_MEMORY_STORE: dict[str, dict] = {}
+_MEMORY_ACTIONS: dict[str, dict] = {}
+
+# Cached Floci availability check (refreshed every 30s)
+_FLOCI_CACHE: dict = {"available": None, "checked_at": 0}
+
+
+def _floci_is_available(endpoint_url: str = "http://localhost:4566") -> bool:
+    now = time.time()
+    if _FLOCI_CACHE["checked_at"] and (now - _FLOCI_CACHE["checked_at"]) < 30:
+        return bool(_FLOCI_CACHE["available"])
+    _FLOCI_CACHE["checked_at"] = now
+    try:
+        floci = FlociClient(endpoint_url=endpoint_url)
+        health = floci.healthcheck()
+        _FLOCI_CACHE["available"] = health.get("status") == "ok"
+    except Exception:
+        _FLOCI_CACHE["available"] = False
+    return bool(_FLOCI_CACHE["available"])
+
 
 class FieldLabService:
     def __init__(self, db: Session, floci_endpoint: str = "http://localhost:4566"):
         self.db = db
-        self.floci = FlociClient(endpoint_url=floci_endpoint)
-        self.resources = FlociResources(client=self.floci)
-        self.sink = FlociEventSink(client=self.floci)
-        self.store = FlociStateStore(client=self.floci)
-        self.archive = FlociAuditArchive(client=self.floci)
-        self.bus = FlociWorkflowBus(client=self.floci)
+        self.floci_endpoint = floci_endpoint
+        self._floci_available = _floci_is_available(floci_endpoint)
+        if self._floci_available:
+            self._floci = FlociClient(endpoint_url=floci_endpoint)
+            self.resources = FlociResources(client=self._floci)
+            self.sink = FlociEventSink(client=self._floci)
+            self.store = FlociStateStore(client=self._floci)
+            self.archive = FlociAuditArchive(client=self._floci)
+            self.bus = FlociWorkflowBus(client=self._floci)
 
     def ensure_resources(self) -> list[dict]:
-        """Idempotently provision Floci resources."""
+        if not self._floci_available:
+            return [{"status": "skipped", "reason": "floci_unavailable"}]
         return self.resources.provision_all()
 
     def create_run(self, payload: dict) -> dict:
@@ -37,21 +63,28 @@ class FieldLabService:
         pack_id = payload.get("solution_pack_id", "")
         profile = payload.get("customer_profile", {})
 
-        # Provision resources if not already present
-        self.ensure_resources()
+        _MEMORY_STORE[run_id] = {
+            "run_id": run_id,
+            "pack_id": pack_id,
+            "status": "created",
+            "metadata": profile,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
 
-        # Write state to DynamoDB
-        self.store.write_run_state(run_id, pack_id, "created", profile)
-
-        # Emit workflow event
-        self.bus.run_started(run_id, pack_id)
+        if self._floci_available:
+            try:
+                self.ensure_resources()
+                self.store.write_run_state(run_id, pack_id, "created", profile)
+                self.bus.run_started(run_id, pack_id)
+            except Exception:
+                pass
 
         return {
             "run_id": run_id,
             "solution_pack_id": pack_id,
             "customer_profile": profile,
             "status": "created",
-            "floci_endpoint": self.floci.endpoint_url,
+            "floci_endpoint": self.floci_endpoint,
             "started_at": None,
             "completed_at": None,
             "summary_json": None,
@@ -59,38 +92,60 @@ class FieldLabService:
         }
 
     def list_runs(self) -> list[dict]:
-        items = self.store.list_runs()
+        items = list(_MEMORY_STORE.values())
+        if self._floci_available:
+            try:
+                dynamo_items = self.store.list_runs()
+                items = [
+                    {"run_id": i["run_id"], "pack_id": i.get("pack_id", ""),
+                     "status": i.get("status", "unknown"), "updated_at": i.get("updated_at", ""),
+                     "metadata": i.get("metadata", {})}
+                    for i in dynamo_items
+                ]
+            except Exception:
+                pass
         return [
             {
                 "run_id": item["run_id"],
                 "solution_pack_id": item.get("pack_id", ""),
+                "customer_profile": item.get("metadata", {}),
                 "status": item.get("status", "unknown"),
-                "updated_at": item.get("updated_at", ""),
+                "floci_endpoint": self.floci_endpoint,
+                "started_at": None,
+                "completed_at": None,
+                "summary_json": None,
+                "created_at": item.get("updated_at", ""),
             }
             for item in items
         ]
 
     def get_run(self, run_id: str) -> dict:
-        item = self.store.get_run_state(run_id)
+        item = _MEMORY_STORE.get(run_id)
+        if self._floci_available:
+            try:
+                dynamo_item = self.store.get_run_state(run_id)
+                if dynamo_item:
+                    item = dynamo_item
+            except Exception:
+                pass
         if item:
             return {
                 "run_id": item["run_id"],
                 "solution_pack_id": item.get("pack_id", ""),
                 "customer_profile": item.get("metadata", {}),
                 "status": item.get("status", "unknown"),
-                "floci_endpoint": self.floci.endpoint_url,
+                "floci_endpoint": self.floci_endpoint,
                 "started_at": item.get("updated_at", ""),
                 "completed_at": None,
                 "summary_json": None,
                 "created_at": item.get("updated_at", ""),
             }
-        # Fallback for runs not yet in DynamoDB
         return {
             "run_id": run_id,
             "solution_pack_id": "manufacturing-printer-gpo",
             "customer_profile": {},
             "status": "running",
-            "floci_endpoint": self.floci.endpoint_url,
+            "floci_endpoint": self.floci_endpoint,
             "started_at": datetime.now(timezone.utc).isoformat(),
             "completed_at": None,
             "summary_json": None,
@@ -98,25 +153,43 @@ class FieldLabService:
         }
 
     def ingest_events(self, run_id: str, events: list[dict]) -> dict:
-        item = self.store.get_run_state(run_id)
-        pack_id = item.get("pack_id", "") if item else ""
-
-        result = self.sink.ingest_solution_pack_events(run_id, pack_id, events)
-        self.store.update_run_status(run_id, "events_ingested", {"event_count": len(events)})
-        return result
+        item = _MEMORY_STORE.get(run_id) or {}
+        pack_id = item.get("pack_id", "")
+        _MEMORY_STORE[run_id] = {**item, "status": "events_ingested",
+                                  "metadata": {**item.get("metadata", {}), "event_count": len(events)},
+                                  "updated_at": datetime.now(timezone.utc).isoformat()}
+        if self._floci_available:
+            try:
+                result = self.sink.ingest_solution_pack_events(run_id, pack_id, events)
+                self.store.update_run_status(run_id, "events_ingested", {"event_count": len(events)})
+                return result
+            except Exception:
+                pass
+        return {"sqs": len(events), "s3": {"key": f"runs/{run_id}/events.jsonl"},
+                "workflow": {"status": "simulated"}}
 
     def execute_run(self, run_id: str) -> dict:
         proof = self._build_run_proof(run_id)
-        self.store.update_run_status(
-            run_id,
-            "executed",
-            {
-                "priority_score": proof["decision"]["priority_score"],
-                "evidence_trust": proof["evidence"]["evidence_trust"],
-                "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
-                "proof_hash": proof["proof_hash"],
-            },
-        )
+        item = _MEMORY_STORE.get(run_id, {})
+        _MEMORY_STORE[run_id] = {**item, "status": "executed",
+                                  "metadata": {
+                                      **item.get("metadata", {}),
+                                      "priority_score": proof["decision"]["priority_score"],
+                                      "evidence_trust": proof["evidence"]["evidence_trust"],
+                                      "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
+                                      "proof_hash": proof["proof_hash"],
+                                  },
+                                  "updated_at": datetime.now(timezone.utc).isoformat()}
+        if self._floci_available:
+            try:
+                self.store.update_run_status(run_id, "executed", {
+                    "priority_score": proof["decision"]["priority_score"],
+                    "evidence_trust": proof["evidence"]["evidence_trust"],
+                    "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
+                    "proof_hash": proof["proof_hash"],
+                })
+            except Exception:
+                pass
         return {
             "run_id": run_id,
             "status": "executed",
@@ -132,59 +205,28 @@ class FieldLabService:
         }
 
     def get_run_events(self, run_id: str) -> dict:
-        item = self.store.get_run_state(run_id)
         proof = self._build_run_proof(run_id)
-        metadata = item.get("metadata", {}) if item else {}
+        item = _MEMORY_STORE.get(run_id, {})
+        metadata = item.get("metadata", {})
         status = item.get("status", "computed") if item else "computed"
         events = [
-            {
-                "event_type": "FieldLabRunStarted",
-                "status": "complete",
-                "actor": "system",
-                "proof_impact": "run_id",
-            },
-            {
-                "event_type": "FieldLabRunEventsIngested",
-                "status": "complete",
-                "actor": "fieldlab",
-                "proof_impact": f"{proof['evidence']['raw_events']} raw events",
-            },
-            {
-                "event_type": "DecisionGenerated",
-                "status": "complete",
-                "actor": "praxis-decision-engine",
-                "proof_impact": proof["decision"]["priority_score"],
-            },
-            {
-                "event_type": "ActionCaptured",
-                "status": proof["action"]["status"],
-                "actor": proof["action"]["actor"],
-                "proof_impact": proof["action"]["action_log_hash"],
-            },
-            {
-                "event_type": "ValueCaseReady",
-                "status": "complete",
-                "actor": "roi-calculator",
-                "proof_impact": proof["value_case"]["estimated_annual_value"],
-            },
-            {
-                "event_type": "FieldLabRunCompleted",
-                "status": status,
-                "actor": "fieldlab",
-                "proof_impact": proof["proof_hash"],
-            },
+            {"event_type": "FieldLabRunStarted", "status": "complete",
+             "actor": "system", "proof_impact": "run_id"},
+            {"event_type": "FieldLabRunEventsIngested", "status": "complete",
+             "actor": "fieldlab", "proof_impact": f"{proof['evidence']['raw_events']} raw events"},
+            {"event_type": "DecisionGenerated", "status": "complete",
+             "actor": "praxis-decision-engine", "proof_impact": proof["decision"]["priority_score"]},
+            {"event_type": "ActionCaptured", "status": proof["action"]["status"],
+             "actor": proof["action"]["actor"], "proof_impact": proof["action"]["action_log_hash"]},
+            {"event_type": "ValueCaseReady", "status": "complete",
+             "actor": "roi-calculator", "proof_impact": proof["value_case"]["estimated_annual_value"]},
+            {"event_type": "FieldLabRunCompleted", "status": status,
+             "actor": "fieldlab", "proof_impact": proof["proof_hash"]},
         ]
-        return {
-            "run_id": run_id,
-            "solution_pack_id": proof["solution_pack"],
-            "status": status,
-            "metadata": metadata,
-            "events": events,
-        }
+        return {"run_id": run_id, "solution_pack_id": proof["solution_pack"],
+                "status": status, "metadata": metadata, "events": events}
 
     def capture_action(self, run_id: str, action: dict) -> dict:
-        item = self.store.get_run_state(run_id)
-        metadata = item.get("metadata", {}) if item else {}
         captured = {
             "action": action.get("action", "approve_remediation"),
             "status": action.get("status", "approved"),
@@ -192,25 +234,33 @@ class FieldLabService:
             "note": action.get("note", ""),
             "captured_at": datetime.now(timezone.utc).isoformat(),
         }
-        metadata["captured_action"] = captured
-        self.store.update_run_status(run_id, "action_captured", metadata)
+        _MEMORY_ACTIONS[run_id] = captured
+        item = _MEMORY_STORE.get(run_id, {})
+        metadata = {**item.get("metadata", {}), "captured_action": captured}
+        _MEMORY_STORE[run_id] = {**item, "status": "action_captured",
+                                  "metadata": metadata,
+                                  "updated_at": datetime.now(timezone.utc).isoformat()}
+        if self._floci_available:
+            try:
+                self.store.update_run_status(run_id, "action_captured", metadata)
+            except Exception:
+                pass
         proof = self._build_run_proof(run_id)
-        return {
-            "run_id": run_id,
-            "status": "action_captured",
-            "action": proof["action"],
-            "proof_hash": proof["proof_hash"],
-        }
+        return {"run_id": run_id, "status": "action_captured",
+                "action": proof["action"], "proof_hash": proof["proof_hash"]}
 
     def get_replay(self, run_id: str) -> dict:
-        replay = self.archive.get_proof(run_id)
-        return {
-            "run_id": run_id,
-            "decisions": [],
-            "events": [],
-            "replayed_at": datetime.now(timezone.utc).isoformat(),
-            "proof_available": replay is not None,
-        }
+        if self._floci_available:
+            try:
+                replay = self.archive.get_proof(run_id)
+                return {"run_id": run_id, "decisions": [], "events": [],
+                        "replayed_at": datetime.now(timezone.utc).isoformat(),
+                        "proof_available": replay is not None}
+            except Exception:
+                pass
+        return {"run_id": run_id, "decisions": [], "events": [],
+                "replayed_at": datetime.now(timezone.utc).isoformat(),
+                "proof_available": False}
 
     def get_executive_readout(self, run_id: str) -> dict:
         proof = self._build_run_proof(run_id)
@@ -219,10 +269,8 @@ class FieldLabService:
             ProofInputs(solution_pack=pack_id, events=[])
         )[0]
         expansions = proof.get("expansion") or ExpansionGraph().top_expansions(pack_id)
-
         return {
-            "run_id": run_id,
-            "solution_pack_id": pack_id,
+            "run_id": run_id, "solution_pack_id": pack_id,
             "incident_summary": {
                 "incident_id": proof["proof_id"],
                 "primary_impact": scenario.get("primary_pain", ""),
@@ -236,21 +284,23 @@ class FieldLabService:
         }
 
     def emit_proof(self, run_id: str, proof: dict) -> dict:
-        """Store proof artifact to S3 and emit completion event."""
-        result = self.archive.store_proof(run_id, proof)
-        pack_id = proof.get("solution_pack", "")
-        proof_hash = proof.get("proof_hash", "")
-        self.bus.run_completed(run_id, pack_id, proof_hash)
-        self.store.update_run_status(run_id, "proof_emitted", {"proof_hash": proof_hash})
-        return result
+        if self._floci_available:
+            try:
+                result = self.archive.store_proof(run_id, proof)
+                pack_id = proof.get("solution_pack", "")
+                proof_hash = proof.get("proof_hash", "")
+                self.bus.run_completed(run_id, pack_id, proof_hash)
+                self.store.update_run_status(run_id, "proof_emitted", {"proof_hash": proof_hash})
+                return result
+            except Exception:
+                pass
+        return {"run_id": run_id, "status": "proof_emitted", "stored": "memory_only"}
 
     def _build_run_proof(self, run_id: str) -> dict:
-        item = self.store.get_run_state(run_id)
-        pack_id = (
-            item.get("pack_id", "manufacturing-printer-gpo") if item else "manufacturing-printer-gpo"
-        )
-        metadata = item.get("metadata", {}) if item else {}
-        captured_action = metadata.get("captured_action", {})
+        item = _MEMORY_STORE.get(run_id, {})
+        pack_id = item.get("pack_id", "manufacturing-printer-gpo")
+        metadata = item.get("metadata", {})
+        captured_action = _MEMORY_ACTIONS.get(run_id, metadata.get("captured_action", {}))
         events = self._load_pack_events(pack_id)
         customer_context = self._load_customer_context(pack_id)
         return PraxisProofBuilder().build(
