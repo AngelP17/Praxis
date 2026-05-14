@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Check if Floci local AWS runtime is healthy and responsive."""
+"""Check if Floci local AWS runtime is healthy and responsive (boto3-based, no aws CLI needed)."""
 
-import os
-import subprocess
 import sys
 import urllib.request
 
 FLOCI_URL = "http://localhost:4566"
-MAX_ATTEMPTS = 30
-SLEEP_SECONDS = 2
+REGION = "us-east-1"
+DUMMY_CREDS = {"aws_access_key_id": "test", "aws_secret_access_key": "test"}
 
 
 def check_health() -> bool:
@@ -21,57 +19,62 @@ def check_health() -> bool:
         return False
 
 
-def run_aws(service: str, cmd: list[str]) -> tuple[bool, str]:
-    """Run an AWS CLI command against Floci endpoint and return (ok, output)."""
+def check_s3() -> tuple[bool, str]:
     try:
-        env = os.environ.copy()
-        env.setdefault("AWS_ACCESS_KEY_ID", "test")
-        env.setdefault("AWS_SECRET_ACCESS_KEY", "test")
-        env.setdefault("AWS_DEFAULT_REGION", "us-east-1")
-        result = subprocess.run(
-            ["aws", "--endpoint-url", FLOCI_URL, service] + cmd,
-            capture_output=True,
-            text=True,
-            timeout=15,
-            check=False,
-            env=env,
-        )
-        return result.returncode == 0, result.stdout + result.stderr
-    except FileNotFoundError as e:
-        return False, f"AWS CLI not found: {e}"
-    except Exception as e:
-        return False, str(e)
+        import boto3
+        s3 = boto3.client("s3", endpoint_url=FLOCI_URL, region_name=REGION, **DUMMY_CREDS)
+        s3.list_buckets()
+        return True, "ok"
+    except Exception as exc:
+        return False, str(exc)
+
+
+def check_sqs() -> tuple[bool, str]:
+    try:
+        import boto3
+        sqs = boto3.client("sqs", endpoint_url=FLOCI_URL, region_name=REGION, **DUMMY_CREDS)
+        sqs.list_queues()
+        return True, "ok"
+    except Exception as exc:
+        return False, str(exc)
+
+
+def check_dynamodb() -> tuple[bool, str]:
+    try:
+        import boto3
+        ddb = boto3.client("dynamodb", endpoint_url=FLOCI_URL, region_name=REGION, **DUMMY_CREDS)
+        ddb.list_tables()
+        return True, "ok"
+    except Exception as exc:
+        return False, str(exc)
 
 
 def main() -> int:
-    checks: list[tuple[str, bool]] = []
+    checks: list[tuple[str, bool, str]] = []
 
-    # 1. Health check
     healthy = check_health()
-    checks.append(("Floci health endpoint (port 4566)", healthy))
+    checks.append(("Floci health endpoint (port 4566)", healthy, "" if healthy else "not reachable"))
 
-    # 2. S3
-    ok, _ = run_aws("s3", ["ls"])
-    checks.append(("S3 list buckets", ok))
+    ok, msg = check_s3()
+    checks.append(("S3 list buckets", ok, msg if not ok else ""))
 
-    # 3. SQS
-    ok, _ = run_aws("sqs", ["list-queues"])
-    checks.append(("SQS list queues", ok))
+    ok, msg = check_sqs()
+    checks.append(("SQS list queues", ok, msg if not ok else ""))
 
-    # 4. DynamoDB
-    ok, _ = run_aws("dynamodb", ["list-tables"])
-    checks.append(("DynamoDB list tables", ok))
+    ok, msg = check_dynamodb()
+    checks.append(("DynamoDB list tables", ok, msg if not ok else ""))
 
     print("=" * 50)
     print("Floci Runtime Check Report")
     print("=" * 50)
 
     all_pass = True
-    for name, result in checks:
+    for name, result, detail in checks:
         status = "PASS" if result else "FAIL"
         if not result:
             all_pass = False
-        print(f"  [{status}] {name}")
+        suffix = f"  ({detail})" if detail else ""
+        print(f"  [{status}] {name}{suffix}")
 
     print("=" * 50)
     if all_pass:
