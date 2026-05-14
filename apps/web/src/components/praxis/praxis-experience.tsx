@@ -23,6 +23,7 @@ import {
 } from "recharts";
 import { ActionApprovalPanel } from "@/components/praxis/ActionApprovalPanel";
 import { PackSwitcher } from "@/components/praxis/PackSwitcher";
+import { PraxisMark } from "@/components/praxis/PraxisMark";
 import { ProofObjectViewer } from "@/components/praxis/ProofObjectViewer";
 import { ErrorState } from "@/components/error-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
@@ -89,8 +90,8 @@ export function PraxisExperience({ initialScreen = "overview" }: { initialScreen
   return (
     <main className="min-h-[100dvh] bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
       <nav className="fixed left-1/2 top-5 z-50 flex w-[min(1180px,calc(100%-32px))] -translate-x-1/2 items-center justify-between border border-[var(--praxis-line)] bg-[color-mix(in_srgb,var(--praxis-bg)_82%,transparent)] px-4 py-3 backdrop-blur-xl">
-        <Link href="/" className="flex items-center gap-3 transition-transform hover:scale-105">
-          <ShieldCheck className="h-7 w-7 text-[var(--praxis-violet)]" />
+        <Link href="/" className="flex items-center gap-3 transition-transform hover:scale-105" style={{ color: "var(--praxis-bone)" }}>
+          <PraxisMark size={22} />
           <span className="font-display text-xl font-medium">Praxis</span>
         </Link>
         <div className="hidden items-center gap-4 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)] md:flex">
