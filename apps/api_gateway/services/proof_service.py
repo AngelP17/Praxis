@@ -1,6 +1,6 @@
-import json
 from pathlib import Path
 from typing import Any
+import json
 
 from sqlalchemy.orm import Session
 
@@ -37,9 +37,6 @@ class ProofService:
         }
 
     def get_pack_proof(self, pack_id: str) -> dict[str, Any]:
-        proof_path = ROOT / "solution-packs" / pack_id / "expected-output" / "proof.json"
-        if proof_path.is_file():
-            return json.loads(proof_path.read_text())
         return self.build_proof({"solution_pack": pack_id})
 
     def _load_pack_events(self, pack_id: str) -> list[dict[str, Any]]:

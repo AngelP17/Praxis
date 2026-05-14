@@ -9,6 +9,8 @@ class SolutionPackSummary(BaseModel):
     industry: str
     primary_pain: str
     demo_length_minutes: int
+    event_count: int = 0
+    sources: list[str] = []
 
 
 class SolutionPackDetail(BaseModel):
@@ -25,6 +27,9 @@ class SolutionPackDetail(BaseModel):
     target_outcome: str
     demo_length_minutes: int
     scenario: dict[str, Any] = {}
+    roi_model: dict[str, Any] = {}
+    event_count: int = 0
+    sources: list[str] = []
 
 
 class SolutionPackValidateResponse(BaseModel):

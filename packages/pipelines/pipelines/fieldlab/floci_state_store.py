@@ -46,8 +46,8 @@ class FlociStateStore:
             updates["metadata"] = json.dumps(metadata)
         self.table.update_item(
             Key={"run_id": run_id},
-            UpdateExpression="SET #s = :status, updated_at = :updated_at, metadata = :metadata",
-            ExpressionAttributeNames={"#s": "status"},
+            UpdateExpression="SET #s = :status, updated_at = :updated_at, #m = :metadata",
+            ExpressionAttributeNames={"#s": "status", "#m": "metadata"},
             ExpressionAttributeValues={
                 ":status": status,
                 ":updated_at": updates["updated_at"],

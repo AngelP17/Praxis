@@ -1,26 +1,42 @@
 {
   "action": {
-    "action_log_hash": "sha256:984df124e2a3ecf104f22ca2ad2dfa345522f00538759295a9857b7e2fd41680",
+    "action_log_hash": "sha256:8cfd9cf17d6d5625365e53ade61085adfae3ed32f9b68eae0033cbe6b2357909",
     "actor": "operator",
-    "mode": "human_approval",
-    "recommended_action": "restore_erp_role_mapping",
+    "mode": "HUMAN_APPROVAL",
+    "recommended_action": "approve_remediation",
+    "risk": "medium",
+    "rollback": "Requires rollback plan",
     "run_id": "fieldlab_run_erp-access-disruption",
     "status": "approved"
   },
   "customer_context_hash": "sha256:b4cb06b9fbb9fefbeea30d604b42d297d3595d50deee059b4d65edce7804ebde",
   "decision": {
-    "confidence": 0.74,
+    "confidence": 0.827,
     "next_best_questions": [
-      "Which ERP modules are blocked per user group?",
-      "What is the fallback access process during SSO outages?"
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "support_hours",
+        "question": "What is the value for support_hours?",
+        "reason": "Expected confidence gain: 0.17"
+      }
     ],
-    "priority_score": 0.81,
+    "priority_score": 0.7042,
     "requires_human_review": true,
-    "root_cause_hypothesis": "sso_group_role_mismatch_during_provisioning"
+    "root_cause_hypothesis": "role_mapping_drift",
+    "signals": {
+      "actionability": 0.88,
+      "business_process_criticality": 0.8667,
+      "customer_visible_impact": 0.8667,
+      "recurrence_risk": 0.35,
+      "severity_score": 0.8583,
+      "sla_exposure": 0.42
+    }
   },
   "evidence": {
-    "corroboration_score": 0.74,
-    "evidence_trust": 0.794,
+    "corroboration_score": 0.7,
+    "evidence_trust": 0.827,
     "freshness_score": 0.91,
     "raw_events": 6,
     "source_coverage": 0.71,
@@ -32,25 +48,30 @@
       "warehouse_management"
     ]
   },
+  "expansion": [],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
-    "actions_available": 4,
+    "actions_available": 6,
     "links_created": 36,
-    "mapping_confidence": 0.77,
-    "objects_created": 8
+    "mapping_confidence": 0.5995,
+    "objects_created": 7
   },
-  "proof_hash": "sha256:d213589d7cfd851d9c02cdac73646b0e0cec77f6df3020adaca096cecfcae4b1",
+  "proof_hash": "sha256:7de4f178b64b284f0fcafe3f0d5f1bb1823a304a9246b509c4c72f9d2f6b62ab",
   "proof_id": "proof_praxis_erp_access_disruption_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:3bfc611ff1dccd75199db1df2f84809dfd7d452b97665865e9354a0c396f3fef",
+    "replay_hash": "sha256:c47e2724058fba1dec2d5c11e09d7f46aa4379529390f38b72fbd5f01f1e1dae",
     "verified_at": "2026-05-12T00:00:00Z"
   },
   "run_id": "fieldlab_run_erp-access-disruption",
   "solution_pack": "erp-access-disruption",
   "value_case": {
-    "confidence": 0.66,
-    "estimated_annual_value": 67200,
-    "primary_value_driver": "reduced access downtime and escalation churn"
+    "bucket": "demo and scope",
+    "confidence": 0.7661,
+    "estimated_annual_value": 34944.0,
+    "primary_value_driver": "Restore governed ERP access and prove reduced fulfillment delay",
+    "roi_calculations": {
+      "annual_value": 34944.0
+    }
   }
 }

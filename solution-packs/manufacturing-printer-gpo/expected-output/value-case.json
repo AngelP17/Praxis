@@ -1,17 +1,7 @@
 {
-  "solution_pack_id": "manufacturing-printer-gpo",
-  "estimated_annual_value": 38481.60,
-  "confidence": 0.82,
-  "key_metrics": {
-    "incidents_per_month": 12,
-    "monthly_labor_saved": 316.80,
-    "monthly_delay_avoided": 1750.00,
-    "monthly_total_value": 2066.80
-  },
-  "assumptions": {
-    "incidents_per_month": 12,
-    "average_minutes_lost": 35,
-    "loaded_labor_rate": 48,
-    "shipment_delay_cost_per_hour": 250
-  }
+  "bucket": "demo and scope",
+  "confidence": 0.7601,
+  "estimated_annual_value": 38481.6,
+  "primary_value_driver": "Reduce repeated printer incidents and provide audit-ready ownership workflow",
+  "solution_pack_id": "manufacturing-printer-gpo"
 }

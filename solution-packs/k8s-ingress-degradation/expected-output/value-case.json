@@ -1,1 +1,7 @@
-{"solution_pack_id":"k8s-ingress-degradation","estimated_annual_value":94500,"confidence":0.71}
+{
+  "bucket": "demo and scope",
+  "confidence": 0.7541,
+  "estimated_annual_value": 310000.0,
+  "primary_value_driver": "Reduce incident duration with evidence-ranked ingress remediation",
+  "solution_pack_id": "k8s-ingress-degradation"
+}

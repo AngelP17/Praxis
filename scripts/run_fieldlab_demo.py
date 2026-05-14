@@ -94,6 +94,20 @@ def main():
         print(f"   Context loaded from {context_path}")
     print()
 
+    proof = PraxisProofBuilder().build(
+        ProofInputs(
+            solution_pack=args.solution_pack,
+            events=events,
+            customer_context=context,
+            run_id=f"fieldlab_run_{args.solution_pack}",
+        )
+    )
+    decision = proof["decision"]
+    action = proof["action"]
+    value_case = proof["value_case"]
+    replay = proof["replay"]
+    expansions = proof.get("expansion", [])
+
     print("3. Compile Operational Ontology")
     ontology_path = pack_dir / "ontology.yaml"
     if ontology_path.is_file():
@@ -126,35 +140,37 @@ def main():
     print()
 
     print("6. Generate Decisions")
-    print("   Priority score: 0.82")
-    print("   Evidence trust: 0.82")
-    print("   Root cause: Printer deployment policy drift")
+    print(f"   Priority score: {decision['priority_score']:.4f}")
+    print(f"   Evidence trust: {proof['evidence']['evidence_trust']:.4f}")
+    print(f"   Root cause: {decision['root_cause_hypothesis'].replace('_', ' ')}")
     if use_floci:
-        bus.decision_generated(run_id, "dec_001", 0.82)
+        bus.decision_generated(run_id, "dec_001", decision["priority_score"])
     print()
 
     print("7. Review Recommendations")
-    print("   Action: Validate Point and Print policy, GPO permissions, IP drift")
-    print("   Human review: Required")
+    print(f"   Action: {action['recommended_action'].replace('_', ' ')}")
+    print(f"   Human review: {'Required' if decision['requires_human_review'] else 'Not required'}")
+    for question in decision.get("next_best_questions", [])[:2]:
+        print(f"   VOI: {question['question']}")
     print()
 
     print("8. Capture Human Action")
-    print("   Mode: HUMAN_APPROVAL")
+    print(f"   Mode: {action['mode']}")
     print("   Action logged with audit hash")
     if use_floci:
-        bus.action_captured(run_id, "validate_point_and_print_policy", "HUMAN_APPROVAL", "operator")
+        bus.action_captured(run_id, action["recommended_action"], action["mode"], action["actor"])
     print()
 
     print("9. Produce Replay Artifact")
-    print("   Replay hash: sha256:a1b2c3d4...")
-    print("   Hash verified: True")
+    print(f"   Replay hash: {replay['replay_hash']}")
+    print(f"   Hash verified: {replay['deterministic']}")
     print()
 
     print("10. Generate Value Case")
-    print("    Estimated annual value: $38,400")
-    print("    Confidence: 0.82")
+    print(f"    Estimated annual value: ${value_case['estimated_annual_value']:,.2f}")
+    print(f"    Confidence: {value_case['confidence']:.4f}")
     if use_floci:
-        bus.value_case_ready(run_id, args.solution_pack, 38400.0)
+        bus.value_case_ready(run_id, args.solution_pack, value_case["estimated_annual_value"])
     print()
 
     print("11. Generate Executive Readout")
@@ -165,13 +181,8 @@ def main():
 
     print("12. Show Expansion Map")
     print("    Adjacent use cases:")
-    for uc in [
-        "Asset Inventory Accuracy",
-        "Vendor SLA Tracking",
-        "Intelligent Ticket Routing",
-        "Endpoint Configuration Drift",
-    ]:
-        print(f"      - {uc}")
+    for uc in expansions:
+        print(f"      - {uc['name']} ({uc['expansion_score']:.4f})")
     print()
 
     print("=== Demo Complete ===")
@@ -179,14 +190,6 @@ def main():
     if args.emit_proof:
         output_dir = Path(args.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
-        proof = PraxisProofBuilder().build(
-            ProofInputs(
-                solution_pack=args.solution_pack,
-                events=events,
-                customer_context=context,
-                run_id=run_id,
-            )
-        )
         proof_path = output_dir / "praxis_proof.json"
         proof_path.write_text(json.dumps(proof, indent=2, sort_keys=True) + "\n")
         print()
@@ -196,9 +199,7 @@ def main():
         if use_floci:
             archive.store_proof(run_id, proof)
             bus.run_completed(run_id, args.solution_pack, proof["proof_hash"])
-            store.update_run_state(
-                run_id, args.solution_pack, "proof_emitted", {"proof_hash": proof["proof_hash"]}
-            )
+            store.update_run_status(run_id, "proof_emitted", {"proof_hash": proof["proof_hash"]})
             print(f"Proof archived to S3: praxis-audit-artifacts/runs/{run_id}/praxis_proof.json")
 
 

@@ -25,6 +25,13 @@ class FieldLabEventIngest(BaseModel):
     events: list[dict[str, Any]]
 
 
+class FieldLabActionCapture(BaseModel):
+    action: str = "approve_remediation"
+    status: str = "approved"
+    actor: str = "operator"
+    note: str = ""
+
+
 class FieldLabRunList(BaseModel):
     runs: list[FieldLabRunResponse]
 

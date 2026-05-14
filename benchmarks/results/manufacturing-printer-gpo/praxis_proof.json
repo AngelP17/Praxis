@@ -1,26 +1,58 @@
 {
   "action": {
-    "action_log_hash": "sha256:f67351b16c7206be261d7a8df259ca581ca4503ec7981c78610e5121554e3a4d",
+    "action_log_hash": "sha256:64caf0ce28bfd9e6728f7fde527cbbce02102369fb9df3fc5163b07e51c78a60",
     "actor": "operator",
-    "mode": "human_approval",
-    "recommended_action": "validate_point_and_print_policy",
+    "mode": "HUMAN_APPROVAL",
+    "recommended_action": "approve_remediation",
+    "risk": "medium",
+    "rollback": "Requires rollback plan",
     "run_id": "fieldlab_run_manufacturing-printer-gpo",
     "status": "approved"
   },
   "customer_context_hash": "sha256:abd0f9b374bcd8ffaedd80ef3bf5cff48c1a902667b045e4c037218c78c34a79",
   "decision": {
-    "confidence": 0.76,
+    "confidence": 0.829,
     "next_best_questions": [
-      "How many shipping documents were delayed?",
-      "Which users are mapped through GPO versus direct IP?"
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "delayed_shipments",
+        "question": "What is the value for delayed_shipments?",
+        "reason": "Expected confidence gain: 0.17"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "support_hours",
+        "question": "What is the value for support_hours?",
+        "reason": "Expected confidence gain: 0.17"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "vendor_escalations",
+        "question": "What is the value for vendor_escalations?",
+        "reason": "Expected confidence gain: 0.17"
+      }
     ],
-    "priority_score": 0.84,
+    "priority_score": 0.7708,
     "requires_human_review": true,
-    "root_cause_hypothesis": "printer_deployment_policy_drift"
+    "root_cause_hypothesis": "printer_deployment_policy_drift",
+    "signals": {
+      "actionability": 0.88,
+      "business_process_criticality": 0.8,
+      "customer_visible_impact": 0.8,
+      "recurrence_risk": 0.79,
+      "severity_score": 0.8083,
+      "sla_exposure": 0.82
+    }
   },
   "evidence": {
-    "corroboration_score": 0.74,
-    "evidence_trust": 0.826,
+    "corroboration_score": 0.8,
+    "evidence_trust": 0.829,
     "freshness_score": 0.91,
     "raw_events": 12,
     "source_coverage": 1.0,
@@ -34,25 +66,72 @@
       "print_server"
     ]
   },
+  "expansion": [
+    {
+      "expansion_score": 0.725,
+      "factors": {
+        "executive_visibility": 0.6,
+        "implementation_reuse": 0.8,
+        "measurable_value": 0.65,
+        "shared_data_model": 0.9,
+        "stakeholder_overlap": 0.7,
+        "urgency": 0.5
+      },
+      "id": "asset-inventory-accuracy",
+      "name": "Asset Inventory Accuracy"
+    },
+    {
+      "expansion_score": 0.6975,
+      "factors": {
+        "executive_visibility": 0.55,
+        "implementation_reuse": 0.75,
+        "measurable_value": 0.7,
+        "shared_data_model": 0.8,
+        "stakeholder_overlap": 0.65,
+        "urgency": 0.6
+      },
+      "id": "ticket-routing",
+      "name": "Intelligent Ticket Routing"
+    },
+    {
+      "expansion_score": 0.675,
+      "factors": {
+        "executive_visibility": 0.5,
+        "implementation_reuse": 0.85,
+        "measurable_value": 0.55,
+        "shared_data_model": 0.85,
+        "stakeholder_overlap": 0.65,
+        "urgency": 0.45
+      },
+      "id": "endpoint-configuration-drift",
+      "name": "Endpoint Configuration Drift"
+    }
+  ],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
-    "actions_available": 5,
+    "actions_available": 6,
     "links_created": 144,
-    "mapping_confidence": 0.79,
-    "objects_created": 9
+    "mapping_confidence": 0.5733,
+    "objects_created": 5
   },
-  "proof_hash": "sha256:8a119f3eb05928780903bfc3c26dd426a27046b86a68add7f26e89cbe49fe0c4",
+  "proof_hash": "sha256:4a111f3c5b60d3df4b458de8fcf08148c392b6394f54498e1df8bf179f5f1add",
   "proof_id": "proof_praxis_manufacturing_printer_gpo_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:4fa0fc260221065223076cb4930cbbe524653e6c5b7f9cf5a938c5028febe85b",
+    "replay_hash": "sha256:f27f7ad81e8163c2b4ac323aa42818b9fe7dc9d42c601628de106141696da8a9",
     "verified_at": "2026-05-12T00:00:00Z"
   },
   "run_id": "fieldlab_run_manufacturing-printer-gpo",
   "solution_pack": "manufacturing-printer-gpo",
   "value_case": {
-    "confidence": 0.68,
-    "estimated_annual_value": 38400,
-    "primary_value_driver": "reduced triage and shipping delay"
+    "bucket": "demo and scope",
+    "confidence": 0.7601,
+    "estimated_annual_value": 38481.6,
+    "primary_value_driver": "Reduce repeated printer incidents and provide audit-ready ownership workflow",
+    "roi_calculations": {
+      "annual_value": 24801.6,
+      "monthly_delay_cost_avoided": 1750.0,
+      "monthly_labor_cost_saved": 316.8
+    }
   }
 }

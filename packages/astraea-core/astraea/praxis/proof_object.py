@@ -8,14 +8,23 @@ so the same solution pack inputs produce the same proof hash.
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
-from .evidence_trust import Evidence, EvidenceTrustScorer
+import yaml
+
+from .expansion_graph import ExpansionGraph
+from .feature_extractor import EventFeatureExtractor
+from .intervention_planner import InterventionPlanner
 from .ontology_compiler import OntologyCompiler
+from .praxis_decision_engine import PraxisDecisionEngine
 from .proof_hash import proof_hash, sha256_digest
+from .roi_calculator import RoiCalculator
 from .signing import load_signing_key, sign_proof
+from .use_case_score import UseCaseScorer
 
 DEFAULT_VERIFIED_AT = "2026-05-12T00:00:00Z"
+ROOT = Path(__file__).resolve().parents[4]
 
 
 @dataclass(frozen=True)
@@ -25,6 +34,10 @@ class ProofInputs:
     customer_context: str = ""
     run_id: str | None = None
     generated_at: str | None = None
+    scenario_context: dict[str, Any] | None = None
+    roi_model: dict[str, Any] | None = None
+    action_status: str = "approved"
+    action_actor: str = "operator"
 
 
 class PraxisProofBuilder:
@@ -38,22 +51,43 @@ class PraxisProofBuilder:
     ) -> dict[str, Any]:
         generated_at = inputs.generated_at or DEFAULT_VERIFIED_AT
         run_id = inputs.run_id or f"fieldlab_run_{inputs.solution_pack}"
-        ontology = OntologyCompiler().compile(inputs.events, "solution_pack", {})
+        scenario_context, roi_model = self.load_pack_context(inputs)
+        extractor = EventFeatureExtractor()
+        features = extractor.extract(inputs.events, scenario_context)
+        ontology = OntologyCompiler().compile(inputs.events, "solution_pack", scenario_context)
         sources = sorted({str(event.get("source", "unknown")) for event in inputs.events})
-        evidence_trust = self._score_evidence(inputs.events, sources)
-        value_case = self._value_case(inputs.solution_pack)
-        pack_config = self._pack_config(inputs.solution_pack)
+        customer_context = self._decision_context(scenario_context, inputs.customer_context)
+        decision = PraxisDecisionEngine().score(features, ontology, customer_context)
+        roi = RoiCalculator().calculate(roi_model)
+        use_case_result = UseCaseScorer().score(features.get("use_case", {}), customer_context)
+        expansion = ExpansionGraph().top_expansions(inputs.solution_pack, limit=3)
+        action_plan = InterventionPlanner().plan_action(
+            features["recommended_action"], features.get("asset_id") or None
+        )
         action_log = {
-            "recommended_action": pack_config["recommended_action"],
-            "mode": "human_approval",
-            "actor": "operator",
-            "status": "approved",
+            "recommended_action": action_plan["action_type"],
+            "mode": action_plan["mode"],
+            "actor": inputs.action_actor,
+            "status": inputs.action_status,
             "run_id": run_id,
+            "risk": action_plan["risk"],
+            "rollback": action_plan["rollback"],
+        }
+        value_case = {
+            "estimated_annual_value": roi["estimated_annual_value"],
+            "confidence": use_case_result["score"],
+            "bucket": use_case_result["bucket"],
+            "primary_value_driver": self._primary_value_driver(scenario_context),
+            "roi_calculations": roi["calculations"],
         }
         replay_payload = {
             "events": inputs.events,
             "ontology": ontology,
-            "decision": pack_config["root_cause"],
+            "decision": {
+                "root_cause_hypothesis": features["root_cause_hypothesis"],
+                "priority_score": decision.priority_score,
+                "evidence_trust": decision.evidence_trust,
+            },
             "action": action_log,
             "value_case": value_case,
         }
@@ -67,32 +101,40 @@ class PraxisProofBuilder:
                 "raw_events": len(inputs.events),
                 "sources": sources,
                 "source_coverage": round(min(len(sources) / 7, 1.0), 2),
-                "corroboration_score": 0.74,
-                "freshness_score": 0.91,
-                "evidence_trust": evidence_trust,
+                "corroboration_score": features["corroboration"],
+                "freshness_score": features["freshness"],
+                "evidence_trust": decision.evidence_trust,
             },
             "ontology": {
-                "objects_created": max(ontology.get("object_count", 0), pack_config["min_objects"]),
-                "links_created": max(len(ontology.get("links", [])), pack_config["min_links"]),
-                "actions_available": min(
-                    len(ontology.get("actions", [])), pack_config["max_actions"]
-                ),
-                "mapping_confidence": max(
-                    ontology.get("confidence", 0.0), pack_config["mapping_confidence"]
-                ),
+                "objects_created": ontology.get("object_count", 0),
+                "links_created": len(ontology.get("links", [])),
+                "actions_available": len(ontology.get("actions", [])),
+                "mapping_confidence": ontology.get("confidence", 0.0),
             },
             "decision": {
-                "root_cause_hypothesis": pack_config["root_cause"],
-                "priority_score": pack_config["priority_score"],
-                "confidence": pack_config["decision_confidence"],
-                "requires_human_review": True,
-                "next_best_questions": pack_config["next_best_questions"],
+                "root_cause_hypothesis": features["root_cause_hypothesis"],
+                "priority_score": decision.priority_score,
+                "confidence": decision.confidence,
+                "requires_human_review": decision.requires_human_review,
+                "next_best_questions": decision.next_best_questions,
+                "signals": {
+                    key: features[key]
+                    for key in [
+                        "severity_score",
+                        "business_process_criticality",
+                        "customer_visible_impact",
+                        "recurrence_risk",
+                        "sla_exposure",
+                        "actionability",
+                    ]
+                },
             },
             "action": {
                 **action_log,
                 "action_log_hash": sha256_digest(action_log),
             },
             "value_case": value_case,
+            "expansion": expansion,
             "replay": {
                 "replay_hash": sha256_digest(replay_payload),
                 "deterministic": True,
@@ -109,78 +151,36 @@ class PraxisProofBuilder:
 
         return proof
 
-    def _pack_config(self, solution_pack: str) -> dict[str, Any]:
-        configs = {
-            "manufacturing-printer-gpo": {
-                "recommended_action": "validate_point_and_print_policy",
-                "root_cause": "printer_deployment_policy_drift",
-                "priority_score": 0.84,
-                "decision_confidence": 0.76,
-                "next_best_questions": [
-                    "How many shipping documents were delayed?",
-                    "Which users are mapped through GPO versus direct IP?",
-                ],
-                "min_objects": 9,
-                "min_links": 14,
-                "max_actions": 5,
-                "mapping_confidence": 0.79,
-            },
-            "erp-access-disruption": {
-                "recommended_action": "restore_erp_role_mapping",
-                "root_cause": "sso_group_role_mismatch_during_provisioning",
-                "priority_score": 0.81,
-                "decision_confidence": 0.74,
-                "next_best_questions": [
-                    "Which ERP modules are blocked per user group?",
-                    "What is the fallback access process during SSO outages?",
-                ],
-                "min_objects": 8,
-                "min_links": 12,
-                "max_actions": 4,
-                "mapping_confidence": 0.77,
-            },
-            "k8s-ingress-degradation": {
-                "recommended_action": "rollback_ingress_policy",
-                "root_cause": "ingress_config_rollback_conflict",
-                "priority_score": 0.88,
-                "decision_confidence": 0.79,
-                "next_best_questions": [
-                    "Which ingress rules changed in the last deployment window?",
-                    "What is the current p95 latency vs baseline?",
-                ],
-                "min_objects": 10,
-                "min_links": 16,
-                "max_actions": 6,
-                "mapping_confidence": 0.82,
-            },
-        }
-        return configs.get(solution_pack, configs["manufacturing-printer-gpo"])
+    def load_pack_context(self, inputs: ProofInputs) -> tuple[dict[str, Any], dict[str, Any]]:
+        pack_dir = ROOT / "solution-packs" / inputs.solution_pack
+        scenario = inputs.scenario_context
+        roi_model = inputs.roi_model
 
-    def _score_evidence(self, events: list[dict[str, Any]], sources: list[str]) -> float:
-        has_business_impact = any(
-            "downtime_minutes" in event or "shipments_delayed" in event for event in events
-        )
-        evidence = Evidence(
-            source_reliability=0.84 if len(sources) >= 4 else 0.68,
-            freshness=0.91,
-            corroboration=0.74 if len(events) >= 8 else 0.58,
-            completeness=0.80 if has_business_impact else 0.64,
-            consistency=0.78,
-            auditability=0.88,
-        )
-        return EvidenceTrustScorer().score(evidence)
+        if scenario is None:
+            scenario = self._load_yaml(pack_dir / "scenario.yaml")
+        if roi_model is None:
+            roi_model = self._load_yaml(pack_dir / "roi-model.yaml")
+        return scenario or {}, roi_model or {}
 
-    def _value_case(self, solution_pack: str) -> dict[str, Any]:
-        values = {
-            "manufacturing-printer-gpo": (38400, 0.68, "reduced triage and shipping delay"),
-            "erp-access-disruption": (67200, 0.66, "reduced access downtime and escalation churn"),
-            "k8s-ingress-degradation": (94500, 0.71, "reduced outage duration and SRE triage time"),
-        }
-        estimated, confidence, driver = values.get(
-            solution_pack, (38400, 0.65, "reduced operational delay")
-        )
+    def _load_yaml(self, path: Path) -> dict[str, Any]:
+        if not path.is_file():
+            return {}
+        with path.open() as handle:
+            return yaml.safe_load(handle) or {}
+
+    def _decision_context(
+        self, scenario_context: dict[str, Any], customer_context: str
+    ) -> dict[str, Any]:
         return {
-            "estimated_annual_value": estimated,
-            "confidence": confidence,
-            "primary_value_driver": driver,
+            "stakeholder_urgency": 0.72 if scenario_context.get("economic_buyer") else 0.5,
+            "industry": scenario_context.get("industry", ""),
+            "buyer_persona": scenario_context.get("buyer_persona", ""),
+            "technical_persona": scenario_context.get("technical_persona", ""),
+            "context_length": len(customer_context or ""),
         }
+
+    def _primary_value_driver(self, scenario_context: dict[str, Any]) -> str:
+        outcome = scenario_context.get("target_outcome")
+        if outcome:
+            return str(outcome)
+        return "reduced operational delay"

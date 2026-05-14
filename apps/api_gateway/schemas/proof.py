@@ -20,6 +20,7 @@ class ProofResponse(BaseModel):
     decision: dict[str, Any]
     action: dict[str, Any]
     value_case: dict[str, Any]
+    expansion: list[dict[str, Any]] = []
     replay: dict[str, Any]
     generated_at: str
     proof_hash: str

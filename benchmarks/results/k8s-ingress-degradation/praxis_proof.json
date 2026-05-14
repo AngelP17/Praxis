@@ -1,26 +1,42 @@
 {
   "action": {
-    "action_log_hash": "sha256:afb2e491776ef7c20e4a47a555cd76ca6d2aed7deb1ff65da7b03b359c850860",
+    "action_log_hash": "sha256:11ad491a1eb19259c3f56f0edb77d9891b856da1bdfc2093255f0a56278cc696",
     "actor": "operator",
-    "mode": "human_approval",
-    "recommended_action": "rollback_ingress_policy",
+    "mode": "HUMAN_APPROVAL",
+    "recommended_action": "approve_remediation",
+    "risk": "medium",
+    "rollback": "Requires rollback plan",
     "run_id": "fieldlab_run_k8s-ingress-degradation",
     "status": "approved"
   },
   "customer_context_hash": "sha256:bce381aecdb53e6e7f05ae8cbc2cf2dc29c2480fb63678a37f30526c886dd112",
   "decision": {
-    "confidence": 0.79,
+    "confidence": 0.837,
     "next_best_questions": [
-      "Which ingress rules changed in the last deployment window?",
-      "What is the current p95 latency vs baseline?"
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "sre_triage_hours",
+        "question": "What is the value for sre_triage_hours?",
+        "reason": "Expected confidence gain: 0.17"
+      }
     ],
-    "priority_score": 0.88,
+    "priority_score": 0.7135,
     "requires_human_review": true,
-    "root_cause_hypothesis": "ingress_config_rollback_conflict"
+    "root_cause_hypothesis": "ingress_retry_timeout_config_mismatch",
+    "signals": {
+      "actionability": 0.74,
+      "business_process_criticality": 0.8267,
+      "customer_visible_impact": 0.8267,
+      "recurrence_risk": 0.35,
+      "severity_score": 0.8583,
+      "sla_exposure": 0.72
+    }
   },
   "evidence": {
-    "corroboration_score": 0.74,
-    "evidence_trust": 0.77,
+    "corroboration_score": 0.75,
+    "evidence_trust": 0.837,
     "freshness_score": 0.91,
     "raw_events": 6,
     "source_coverage": 0.86,
@@ -33,25 +49,30 @@
       "praxis"
     ]
   },
+  "expansion": [],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
     "actions_available": 6,
     "links_created": 36,
-    "mapping_confidence": 0.82,
-    "objects_created": 10
+    "mapping_confidence": 0.6004,
+    "objects_created": 7
   },
-  "proof_hash": "sha256:ad1393c04e8f034d0f9015da330de0f2f201360bcc57920d389a46f8314bfed0",
+  "proof_hash": "sha256:fae92dfa9a50a63b149ccc992a03d8bc6e0c0cac84493ca2b601c5bec42cd243",
   "proof_id": "proof_praxis_k8s_ingress_degradation_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:e4c4b0a8bb77ca930a45405652a36d8400981cacb9c1b6cbb8d05ae31cddad8f",
+    "replay_hash": "sha256:f76f435e02d973415b73983855c495a7a63962c8bf3bace5a0c6c3fd4b192821",
     "verified_at": "2026-05-12T00:00:00Z"
   },
   "run_id": "fieldlab_run_k8s-ingress-degradation",
   "solution_pack": "k8s-ingress-degradation",
   "value_case": {
-    "confidence": 0.71,
-    "estimated_annual_value": 94500,
-    "primary_value_driver": "reduced outage duration and SRE triage time"
+    "bucket": "demo and scope",
+    "confidence": 0.7541,
+    "estimated_annual_value": 310000.0,
+    "primary_value_driver": "Reduce incident duration with evidence-ranked ingress remediation",
+    "roi_calculations": {
+      "annual_value": 310000.0
+    }
   }
 }

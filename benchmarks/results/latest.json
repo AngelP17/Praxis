@@ -7,38 +7,38 @@
     {
       "decision_replay_match": true,
       "events_processed": 12,
-      "evidence_trust_score": 0.826,
+      "evidence_trust_score": 0.829,
       "next_best_question_gain": 0.18,
-      "ontology_mapping_confidence": 0.79,
+      "ontology_mapping_confidence": 0.5733,
       "pack_validation_status": true,
       "proof_verification_status": true,
       "solution_pack": "manufacturing-printer-gpo",
       "time_to_executive_readout": "simulated",
-      "value_case_confidence": 0.68
+      "value_case_confidence": 0.7601
     },
     {
       "decision_replay_match": true,
       "events_processed": 6,
-      "evidence_trust_score": 0.794,
+      "evidence_trust_score": 0.827,
       "next_best_question_gain": 0.18,
-      "ontology_mapping_confidence": 0.77,
+      "ontology_mapping_confidence": 0.5995,
       "pack_validation_status": true,
       "proof_verification_status": true,
       "solution_pack": "erp-access-disruption",
       "time_to_executive_readout": "simulated",
-      "value_case_confidence": 0.66
+      "value_case_confidence": 0.7661
     },
     {
       "decision_replay_match": true,
       "events_processed": 6,
-      "evidence_trust_score": 0.77,
+      "evidence_trust_score": 0.837,
       "next_best_question_gain": 0.18,
-      "ontology_mapping_confidence": 0.82,
+      "ontology_mapping_confidence": 0.6004,
       "pack_validation_status": true,
       "proof_verification_status": true,
       "solution_pack": "k8s-ingress-degradation",
       "time_to_executive_readout": "simulated",
-      "value_case_confidence": 0.71
+      "value_case_confidence": 0.7541
     }
   ]
 }

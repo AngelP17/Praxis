@@ -1,1 +1,7 @@
-{"solution_pack_id":"erp-access-disruption","estimated_annual_value":67200,"confidence":0.66}
+{
+  "bucket": "demo and scope",
+  "confidence": 0.7661,
+  "estimated_annual_value": 34944.0,
+  "primary_value_driver": "Restore governed ERP access and prove reduced fulfillment delay",
+  "solution_pack_id": "erp-access-disruption"
+}
