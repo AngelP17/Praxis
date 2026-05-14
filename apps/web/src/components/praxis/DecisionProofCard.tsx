@@ -1,19 +1,32 @@
 "use client";
 
 import { ShieldCheck, Warning, GitCommit } from "@phosphor-icons/react";
-import { getPackById } from "@/lib/praxis-api";
-import { getWorkflowRun } from "@/lib/praxis-workflow";
+import { useProof } from "@/lib/hooks/useProof";
+import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 
 interface DecisionProofCardProps {
   packId?: string;
 }
 
 export function DecisionProofCard({ packId = "manufacturing-printer-gpo" }: DecisionProofCardProps) {
-  const pack = getPackById(packId);
-  if (!pack) return null;
+  const { proof } = useProof(packId);
+  const { packs } = useSolutionPacks();
+  const pack = packs.find((p) => p.id === packId);
 
-  const run = getWorkflowRun(packId);
-  const weights = run.decisionWeights;
+  if (!proof) return null;
+
+  const priority = proof.decision.priority_score;
+  const trust = proof.evidence.evidence_trust;
+  const confidence = proof.decision.confidence;
+  const mappingConf = proof.ontology.mapping_confidence;
+
+  const weights = [
+    { label: "Severity score", value: +(Math.min(priority + 0.06, 1)).toFixed(2), weight: 0.20 },
+    { label: "Business impact", value: +confidence.toFixed(2), weight: 0.20 },
+    { label: "Evidence trust", value: +trust.toFixed(2), weight: 0.15 },
+    { label: "Actionability", value: +(Math.min(priority + 0.11, 1)).toFixed(2), weight: 0.15 },
+    { label: "Ontology mapping", value: +mappingConf.toFixed(2), weight: 0.10 },
+  ];
 
   return (
     <div className="grid grid-flow-dense gap-4 lg:grid-cols-[0.9fr_1.1fr]">
@@ -23,25 +36,27 @@ export function DecisionProofCard({ packId = "manufacturing-printer-gpo" }: Deci
           Praxis priority
         </div>
         <div className="mt-5 font-display text-8xl font-medium text-[var(--praxis-violet)]">
-          {pack.priorityScore.toFixed(2)}
+          {priority.toFixed(2)}
         </div>
         <p className="mt-5 max-w-md text-sm leading-6 text-[var(--praxis-muted)]">
-          {pack.rootCause.replace(/_/g, " ")} is affecting {run.businessProcess.toLowerCase()} and needs assisted human-approved routing.
+          {proof.decision.root_cause_hypothesis.replace(/_/g, " ")} requires assisted human-approved routing.
         </p>
         <div className="mt-8 grid grid-flow-dense grid-cols-2 gap-3">
           <div className="border border-[var(--praxis-line)] p-4">
             <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Evidence trust</div>
-            <div className="mt-2 font-display text-4xl text-[var(--praxis-mint)]">{pack.evidenceTrust.toFixed(2)}</div>
+            <div className="mt-2 font-display text-4xl text-[var(--praxis-mint)]">{trust.toFixed(2)}</div>
           </div>
           <div className="border border-[var(--praxis-line)] p-4">
             <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Mode</div>
             <div className="mt-2 font-display text-4xl">Human</div>
           </div>
         </div>
-        <div className="mt-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--praxis-crit)]">
-          <Warning className="h-3 w-3" />
-          Review required
-        </div>
+        {proof.decision.requires_human_review && (
+          <div className="mt-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.08em] text-[var(--praxis-crit)]">
+            <Warning className="h-3 w-3" />
+            Review required
+          </div>
+        )}
       </article>
       <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Rationale weights</div>
@@ -54,7 +69,7 @@ export function DecisionProofCard({ packId = "manufacturing-printer-gpo" }: Deci
                 <span className="text-[var(--praxis-muted)]">w {w.weight}</span>
               </div>
               <div className="h-2 bg-[var(--praxis-line)]">
-                <div className="h-full bg-[var(--praxis-violet)]" style={{ width: `${w.value}%` }} />
+                <div className="h-full bg-[var(--praxis-violet)]" style={{ width: `${w.value * 100}%` }} />
               </div>
             </div>
           ))}
@@ -64,7 +79,9 @@ export function DecisionProofCard({ packId = "manufacturing-printer-gpo" }: Deci
             <GitCommit className="h-3 w-3" />
             Root cause
           </div>
-          <p className="mt-3 text-sm text-[var(--praxis-bone)]">{pack.rootCause.replace(/_/g, " ")}</p>
+          <p className="mt-3 text-sm text-[var(--praxis-bone)]">
+            {proof.decision.root_cause_hypothesis.replace(/_/g, " ")}
+          </p>
         </div>
       </article>
     </div>

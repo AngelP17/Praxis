@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import sys
 import uuid
+import yaml
 from datetime import datetime
 from pathlib import Path
 from sqlalchemy.orm import Session
@@ -9,11 +10,9 @@ from sqlalchemy.orm import Session
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "packages" / "astraea-core"))
 
-from astraea.praxis.roi_calculator import RoiCalculator
-from astraea.praxis.use_case_score import UseCaseScorer
-from astraea.praxis.expansion_graph import ExpansionGraph
-
-import yaml
+from astraea.praxis.roi_calculator import RoiCalculator  # noqa: E402
+from astraea.praxis.use_case_score import UseCaseScorer  # noqa: E402
+from astraea.praxis.expansion_graph import ExpansionGraph  # noqa: E402
 
 PACKS_DIR = ROOT / "solution-packs"
 DEFAULT_PACK = "manufacturing-printer-gpo"

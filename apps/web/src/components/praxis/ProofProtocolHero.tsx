@@ -7,7 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import { PraxisLogo } from "./PraxisLogo";
-import { getWorkflowRun, getFullProofHash } from "@/lib/praxis-workflow";
+import { useProof } from "@/lib/hooks/useProof";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -41,8 +41,9 @@ const accordion = [
 
 export function ProofProtocolHero({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
   const rootRef = useRef<HTMLElement>(null);
-  const run = getWorkflowRun(packId);
-  const fullProofHash = getFullProofHash(packId);
+  const { proof } = useProof(packId);
+  const runId = proof?.run_id ?? `fieldlab_run_${packId}`;
+  const fullProofHash = proof?.proof_hash ?? "sha256:loading…";
 
   useGSAP(
     () => {
@@ -110,7 +111,7 @@ export function ProofProtocolHero({ packId = "manufacturing-printer-gpo" }: { pa
         </Link>
         <div className="hidden items-center gap-3 rounded-full border border-[rgba(241,237,223,0.14)] bg-[rgba(19,18,31,0.66)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)] backdrop-blur-xl md:flex">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--praxis-mint)]" />
-          CI green · {run.runId.substring(0, 24)}
+          CI green · {runId.substring(0, 24)}
         </div>
       </nav>
 

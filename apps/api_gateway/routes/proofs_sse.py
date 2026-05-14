@@ -20,7 +20,7 @@ from sse_starlette.sse import EventSourceResponse
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "packages" / "astraea-core"))
 
-from astraea.praxis import PraxisProofBuilder, ProofInputs
+from astraea.praxis import PraxisProofBuilder, ProofInputs  # noqa: E402
 
 router = APIRouter(prefix="/api/proofs", tags=["proofs-sse"])
 

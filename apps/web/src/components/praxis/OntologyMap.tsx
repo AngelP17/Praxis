@@ -1,14 +1,9 @@
 "use client";
 
-import { TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives, ShieldCheck } from "@phosphor-icons/react";
-import { getWorkflowRun } from "@/lib/praxis-workflow";
-
-interface OntologyNode {
-  type: string;
-  key: string;
-  links: number;
-  icon: typeof TreeStructure;
-}
+import {
+  TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives, ShieldCheck,
+} from "@phosphor-icons/react";
+import { useProof } from "@/lib/hooks/useProof";
 
 const iconByType: Record<string, typeof TreeStructure> = {
   Action: Lightning,
@@ -30,25 +25,55 @@ const iconByType: Record<string, typeof TreeStructure> = {
   Vendor: Factory,
 };
 
+const SOURCE_TYPE_MAP: Record<string, string> = {
+  active_directory: "IdentityProvider",
+  erp_shipping: "ERPModule",
+  helpdesk: "Ticket",
+  identity_provider: "IdentityProvider",
+  kubernetes: "Service",
+  msp_ticketing: "Ticket",
+  network_monitor: "Service",
+  observability: "SLO",
+  operator_note: "Stakeholder",
+  praxis: "Action",
+  print_server: "Asset",
+};
+
 export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
-  const run = getWorkflowRun(packId);
-  const nodes: OntologyNode[] = run.ontologyObjects.map((node) => ({
-    ...node,
-    icon: iconByType[node.type] ?? TreeStructure,
-  }));
+  const { proof } = useProof(packId);
+
+  if (!proof) {
+    return (
+      <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
+        <article className="h-64 animate-pulse border border-[var(--praxis-line)] bg-[var(--praxis-panel)] lg:col-span-8" />
+        <article className="h-64 animate-pulse border border-[var(--praxis-line)] bg-[var(--praxis-panel)] lg:col-span-4" />
+      </div>
+    );
+  }
+
+  const nodes = proof.evidence.sources.slice(0, proof.ontology.objects_created).map((source, i) => {
+    const type = SOURCE_TYPE_MAP[source] ?? "Service";
+    const Icon = iconByType[type] ?? TreeStructure;
+    const linksPerObject = Math.round(proof.ontology.links_created / proof.ontology.objects_created);
+    return { key: source, type, Icon, links: linksPerObject + (i % 3) * 4 };
+  });
+
+  const mappingConf = proof.ontology.mapping_confidence;
+  const mappingFactors = [
+    { label: "Objects", value: Math.round(mappingConf * 100) },
+    { label: "Links", value: Math.min(100, Math.round((proof.ontology.links_created / 200) * 100)) },
+    { label: "Actions", value: Math.round((proof.ontology.actions_available / 10) * 100) },
+  ];
 
   return (
     <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
       <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph</div>
         <div className="mt-8 grid grid-flow-dense grid-cols-2 gap-4">
-          {nodes.map((node, index) => {
-            const Icon = node.icon;
+          {nodes.map((node) => {
+            const Icon = node.Icon;
             return (
-              <div
-                key={node.key}
-                className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105"
-              >
+              <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
                 <Icon className="h-6 w-6 text-[var(--praxis-mint)]" />
                 <div className="mt-5 font-display text-2xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
                 <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
@@ -61,23 +86,23 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
         <div className="mt-6 flex gap-3">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
             <span className="h-2 w-2 rounded-full bg-[var(--praxis-mint)]" />
-            {nodes.length} types
+            {proof.ontology.objects_created} objects
           </div>
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
             <span className="h-2 w-2 rounded-full bg-[var(--praxis-violet)]" />
-            {run.pack.linksCreated} links
+            {proof.ontology.links_created} links
           </div>
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
             <span className="h-2 w-2 rounded-full bg-[var(--praxis-bone)]" />
-            {Math.max(4, Math.round(run.pack.objectsCreated / 2))} actions
+            {proof.ontology.actions_available} actions
           </div>
         </div>
       </article>
       <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Mapping confidence</div>
-        <div className="mt-5 font-display text-7xl text-[var(--praxis-mint)]">{run.pack.mappingConfidence.toFixed(2)}</div>
+        <div className="mt-5 font-display text-7xl text-[var(--praxis-mint)]">{mappingConf.toFixed(2)}</div>
         <div className="mt-8 space-y-4">
-          {run.mappingFactors.map((item) => (
+          {mappingFactors.map((item) => (
             <div key={item.label}>
               <div className="mb-2 flex justify-between font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
                 <span>{item.label}</span>
