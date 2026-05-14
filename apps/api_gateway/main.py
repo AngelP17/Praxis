@@ -9,7 +9,6 @@ from apps.api_gateway.deps import init_db
 from apps.api_gateway.logging_config import configure_logging, get_logger
 from apps.api_gateway.middleware.rate_limit import RateLimitMiddleware
 from apps.api_gateway.middleware.proof_rate_limit import ProofRateLimitMiddleware
-from apps.api_gateway.middleware.cloudwatch_logging import CloudWatchMiddleware
 from apps.api_gateway.middleware.metrics import MetricsMiddleware
 from apps.api_gateway.routes.attachments import router as attachments_router
 from apps.api_gateway.routes.assets import router as assets_router
@@ -46,14 +45,7 @@ async def lifespan(app: FastAPI):
     logger = get_logger("main")
     logger.info("praxis_api_starting", version="2.0.0", env=settings.ENV)
 
-    cw_client = boto3.client(
-        "cloudwatch",
-        endpoint_url=settings.FLOCI_ENDPOINT,
-        region_name=settings.AWS_REGION,
-        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-    )
-    app.state.cw_client = cw_client
+    app.state.cw_client = None
 
     if settings.AUTO_INIT_DB:
         init_db()
@@ -71,7 +63,6 @@ app = FastAPI(
 
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(ProofRateLimitMiddleware)
-app.add_middleware(CloudWatchMiddleware, get_cw_client=lambda: app.state.cw_client)
 app.add_middleware(MetricsMiddleware)
 
 app.add_middleware(
