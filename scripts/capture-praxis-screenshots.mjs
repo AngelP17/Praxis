@@ -16,7 +16,6 @@ async function capture(page, fileName, route, options = {}) {
   const {
     waitForText,
     waitForSelector,
-    screenshotSelector,
     scrollToText,
     scrollToSelector,
     postWaitMs = 2000,
@@ -62,21 +61,44 @@ async function capture(page, fileName, route, options = {}) {
   
   await wait(postWaitMs);
   
-  if (screenshotSelector) {
-    const navOverride = await page.addStyleTag({
-      content: "nav.fixed { display: none !important; }",
-    });
-    await page.locator(screenshotSelector).first().screenshot({
-      path: path.join(OUT_DIR, fileName),
-    });
-    await navOverride.evaluate((node) => node.remove());
-  } else {
-    await page.screenshot({
-      path: path.join(OUT_DIR, fileName),
-      fullPage,
-    });
-  }
+  await page.screenshot({
+    path: path.join(OUT_DIR, fileName),
+    fullPage,
+  });
   console.log(`  Saved ${fileName}`);
+}
+
+async function loginAsDemoOperator(page) {
+  try {
+    await page.goto(`${BASE_URL}/login`, { waitUntil: "domcontentloaded" });
+    await page.getByText("Sign In", { exact: false }).first().waitFor({ timeout: 15000 });
+
+    const usernameInput = page.locator('input[name="username"], input#username, input[placeholder*="Username" i]').first();
+    const passwordInput = page.locator('input[name="password"], input#password, input[type="password"]').first();
+
+    if (await usernameInput.isVisible().catch(() => false)) {
+      await usernameInput.fill("operator");
+      await passwordInput.fill("operator");
+      await page.locator('button[type="submit"]').first().click();
+      await page.waitForURL(/\/(command-center|dashboard)/, { timeout: 15000 });
+      return;
+    }
+  } catch {
+    // fall through to local storage fallback
+  }
+
+  await page.addInitScript(() => {
+    window.localStorage.setItem("access_token", "demo-local-token");
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        username: "operator",
+        role: "agent",
+        display_name: "Demo Operator",
+      })
+    );
+  });
+  await page.goto(`${BASE_URL}/command-center`, { waitUntil: "domcontentloaded" });
 }
 
 async function main() {
@@ -94,9 +116,12 @@ async function main() {
   });
 
   try {
+    await loginAsDemoOperator(page);
+    await wait(1000);
+
     // 1. Landing / Hero
     await capture(page, "01-praxis-landing.png", "/", {
-      waitForText: "Forward-deployed",
+      waitForText: "Praxis",
       postWaitMs: 3000,
     });
     
@@ -104,7 +129,6 @@ async function main() {
     await capture(page, "02-field-workbench.png", "/field-workbench", {
       waitForText: "Operational Overview",
       scrollToText: "Operational Overview",
-      screenshotSelector: '[data-praxis-screen="overview"]',
       postWaitMs: 2500,
     });
     
@@ -122,9 +146,8 @@ async function main() {
     
     // 5. Solution Packs
     await capture(page, "05-solution-packs.png", "/solution-packs", {
-      waitForText: "Solution Pack Launcher",
-      scrollToText: "Solution Pack Launcher",
-      screenshotSelector: '[data-praxis-screen="solution-packs"]',
+      waitForText: "Solution Packs",
+      scrollToText: "Solution Packs",
       postWaitMs: 2500,
     });
     
@@ -132,15 +155,13 @@ async function main() {
     await capture(page, "06-ontology.png", "/ontology", {
       waitForText: "Operational Ontology",
       scrollToText: "Operational Ontology",
-      screenshotSelector: '[data-praxis-screen="ontology"]',
       postWaitMs: 2500,
     });
     
     // 7. Value Case
     await capture(page, "07-value-case.png", "/value-case", {
-      waitForText: "Value Case Builder",
-      scrollToText: "Value Case Builder",
-      screenshotSelector: '[data-praxis-screen="value-case"]',
+      waitForText: "Value Case",
+      scrollToText: "Value Case",
       postWaitMs: 2500,
     });
     

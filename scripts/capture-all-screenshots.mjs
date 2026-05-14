@@ -119,7 +119,7 @@ async function main() {
   try {
     // 1. Landing (public)
     await capture(publicPage, "01-landing.png", "/", {
-      waitForText: "Operational decisions",
+      waitForText: "Praxis",
       postWaitMs: 2000,
     });
     
@@ -136,7 +136,7 @@ async function main() {
     
     // 3. Dashboard
     await capture(authPage, "03-dashboard.png", "/dashboard", {
-      waitForText: "System Health",
+      waitForText: "Operational Overview",
       postWaitMs: 2000,
     });
     
@@ -148,13 +148,13 @@ async function main() {
     
     // 5. Incidents list
     await capture(authPage, "05-incidents.png", "/incidents", {
-      waitForText: "Incidents",
+      waitForText: "Incident Clusters",
       postWaitMs: 2000,
     });
     
     // 6. Incident detail (INC-4821)
     await capture(authPage, "06-incident-detail.png", "/incidents/INC-4821", {
-      waitForText: "INC-4821",
+      waitForText: "Incident Detail",
       postWaitMs: 2500,
     });
     
@@ -166,13 +166,13 @@ async function main() {
     
     // 8. Platform
     await capture(authPage, "08-platform.png", "/platform", {
-      waitForText: "Platform",
+      waitForText: "Observability and SRE Control Plane",
       postWaitMs: 2000,
     });
     
     // 9. Assets
     await capture(authPage, "09-assets.png", "/assets", {
-      waitForText: "Assets",
+      waitForText: "Infrastructure Inventory and Criticality Map",
       postWaitMs: 2000,
     });
     
@@ -202,13 +202,19 @@ async function main() {
     
     // 14. Reports
     await capture(authPage, "14-reports.png", "/reports", {
-      waitForText: "Reports",
+      waitForText: "Reporting integrated with the operational platform",
       postWaitMs: 2000,
     });
     
     // 15. Admin
     await capture(authPage, "15-admin.png", "/admin", {
       waitForText: "Admin",
+      postWaitMs: 2000,
+    });
+
+    // 16. Board
+    await capture(authPage, "16-board.png", "/board", {
+      waitForText: "Operational board view",
       postWaitMs: 2000,
     });
     
