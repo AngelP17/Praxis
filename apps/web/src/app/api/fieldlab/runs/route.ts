@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { IS_VERCEL_RUNTIME, proxyBackend } from "@/app/api/_lib/praxis-server";
-import { getDemoRun } from "@/lib/praxis-demo-data";
+import { getDemoRun, DEMO_PACK_IDS } from "@/lib/praxis-demo-data";
 
 export async function POST(request: Request) {
   if (!IS_VERCEL_RUNTIME) {
@@ -17,11 +17,13 @@ export async function POST(request: Request) {
   return NextResponse.json(getDemoRun(packId));
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   if (!IS_VERCEL_RUNTIME) {
     return proxyBackend("/api/fieldlab/runs");
   }
 
-  const packId = "manufacturing-printer-gpo";
-  return NextResponse.json([getDemoRun(packId)]);
+  const { searchParams } = new URL(request.url);
+  const packId = searchParams.get("pack");
+  if (packId) return NextResponse.json([getDemoRun(packId)]);
+  return NextResponse.json(DEMO_PACK_IDS.map((id) => getDemoRun(id)));
 }

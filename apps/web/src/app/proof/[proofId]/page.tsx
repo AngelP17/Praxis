@@ -7,11 +7,20 @@ import { PackSwitcher } from "@/components/praxis/PackSwitcher";
 import { ProofDiff } from "@/components/praxis/ProofDiff";
 import { ProofProtocolHero } from "@/components/praxis/ProofProtocolHero";
 import { useProof } from "@/lib/hooks/useProof";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
+
+function resolvePackId(runId: string, queryPack: string | null): string {
+  if (queryPack) return queryPack;
+  if (runId.includes("erp")) return "erp-access-disruption";
+  if (runId.includes("k8s") || runId.includes("ingress")) return "k8s-ingress-degradation";
+  return "manufacturing-printer-gpo";
+}
 
 export default function ProofDetailPage() {
+  const params = useParams();
   const searchParams = useSearchParams();
-  const packId = searchParams.get("pack") ?? "manufacturing-printer-gpo";
+  const proofId = (params.proofId as string) ?? "";
+  const packId = resolvePackId(proofId, searchParams.get("pack"));
   const { proof } = useProof(packId);
 
   return (

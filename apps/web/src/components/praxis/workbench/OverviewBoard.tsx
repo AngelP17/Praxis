@@ -109,7 +109,8 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
   const proofShort = proof.proof_hash.slice(7, 15);
   const packName = activePack?.name ?? packId;
   const runId_ = runId ?? proof.run_id;
-  const sites = 7;
+  const sites = proof.evidence.sources.length;
+
   const alerts = proof.evidence.sources.slice(0, 3).map((source, i) => ({
     source,
     summary: `Signal from ${source}`,
