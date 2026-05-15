@@ -58,7 +58,7 @@ export function ProofNarrativeStrip({
       {/* ambient sweep */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_60%_120%_at_0%_50%,rgba(139,92,255,0.07),transparent)]" />
 
-      <div className="relative grid grid-cols-1 divide-y divide-[var(--praxis-line)] md:grid-cols-[1fr_auto_1fr_auto_1fr] md:divide-x md:divide-y-0">
+      <div className="relative grid grid-flow-dense grid-cols-1 divide-y divide-[var(--praxis-line)] md:grid-cols-[1fr_auto_1fr_auto_1fr] md:divide-x md:divide-y-0">
         {acts.map((act, i) => (
           <>
             <motion.div

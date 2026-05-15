@@ -134,7 +134,7 @@ export function ProofProtocolHero({ packId = "manufacturing-printer-gpo", proof 
       </nav>
 
       {/* hero — split screen, left-aligned */}
-      <div className="relative mx-auto grid min-h-[88dvh] max-w-7xl grid-cols-1 items-center gap-12 px-5 pt-20 pb-20 md:grid-cols-[1fr_420px] md:gap-16">
+      <div className="relative mx-auto grid grid-flow-dense min-h-[88dvh] max-w-7xl grid-cols-1 items-center gap-12 px-5 pt-20 pb-20 md:grid-cols-[1fr_420px] md:gap-16">
         {/* left: copy */}
         <div>
           <div className="ppp-hero-copy mb-7 inline-flex items-center gap-2 rounded-full border border-[rgba(139,92,255,0.3)] bg-[rgba(139,92,255,0.08)] px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-violet)]">
@@ -186,7 +186,7 @@ export function ProofProtocolHero({ packId = "manufacturing-printer-gpo", proof 
                 Live proof metrics
               </div>
             </div>
-            <div className="grid grid-cols-2 divide-x divide-y divide-[rgba(241,237,223,0.07)]">
+            <div className="grid grid-flow-dense grid-cols-2 divide-x divide-y divide-[rgba(241,237,223,0.07)]">
               {stats.map((stat) => (
                 <div key={stat.label} className="ppp-stat px-6 py-6">
                   <div className="font-display text-4xl font-semibold tracking-tight">{stat.value}</div>

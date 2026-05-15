@@ -88,7 +88,7 @@ export function ProofJourneyTimeline({ proof }: { proof: PraxisProof }) {
       {/* connector line */}
       <div className="pointer-events-none absolute left-5 right-5 top-[72px] hidden h-[1px] bg-[var(--praxis-line)] md:block" />
 
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-6 md:gap-0">
+      <div className="grid grid-flow-dense grid-cols-2 gap-3 md:grid-cols-6 md:gap-0">
         {steps.map((step, i) => {
           const Icon = step.icon;
           return (

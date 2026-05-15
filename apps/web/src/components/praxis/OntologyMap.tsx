@@ -2,13 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import {
-  TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives,
+  TreeStructure, Lightning, Globe, Users, Factory, HardDrives,
 } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
-import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
+
+const iconByType: Record<string, typeof TreeStructure> = {
+  Asset: HardDrives,
+  Service: Globe,
+  Action: Lightning,
+  ERP: Factory,
+  Identity: Users,
+  Ticketing: TreeStructure,
+  SLO: Globe,
+  Stakeholder: Users,
+  Network: Globe,
+};
+
+function renderIcon(Icon: typeof TreeStructure) {
+  return <Icon className="h-5 w-5" style={{ color: "var(--praxis-violet)" }} />;
+}
 
 const SOURCE_TYPE_MAP: Record<string, string> = {
   active_directory: "Identity",
@@ -331,107 +347,118 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
 
   const sources = proof.evidence.sources.slice(0, proof.ontology.objects_created);
   const mappingConf = proof.ontology.mapping_confidence;
-  const mappingFactors = [
-    { label: "Objects", value: Math.round(mappingConf * 100) },
-    { label: "Links", value: Math.min(100, Math.round((snapshot.links.length / 20) * 100)) },
-    { label: "Actions", value: Math.round((snapshot.actions.length / 10) * 100) },
+  const objectCount = snapshot.objects.length;
+  const linkCount = snapshot.links.length;
+  const actionCount = snapshot.actions.length;
+
+  const metrics = [
+    { label: "Mapping conf", value: mappingConf.toFixed(2), pct: Math.round(mappingConf * 100), color: "var(--praxis-plasma)" },
+    { label: "Evidence trust", value: proof.evidence.evidence_trust.toFixed(2), pct: Math.round(proof.evidence.evidence_trust * 100), color: "var(--praxis-argon)" },
+    { label: "Objects", value: String(objectCount), pct: Math.min(100, Math.round((objectCount / 20) * 100)), color: "var(--praxis-violet)" },
+    { label: "Links", value: String(linkCount), pct: Math.min(100, Math.round((linkCount / 20) * 100)), color: "rgba(139,92,255,.6)" },
   ];
 
   const topbarRight = (
     <>
-      <Pill tone="argon">{objects} objects</Pill>
-      <Pill>{links} links</Pill>
-      <Pill tone="default">{actions} actions</Pill>
+      <Pill tone="argon">{objectCount} objects</Pill>
+      <Pill>{linkCount} links</Pill>
+      <Pill tone="default">{actionCount} actions</Pill>
     </>
   );
 
   return (
-    <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
-      <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph</div>
-        <div className="mt-8 grid grid-flow-dense grid-cols-2 gap-4">
-          {nodes.map((node) => {
-            return (
-              <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
+    <WorkbenchShell
+      topbar={<TopbarTitle title="Ontology" subtitle={`${objectCount} objects · ${linkCount} links · conf ${mappingConf.toFixed(2)}`} right={topbarRight} />}
+    >
+      <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-12">
+        <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
+          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph · topology</div>
+          <div className="mt-4">
+            <TopologyGraph
+              sources={sources}
+              linksCreated={proof.ontology.links_created}
+              mappingConf={mappingConf}
+              evidenceTrust={proof.evidence.evidence_trust}
+            />
+          </div>
+          <div className="mt-4 flex flex-wrap gap-4">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--praxis-mint)]" />
+              {objectCount} objects
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--praxis-violet)]" />
+              {linkCount} links
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--praxis-bone)]" />
+              {actionCount} actions
+            </div>
+          </div>
+          <div className="mt-6 grid grid-flow-dense grid-cols-2 gap-3 md:grid-cols-3">
+            {nodes.map((node) => (
+              <div key={node.key} className="group border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
                 {renderIcon(node.Icon)}
-                <div className="mt-5 font-display text-2xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
-                <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+                <div className="mt-3 font-display text-xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
+                <div className="mt-1 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
                   {node.links} links · {node.label}
                 </div>
               </div>
-            );
-          })}
-        </div>
-        <div className="mt-6 flex gap-3">
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--praxis-mint)]" />
-            {snapshot.objects.length} objects
+            ))}
           </div>
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--praxis-violet)]" />
-            {snapshot.links.length} links
-          </div>
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--praxis-bone)]" />
-            {snapshot.actions.length} actions
+        </article>
+
+        <aside className="flex flex-col gap-px lg:col-span-4 border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,.98),rgba(10,10,20,.96))]">
+          <div className="p-6 border-b border-[var(--praxis-line)]">
+            <div className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">Mapping confidence</div>
+            <motion.div
+              className="mt-3 font-display text-[72px] font-semibold leading-none tracking-tight"
+              style={{ color: "var(--praxis-plasma)" }}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+            >
+              {mappingConf.toFixed(2)}
+            </motion.div>
+            <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
+              evidence trust · {proof.evidence.evidence_trust.toFixed(2)}
+            </div>
           </div>
 
-          {/* metrics rail */}
-          <div className="flex flex-col gap-px border-l-0 bg-[var(--praxis-line)] lg:border-l">
-            {/* mapping confidence hero */}
-            <div className="bg-[linear-gradient(180deg,rgba(19,18,31,.98),rgba(10,10,20,.96))] p-6">
-              <div className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">Mapping confidence</div>
+          <div className="flex flex-1 flex-col gap-px">
+            {metrics.map((m, i) => (
               <motion.div
-                className="mt-3 font-display text-[72px] font-semibold leading-none tracking-tight"
-                style={{ color: "var(--praxis-plasma)" }}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.6 }}
+                key={m.label}
+                className="flex flex-col justify-center bg-[linear-gradient(180deg,rgba(19,18,31,.96),rgba(10,10,20,.94))] p-5"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.08 }}
               >
-                {mappingConf.toFixed(2)}
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">{m.label}</span>
+                  <span className="font-display text-2xl font-medium" style={{ color: m.color }}>{m.value}</span>
+                </div>
+                <div className="mt-3 h-[3px] w-full bg-[var(--praxis-line)]">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ background: m.color }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${m.pct}%` }}
+                    transition={{ delay: 0.7 + i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  />
+                </div>
+                <div className="mt-1.5 font-mono text-[9px] text-right text-[var(--praxis-mute)]">{m.pct}%</div>
               </motion.div>
-              <div className="mt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
-                evidence trust · {proof.evidence.evidence_trust.toFixed(2)}
-              </div>
-            </div>
+            ))}
+          </div>
 
-            {/* metric bars */}
-            <div className="flex flex-1 flex-col gap-px">
-              {metrics.map((m, i) => (
-                <motion.div
-                  key={m.label}
-                  className="flex flex-1 flex-col justify-center bg-[linear-gradient(180deg,rgba(19,18,31,.96),rgba(10,10,20,.94))] p-5"
-                  initial={{ opacity: 0, x: 16 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 + i * 0.08 }}
-                >
-                  <div className="flex items-baseline justify-between gap-2">
-                    <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">{m.label}</span>
-                    <span className="font-display text-2xl font-medium" style={{ color: m.color }}>{m.value}</span>
-                  </div>
-                  <div className="mt-3 h-[3px] w-full bg-[var(--praxis-line)]">
-                    <motion.div
-                      className="h-full rounded-full"
-                      style={{ background: m.color }}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${m.pct}%` }}
-                      transition={{ delay: 0.7 + i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                    />
-                  </div>
-                  <div className="mt-1.5 font-mono text-[9px] text-right text-[var(--praxis-mute)]">{m.pct}%</div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* proof hash footer */}
-            <div className="bg-[rgba(10,10,20,0.86)] p-5 border-t border-[var(--praxis-line)]">
-              <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Proof hash</div>
-              <div className="mt-2 break-all font-mono text-[9.5px] text-[var(--praxis-argon)] leading-4">
-                {proof.proof_hash}
-              </div>
+          <div className="p-5 border-t border-[var(--praxis-line)] bg-[rgba(10,10,20,0.86)]">
+            <div className="font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Proof hash</div>
+            <div className="mt-2 break-all font-mono text-[9.5px] leading-4" style={{ color: "var(--praxis-argon)" }}>
+              {proof.proof_hash}
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </WorkbenchShell>
   );
