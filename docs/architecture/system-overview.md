@@ -2,23 +2,22 @@
 
 ## Context
 
-Praxis ingests ticket data from Excel/import sources, transforms it through an event-sourced pipeline, produces ranked decisions and recommendations, and presents an operator command center for action.
+Praxis ingests operational signals, runs them through the FieldLab and decision stack, produces replayable proof-carrying recommendations, and presents cinematic workbench surfaces for operators, forward-deployed engineers, and GTM reviewers.
 
 ```mermaid
 flowchart LR
-    A[Ticket Sources] --> B[Ingest Pipeline]
-    B --> C[Normalization]
-    C --> D[Event Store]
-    D --> E[Feature Derivation]
-    E --> F[Decision Engine]
-    F --> G[Recommendations]
-    F --> H[Incident Clustering]
-    F --> I[Audit Records]
-    G --> J[Operator Command Center]
-    H --> J
-    I --> K[Replay and Audit View]
-    J --> L[Operator Feedback]
-    L --> D
+    A["Tickets, telemetry, alerts, operator notes"] --> B["API Gateway + adapters"]
+    B --> C["Normalized operational events"]
+    C --> D["FieldLab state and audit store"]
+    D --> E["Astraea / Praxis decision engine"]
+    E --> F["Recommendations + action policy"]
+    E --> G["Incident and ontology views"]
+    E --> H["Proof object + replay hash"]
+    F --> I["Workbench surfaces"]
+    G --> I
+    H --> J["Proof diff, replay, audit export"]
+    I --> K["Human action / feedback"]
+    K --> D
 ```
 
 ## Core Principles
@@ -32,44 +31,38 @@ flowchart LR
 
 ```mermaid
 flowchart TD
-    A[tickets.xlsx / Import] --> B[excel_loader.py]
-    B --> C[delta_detector.py]
-    C --> D[row_normalizer.py]
-    D --> E[thread_cleaner.py]
-    E --> F[ticket_events table]
-    F --> G[ticket_features.py]
-    G --> H{scoring.py}
-    H --> I[decision_record + recommendations]
-    H --> J[root_cause_rules.py]
-    G --> K[incident_clustering.py]
-    K --> L[incidents + incident_ticket_links]
-    I --> M[similar_cases.py]
-    M --> N[similar_case_links]
-    I --> O[excel_report.py]
-    J --> O
-    K --> O
-    N --> O
+    A["Signal sources"] --> B["Gateway ingest + validation"]
+    B --> C["OperationalEvent normalization"]
+    C --> D["FieldLab / event persistence"]
+    D --> E["Feature extraction + evidence trust"]
+    E --> F{"Praxis scoring"}
+    F --> G["Decision record + recommendation set"]
+    F --> H["Root cause and causal graph"]
+    E --> I["Incident correlation"]
+    G --> J["Proof object + signature"]
+    H --> K["Executive readout inputs"]
+    I --> K
+    J --> L["Verifier / replay / diff"]
+    K --> M["Value case + deployment plan"]
 ```
 
 ## Database Architecture
 
 ```mermaid
 erDiagram
-    tickets ||--o{ ticket_events : produces
-    tickets ||--o| decision_records : has
-    decision_records ||--o{ recommendations : yields
-    tickets ||--o{ similar_case_links : similar_to
-    tickets ||--o{ incident_ticket_links : linked_to
-    incidents ||--o{ incident_ticket_links : contains
-    recommendations ||--o| operator_feedback : receives
-    recommendations ||--o| action_runs : triggers
-    tickets ||--o| audit_records : snapshotted_as
+    OPERATIONAL_EVENT ||--o{ DECISION_RECORD : produces
+    OPERATIONAL_EVENT }o--o{ INCIDENT : correlates_into
+    INCIDENT ||--o{ TICKET : owns
+    DECISION_RECORD ||--o{ RECOMMENDATION : emits
+    DECISION_RECORD ||--o{ HUMAN_FEEDBACK : receives
+    INCIDENT ||--o{ EVIDENCE_ARTIFACT : contains
+    INCIDENT ||--o{ REPLAY_EVENT : reconstructs
 ```
 
 ## Key Design Decisions
 
-- **PostgreSQL on Neon** — managed Postgres, connection pooling, branch-based dev
-- **Delta detection over full reload** — last-modified hash comparison avoids reprocessing unchanged rows
-- **Rules-first root cause** — keyword matching before ML embedding; faster, more explainable
-- **BM25 for similarity** — simpler than embeddings, good enough recall for similar-case retrieval
-- **Event immutable** — ticket_events table is append-only; audit_records provide point-in-time snapshots
+- **FieldLab before production** — prove the workflow locally before any real hosted deployment
+- **Deterministic decisioning** — identical inputs should produce identical scores, replays, and proof hashes
+- **Rules-plus-graph reasoning** — operational logic stays inspectable and replayable
+- **Human review by default** — the product recommends; humans approve or override
+- **Immutable event trail** — operational events, proof artifacts, and feedback remain audit-friendly

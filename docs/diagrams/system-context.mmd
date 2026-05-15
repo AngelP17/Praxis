@@ -40,6 +40,11 @@ flowchart LR
         Report["Post-Incident Report"]
     end
 
+    subgraph Surfaces["Praxis Surfaces"]
+        Workbench["Field Workbench / Console / Dashboard"]
+        Proof["Proof Detail / Diff / Readout"]
+    end
+
     Sources --> Ingest
     Ingest --> Normalize
     Normalize --> Validate
@@ -57,3 +62,6 @@ flowchart LR
     StoreEvent --> Timeline
     Timeline --> Export
     Export --> Report
+    Route --> Workbench
+    Hash --> Proof
+    Timeline --> Proof

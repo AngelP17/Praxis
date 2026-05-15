@@ -282,7 +282,7 @@ Flagship path VALIDATED.
 
 ## Conclusion
 
-Praxis v1.1.0 meets all requirements for production portfolio status:
+Praxis v1.1.0 meets the requirements for a verified local full-stack product and a frontend-only public demo:
 - 13 passing backend tests
 - 17/17 frontend pages build successfully
 - 2/2 smoke tests pass
@@ -298,6 +298,8 @@ Praxis v1.1.0 meets all requirements for production portfolio status:
 - One-command demo with seeded scenarios
 - Updated theoretical docs, ADRs, Mermaid diagrams
 - Updated screen map, API contracts, and UX rationale
+
+It does **not** by itself prove turnkey public production hosting. A real hosted deployment still requires explicit runtime secrets, public CORS origins, credential rotation, and an exercised hosting target.
 
 ---
 

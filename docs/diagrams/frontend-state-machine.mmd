@@ -1,5 +1,5 @@
 stateDiagram-v2
-    [*] --> Loading: Open Command Room
+    [*] --> Loading: Open Praxis surface
     Loading --> Empty: No data
     Loading --> Error: API failure
     Loading --> Ready: Data loaded
@@ -7,7 +7,7 @@ stateDiagram-v2
     Empty --> Loading: Refresh
     Error --> Loading: Retry
 
-    Ready --> Selecting: Click signal
+    Ready --> Selecting: Select record or pack
     Selecting --> Ready: Selection changed
 
     Ready --> Filtering: Type search
@@ -20,7 +20,7 @@ stateDiagram-v2
     Ready --> Feedbacking: Submit feedback
     Feedbacking --> Ready: Feedback saved
 
-    Ready --> Replaying: Request replay
+    Ready --> Replaying: Request replay or proof diff
     Replaying --> Ready: Replay loaded
 
     Ready --> Stale: Sync expired

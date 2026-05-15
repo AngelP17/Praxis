@@ -96,11 +96,11 @@ These components are tracked separately and do not affect the core decision hash
 sequenceDiagram
     participant Source as Signal Source
     participant Gateway as API Gateway
-    participant Store as Event Store
+    participant Store as FieldLab/Event Store
     participant Astraea as Astraea Engine
-    participant Incident as Incident Service
     participant Praxis as Praxis Workflow
-    participant UI as Command Room UI
+    participant Proof as Proof Builder
+    participant UI as Workbench UI
 
     Source->>Gateway: POST /api/events/ingest
     Gateway->>Gateway: Validate schema
@@ -110,9 +110,9 @@ sequenceDiagram
     Astraea->>Astraea: Score risk and priority
     Astraea->>Astraea: Generate explanation and replay hash
     Astraea->>Store: Persist decision record
-    Store->>Incident: Link related events
-    Incident->>Praxis: Create or update ticket
-    Praxis->>UI: Expose ranked queue and decision context
+    Store->>Praxis: Link related events and ticket context
+    Praxis->>Proof: Build proof object / verification artifacts
+    Proof->>UI: Expose decision, replay, and proof state
 ```
 
 ## Why It Matters

@@ -29,7 +29,7 @@ This documentation set explains the theory, architecture, and operational model 
 | [architecture/floci-runtime.md](architecture/floci-runtime.md) | Floci local AWS runtime architecture | 5 min |
 | [architecture/cloudwatch-observability.md](architecture/cloudwatch-observability.md) | CloudWatch metrics, alarms, logging | 4 min |
 | [architecture/dynamodb-streams.md](architecture/dynamodb-streams.md) | DynamoDB Streams change capture | 3 min |
-| [architecture/deployment-guide.md](architecture/deployment-guide.md) | Full dev → staging → prod deployment path | 5 min |
+| [architecture/deployment-guide.md](architecture/deployment-guide.md) | Local full-stack, frontend demo, and optional self-host/cloud deployment paths | 5 min |
 | [architecture/data-flow.md](architecture/data-flow.md) | End-to-end data flow with FieldLab | 4 min |
 | [architecture/decision-engine.md](architecture/decision-engine.md) | 10-factor scoring + evidence trust | 5 min |
 | [architecture/system-overview.md](architecture/system-overview.md) | System-level component topology | 4 min |
