@@ -1,160 +1,153 @@
 # Praxis Deployment Guide
 
-The full path from local FieldLab development to production Kubernetes deployment.
+This guide documents the release paths that are actually supported by the current repo.
+
+It intentionally separates the verified demo deployment path from the harder full-stack production path so future sessions do not assume they are the same thing.
+
+## Current Release Modes
 
 ```mermaid
-flowchart TB
-    subgraph Dev["Local Development"]
-        Floci["Floci<br/>docker compose up"]
-        API["API Gateway<br/>uvicorn :8000"]
-        Web["Next.js<br/>:3000"]
-    end
-
-    subgraph CI["CI/CD (GitHub Actions)"]
-        Lint["Ruff lint"]
-        Test["pytest (16 tests)"]
-        Build["pnpm web:build"]
-        Typecheck["tsc --noEmit"]
-        GPT["gpt-taste QA"]
-        Proof["FieldLab Proof<br/>floci verify"]
-    end
-
-    subgraph Staging["Staging (k3d)"]
-        K3D["k3d cluster<br/>terraform apply"]
-        Manifests["K8s manifests<br/>deploy/svc/ingress/hpa"]
-        FlociStaging["Floci sidecar<br/>(local AWS emulation)"]
-    end
-
-    subgraph Production["Production (EKS)"]
-        EKS["EKS cluster<br/>terraform apply"]
-        Lambda["Lambda<br/>proof compute"]
-        CW["CloudWatch<br/>alarms + metrics"]
-        IAM["IAM Roles<br/>service accounts"]
-    end
-
-    Dev --> CI
-    CI -->|main| Staging
-    Staging -->|release| Production
+flowchart LR
+    Local["Local full stack<br/>make demo"] --> Demo["Frontend-only public demo<br/>Vercel + NEXT_PUBLIC_DEMO_MODE=1"]
+    Local --> Proof["FieldLab proof path<br/>make praxis-proof"]
+    Demo --> Prod["Full-stack public production<br/>requires explicit hardening + hosting"]
 ```
-
-## Prerequisites
-
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Docker | 24+ | Floci + container build |
-| Python | 3.12+ | Backend services |
-| Node.js | 22+ | Frontend |
-| pnpm | 10.29.3+ | Package management |
-| kubectl | 1.29+ | K8s management |
-| terraform | 1.7+ | Infrastructure as code |
 
 ## 1. Local Development
 
+These are the repo-native commands for running Praxis on one machine.
+
 ```bash
-# Full install
 make install
-
-# Start Floci
-docker run -d --name floci \
-  -p 4566:4566 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -u root \
-  floci/floci:latest
-
-# Verify Floci
-python scripts/check_floci_runtime.py
-
-# Start all services
-make dev-api       # API Gateway :8000
-make dev-web       # Next.js :3000
-
-# Run FieldLab demo
-make praxis-proof  # PROOF VALID
+make demo
+make demo-seed
+make demo-validate
 ```
 
-## 2. CI Pipeline
+Service URLs:
+
+- Web: `http://localhost:3000`
+- API gateway: `http://localhost:8000`
+- Decision service: `http://localhost:8001`
+- Platform service: `http://localhost:8080`
+
+To stop the local demo:
 
 ```bash
-# Full validation suite
-make lint                    # Ruff
-.venv/bin/pytest tests/praxis -v   # 16 tests
-pnpm web:typecheck           # TypeScript
-pnpm web:lint:gpt-taste:ci   # Design quality
-pnpm web:build               # Production build
-
-# Floci-dependent gates (requires Floci running)
-make praxis-floci-verify     # Floci health
-make praxis-benchmark        # 3/3 proofs valid
-make praxis-proof-hashes     # Hash integrity
+make clean-demo
 ```
 
-## 3. Staging Deploy
+## 2. Frontend-only Public Demo
+
+This is the verified public launch path today.
+
+Why it works:
+
+- The Next.js app includes `app/api` proxy handlers
+- In demo mode those handlers return deterministic fallback payloads
+- The flagship product surfaces render without a separately deployed backend
+
+### Required settings
+
+Set this in the frontend deployment environment:
 
 ```bash
-# Create k3d cluster
-k3d cluster create praxis-staging
-
-# Deploy via Terraform
-cd infrastructure/terraform
-terraform init
-terraform apply -var="environment=staging"
-
-# Deploy K8s manifests
-cd ../k8s
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-kubectl apply -f ingress.yaml
-kubectl apply -f hpa.yaml
-kubectl apply -f networkpolicy.yaml
-kubectl apply -f poddisruptionbudget.yaml
-
-# Verify
-kubectl get all -n praxis-staging
-curl https://staging.praxis.local/health
+NEXT_PUBLIC_DEMO_MODE=1
 ```
 
-## 4. Production Deploy
+### Deploy target
+
+- Root deploy config: `vercel.json`
+- App-level deploy config: `apps/web/vercel.json`
+
+Both now describe a frontend-only Next.js deployment. The previous root `experimentalServices` block was removed so Vercel does not implicitly try to co-deploy `services/platform-service`.
+
+### Recommended verification
 
 ```bash
-# Create EKS cluster
-cd infrastructure/terraform
-terraform init
-terraform apply -var="environment=production"
-
-# Deploy Lambda
-cd ../lambda
-sam build && sam deploy --guided
-
-# Deploy K8s
-cd ../k8s
-kubectl apply -f deployment.yaml
-# ... (same as staging, minus Floci sidecar)
-
-# Verify
-kubectl get all -n praxis-production
-curl https://api.praxis.io/health
+pnpm web:typecheck
+pnpm web:lint:gpt-taste:ci
+pnpm web:test:smoke
+pnpm web:build
 ```
 
-## Environment Matrix
+## 3. Local Proof / FieldLab Verification
 
-| Setting | Dev | Staging | Production |
-|---------|-----|---------|------------|
-| Floci endpoint | `localhost:4566` | `floci:4566` (sidecar) | AWS real endpoints |
-| `USE_LAMBDA_COMPUTE` | `False` | `True` | `True` |
-| `RATE_LIMIT_PER_MINUTE` | 600 | 600 | 120 |
-| `ENV` | `development` | `staging` | `production` |
-| `DEBUG` | `True` | `False` | `False` |
-| Database | SQLite | SQLite | RDS PostgreSQL |
-
-## Rollback
+Use this when the task is to prove the flagship Praxis workflow rather than just render the UI.
 
 ```bash
-# Rollback K8s deployment
-kubectl rollout undo deployment/api-gateway -n praxis-production
-
-# Rollback Lambda
-aws lambda update-alias \
-  --function-name praxis-proof-compute \
-  --name prod \
-  --function-version <previous-version>
+make install
+make praxis-fieldlab-up
+make praxis-proof
+make praxis-benchmark
+make praxis-floci-verify
+make praxis-fieldlab-down
 ```
+
+Generated artifacts:
+
+- `artifacts/latest/praxis_proof.json`
+- `artifacts/latest/proof-summary.md`
+
+## 4. Full-stack Public Production
+
+This repo is not yet a turnkey one-command public production deploy.
+
+What is present:
+
+- A FastAPI gateway
+- Local Docker Compose for the backend stack
+- Kubernetes manifests under `infrastructure/k8s/`
+- Terraform assets under `infrastructure/terraform/`
+- Lambda reference assets under `infrastructure/lambda/`
+
+What is not verified by repo CI today:
+
+- A single public cloud deployment recipe for the full backend stack
+- A hosted production environment exercised by automated end-to-end validation
+
+### Required hardening before real public production
+
+The API gateway now enforces these checks when `ENV=production`:
+
+- `SECRET_KEY` must be replaced with a strong real secret
+- `DEBUG` must be `false`
+- `ALLOWED_ORIGINS` must list explicit non-localhost frontend origins
+
+Additional required steps:
+
+- Replace or rotate demo credentials stored in `users.json`
+- Choose and validate a real backend hosting target
+- Confirm public DNS, TLS, logging, and data retention decisions outside the demo path
+
+See also: [Public Launch Checklist](../release/public-launch-checklist.md)
+
+## Docker Compose Scope
+
+`docker-compose.yml` is now explicitly a local development stack:
+
+- `ENV=development`
+- local default origins only
+- local demo secret only
+
+Do not treat it as a production deployment manifest.
+
+## Done When
+
+### Demo publish
+
+- `NEXT_PUBLIC_DEMO_MODE=1` is set
+- frontend verification commands pass
+- the deployed site renders the flagship routes cleanly
+
+### Public production publish
+
+- production env vars are real and non-demo
+- demo credentials are replaced
+- the chosen backend hosting path is deployed and tested
+- frontend and backend verification commands pass against that environment
+
+## Known Unknowns
+
+- The repo contains cloud-oriented assets, but this guide does not claim a verified EKS or Lambda release path because that path is not exercised by current GitHub Actions
+- If you want a real production launch, the remaining work is mostly deployment and secrets management, not frontend polish

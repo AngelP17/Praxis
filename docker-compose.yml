@@ -25,10 +25,10 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://praxis:praxis@postgres:5432/praxis
-      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
-      ENV: production
+      SECRET_KEY: ${SECRET_KEY:-local-demo-secret}
+      ENV: development
       DEBUG: "false"
-      ALLOWED_ORIGINS: "http://localhost:3000"
+      ALLOWED_ORIGINS: "http://localhost:3000,http://127.0.0.1:3000"
       DECISION_SERVICE_URL: http://decision-service:8001
       PLATFORM_SERVICE_URL: http://platform-service:8080
     depends_on:

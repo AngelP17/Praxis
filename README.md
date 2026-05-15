@@ -37,6 +37,22 @@ Floci start -> health check -> demo run -> proof emit -> verify -> determinism r
 
 The web app also ships a Next.js `app/api` bridge for frontend stability. In local development it proxies the web UI to the FastAPI gateway; on Vercel it serves deterministic demo payloads for proofs, solution packs, Floci health, replay checks, and pipeline streaming so the flagship surfaces do not 404 when the backend is not deployed beside the frontend.
 
+## Release Modes
+
+Praxis currently has two honest release modes:
+
+- **Frontend-only public demo**: ready now. Deploy the Next.js app with `NEXT_PUBLIC_DEMO_MODE=1` and the flagship surfaces run on deterministic demo fallbacks.
+- **Full-stack public production**: not turnkey yet. The repo includes the backend services and reference infrastructure, but you still need real secrets, explicit public CORS origins, rotated demo credentials, and a chosen backend hosting target.
+
+Before a real public production launch:
+
+- Replace `SECRET_KEY` with a strong runtime secret
+- Set `ALLOWED_ORIGINS` to the real public frontend domains
+- Replace or rotate demo credentials in `users.json`
+- Validate the chosen backend hosting path
+
+See [docs/release/public-launch-checklist.md](docs/release/public-launch-checklist.md) and [docs/architecture/deployment-guide.md](docs/architecture/deployment-guide.md).
+
 ## Prove Praxis Works
 
 Praxis is verified through a local FieldLab run, not a pre-recorded video. The flagship proof path loads the manufacturing solution pack, streams messy events through the Floci-backed FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.

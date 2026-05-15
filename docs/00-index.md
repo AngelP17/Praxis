@@ -20,6 +20,7 @@ This documentation set explains the theory, architecture, and operational model 
 | [12-demo-script.md](12-demo-script.md) | How to demo the system | 5 min |
 | [13-validation-and-quality-gates.md](13-validation-and-quality-gates.md) | How quality is verified | 3 min |
 | [14-limitations-and-future-work.md](14-limitations-and-future-work.md) | Honest limitations and roadmap | 3 min |
+| [release/public-launch-checklist.md](release/public-launch-checklist.md) | Verified demo launch path vs real production checklist | 3 min |
 
 ## Architecture Deep Dives
 
