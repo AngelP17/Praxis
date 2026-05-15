@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FileText, TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
+import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { formatCurrency } from "@/lib/praxis-client";
 import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
 
