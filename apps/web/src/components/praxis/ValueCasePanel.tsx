@@ -6,17 +6,15 @@ import { FileText, TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { formatCurrency } from "@/lib/praxis-client";
-
-interface ValueCasePanelProps {
-  packId?: string;
-}
+import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
 
 type Impact = "high" | "medium" | "low";
 
 function ImpactIcon({ impact }: { impact: Impact }) {
   if (impact === "high") return <TrendUp className="h-3 w-3 text-[var(--praxis-crit)]" />;
   if (impact === "medium") return <Minus className="h-3 w-3 text-[var(--praxis-muted)]" />;
-  return <TrendDown className="h-3 w-3 text-[var(--praxis-mint)]" />;
+  return <TrendDown className="h-3 w-3 text-[var(--praxis-argon)]" />;
 }
 
 export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCasePanelProps) {
@@ -75,6 +73,13 @@ export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCa
     { label: "Actions available", value: String(proof.ontology.actions_available), impact: "low" },
   ];
 
+  const topbarRight = (
+    <>
+      <Pill tone="argon">{formatCurrency(annualValue)}/yr</Pill>
+      <Pill>conf {confidence.toFixed(2)}</Pill>
+    </>
+  );
+
   return (
     <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
       <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
@@ -103,12 +108,11 @@ export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCa
                   <ImpactIcon impact={a.impact} />
                   {a.label}
                 </div>
-                <div className="mt-2 font-display text-3xl">{a.value}</div>
               </div>
-            </div>
-          ))}
-        </div>
-      </article>
-    </div>
+            ))}
+          </div>
+        </article>
+      </div>
+    </WorkbenchShell>
   );
 }

@@ -7,6 +7,7 @@ import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { WorkbenchShell, TopbarTitle, Pill, PrimaryAction, GhostAction } from "./WorkbenchShell";
+import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
 
 export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; runId?: string }) {
   const searchParams = useSearchParams();
@@ -59,6 +60,7 @@ export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; 
       packName={activePack?.name ?? packId}
       topbar={<TopbarTitle title={`Decision · ${runId_.toUpperCase()}`} subtitle="review required" right={topbarRight} />}
     >
+      <ProofNarrativeStrip proof={proof} packName={activePack?.name ?? packId} />
       <div className="grid grid-cols-1 grid-flow-dense gap-[18px] overflow-hidden p-6 lg:grid-cols-[1.25fr_1fr]">
         <article className="flex flex-col gap-[18px] overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.01]">
           <div className="flex flex-wrap items-end justify-between gap-6">

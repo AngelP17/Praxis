@@ -9,6 +9,8 @@ import { formatCurrency, formatPercent } from "@/lib/praxis-client";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { WorkbenchShell, TopbarTitle, Pill, PrimaryAction } from "./WorkbenchShell";
+import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
+import { ProofJourneyTimeline } from "@/components/praxis/ProofJourneyTimeline";
 
 function Spark({ data, color, w = 120, h = 36 }: { data: number[]; color: string; w?: number; h?: number }) {
   const max = Math.max(...data);
@@ -141,6 +143,7 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
       packName={packName}
       topbar={<TopbarTitle title="Operational Overview" subtitle={`Real-time posture · ${sites} sites · ${activeRuns} active runs`} right={topbarRight} />}
     >
+      <ProofNarrativeStrip proof={proof} packName={packName} />
       <div className="grid grid-cols-1 grid-flow-dense auto-rows-min gap-[14px] p-[26px] md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           label="Mission Readiness"
@@ -182,6 +185,10 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
         </article>
 
         <SignalDensityChart />
+
+        <div className="col-span-1 md:col-span-2 lg:col-span-4">
+          <ProofJourneyTimeline proof={proof} />
+        </div>
 
         <MetricCard label="Events ingested" value={String(eventsTotal)} delta="proof-verified event count" deltaColor="var(--praxis-argon)" />
         <MetricCard label="Ontology objects" value={String(ontologyObjects)} delta={`${proof.ontology.links_created} links`} deltaColor="var(--praxis-argon)" />

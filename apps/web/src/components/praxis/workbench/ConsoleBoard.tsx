@@ -11,6 +11,8 @@ import { PipelineLive } from "@/components/praxis/PipelineLive";
 import { CurlWidget } from "@/components/praxis/CurlWidget";
 import { FlociHealth } from "@/components/praxis/FlociHealth";
 import { WorkbenchShell, TopbarTitle, Pill, PrimaryAction } from "./WorkbenchShell";
+import { ProofJourneyTimeline } from "@/components/praxis/ProofJourneyTimeline";
+import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
 
 const FLOCI_SERVICES = [
   { service: "S3", resource: "praxis-raw-events", status: "archive" },
@@ -48,7 +50,11 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
       packName={packName}
       topbar={<TopbarTitle title="Operator Console" subtitle="Live pipeline · Floci health · Active runs" right={topbarRight} />}
     >
+      <ProofNarrativeStrip proof={proof} packName={packName} />
       <div className="grid grid-cols-1 grid-flow-dense gap-[18px] p-6 md:p-8 lg:grid-cols-12">
+        <div className="lg:col-span-12">
+          <ProofJourneyTimeline proof={proof} />
+        </div>
         <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.01] lg:col-span-8">
           <div className="mb-4 flex items-center justify-between">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Live pipeline &middot; {packName}</div>

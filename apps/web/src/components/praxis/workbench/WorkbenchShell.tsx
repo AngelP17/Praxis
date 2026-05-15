@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
 import { ArrowSquareOut, BracketsCurly, CirclesThreePlus } from "@phosphor-icons/react";
 import { PraxisMark } from "@/components/praxis/PraxisMark";
@@ -30,6 +30,9 @@ export function WorkbenchShell({
   packName?: string;
 }) {
   const pathname = usePathname() ?? "";
+  const searchParams = useSearchParams();
+  const packParam = searchParams.get("pack");
+  const packSuffix = packParam ? `?pack=${packParam}` : "";
   return (
     <div className="relative grid min-h-[100dvh] grid-cols-1 grid-flow-dense overflow-hidden bg-[var(--praxis-obsidian)] text-[var(--praxis-bone)] md:grid-cols-[264px_1fr]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(139,92,255,0.14),transparent_24%),radial-gradient(circle_at_86%_18%,rgba(62,255,168,0.08),transparent_20%),linear-gradient(180deg,rgba(19,18,31,0.18),transparent_42%)]" />
@@ -64,7 +67,7 @@ export function WorkbenchShell({
             return (
               <Link
                 key={href}
-                href={href}
+                href={`${href}${packSuffix}`}
                 className="group relative mb-1 overflow-hidden border px-4 py-[12px] text-[12.5px] transition-transform duration-700 hover:translate-x-1"
                 style={{
                   borderColor: active ? "var(--praxis-plasma)" : "var(--praxis-line)",
