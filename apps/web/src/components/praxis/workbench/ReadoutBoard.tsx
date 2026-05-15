@@ -8,6 +8,8 @@ import { formatCurrency } from "@/lib/praxis-client";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { WorkbenchShell, TopbarTitle, GhostAction, PrimaryAction } from "./WorkbenchShell";
+import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
+import { ProofJourneyTimeline } from "@/components/praxis/ProofJourneyTimeline";
 
 function Spark({ data, color, w = 310, h = 70 }: { data: number[]; color: string; w?: number; h?: number }) {
   const max = Math.max(...data);
@@ -63,6 +65,10 @@ export function ReadoutBoard({ packId: propPackId, runId }: { packId?: string; r
       packName={packName}
       topbar={<TopbarTitle title="Executive Readout · Q2" subtitle={packName} right={topbarRight} />}
     >
+      <ProofNarrativeStrip proof={proof} packName={packName} />
+      <div className="px-8 pt-6 pb-2">
+        <ProofJourneyTimeline proof={proof} />
+      </div>
       <div
         className="flex h-full justify-center overflow-hidden p-[30px]"
         style={{ background: "radial-gradient(ellipse at 50% 0%, var(--praxis-surface-2) 0%, var(--praxis-obsidian) 60%)" }}
