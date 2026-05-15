@@ -37,6 +37,15 @@
   --praxis-amber: #E8B86F;
   --praxis-crit: #FF5E78;
 
+  /* paper-mode tokens — inverted palette for HiFiReadoutPanel paper toggle */
+  --praxis-paper-bg:        #F1EDDF;
+  --praxis-paper-surface:   #E8E4D4;
+  --praxis-paper-surface-2: #DDD9C8;
+  --praxis-paper-line:      #C8C4B0;
+  --praxis-paper-ink:       #1C1A2E;
+  --praxis-paper-mute:      #6B6655;
+  --praxis-paper-argon:     #1A7A52;
+
   /* legacy aliases — kept for backward compat with existing components */
   --praxis-bg: var(--praxis-obsidian);
   --praxis-panel: var(--praxis-surface);

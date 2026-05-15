@@ -14,6 +14,14 @@ const LINE = "var(--praxis-line)";
 const MUTE = "var(--praxis-mute)";
 const FAINT = "var(--praxis-faint)";
 const CRIT = "var(--praxis-crit)";
+// Paper-mode tokens (inverted palette, defined in globals.css --praxis-paper-*)
+const PAPER_BG       = "var(--praxis-paper-bg)";
+const PAPER_SURFACE  = "var(--praxis-paper-surface)";
+const PAPER_SURFACE2 = "var(--praxis-paper-surface-2)";
+const PAPER_LINE     = "var(--praxis-paper-line)";
+const PAPER_INK      = "var(--praxis-paper-ink)";
+const PAPER_MUTE     = "var(--praxis-paper-mute)";
+const PAPER_ARGON    = "var(--praxis-paper-argon)";
 
 function ScreenChrome({ runId, screenLabel }: { runId: string; screenLabel: string }) {
   return (
@@ -309,13 +317,13 @@ export function HiFiReadoutPanel() {
   const [mode, setMode] = useState<"dark" | "paper">("dark");
   const paper = mode === "paper";
 
-  const bg      = paper ? "#F1EDDF" : OBSIDIAN;
-  const surface = paper ? "#E8E4D4" : SURFACE;
-  const surface2= paper ? "#DDD9C8" : SURFACE_2;
-  const line    = paper ? "#C8C4B0" : LINE;
-  const bone    = paper ? "#1C1A2E" : BONE;
-  const mute    = paper ? "#6B6655" : MUTE;
-  const argon   = paper ? "#1A7A52" : ARGON;
+  const bg      = paper ? PAPER_BG       : OBSIDIAN;
+  const surface = paper ? PAPER_SURFACE  : SURFACE;
+  const surface2= paper ? PAPER_SURFACE2 : SURFACE_2;
+  const line    = paper ? PAPER_LINE     : LINE;
+  const bone    = paper ? PAPER_INK      : BONE;
+  const mute    = paper ? PAPER_MUTE     : MUTE;
+  const argon   = paper ? PAPER_ARGON    : ARGON;
 
   return (
     <div className="relative h-full w-full transition-colors duration-500" style={{ background: bg, color: bone }}>

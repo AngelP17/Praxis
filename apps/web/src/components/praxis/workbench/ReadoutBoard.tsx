@@ -35,8 +35,8 @@ export function ReadoutBoard({ packId: propPackId, runId }: { packId?: string; r
   if (error || !proof) return <WorkbenchShell topbar={<TopbarTitle title="Executive Readout" subtitle="Error" />}><div className="p-8"><ErrorState title="Proof unavailable" message={error?.message ?? "Could not load proof"} onRetry={reload} /></div></WorkbenchShell>;
 
   const runId_ = runId ?? proof.run_id;
-  const now = new Date();
-  const quarter = `Q${Math.ceil((now.getMonth() + 1) / 3)}`;
+  const proofDate = proof.generated_at ? new Date(proof.generated_at) : new Date();
+  const quarter = `Q${Math.ceil((proofDate.getMonth() + 1) / 3)}`;
   const annualValue = proof.value_case.estimated_annual_value;
   const annualLabel = `${formatCurrency(annualValue)}/yr`;
   const trust = proof.evidence.evidence_trust;

@@ -97,7 +97,7 @@ function FieldLabTerminalSection() {
     { prompt: "",  text: "  → S3    ready · bucket praxis-artifacts-dev",    color: "var(--praxis-argon)" },
     { prompt: "",  text: "  → DDB   ready · table praxis-proof-ledger",      color: "var(--praxis-argon)" },
     { prompt: "",  text: "  → floci ready · 3 services healthy",             color: "var(--praxis-argon)" },
-    { prompt: "$", text: "make praxis-proof PACK=manufacturing-printer-gpo", color: "var(--praxis-bone)" },
+    { prompt: "$", text: "make praxis-proof", color: "var(--praxis-bone)" },
     { prompt: "",  text: "  running signal ingestion…",                      color: "var(--praxis-muted)" },
     { prompt: "",  text: "  running ontology compilation…",                  color: "var(--praxis-muted)" },
     { prompt: "",  text: "  running decision scoring…",                      color: "var(--praxis-muted)" },
