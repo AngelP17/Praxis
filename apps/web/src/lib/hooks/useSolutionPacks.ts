@@ -3,8 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { praxisClient, type SolutionPack } from "@/lib/praxis-client";
 import { DEMO_PACKS } from "@/lib/praxis-demo-data";
-
-const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 export function useSolutionPacks() {
   const [packs, setPacks] = useState<SolutionPack[]>([]);
@@ -15,7 +14,7 @@ export function useSolutionPacks() {
     setLoading(true);
     setError(null);
 
-    if (IS_DEMO) {
+    if (IS_DEMO_MODE) {
       setPacks(DEMO_PACKS);
       setLoading(false);
       return;
@@ -32,5 +31,5 @@ export function useSolutionPacks() {
     load();
   }, [load]);
 
-  return { packs, loading, error, reload: load, isDemo: IS_DEMO };
+  return { packs, loading, error, reload: load, isDemo: IS_DEMO_MODE };
 }

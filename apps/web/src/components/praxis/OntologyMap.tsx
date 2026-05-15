@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives,
 } from "@phosphor-icons/react";
@@ -48,9 +50,68 @@ function renderIcon(Icon: any) {
 }
 
 export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
-  const { proof } = useProof(packId);
+  const searchParams = useSearchParams();
+  const resolvedPackId = searchParams.get("pack") ?? packId;
+  const { proof } = useProof(resolvedPackId);
+  const [snapshot, setSnapshot] = useState<{
+    objects: Array<{ object_key: string; object_type: string; display_name: string; confidence?: number }>;
+    links: Array<{ source: string; target: string; relation?: string }>;
+    actions: Array<{ action_type: string; display_name?: string }>;
+  } | null>(null);
 
-  if (!proof) {
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const [objectsRes, linksRes, actionsRes] = await Promise.all([
+          fetch("/api/ontology/objects", { cache: "no-store" }),
+          fetch("/api/ontology/links", { cache: "no-store" }),
+          fetch("/api/ontology/actions", { cache: "no-store" }),
+        ]);
+        if (!objectsRes.ok || !linksRes.ok || !actionsRes.ok) {
+          throw new Error("Ontology endpoints unavailable");
+        }
+        const [objectsData, linksData, actionsData] = await Promise.all([
+          objectsRes.json(),
+          linksRes.json(),
+          actionsRes.json(),
+        ]);
+        if (!cancelled) {
+          setSnapshot({
+            objects: objectsData.objects ?? [],
+            links: linksData.links ?? [],
+            actions: actionsData.actions ?? [],
+          });
+        }
+      } catch {
+        if (!cancelled && proof) {
+          setSnapshot({
+            objects: proof.evidence.sources.slice(0, proof.ontology.objects_created).map((source, index) => ({
+              object_key: `${source}-${index}`,
+              object_type: SOURCE_TYPE_MAP[source] ?? "Service",
+              display_name: source.replace(/_/g, " "),
+              confidence: proof.ontology.mapping_confidence,
+            })),
+            links: Array.from({ length: proof.ontology.links_created }).slice(0, 3).map((_, index) => ({
+              source: `source-${index}`,
+              target: `target-${index}`,
+              relation: "correlates_with",
+            })),
+            actions: Array.from({ length: Math.min(proof.ontology.actions_available, 3) }).map((_, index) => ({
+              action_type: `action_${index + 1}`,
+              display_name: ["Route to mechanical", "Capture evidence", "Escalate owner"][index] ?? `Action ${index + 1}`,
+            })),
+          });
+        }
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [proof]);
+
+  if (!proof || !snapshot) {
     return (
       <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
         <article className="h-64 animate-pulse border border-[var(--praxis-line)] bg-[var(--praxis-panel)] lg:col-span-8" />
@@ -59,18 +120,18 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
     );
   }
 
-  const nodes = proof.evidence.sources.slice(0, proof.ontology.objects_created).map((source, i) => {
-    const type = SOURCE_TYPE_MAP[source] ?? "Service";
+  const nodes = snapshot.objects.map((object, i) => {
+    const type = object.object_type ?? SOURCE_TYPE_MAP[object.object_key] ?? "Service";
     const Icon = iconByType[type] ?? TreeStructure;
-    const linksPerObject = Math.round(proof.ontology.links_created / proof.ontology.objects_created);
-    return { key: source, type, Icon, links: linksPerObject + (i % 3) * 4 };
+    const linksPerObject = Math.max(1, Math.round(snapshot.links.length / Math.max(snapshot.objects.length, 1)));
+    return { key: object.object_key, label: object.display_name, type, Icon, links: linksPerObject + (i % 3) * 4 };
   });
 
   const mappingConf = proof.ontology.mapping_confidence;
   const mappingFactors = [
     { label: "Objects", value: Math.round(mappingConf * 100) },
-    { label: "Links", value: Math.min(100, Math.round((proof.ontology.links_created / 200) * 100)) },
-    { label: "Actions", value: Math.round((proof.ontology.actions_available / 10) * 100) },
+    { label: "Links", value: Math.min(100, Math.round((snapshot.links.length / 20) * 100)) },
+    { label: "Actions", value: Math.round((snapshot.actions.length / 10) * 100) },
   ];
 
   return (
@@ -84,7 +145,7 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
                 {renderIcon(node.Icon)}
                 <div className="mt-5 font-display text-2xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
                 <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-                  {node.links} links · {node.key}
+                  {node.links} links · {node.label}
                 </div>
               </div>
             );
@@ -93,15 +154,15 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
         <div className="mt-6 flex gap-3">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
             <span className="h-2 w-2 rounded-full bg-[var(--praxis-mint)]" />
-            {proof.ontology.objects_created} objects
+            {snapshot.objects.length} objects
           </div>
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
             <span className="h-2 w-2 rounded-full bg-[var(--praxis-violet)]" />
-            {proof.ontology.links_created} links
+            {snapshot.links.length} links
           </div>
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
             <span className="h-2 w-2 rounded-full bg-[var(--praxis-bone)]" />
-            {proof.ontology.actions_available} actions
+            {snapshot.actions.length} actions
           </div>
         </div>
       </article>

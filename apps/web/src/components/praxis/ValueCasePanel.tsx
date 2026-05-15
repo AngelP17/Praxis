@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { FileText, TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
@@ -18,17 +20,50 @@ function ImpactIcon({ impact }: { impact: Impact }) {
 }
 
 export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCasePanelProps) {
-  const { proof } = useProof(packId);
+  const searchParams = useSearchParams();
+  const resolvedPackId = searchParams.get("pack") ?? packId;
+  const { proof } = useProof(resolvedPackId);
   const { packs } = useSolutionPacks();
-  const pack = packs.find((p) => p.id === packId);
+  const pack = packs.find((p) => p.id === resolvedPackId);
+  const [valueCase, setValueCase] = useState<{
+    estimated_annual_value: number;
+    confidence: number;
+    evidence_refs_json: string[];
+  } | null>(null);
 
-  if (!proof) return null;
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const response = await fetch(`/api/value-cases/${resolvedPackId}`, { cache: "no-store" });
+        if (!response.ok) throw new Error("Value case unavailable");
+        const data = await response.json();
+        if (!cancelled) {
+          setValueCase(data);
+        }
+      } catch {
+        if (!cancelled && proof) {
+          setValueCase({
+            estimated_annual_value: proof.value_case.estimated_annual_value,
+            confidence: proof.value_case.confidence,
+            evidence_refs_json: proof.evidence.sources,
+          });
+        }
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [proof, resolvedPackId]);
 
-  const annualValue = proof.value_case.estimated_annual_value;
-  const confidence = proof.value_case.confidence;
+  if (!proof || !valueCase) return null;
+
+  const annualValue = valueCase.estimated_annual_value;
+  const confidence = valueCase.confidence;
   const primaryDriver = proof.value_case.primary_value_driver;
   const evidenceTrust = proof.evidence.evidence_trust;
-  const rawEvents = proof.evidence.raw_events;
+  const rawEvents = valueCase.evidence_refs_json.length || proof.evidence.raw_events;
   const ontologyObjects = proof.ontology.objects_created;
 
   const assumptions: { label: string; value: string; impact: Impact }[] = [
@@ -51,7 +86,7 @@ export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCa
           <div className="font-display text-xl text-[var(--praxis-violet)]">{confidence.toFixed(2)}</div>
         </div>
         <p className="mt-7 text-sm leading-6 text-[var(--praxis-muted)]">
-          Based on {rawEvents} events across {proof.evidence.sources.length} sources.
+          Based on {rawEvents} evidence references across {proof.evidence.sources.length} sources.
         </p>
         <div className="mt-4 border-t border-[var(--praxis-line)] pt-4">
           <div className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Primary driver</div>

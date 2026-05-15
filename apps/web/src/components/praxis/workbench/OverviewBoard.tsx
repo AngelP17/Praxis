@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
+import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 import { formatCurrency, formatPercent } from "@/lib/praxis-client";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
@@ -92,6 +93,7 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
   const packId = propPackId ?? searchParams.get("pack") ?? "manufacturing-printer-gpo";
   const { proof, loading, error, reload } = useProof(packId);
   const { packs } = useSolutionPacks();
+  const dashboard = useDashboardData();
   const activePack = packs.find((p) => p.id === packId);
 
   if (loading) return <WorkbenchShell topbar={<TopbarTitle title="Operational Overview" subtitle="Loading…" />}><div className="p-8"><LoadingSkeleton /></div></WorkbenchShell>;
@@ -106,14 +108,24 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
   const packName = activePack?.name ?? packId;
   const runId_ = runId ?? proof.run_id;
   const sites = 7;
-  const activeRuns = 24;
-
   const alerts = proof.evidence.sources.slice(0, 3).map((source, i) => ({
     source,
     summary: `Signal from ${source}`,
     severity: i === 0 ? "high" : i === 1 ? "medium" : "low",
     timestamp: proof.generated_at,
   }));
+  const activeRuns = dashboard.metrics?.incidentCount ?? 24;
+  const openTickets = dashboard.metrics?.openTickets ?? eventsTotal;
+  const criticalTickets = dashboard.metrics?.criticalTickets ?? alerts.length;
+  const signalQuality = dashboard.metrics
+    ? Math.max(0, Math.min(1, 1 - criticalTickets / Math.max(openTickets, 1)))
+    : priorityScore;
+  const readinessDelta =
+    dashboard.metrics?.systemStatus === "healthy"
+      ? "live metrics nominal"
+      : dashboard.metrics?.systemStatus === "degraded"
+        ? "attention required"
+        : "+2.4% vs yesterday";
 
   const topbarRight = (
     <>
@@ -133,26 +145,26 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
         <MetricCard
           label="Mission Readiness"
           value={formatPercent(evidenceTrust)}
-          delta="+2.4% vs yesterday"
+          delta={readinessDelta}
           deltaColor="var(--praxis-argon)"
           chart={<Spark data={[20, 22, 21, 23, 25, 24, 28, 27, 30, 29, 32]} color="var(--praxis-plasma)" />}
         />
         <MetricCard
           label="Active Operations"
           value={String(activeRuns)}
-          delta={`across ${sites} theaters`}
+          delta={`${openTickets} open tickets across ${sites} theaters`}
           chart={<Bars data={[3, 5, 4, 6, 7, 6, 8, 9, 7, 8, 10]} color="var(--praxis-plasma)" />}
         />
         <MetricCard
           label="Signal Quality"
-          value={formatPercent(priorityScore)}
-          delta="stable"
+          value={formatPercent(signalQuality)}
+          delta={`${criticalTickets} critical signals`}
           chart={<Spark data={[8, 9, 7, 10, 9, 11, 10, 12, 11, 13, 12]} color="var(--praxis-argon)" />}
         />
 
         <article className="row-span-2 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.01]">
           <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Alerts &middot; requiring action</div>
-          <div className="mt-2 font-display text-[30px] font-medium">{alerts.length} open</div>
+          <div className="mt-2 font-display text-[30px] font-medium">{criticalTickets} open</div>
           <div className="mt-4 flex flex-col gap-[10px]">
             {alerts.map((e, i) => {
               const color = e.severity === "high" ? "var(--praxis-crit)" : e.severity === "medium" ? "var(--praxis-plasma)" : "var(--praxis-argon)";
