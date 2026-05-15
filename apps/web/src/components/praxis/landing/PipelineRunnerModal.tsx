@@ -95,7 +95,7 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
               Pipeline Runner &middot; {packId}
             </span>
           </div>
-          <button onClick={onClose} className="p-1 opacity-60 transition-opacity hover:opacity-100">
+          <button onClick={onClose} className="p-1 opacity-60 transition-all duration-200 hover:scale-110 hover:opacity-100">
             <X className="h-4 w-4" style={{ color: "var(--praxis-bone)" }} />
           </button>
         </div>
@@ -134,7 +134,7 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
         </div>
 
         {/* body: event log + active stage info */}
-        <div className="grid grid-cols-2" style={{ minHeight: 320 }}>
+        <div className="grid grid-flow-dense grid-cols-2" style={{ minHeight: 320 }}>
           {/* event log */}
           <div className="border-r" style={{ borderColor: "var(--praxis-line)" }}>
             <div className="border-b px-4 py-2 font-mono text-[9px] uppercase tracking-[0.2em]" style={{ borderColor: "var(--praxis-line)", color: "var(--praxis-muted)" }}>

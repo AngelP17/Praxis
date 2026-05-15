@@ -49,7 +49,7 @@ export function HiFiStickyTour() {
 
   return (
     <section
-      className="relative"
+      className="relative py-20"
       style={{ background: "var(--praxis-obsidian)" }}
     >
       {/* section header */}

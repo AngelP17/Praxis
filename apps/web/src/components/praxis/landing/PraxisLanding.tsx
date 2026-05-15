@@ -25,7 +25,7 @@ function OutcomesSection() {
         <div className="mb-14 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
           Outcomes
         </div>
-        <div className="grid gap-px border" style={{ borderColor: "var(--praxis-line)", gridTemplateColumns: "repeat(4,1fr)" }}>
+        <div className="grid grid-flow-dense gap-px border" style={{ borderColor: "var(--praxis-line)", gridTemplateColumns: "repeat(4,1fr)" }}>
           {metrics.map((m) => (
             <div key={m.label} className="border-r p-8 last:border-r-0" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
               <div
@@ -109,7 +109,7 @@ function FieldLabTerminalSection() {
   return (
     <section className="border-b py-24 md:py-36" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
       <div className="mx-auto max-w-7xl px-5">
-        <div className="grid gap-12 lg:grid-cols-2 lg:gap-20">
+        <div className="grid grid-flow-dense gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="flex flex-col justify-center">
             <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
               Local proof workflow

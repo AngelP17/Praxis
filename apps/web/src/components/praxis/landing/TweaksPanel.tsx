@@ -238,12 +238,12 @@ export function TweaksPanel() {
             <div className="flex items-center gap-3">
               <button
                 onClick={reset}
-                className="font-mono text-[9px] uppercase tracking-[0.12em] transition-opacity hover:opacity-80"
+                className="font-mono text-[9px] uppercase tracking-[0.12em] transition-all duration-200 hover:scale-105 hover:opacity-80"
                 style={{ color: "var(--praxis-muted)" }}
               >
                 reset
               </button>
-              <button onClick={() => setOpen(false)} className="opacity-60 transition-opacity hover:opacity-100">
+              <button onClick={() => setOpen(false)} className="opacity-60 transition-all duration-200 hover:scale-110 hover:opacity-100">
                 <X className="h-3.5 w-3.5" style={{ color: "var(--praxis-bone)" }} />
               </button>
             </div>

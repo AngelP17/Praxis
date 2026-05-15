@@ -23,7 +23,7 @@ const CHECKS = [
   { label: "ed25519 signature",   status: "verified",     color: "var(--praxis-argon)" },
   { label: "proof schema v1.4",   status: "valid",        color: "var(--praxis-argon)" },
   { label: "deterministic replay",status: "matched",      color: "var(--praxis-argon)" },
-  { label: "evidence trust ≥ 0.80",status:"0.82 ✓",      color: "var(--praxis-argon)" },
+  { label: "evidence trust ≥ 0.80",status:"0.82 pass",   color: "var(--praxis-argon)" },
   { label: "merkle root",         status: "intact",       color: "var(--praxis-amber)" },
   { label: "sigstore attestation",status: "rekor anchor", color: "var(--praxis-amber)" },
 ];
@@ -70,7 +70,7 @@ export function ProofAnatomySection() {
           <span className="h-px flex-1" style={{ background: "var(--praxis-line)" }} />
         </div>
 
-        <div className="grid gap-10 lg:grid-cols-2">
+        <div className="grid grid-flow-dense gap-10 lg:grid-cols-2">
           {/* JSON viewer */}
           <div
             className="overflow-hidden border"
