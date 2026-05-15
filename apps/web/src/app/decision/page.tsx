@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { DecisionBoard } from "@/components/praxis/workbench/DecisionBoard";
 
 export default function DecisionPage() {
-  return <PraxisExperience initialScreen="decision" />;
+  return <DecisionBoard />;
 }

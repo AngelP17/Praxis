@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { ValueCasePanel } from "@/components/praxis/ValueCasePanel";
 
 export default function ValueCasePage() {
-  return <PraxisExperience initialScreen="value-case" />;
+  return <ValueCasePanel />;
 }

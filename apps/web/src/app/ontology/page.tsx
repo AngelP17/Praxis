@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { OntologyMap } from "@/components/praxis/OntologyMap";
 
 export default function OntologyPage() {
-  return <PraxisExperience initialScreen="ontology" />;
+  return <OntologyMap />;
 }

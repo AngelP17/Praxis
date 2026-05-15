@@ -1,20 +1,37 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { MapTrifold, GitBranch, ArrowRight } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { formatCurrency } from "@/lib/praxis-client";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
 
-interface ExpansionMapProps {
-  packId?: string;
-}
-
-export function ExpansionMap({ packId = "manufacturing-printer-gpo" }: ExpansionMapProps) {
-  const { proof } = useProof(packId);
+export function ExpansionMap({ packId: propPackId }: { packId?: string }) {
+  const searchParams = useSearchParams();
+  const packId = searchParams.get("pack") ?? propPackId ?? "manufacturing-printer-gpo";
+  const { proof, loading } = useProof(packId);
   const { packs } = useSolutionPacks();
   const pack = packs.find((p) => p.id === packId);
 
-  if (!proof) return null;
+  if (loading) {
+    return (
+      <WorkbenchShell topbar={<TopbarTitle title="Expansion" subtitle="Loading…" />}>
+        <div className="p-8"><LoadingSkeleton /></div>
+      </WorkbenchShell>
+    );
+  }
+
+  if (!proof) {
+    return (
+      <WorkbenchShell topbar={<TopbarTitle title="Expansion" subtitle="No proof data" />}>
+        <div className="p-8 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
+          No proof available for {packId}. Run FieldLab first.
+        </div>
+      </WorkbenchShell>
+    );
+  }
 
   const adjacentCases = (proof.expansion ?? []).map((item, index) => ({
     name: item.name,
@@ -22,48 +39,60 @@ export function ExpansionMap({ packId = "manufacturing-printer-gpo" }: Expansion
     rationale: index % 2 === 0 ? "Shared data model and stakeholder overlap" : "Reusable implementation path",
   }));
 
+  const topbarRight = (
+    <>
+      <Pill>{adjacentCases.length} adjacent cases</Pill>
+      <Pill tone="argon">{formatCurrency(proof.value_case.estimated_annual_value)}/yr</Pill>
+    </>
+  );
+
   return (
-    <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
-      <article className="lg:col-span-5 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <MapTrifold className="h-10 w-10 text-[var(--praxis-violet)]" weight="duotone" />
-        <h4 className="mt-10 font-display text-5xl font-medium leading-none">{pack?.name ?? packId}</h4>
-        <p className="mt-5 text-sm leading-6 text-[var(--praxis-muted)]">
-          Initial proof path for {(pack?.buyer_persona ?? "operator").toLowerCase()} operations and executive value narrative.
-        </p>
-        <div className="mt-8 space-y-3">
-          <div className="flex items-center justify-between border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
-            <span className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Current value</span>
-            <span className="font-display text-2xl text-[var(--praxis-mint)]">{formatCurrency(proof.value_case.estimated_annual_value)}/yr</span>
-          </div>
-          <div className="flex items-center justify-between border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4">
-            <span className="font-mono text-[10px] uppercase text-[var(--praxis-muted)]">Expansion potential</span>
-            <span className="font-display text-2xl text-[var(--praxis-violet)]">{adjacentCases.length} cases</span>
-          </div>
-        </div>
-      </article>
-      <article className="lg:col-span-7 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
-          <GitBranch className="h-4 w-4" />
-          Adjacent use cases
-        </div>
-        <div className="mt-6 space-y-3">
-          {adjacentCases.map((item, index) => (
-            <div key={item.name} className="group grid grid-flow-dense grid-cols-[1fr_auto] gap-4 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-colors hover:border-[var(--praxis-violet)]">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] uppercase text-[var(--praxis-violet)]">#{String(index + 1).padStart(2, "0")}</span>
-                  <span className="text-sm">{item.name}</span>
-                </div>
-                <div className="mt-1 text-xs text-[var(--praxis-muted)]">{item.rationale}</div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="font-display text-3xl text-[var(--praxis-mint)]">{item.score.toFixed(2)}</span>
-                <ArrowRight className="h-4 w-4 text-[var(--praxis-muted)] opacity-0 transition-opacity group-hover:opacity-100" />
-              </div>
+    <WorkbenchShell
+      packName={pack?.name ?? packId}
+      topbar={<TopbarTitle title="Expansion" subtitle={pack?.name ?? packId} right={topbarRight} />}
+    >
+      <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-12">
+        <article className="lg:col-span-5 border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
+          <MapTrifold className="h-10 w-10" style={{ color: "var(--praxis-plasma)" }} weight="duotone" />
+          <h4 className="mt-10 font-display text-5xl font-medium leading-none">{pack?.name ?? packId}</h4>
+          <p className="mt-5 text-sm leading-6 text-[var(--praxis-mute)]">
+            Initial proof path for {(pack?.buyer_persona ?? "operator").toLowerCase()} operations and executive value narrative.
+          </p>
+          <div className="mt-8 space-y-3">
+            <div className="flex items-center justify-between border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] p-4">
+              <span className="font-mono text-[10px] uppercase text-[var(--praxis-mute)]">Current value</span>
+              <span className="font-display text-2xl" style={{ color: "var(--praxis-argon)" }}>{formatCurrency(proof.value_case.estimated_annual_value)}/yr</span>
             </div>
-          ))}
-        </div>
-      </article>
-    </div>
+            <div className="flex items-center justify-between border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] p-4">
+              <span className="font-mono text-[10px] uppercase text-[var(--praxis-mute)]">Expansion potential</span>
+              <span className="font-display text-2xl" style={{ color: "var(--praxis-plasma)" }}>{adjacentCases.length} cases</span>
+            </div>
+          </div>
+        </article>
+        <article className="lg:col-span-7 border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
+          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
+            <GitBranch className="h-4 w-4" />
+            Adjacent use cases
+          </div>
+          <div className="mt-6 space-y-3">
+            {adjacentCases.map((item, index) => (
+              <div key={item.name} className="group grid grid-flow-dense grid-cols-[1fr_auto] gap-4 border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] p-4 transition-colors hover:border-[var(--praxis-plasma)]">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] uppercase" style={{ color: "var(--praxis-plasma)" }}>#{String(index + 1).padStart(2, "0")}</span>
+                    <span className="text-sm">{item.name}</span>
+                  </div>
+                  <div className="mt-1 text-xs text-[var(--praxis-mute)]">{item.rationale}</div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-display text-3xl" style={{ color: "var(--praxis-argon)" }}>{item.score.toFixed(2)}</span>
+                  <ArrowRight className="h-4 w-4 text-[var(--praxis-mute)] opacity-0 transition-opacity group-hover:opacity-100" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      </div>
+    </WorkbenchShell>
   );
 }

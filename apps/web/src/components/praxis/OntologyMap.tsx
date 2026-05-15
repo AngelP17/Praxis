@@ -1,9 +1,13 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import {
   TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives,
 } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
+import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
 import { PraxisMark } from "./PraxisMark";
 
 const iconByType: Record<string, any> = {
@@ -47,15 +51,28 @@ function renderIcon(Icon: any) {
   return <Icon className="h-6 w-6 text-[var(--praxis-mint)]" />;
 }
 
-export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
-  const { proof } = useProof(packId);
+export function OntologyMap({ packId: propPackId }: { packId?: string }) {
+  const searchParams = useSearchParams();
+  const packId = searchParams.get("pack") ?? propPackId ?? "manufacturing-printer-gpo";
+  const { proof, loading } = useProof(packId);
+  const { packs } = useSolutionPacks();
+  const activePack = packs.find((p) => p.id === packId);
+
+  if (loading) {
+    return (
+      <WorkbenchShell topbar={<TopbarTitle title="Ontology" subtitle="Loading…" />}>
+        <div className="p-8"><LoadingSkeleton /></div>
+      </WorkbenchShell>
+    );
+  }
 
   if (!proof) {
     return (
-      <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
-        <article className="h-64 animate-pulse border border-[var(--praxis-line)] bg-[var(--praxis-panel)] lg:col-span-8" />
-        <article className="h-64 animate-pulse border border-[var(--praxis-line)] bg-[var(--praxis-panel)] lg:col-span-4" />
-      </div>
+      <WorkbenchShell topbar={<TopbarTitle title="Ontology" subtitle="No proof data" />}>
+        <div className="p-8 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
+          No proof available for {packId}. Run FieldLab first.
+        </div>
+      </WorkbenchShell>
     );
   }
 
@@ -73,55 +90,65 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
     { label: "Actions", value: Math.round((proof.ontology.actions_available / 10) * 100) },
   ];
 
+  const topbarRight = (
+    <>
+      <Pill>{proof.ontology.objects_created} objects</Pill>
+      <Pill tone="argon">{proof.ontology.links_created} links</Pill>
+    </>
+  );
+
   return (
-    <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
-      <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph</div>
-        <div className="mt-8 grid grid-flow-dense grid-cols-2 gap-4">
-          {nodes.map((node) => {
-            return (
-              <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
+    <WorkbenchShell
+      packName={activePack?.name ?? packId}
+      topbar={<TopbarTitle title="Ontology" subtitle={`Mapping confidence ${mappingConf.toFixed(2)}`} right={topbarRight} />}
+    >
+      <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-12">
+        <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
+          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Object graph</div>
+          <div className="mt-8 grid grid-flow-dense grid-cols-2 gap-4">
+            {nodes.map((node) => (
+              <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] p-4 transition-transform duration-700 hover:scale-105">
                 {renderIcon(node.Icon)}
                 <div className="mt-5 font-display text-2xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
-                <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+                <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-mute)]">
                   {node.links} links · {node.key}
                 </div>
               </div>
-            );
-          })}
-        </div>
-        <div className="mt-6 flex gap-3">
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--praxis-mint)]" />
-            {proof.ontology.objects_created} objects
+            ))}
           </div>
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--praxis-violet)]" />
-            {proof.ontology.links_created} links
-          </div>
-          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--praxis-bone)]" />
-            {proof.ontology.actions_available} actions
-          </div>
-        </div>
-      </article>
-      <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Mapping confidence</div>
-        <div className="mt-5 font-display text-7xl text-[var(--praxis-mint)]">{mappingConf.toFixed(2)}</div>
-        <div className="mt-8 space-y-4">
-          {mappingFactors.map((item) => (
-            <div key={item.label}>
-              <div className="mb-2 flex justify-between font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-                <span>{item.label}</span>
-                <span>{item.value}%</span>
-              </div>
-              <div className="h-2 bg-[var(--praxis-line)]">
-                <div className="h-full bg-[var(--praxis-violet)]" style={{ width: `${item.value}%` }} />
-              </div>
+          <div className="mt-6 flex gap-3">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-mute)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--praxis-argon)]" />
+              {proof.ontology.objects_created} objects
             </div>
-          ))}
-        </div>
-      </article>
-    </div>
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-mute)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--praxis-plasma)]" />
+              {proof.ontology.links_created} links
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-mute)]">
+              <span className="h-2 w-2 rounded-full bg-[var(--praxis-bone)]" />
+              {proof.ontology.actions_available} actions
+            </div>
+          </div>
+        </article>
+        <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
+          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Mapping confidence</div>
+          <div className="mt-5 font-display text-7xl" style={{ color: "var(--praxis-argon)" }}>{mappingConf.toFixed(2)}</div>
+          <div className="mt-8 space-y-4">
+            {mappingFactors.map((item) => (
+              <div key={item.label}>
+                <div className="mb-2 flex justify-between font-mono text-[10px] uppercase text-[var(--praxis-mute)]">
+                  <span>{item.label}</span>
+                  <span>{item.value}%</span>
+                </div>
+                <div className="h-2 bg-[var(--praxis-line)]">
+                  <div className="h-full" style={{ width: `${item.value}%`, background: "var(--praxis-plasma)" }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </article>
+      </div>
+    </WorkbenchShell>
   );
 }

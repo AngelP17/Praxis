@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { ExpansionMap } from "@/components/praxis/ExpansionMap";
 
 export default function ExpansionMapPage() {
-  return <PraxisExperience initialScreen="expansion" />;
+  return <ExpansionMap />;
 }
