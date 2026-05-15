@@ -217,6 +217,36 @@ async function main() {
       waitForText: "Operational board view",
       postWaitMs: 2000,
     });
+
+    // 17. Console
+    await capture(authPage, "17-console.png", "/console", {
+      waitForText: "Operator Console",
+      postWaitMs: 2000,
+    });
+
+    // 18. FieldLab
+    await capture(authPage, "18-fieldlab.png", "/fieldlab", {
+      waitForText: "Live FieldLab proof system",
+      postWaitMs: 2500,
+    });
+
+    // 19. Solution Packs
+    await capture(authPage, "19-solution-packs.png", "/solution-packs", {
+      waitForText: "Solution Packs",
+      postWaitMs: 2000,
+    });
+
+    // 20. Proof Diff
+    await capture(authPage, "20-proof-diff.png", "/proof/diff", {
+      waitForText: "Proof Diff",
+      postWaitMs: 1500,
+    });
+
+    // 21. New Ticket
+    await capture(authPage, "21-tickets-new.png", "/tickets/new", {
+      waitForText: "New Ticket",
+      postWaitMs: 2000,
+    });
     
     console.log(`\nAll screenshots saved to ${OUT_DIR}`);
   } finally {

@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "@/lib/api";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import {
   DEMO_PACKS,
   getDemoActionCapture,
@@ -9,8 +10,6 @@ import {
   getDemoRun,
   getDemoTimeline,
 } from "@/lib/praxis-demo-data";
-
-const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
 
 export type SolutionPackId = string;
 
@@ -149,26 +148,26 @@ export interface ActionCaptureResponse {
 
 export const praxisClient = {
   listSolutionPacks: async () => {
-    if (IS_DEMO) return DEMO_PACKS;
+    if (IS_DEMO_MODE) return DEMO_PACKS;
     return (await api.get<SolutionPack[]>("/solution-packs")).data;
   },
   getSolutionPack: async (packId: string) => {
-    if (IS_DEMO) return DEMO_PACKS.find((pack) => pack.id === packId) ?? DEMO_PACKS[0];
+    if (IS_DEMO_MODE) return DEMO_PACKS.find((pack) => pack.id === packId) ?? DEMO_PACKS[0];
     return (await api.get<SolutionPack>(`/solution-packs/${packId}`)).data;
   },
   createRun: async (packId: string) => {
-    if (IS_DEMO) return getDemoRun(packId);
+    if (IS_DEMO_MODE) return getDemoRun(packId);
     return (await api.post<FieldLabRun>("/fieldlab/runs", { solution_pack_id: packId })).data;
   },
   executeRun: async (runId: string) => {
-    if (IS_DEMO) {
+    if (IS_DEMO_MODE) {
       const packId = runId.replace(/^demo_/, "") || "manufacturing-printer-gpo";
       return getDemoExecuteResponse(packId, runId);
     }
     return (await api.post<FieldLabExecuteResponse>(`/fieldlab/runs/${runId}/execute`)).data;
   },
   getRunTimeline: async (runId: string) => {
-    if (IS_DEMO) {
+    if (IS_DEMO_MODE) {
       const packId = runId.replace(/^demo_/, "") || "manufacturing-printer-gpo";
       return getDemoTimeline(packId, runId);
     }
@@ -178,7 +177,7 @@ export const praxisClient = {
     runId: string,
     action: { action: string; status: string; actor?: string; note?: string },
   ) => {
-    if (IS_DEMO) {
+    if (IS_DEMO_MODE) {
       const packId = runId.replace(/^demo_/, "") || "manufacturing-printer-gpo";
       return getDemoActionCapture(
         runId,
@@ -189,11 +188,11 @@ export const praxisClient = {
     return (await api.post<ActionCaptureResponse>(`/fieldlab/runs/${runId}/action`, action)).data;
   },
   getProofByPack: async (packId: string) => {
-    if (IS_DEMO) return getDemoProof(packId);
+    if (IS_DEMO_MODE) return getDemoProof(packId);
     return (await api.get<PraxisProof>(`/proofs/${packId}`)).data;
   },
   verifyProof: async (proof: PraxisProof) => {
-    if (IS_DEMO) return { valid: true, proof_hash: proof.proof_hash || "", status: "verified", errors: [] } as ProofVerificationResponse;
+    if (IS_DEMO_MODE) return { valid: true, proof_hash: proof.proof_hash || "", status: "verified", errors: [] } as ProofVerificationResponse;
     return (await api.post<ProofVerificationResponse>("/proofs/verify", proof)).data;
   },
 };

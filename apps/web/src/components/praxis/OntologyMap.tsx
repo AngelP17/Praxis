@@ -1,8 +1,10 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import {
+  TreeStructure, Link as LinkIcon, Lightning, Globe, Users, Factory, HardDrives,
+} from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
@@ -250,14 +252,69 @@ function TopologyGraph({
   );
 }
 
-export function OntologyMap({ packId: propPackId }: { packId?: string }) {
+export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?: string }) {
   const searchParams = useSearchParams();
-  const packId = searchParams.get("pack") ?? propPackId ?? "manufacturing-printer-gpo";
-  const { proof, loading } = useProof(packId);
-  const { packs } = useSolutionPacks();
-  const activePack = packs.find(p => p.id === packId);
+  const resolvedPackId = searchParams.get("pack") ?? packId;
+  const { proof } = useProof(resolvedPackId);
+  const [snapshot, setSnapshot] = useState<{
+    objects: Array<{ object_key: string; object_type: string; display_name: string; confidence?: number }>;
+    links: Array<{ source: string; target: string; relation?: string }>;
+    actions: Array<{ action_type: string; display_name?: string }>;
+  } | null>(null);
 
-  if (loading) {
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const [objectsRes, linksRes, actionsRes] = await Promise.all([
+          fetch("/api/ontology/objects", { cache: "no-store" }),
+          fetch("/api/ontology/links", { cache: "no-store" }),
+          fetch("/api/ontology/actions", { cache: "no-store" }),
+        ]);
+        if (!objectsRes.ok || !linksRes.ok || !actionsRes.ok) {
+          throw new Error("Ontology endpoints unavailable");
+        }
+        const [objectsData, linksData, actionsData] = await Promise.all([
+          objectsRes.json(),
+          linksRes.json(),
+          actionsRes.json(),
+        ]);
+        if (!cancelled) {
+          setSnapshot({
+            objects: objectsData.objects ?? [],
+            links: linksData.links ?? [],
+            actions: actionsData.actions ?? [],
+          });
+        }
+      } catch {
+        if (!cancelled && proof) {
+          setSnapshot({
+            objects: proof.evidence.sources.slice(0, proof.ontology.objects_created).map((source, index) => ({
+              object_key: `${source}-${index}`,
+              object_type: SOURCE_TYPE_MAP[source] ?? "Service",
+              display_name: source.replace(/_/g, " "),
+              confidence: proof.ontology.mapping_confidence,
+            })),
+            links: Array.from({ length: proof.ontology.links_created }).slice(0, 3).map((_, index) => ({
+              source: `source-${index}`,
+              target: `target-${index}`,
+              relation: "correlates_with",
+            })),
+            actions: Array.from({ length: Math.min(proof.ontology.actions_available, 3) }).map((_, index) => ({
+              action_type: `action_${index + 1}`,
+              display_name: ["Route to mechanical", "Capture evidence", "Escalate owner"][index] ?? `Action ${index + 1}`,
+            })),
+          });
+        }
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [proof]);
+
+  if (!proof || !snapshot) {
     return (
       <WorkbenchShell topbar={<TopbarTitle title="Ontology" subtitle="Loading graph…" />}>
         <div className="p-8"><LoadingSkeleton /></div>
@@ -265,25 +322,19 @@ export function OntologyMap({ packId: propPackId }: { packId?: string }) {
     );
   }
 
-  if (!proof) {
-    return (
-      <WorkbenchShell topbar={<TopbarTitle title="Ontology" subtitle="No proof data" />}>
-        <div className="flex h-full flex-col items-center justify-center gap-4 p-8 text-center">
-          <div className="font-display text-3xl font-medium text-[var(--praxis-bone)]">No ontology data</div>
-          <p className="max-w-sm text-sm text-[var(--praxis-mute)]">Run FieldLab for this pack to compile the object graph and mapping confidence.</p>
-        </div>
-      </WorkbenchShell>
-    );
-  }
+  const nodes = snapshot.objects.map((object, i) => {
+    const type = object.object_type ?? SOURCE_TYPE_MAP[object.object_key] ?? "Service";
+    const Icon = iconByType[type] ?? TreeStructure;
+    const linksPerObject = Math.max(1, Math.round(snapshot.links.length / Math.max(snapshot.objects.length, 1)));
+    return { key: object.object_key, label: object.display_name, type, Icon, links: linksPerObject + (i % 3) * 4 };
+  });
 
   const sources = proof.evidence.sources.slice(0, proof.ontology.objects_created);
   const mappingConf = proof.ontology.mapping_confidence;
-  const { objects_created: objects, links_created: links, actions_available: actions } = proof.ontology;
-
-  const metrics = [
-    { label: "Objects", value: objects, pct: Math.round(mappingConf * 100), color: "var(--praxis-argon)" },
-    { label: "Links", value: links, pct: Math.min(100, Math.round((links / 200) * 100)), color: "var(--praxis-plasma)" },
-    { label: "Actions", value: actions, pct: Math.round((actions / 10) * 100), color: "rgba(192,132,252,1)" },
+  const mappingFactors = [
+    { label: "Objects", value: Math.round(mappingConf * 100) },
+    { label: "Links", value: Math.min(100, Math.round((snapshot.links.length / 20) * 100)) },
+    { label: "Actions", value: Math.round((snapshot.actions.length / 10) * 100) },
   ];
 
   const topbarRight = (
@@ -295,45 +346,34 @@ export function OntologyMap({ packId: propPackId }: { packId?: string }) {
   );
 
   return (
-    <WorkbenchShell
-      packName={activePack?.name ?? packId}
-      topbar={<TopbarTitle title="Ontology" subtitle={`Mapping confidence ${mappingConf.toFixed(2)} · ${packId}`} right={topbarRight} />}
-    >
-      <div className="grid h-full min-h-0 grid-rows-[1fr_auto] overflow-hidden">
-
-        {/* topology graph + stats column */}
-        <div className="grid min-h-0 overflow-hidden lg:grid-cols-[1fr_280px]">
-
-          {/* topology */}
-          <div className="relative flex flex-col overflow-hidden border-b border-[var(--praxis-line)] lg:border-b-0 lg:border-r">
-            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_30%_40%,rgba(139,92,255,0.08),transparent_60%),radial-gradient(circle_at_75%_70%,rgba(62,255,168,0.05),transparent_55%)]" />
-            <div className="relative flex flex-1 items-center justify-center p-6">
-              <TopologyGraph
-                sources={sources}
-                linksCreated={links}
-                mappingConf={mappingConf}
-                evidenceTrust={proof.evidence.evidence_trust}
-              />
-            </div>
-            <div className="border-t border-[var(--praxis-line)] bg-[rgba(10,10,20,0.6)] px-6 py-4">
-              <div className="flex flex-wrap gap-6">
-                {sources.map((src, i) => {
-                  const type = SOURCE_TYPE_MAP[src] ?? "Service";
-                  const color = typeColor(type);
-                  return (
-                    <div key={src} className="flex items-center gap-2">
-                      <span className="h-2 w-2 rounded-full" style={{ background: color }} />
-                      <span className="font-mono text-[9.5px] uppercase tracking-[0.1em] text-[var(--praxis-mute)]">
-                        {src.replace(/_/g, "-")}
-                      </span>
-                      <span className="font-mono text-[9px] tracking-wider" style={{ color }}>
-                        {type}
-                      </span>
-                    </div>
-                  );
-                })}
+    <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
+      <article className="lg:col-span-8 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
+        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Object graph</div>
+        <div className="mt-8 grid grid-flow-dense grid-cols-2 gap-4">
+          {nodes.map((node) => {
+            return (
+              <div key={node.key} className="group min-h-28 border border-[var(--praxis-line)] bg-[var(--praxis-bg)] p-4 transition-transform duration-700 hover:scale-105">
+                {renderIcon(node.Icon)}
+                <div className="mt-5 font-display text-2xl">{node.type === "BusinessProcess" ? "Process" : node.type}</div>
+                <div className="mt-2 break-words font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+                  {node.links} links · {node.label}
+                </div>
               </div>
-            </div>
+            );
+          })}
+        </div>
+        <div className="mt-6 flex gap-3">
+          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--praxis-mint)]" />
+            {snapshot.objects.length} objects
+          </div>
+          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--praxis-violet)]" />
+            {snapshot.links.length} links
+          </div>
+          <div className="flex items-center gap-2 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+            <span className="h-2 w-2 rounded-full bg-[var(--praxis-bone)]" />
+            {snapshot.actions.length} actions
           </div>
 
           {/* metrics rail */}

@@ -1,6 +1,7 @@
 flowchart TB
     subgraph Client["Client Layer"]
         Web["Next.js Web App"]
+        Bridge["Next app/api bridge"]
     end
 
     subgraph Gateway["API Gateway"]
@@ -24,7 +25,8 @@ flowchart TB
         Postgres[(PostgreSQL)]
     end
 
-    Web --> FastAPI
+    Web --> Bridge
+    Bridge --> FastAPI
     FastAPI --> Auth
     Auth --> DecisionService
     Auth --> PlatformService

@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { BracketsCurly, Check, Copy } from "@phosphor-icons/react";
 import { PraxisMark } from "./PraxisMark";
 import { getDemoProof } from "@/lib/praxis-demo-data";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 interface CurlWidgetProps {
   proofHash?: string;
@@ -16,7 +17,6 @@ export function CurlWidget({
   packId = "manufacturing-printer-gpo",
   showDeterminism = true,
 }: CurlWidgetProps) {
-  const isDemo = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
   const [copied, setCopied] = useState(false);
   const [checking, setChecking] = useState(false);
   const [determinismResult, setDeterminismResult] = useState<boolean | null>(null);
@@ -33,7 +33,7 @@ export function CurlWidget({
     setChecking(true);
     setDeterminismResult(null);
 
-    if (isDemo) {
+    if (IS_DEMO_MODE) {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setDeterminismResult(true);
       setChecking(false);
@@ -53,7 +53,7 @@ export function CurlWidget({
     } finally {
       setChecking(false);
     }
-  }, [isDemo, packId]);
+  }, [packId]);
 
   const resolvedProofHash = proofHash || getDemoProof(packId).proof_hash;
 

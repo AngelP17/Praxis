@@ -125,7 +125,7 @@ This ensures the demo never shows a broken interface, even when backend services
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Loading: Open Command Room
+    [*] --> Loading: Open Praxis surface
     Loading --> Empty: No data
     Loading --> Error: API failure
     Loading --> Ready: Data loaded
@@ -133,7 +133,7 @@ stateDiagram-v2
     Empty --> Loading: Refresh
     Error --> Loading: Retry
 
-    Ready --> Selecting: Click signal
+    Ready --> Selecting: Select record or pack
     Selecting --> Ready: Selection changed
 
     Ready --> Filtering: Type search

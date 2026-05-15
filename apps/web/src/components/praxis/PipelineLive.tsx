@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { CheckCircle, Database, Envelope, BracketsCurly, ArrowRight } from "@phosphor-icons/react";
 import { PraxisMark } from "./PraxisMark";
 import { DEMO_PIPELINE_STAGES, getDemoPipelineCompletion, getDemoProof } from "@/lib/praxis-demo-data";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 interface StageEvent {
   stage: string;
@@ -39,8 +40,6 @@ const STAGE_ICONS: Record<string, any> = {
   "proof.sign": PraxisMark,
 };
 
-const IS_DEMO = typeof window !== "undefined" && window.location.hostname.includes("vercel.app");
-
 function StageDot({ active }: { active: boolean }) {
   return (
     <span
@@ -60,7 +59,7 @@ function renderStageIcon(Icon: any) {
 
 export function PipelineLive({
   packId = "manufacturing-printer-gpo",
-  demo = IS_DEMO,
+  demo = IS_DEMO_MODE,
 }: { packId?: string; demo?: boolean }) {
   const [stages, setStages] = useState<StageEvent[]>([]);
   const [completed, setCompleted] = useState<CompletedEvent | null>(null);

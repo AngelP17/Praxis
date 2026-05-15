@@ -67,6 +67,24 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Root Turbo typecheck: `pnpm typecheck`
 - Package install from root: `pnpm install`
 
+## Publishability Reality Check
+
+- Do not describe Praxis as fully public-production-ready unless you verify both the frontend and backend release path in the current checkout.
+- The verified fast path today is a frontend-only public demo with `NEXT_PUBLIC_DEMO_MODE=1`.
+- The root `vercel.json` is intentionally frontend-only. Do not reintroduce implicit multi-service Vercel deploy assumptions unless the user explicitly asks for that work.
+- For real public production, always inspect:
+  - `apps/api_gateway/config.py`
+  - `.env.example`
+  - `docker-compose.yml`
+  - `users.json`
+  - `docs/architecture/deployment-guide.md`
+  - `docs/release/public-launch-checklist.md`
+- Treat these as production blockers until verified otherwise:
+  - placeholder `SECRET_KEY`
+  - localhost-only `ALLOWED_ORIGINS`
+  - demo credentials left in `users.json`
+  - deployment docs that imply a cloud path not exercised by CI
+
 ## Praxis-Specific Commands
 
 - FieldLab up: `make praxis-fieldlab-up`

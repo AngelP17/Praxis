@@ -37,6 +37,22 @@ Floci start -> health check -> demo run -> proof emit -> verify -> determinism r
 
 The web app also ships a Next.js `app/api` bridge for frontend stability. In local development it proxies the web UI to the FastAPI gateway; on Vercel it serves deterministic demo payloads for proofs, solution packs, Floci health, replay checks, and pipeline streaming so the flagship surfaces do not 404 when the backend is not deployed beside the frontend.
 
+## Release Modes
+
+Praxis currently has two honest release modes:
+
+- **Frontend-only public demo**: ready now. Deploy the Next.js app with `NEXT_PUBLIC_DEMO_MODE=1` and the flagship surfaces run on deterministic demo fallbacks.
+- **Full-stack public production**: not turnkey yet. The repo includes the backend services and reference infrastructure, but you still need real secrets, explicit public CORS origins, rotated demo credentials, and a chosen backend hosting target.
+
+Before a real public production launch:
+
+- Replace `SECRET_KEY` with a strong runtime secret
+- Set `ALLOWED_ORIGINS` to the real public frontend domains
+- Replace or rotate demo credentials in `users.json`
+- Validate the chosen backend hosting path
+
+See [docs/release/public-launch-checklist.md](docs/release/public-launch-checklist.md) and [docs/architecture/deployment-guide.md](docs/architecture/deployment-guide.md).
+
 ## Prove Praxis Works
 
 Praxis is verified through a local FieldLab run, not a pre-recorded video. The flagship proof path loads the manufacturing solution pack, streams messy events through the Floci-backed FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.
@@ -318,6 +334,57 @@ make praxis-demo            # Run the flagship demo
 make praxis-validate-pack   # Validate a solution pack
 make praxis-readout RUN_ID=xyz  # Generate executive readout
 ```
+
+---
+
+## Running Praxis
+
+### Option 1 — Frontend demo only (no backend required)
+
+The fastest path. All product surfaces work with deterministic demo data.
+
+Deploy to [Vercel](https://vercel.com) with one environment variable:
+
+```
+NEXT_PUBLIC_DEMO_MODE=1
+```
+
+`vercel.json` at the repo root is already configured for a frontend-only Next.js deploy.
+
+### Option 2 — Full stack locally
+
+```bash
+make install      # set up Python venv + Node deps
+make demo         # start API gateway, decision service, platform service, and web on localhost
+make demo-seed    # load the press-vibration-cascade demo scenario
+```
+
+Open `http://localhost:3000`. Login credentials: `operator` / `operator` (agent role).
+
+### Option 3 — Self-hosted / cloud backend
+
+The repo ships ready-to-use configs for three paths:
+
+| Path | Config file | Best for |
+|---|---|---|
+| VPS / any Docker host | [`docker-compose.prod.yml`](docker-compose.prod.yml) | DigitalOcean, Hetzner, EC2 |
+| Fly.io | [`fly.toml`](fly.toml) | Managed containers, global edge |
+| Railway | [`railway.toml`](railway.toml) | Instant deploys, built-in Postgres |
+
+Quick start for each path (Fly.io example):
+
+```bash
+fly apps create praxis-api
+fly postgres create --name praxis-db && fly postgres attach --app praxis-api praxis-db
+fly secrets set ENV=production DEBUG=false \
+  SECRET_KEY="$(openssl rand -base64 32)" \
+  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
+fly deploy
+```
+
+Then set `NEXT_PUBLIC_API_URL=https://praxis-api.fly.dev` in your frontend deployment and remove `NEXT_PUBLIC_DEMO_MODE`.
+
+Full instructions for all three paths: [docs/architecture/deployment-guide.md](docs/architecture/deployment-guide.md)
 
 ---
 

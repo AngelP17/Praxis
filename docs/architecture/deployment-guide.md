@@ -1,160 +1,265 @@
 # Praxis Deployment Guide
 
-The full path from local FieldLab development to production Kubernetes deployment.
+This guide documents the release paths that are actually supported by the current repo.
+
+It intentionally separates the verified demo deployment path from the harder full-stack production path so future sessions do not assume they are the same thing.
+
+## Current Release Modes
 
 ```mermaid
-flowchart TB
-    subgraph Dev["Local Development"]
-        Floci["Floci<br/>docker compose up"]
-        API["API Gateway<br/>uvicorn :8000"]
-        Web["Next.js<br/>:3000"]
-    end
-
-    subgraph CI["CI/CD (GitHub Actions)"]
-        Lint["Ruff lint"]
-        Test["pytest (16 tests)"]
-        Build["pnpm web:build"]
-        Typecheck["tsc --noEmit"]
-        GPT["gpt-taste QA"]
-        Proof["FieldLab Proof<br/>floci verify"]
-    end
-
-    subgraph Staging["Staging (k3d)"]
-        K3D["k3d cluster<br/>terraform apply"]
-        Manifests["K8s manifests<br/>deploy/svc/ingress/hpa"]
-        FlociStaging["Floci sidecar<br/>(local AWS emulation)"]
-    end
-
-    subgraph Production["Production (EKS)"]
-        EKS["EKS cluster<br/>terraform apply"]
-        Lambda["Lambda<br/>proof compute"]
-        CW["CloudWatch<br/>alarms + metrics"]
-        IAM["IAM Roles<br/>service accounts"]
-    end
-
-    Dev --> CI
-    CI -->|main| Staging
-    Staging -->|release| Production
+flowchart LR
+    Local["Local full stack<br/>make demo"] --> Demo["Frontend-only public demo<br/>Vercel + NEXT_PUBLIC_DEMO_MODE=1"]
+    Local --> Proof["FieldLab proof path<br/>make praxis-proof"]
+    Demo --> Prod["Full-stack public production<br/>requires explicit hardening + hosting"]
 ```
-
-## Prerequisites
-
-| Tool | Version | Purpose |
-|------|---------|---------|
-| Docker | 24+ | Floci + container build |
-| Python | 3.12+ | Backend services |
-| Node.js | 22+ | Frontend |
-| pnpm | 10.29.3+ | Package management |
-| kubectl | 1.29+ | K8s management |
-| terraform | 1.7+ | Infrastructure as code |
 
 ## 1. Local Development
 
+These are the repo-native commands for running Praxis on one machine.
+
 ```bash
-# Full install
 make install
-
-# Start Floci
-docker run -d --name floci \
-  -p 4566:4566 \
-  -v /var/run/docker.sock:/var/run/docker.sock \
-  -u root \
-  floci/floci:latest
-
-# Verify Floci
-python scripts/check_floci_runtime.py
-
-# Start all services
-make dev-api       # API Gateway :8000
-make dev-web       # Next.js :3000
-
-# Run FieldLab demo
-make praxis-proof  # PROOF VALID
+make demo
+make demo-seed
+make demo-validate
 ```
 
-## 2. CI Pipeline
+Service URLs:
+
+- Web: `http://localhost:3000`
+- API gateway: `http://localhost:8000`
+- Decision service: `http://localhost:8001`
+- Platform service: `http://localhost:8080`
+
+To stop the local demo:
 
 ```bash
-# Full validation suite
-make lint                    # Ruff
-.venv/bin/pytest tests/praxis -v   # 16 tests
-pnpm web:typecheck           # TypeScript
-pnpm web:lint:gpt-taste:ci   # Design quality
-pnpm web:build               # Production build
-
-# Floci-dependent gates (requires Floci running)
-make praxis-floci-verify     # Floci health
-make praxis-benchmark        # 3/3 proofs valid
-make praxis-proof-hashes     # Hash integrity
+make clean-demo
 ```
 
-## 3. Staging Deploy
+## 2. Frontend-only Public Demo
+
+This is the verified public launch path today.
+
+Why it works:
+
+- The Next.js app includes `app/api` proxy handlers
+- In demo mode those handlers return deterministic fallback payloads
+- The flagship product surfaces render without a separately deployed backend
+
+### Required settings
+
+Set this in the frontend deployment environment:
 
 ```bash
-# Create k3d cluster
-k3d cluster create praxis-staging
-
-# Deploy via Terraform
-cd infrastructure/terraform
-terraform init
-terraform apply -var="environment=staging"
-
-# Deploy K8s manifests
-cd ../k8s
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
-kubectl apply -f ingress.yaml
-kubectl apply -f hpa.yaml
-kubectl apply -f networkpolicy.yaml
-kubectl apply -f poddisruptionbudget.yaml
-
-# Verify
-kubectl get all -n praxis-staging
-curl https://staging.praxis.local/health
+NEXT_PUBLIC_DEMO_MODE=1
 ```
 
-## 4. Production Deploy
+### Deploy target
+
+- Root deploy config: `vercel.json`
+- App-level deploy config: `apps/web/vercel.json`
+
+Both now describe a frontend-only Next.js deployment. The previous root `experimentalServices` block was removed so Vercel does not implicitly try to co-deploy `services/platform-service`.
+
+### Recommended verification
 
 ```bash
-# Create EKS cluster
-cd infrastructure/terraform
-terraform init
-terraform apply -var="environment=production"
-
-# Deploy Lambda
-cd ../lambda
-sam build && sam deploy --guided
-
-# Deploy K8s
-cd ../k8s
-kubectl apply -f deployment.yaml
-# ... (same as staging, minus Floci sidecar)
-
-# Verify
-kubectl get all -n praxis-production
-curl https://api.praxis.io/health
+pnpm web:typecheck
+pnpm web:lint:gpt-taste:ci
+pnpm web:test:smoke
+pnpm web:build
 ```
 
-## Environment Matrix
+## 3. Local Proof / FieldLab Verification
 
-| Setting | Dev | Staging | Production |
-|---------|-----|---------|------------|
-| Floci endpoint | `localhost:4566` | `floci:4566` (sidecar) | AWS real endpoints |
-| `USE_LAMBDA_COMPUTE` | `False` | `True` | `True` |
-| `RATE_LIMIT_PER_MINUTE` | 600 | 600 | 120 |
-| `ENV` | `development` | `staging` | `production` |
-| `DEBUG` | `True` | `False` | `False` |
-| Database | SQLite | SQLite | RDS PostgreSQL |
-
-## Rollback
+Use this when the task is to prove the flagship Praxis workflow rather than just render the UI.
 
 ```bash
-# Rollback K8s deployment
-kubectl rollout undo deployment/api-gateway -n praxis-production
-
-# Rollback Lambda
-aws lambda update-alias \
-  --function-name praxis-proof-compute \
-  --name prod \
-  --function-version <previous-version>
+make install
+make praxis-fieldlab-up
+make praxis-proof
+make praxis-benchmark
+make praxis-floci-verify
+make praxis-fieldlab-down
 ```
+
+Generated artifacts:
+
+- `artifacts/latest/praxis_proof.json`
+- `artifacts/latest/proof-summary.md`
+
+## 4. Full-stack Self-hosted / Cloud Production
+
+The repo ships three concrete paths for running the full backend stack. All three use the same Dockerfiles and the same environment variable contract. Choose one based on your infrastructure preference.
+
+### Environment variables required for every path
+
+```bash
+SECRET_KEY        # strong random secret — openssl rand -base64 32
+ALLOWED_ORIGINS   # comma-separated public frontend URLs, e.g. https://praxis.example.com
+POSTGRES_PASSWORD # strong database password
+ENV=production
+DEBUG=false
+```
+
+The API gateway enforces at boot: if `ENV=production` and `SECRET_KEY` is a placeholder, `DEBUG` is true, or `ALLOWED_ORIGINS` is localhost-only, the process exits immediately with a descriptive error.
+
+---
+
+### Path A — VPS / any server with Docker Compose
+
+Works on any machine that has Docker and Docker Compose v2 (DigitalOcean Droplet, Hetzner, EC2, Lightsail, etc.).
+
+```bash
+# 1. Clone and enter the repo
+git clone https://github.com/AngelP17/praxis && cd praxis
+
+# 2. Create .env from the template
+cp .env.example .env
+# Edit .env: set SECRET_KEY, POSTGRES_PASSWORD, ALLOWED_ORIGINS
+
+# 3. Start the full stack in production mode
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# 4. Seed demo data (optional)
+docker compose exec api-gateway python scripts/demo/seed_scenario.py \
+  sample-data/scenarios/press-vibration-cascade.json
+
+# 5. Verify the gateway is healthy
+curl http://localhost:8000/health
+```
+
+The `docker-compose.prod.yml` override sets `ENV=production`, removes dev port bindings for backend services, and passes secrets from your `.env`. Put Nginx or Caddy in front for TLS and routing.
+
+**Stop / update:**
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+git pull && docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+---
+
+### Path B — Fly.io
+
+Config: [`fly.toml`](../../fly.toml) (targets `apps/api_gateway/Dockerfile`).
+
+```bash
+# 1. Install flyctl and log in
+brew install flyctl && fly auth login
+
+# 2. Create the app (first time only)
+fly apps create praxis-api
+
+# 3. Provision a Postgres database
+fly postgres create --name praxis-db
+fly postgres attach --app praxis-api praxis-db
+# ^ DATABASE_URL is set automatically as a secret
+
+# 4. Set remaining secrets
+fly secrets set \
+  ENV=production \
+  DEBUG=false \
+  SECRET_KEY="$(openssl rand -base64 32)" \
+  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
+
+# 5. Deploy
+fly deploy
+
+# 6. Verify
+fly status
+curl https://praxis-api.fly.dev/health
+```
+
+Set `NEXT_PUBLIC_API_URL=https://praxis-api.fly.dev` in your frontend deployment (Vercel env vars) and remove `NEXT_PUBLIC_DEMO_MODE`.
+
+**Update:**
+```bash
+git pull && fly deploy
+```
+
+---
+
+### Path C — Railway
+
+Config: [`railway.toml`](../../railway.toml) (targets `apps/api_gateway/Dockerfile`).
+
+```bash
+# 1. Install the Railway CLI and log in
+npm install -g @railway/cli && railway login
+
+# 2. Create a new project
+railway init
+
+# 3. Add Postgres (Railway provisions it and sets DATABASE_URL)
+railway add --database postgres
+
+# 4. Set environment variables
+railway variables set \
+  ENV=production \
+  DEBUG=false \
+  SECRET_KEY="$(openssl rand -base64 32)" \
+  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
+
+# 5. Deploy
+railway up
+
+# 6. Get the public URL and verify
+railway domain
+curl https://<your-railway-domain>/health
+```
+
+Set that Railway URL as `NEXT_PUBLIC_API_URL` in your frontend deployment and remove `NEXT_PUBLIC_DEMO_MODE`.
+
+**Update:**
+```bash
+git push  # Railway auto-deploys from GitHub if connected, or: railway up
+```
+
+---
+
+### Frontend wiring for Paths B and C
+
+Once the backend is running publicly, update your Vercel project:
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Your backend public URL (no trailing slash) |
+| `NEXT_PUBLIC_DEMO_MODE` | Remove entirely (or leave unset) |
+
+Redeploy the frontend. The Next.js proxy routes will forward to the live backend instead of returning demo fallbacks.
+
+---
+
+### Before going live with real users
+
+- Rotate `users.json` demo credentials — the defaults (`admin/admin`, `operator/operator`) are for local/demo only
+- Confirm your `ALLOWED_ORIGINS` exactly matches the deployed frontend URL
+- Review `infrastructure/k8s/` and `infrastructure/terraform/` if you need Kubernetes or IaC-managed infra instead
+
+See also: [Public Launch Checklist](../release/public-launch-checklist.md)
+
+## Docker Compose Scope
+
+`docker-compose.yml` is the local development stack:
+- `ENV=development`, local secrets, all ports exposed for direct access
+
+`docker-compose.prod.yml` is the production override:
+- Enables `ENV=production`, passes real secrets, removes dev port bindings
+
+Do not use `docker-compose.yml` alone as a production manifest.
+
+## Done When
+
+### Demo publish (frontend-only)
+
+- `NEXT_PUBLIC_DEMO_MODE=1` is set in your Vercel project
+- `pnpm web:build` and `pnpm web:test:smoke` pass
+- Deployed site renders all flagship routes
+
+### Full-stack production publish
+
+- Backend deployed via Path A, B, or C and `/health` returns `{"status":"healthy"}`
+- `NEXT_PUBLIC_API_URL` points to the live backend
+- `NEXT_PUBLIC_DEMO_MODE` is unset
+- Demo credentials in `users.json` are replaced

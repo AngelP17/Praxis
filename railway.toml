@@ -1,0 +1,31 @@
+# Railway deploy config for the Praxis API Gateway
+#
+# Prerequisites:
+#   npm install -g @railway/cli
+#   railway login
+#
+# First-time setup:
+#   railway init                          # creates a new project
+#   railway add --database postgres       # provisions Postgres; sets DATABASE_URL automatically
+#   railway variables set \
+#     ENV=production \
+#     DEBUG=false \
+#     SECRET_KEY="$(openssl rand -base64 32)" \
+#     ALLOWED_ORIGINS="https://<your-frontend-domain>"
+#
+# Deploy:
+#   railway up
+#
+# After deploy, Railway provides a public URL. Set that as NEXT_PUBLIC_API_URL in
+# your Vercel (or wherever the frontend runs) env vars.
+
+[build]
+  builder = "DOCKERFILE"
+  dockerfilePath = "apps/api_gateway/Dockerfile"
+
+[deploy]
+  startCommand = "uvicorn apps.api_gateway.main:app --host 0.0.0.0 --port $PORT"
+  healthcheckPath = "/health"
+  healthcheckTimeout = 300
+  restartPolicyType = "ON_FAILURE"
+  restartPolicyMaxRetries = 3

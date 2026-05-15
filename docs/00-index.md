@@ -20,6 +20,7 @@ This documentation set explains the theory, architecture, and operational model 
 | [12-demo-script.md](12-demo-script.md) | How to demo the system | 5 min |
 | [13-validation-and-quality-gates.md](13-validation-and-quality-gates.md) | How quality is verified | 3 min |
 | [14-limitations-and-future-work.md](14-limitations-and-future-work.md) | Honest limitations and roadmap | 3 min |
+| [release/public-launch-checklist.md](release/public-launch-checklist.md) | Verified demo launch path vs real production checklist | 3 min |
 
 ## Architecture Deep Dives
 
@@ -28,7 +29,7 @@ This documentation set explains the theory, architecture, and operational model 
 | [architecture/floci-runtime.md](architecture/floci-runtime.md) | Floci local AWS runtime architecture | 5 min |
 | [architecture/cloudwatch-observability.md](architecture/cloudwatch-observability.md) | CloudWatch metrics, alarms, logging | 4 min |
 | [architecture/dynamodb-streams.md](architecture/dynamodb-streams.md) | DynamoDB Streams change capture | 3 min |
-| [architecture/deployment-guide.md](architecture/deployment-guide.md) | Full dev → staging → prod deployment path | 5 min |
+| [architecture/deployment-guide.md](architecture/deployment-guide.md) | Local full-stack, frontend demo, and optional self-host/cloud deployment paths | 5 min |
 | [architecture/data-flow.md](architecture/data-flow.md) | End-to-end data flow with FieldLab | 4 min |
 | [architecture/decision-engine.md](architecture/decision-engine.md) | 10-factor scoring + evidence trust | 5 min |
 | [architecture/system-overview.md](architecture/system-overview.md) | System-level component topology | 4 min |

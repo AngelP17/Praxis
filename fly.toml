@@ -1,0 +1,54 @@
+# Fly.io deploy config for the Praxis API Gateway
+#
+# Prerequisites:
+#   brew install flyctl
+#   fly auth login
+#
+# First-time setup:
+#   fly postgres create --name praxis-db
+#   fly postgres attach --app praxis-api praxis-db   # sets DATABASE_URL automatically
+#   fly secrets set SECRET_KEY="$(openssl rand -base64 32)"
+#   fly secrets set ALLOWED_ORIGINS="https://<your-frontend-domain>"
+#   fly secrets set ENV=production DEBUG=false
+#
+# Deploy:
+#   fly deploy
+#
+# After deploy, point your frontend NEXT_PUBLIC_API_URL to:
+#   https://praxis-api.fly.dev
+
+app = "praxis-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "apps/api_gateway/Dockerfile"
+
+[env]
+  PORT = "8000"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 80
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[checks]
+  [checks.health]
+    grace_period = "10s"
+    interval = "15s"
+    method = "GET"
+    path = "/health"
+    port = 8000
+    timeout = "5s"
+    type = "http"

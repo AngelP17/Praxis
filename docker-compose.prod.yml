@@ -1,0 +1,49 @@
+# Production override for docker-compose.yml
+#
+# Usage (on any VPS/server with Docker Compose v2):
+#
+#   cp .env.example .env          # fill in real values
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# Required environment variables (set in .env or the shell):
+#   SECRET_KEY       — strong random secret, e.g. openssl rand -base64 32
+#   ALLOWED_ORIGINS  — comma-separated public frontend URLs, e.g. https://praxis.example.com
+#   POSTGRES_PASSWORD — strong password for the database
+#
+# Optional:
+#   NEXT_PUBLIC_API_URL — public URL of the API gateway (default: http://localhost:8000)
+
+services:
+  postgres:
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  api-gateway:
+    restart: unless-stopped
+    environment:
+      ENV: production
+      DEBUG: "false"
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      DATABASE_URL: postgresql://praxis:${POSTGRES_PASSWORD}@postgres:5432/praxis
+    # Remove the dev port binding in production — put a reverse proxy in front
+    ports: []
+
+  decision-service:
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://praxis:${POSTGRES_PASSWORD}@postgres:5432/praxis
+    ports: []
+
+  platform-service:
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://praxis:${POSTGRES_PASSWORD}@postgres:5432/praxis
+    ports: []
+
+  web:
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    ports:
+      - "3000:3000"
