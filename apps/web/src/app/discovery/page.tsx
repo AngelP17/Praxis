@@ -1,5 +1,5 @@
-import { PraxisExperience } from "@/components/praxis/praxis-experience";
+import { DiscoveryPanel } from "@/components/praxis/DiscoveryPanel";
 
 export default function DiscoveryPage() {
-  return <PraxisExperience initialScreen="discovery" />;
+  return <DiscoveryPanel />;
 }
