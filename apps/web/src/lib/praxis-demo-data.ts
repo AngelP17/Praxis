@@ -7,6 +7,12 @@ import type {
   SolutionPack,
 } from "./praxis-client";
 
+export const DEMO_PACK_IDS = [
+  "manufacturing-printer-gpo",
+  "erp-access-disruption",
+  "k8s-ingress-degradation",
+] as const;
+
 export const DEMO_PACKS: SolutionPack[] = [
   {
     id: "manufacturing-printer-gpo",

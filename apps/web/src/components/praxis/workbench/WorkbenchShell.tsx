@@ -95,7 +95,7 @@ export function WorkbenchShell({
                 style={{ background: "linear-gradient(135deg, var(--praxis-plasma), var(--praxis-argon))" }}
               />
               <div>
-                <div className="font-sans text-[12px] text-[var(--praxis-bone)]">Ava Chen</div>
+                <div className="font-sans text-[12px] text-[var(--praxis-bone)]">Field Agent</div>
                 <div className="tracking-[0.06em]">Forward-deployed</div>
               </div>
             </div>

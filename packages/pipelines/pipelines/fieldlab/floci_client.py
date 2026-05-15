@@ -37,8 +37,21 @@ class CloudWatchLogger:
 
     def __init__(self, client: Any):
         self.client = client
-        self.cloudwatch = client.cloudwatch
+        self._cloudwatch = None
         self.namespace = "Praxis/FieldLab"
+
+    @property
+    def cloudwatch(self):
+        if self._cloudwatch is None:
+            self._cloudwatch = boto3.client(
+                "cloudwatch",
+                endpoint_url=self.client.endpoint_url,
+                region_name=self.client.region,
+                aws_access_key_id=self.client.access_key_id,
+                aws_secret_access_key=self.client.secret_access_key,
+                config=_FLOCI_CONFIG,
+            )
+        return self._cloudwatch
 
     def log_metric(self, metric_name: str, value: float, unit: str = "Count") -> None:
         """Send a metric to CloudWatch."""
@@ -106,8 +119,6 @@ class FlociClient:
                 aws_secret_access_key=self.secret_access_key,
                 config=_FLOCI_CONFIG,
             )
-            # Log service initialization to CloudWatch
-            self.cw.log_metric(f"{service}/initialized", 1.0)
         return self._clients[service]
 
     @property
