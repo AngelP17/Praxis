@@ -89,65 +89,177 @@ Generated artifacts:
 - `artifacts/latest/praxis_proof.json`
 - `artifacts/latest/proof-summary.md`
 
-## 4. Full-stack Public Production
+## 4. Full-stack Self-hosted / Cloud Production
 
-This repo is not yet a turnkey one-command public production deploy.
+The repo ships three concrete paths for running the full backend stack. All three use the same Dockerfiles and the same environment variable contract. Choose one based on your infrastructure preference.
 
-What is present:
+### Environment variables required for every path
 
-- A FastAPI gateway
-- Local Docker Compose for the backend stack
-- Kubernetes manifests under `infrastructure/k8s/`
-- Terraform assets under `infrastructure/terraform/`
-- Lambda reference assets under `infrastructure/lambda/`
+```bash
+SECRET_KEY        # strong random secret — openssl rand -base64 32
+ALLOWED_ORIGINS   # comma-separated public frontend URLs, e.g. https://praxis.example.com
+POSTGRES_PASSWORD # strong database password
+ENV=production
+DEBUG=false
+```
 
-What is not verified by repo CI today:
+The API gateway enforces at boot: if `ENV=production` and `SECRET_KEY` is a placeholder, `DEBUG` is true, or `ALLOWED_ORIGINS` is localhost-only, the process exits immediately with a descriptive error.
 
-- A single public cloud deployment recipe for the full backend stack
-- A hosted production environment exercised by automated end-to-end validation
+---
 
-### Required hardening before real public production
+### Path A — VPS / any server with Docker Compose
 
-The API gateway now enforces these checks when `ENV=production`:
+Works on any machine that has Docker and Docker Compose v2 (DigitalOcean Droplet, Hetzner, EC2, Lightsail, etc.).
 
-- `SECRET_KEY` must be replaced with a strong real secret
-- `DEBUG` must be `false`
-- `ALLOWED_ORIGINS` must list explicit non-localhost frontend origins
+```bash
+# 1. Clone and enter the repo
+git clone https://github.com/AngelP17/praxis && cd praxis
 
-Additional required steps:
+# 2. Create .env from the template
+cp .env.example .env
+# Edit .env: set SECRET_KEY, POSTGRES_PASSWORD, ALLOWED_ORIGINS
 
-- Replace or rotate demo credentials stored in `users.json`
-- Choose and validate a real backend hosting target
-- Confirm public DNS, TLS, logging, and data retention decisions outside the demo path
+# 3. Start the full stack in production mode
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+# 4. Seed demo data (optional)
+docker compose exec api-gateway python scripts/demo/seed_scenario.py \
+  sample-data/scenarios/press-vibration-cascade.json
+
+# 5. Verify the gateway is healthy
+curl http://localhost:8000/health
+```
+
+The `docker-compose.prod.yml` override sets `ENV=production`, removes dev port bindings for backend services, and passes secrets from your `.env`. Put Nginx or Caddy in front for TLS and routing.
+
+**Stop / update:**
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml down
+git pull && docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+```
+
+---
+
+### Path B — Fly.io
+
+Config: [`fly.toml`](../../fly.toml) (targets `apps/api_gateway/Dockerfile`).
+
+```bash
+# 1. Install flyctl and log in
+brew install flyctl && fly auth login
+
+# 2. Create the app (first time only)
+fly apps create praxis-api
+
+# 3. Provision a Postgres database
+fly postgres create --name praxis-db
+fly postgres attach --app praxis-api praxis-db
+# ^ DATABASE_URL is set automatically as a secret
+
+# 4. Set remaining secrets
+fly secrets set \
+  ENV=production \
+  DEBUG=false \
+  SECRET_KEY="$(openssl rand -base64 32)" \
+  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
+
+# 5. Deploy
+fly deploy
+
+# 6. Verify
+fly status
+curl https://praxis-api.fly.dev/health
+```
+
+Set `NEXT_PUBLIC_API_URL=https://praxis-api.fly.dev` in your frontend deployment (Vercel env vars) and remove `NEXT_PUBLIC_DEMO_MODE`.
+
+**Update:**
+```bash
+git pull && fly deploy
+```
+
+---
+
+### Path C — Railway
+
+Config: [`railway.toml`](../../railway.toml) (targets `apps/api_gateway/Dockerfile`).
+
+```bash
+# 1. Install the Railway CLI and log in
+npm install -g @railway/cli && railway login
+
+# 2. Create a new project
+railway init
+
+# 3. Add Postgres (Railway provisions it and sets DATABASE_URL)
+railway add --database postgres
+
+# 4. Set environment variables
+railway variables set \
+  ENV=production \
+  DEBUG=false \
+  SECRET_KEY="$(openssl rand -base64 32)" \
+  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
+
+# 5. Deploy
+railway up
+
+# 6. Get the public URL and verify
+railway domain
+curl https://<your-railway-domain>/health
+```
+
+Set that Railway URL as `NEXT_PUBLIC_API_URL` in your frontend deployment and remove `NEXT_PUBLIC_DEMO_MODE`.
+
+**Update:**
+```bash
+git push  # Railway auto-deploys from GitHub if connected, or: railway up
+```
+
+---
+
+### Frontend wiring for Paths B and C
+
+Once the backend is running publicly, update your Vercel project:
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | Your backend public URL (no trailing slash) |
+| `NEXT_PUBLIC_DEMO_MODE` | Remove entirely (or leave unset) |
+
+Redeploy the frontend. The Next.js proxy routes will forward to the live backend instead of returning demo fallbacks.
+
+---
+
+### Before going live with real users
+
+- Rotate `users.json` demo credentials — the defaults (`admin/admin`, `operator/operator`) are for local/demo only
+- Confirm your `ALLOWED_ORIGINS` exactly matches the deployed frontend URL
+- Review `infrastructure/k8s/` and `infrastructure/terraform/` if you need Kubernetes or IaC-managed infra instead
 
 See also: [Public Launch Checklist](../release/public-launch-checklist.md)
 
 ## Docker Compose Scope
 
-`docker-compose.yml` is now explicitly a local development stack:
+`docker-compose.yml` is the local development stack:
+- `ENV=development`, local secrets, all ports exposed for direct access
 
-- `ENV=development`
-- local default origins only
-- local demo secret only
+`docker-compose.prod.yml` is the production override:
+- Enables `ENV=production`, passes real secrets, removes dev port bindings
 
-Do not treat it as a production deployment manifest.
+Do not use `docker-compose.yml` alone as a production manifest.
 
 ## Done When
 
-### Demo publish
+### Demo publish (frontend-only)
 
-- `NEXT_PUBLIC_DEMO_MODE=1` is set
-- frontend verification commands pass
-- the deployed site renders the flagship routes cleanly
+- `NEXT_PUBLIC_DEMO_MODE=1` is set in your Vercel project
+- `pnpm web:build` and `pnpm web:test:smoke` pass
+- Deployed site renders all flagship routes
 
-### Public production publish
+### Full-stack production publish
 
-- production env vars are real and non-demo
-- demo credentials are replaced
-- the chosen backend hosting path is deployed and tested
-- frontend and backend verification commands pass against that environment
-
-## Known Unknowns
-
-- The repo contains cloud-oriented assets, but this guide does not claim a verified EKS or Lambda release path because that path is not exercised by current GitHub Actions
-- If you want a real production launch, the remaining work is mostly deployment and secrets management, not frontend polish
+- Backend deployed via Path A, B, or C and `/health` returns `{"status":"healthy"}`
+- `NEXT_PUBLIC_API_URL` points to the live backend
+- `NEXT_PUBLIC_DEMO_MODE` is unset
+- Demo credentials in `users.json` are replaced

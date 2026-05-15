@@ -337,6 +337,57 @@ make praxis-readout RUN_ID=xyz  # Generate executive readout
 
 ---
 
+## Running Praxis
+
+### Option 1 — Frontend demo only (no backend required)
+
+The fastest path. All product surfaces work with deterministic demo data.
+
+Deploy to [Vercel](https://vercel.com) with one environment variable:
+
+```
+NEXT_PUBLIC_DEMO_MODE=1
+```
+
+`vercel.json` at the repo root is already configured for a frontend-only Next.js deploy.
+
+### Option 2 — Full stack locally
+
+```bash
+make install      # set up Python venv + Node deps
+make demo         # start API gateway, decision service, platform service, and web on localhost
+make demo-seed    # load the press-vibration-cascade demo scenario
+```
+
+Open `http://localhost:3000`. Login credentials: `operator` / `operator` (agent role).
+
+### Option 3 — Self-hosted / cloud backend
+
+The repo ships ready-to-use configs for three paths:
+
+| Path | Config file | Best for |
+|---|---|---|
+| VPS / any Docker host | [`docker-compose.prod.yml`](docker-compose.prod.yml) | DigitalOcean, Hetzner, EC2 |
+| Fly.io | [`fly.toml`](fly.toml) | Managed containers, global edge |
+| Railway | [`railway.toml`](railway.toml) | Instant deploys, built-in Postgres |
+
+Quick start for each path (Fly.io example):
+
+```bash
+fly apps create praxis-api
+fly postgres create --name praxis-db && fly postgres attach --app praxis-api praxis-db
+fly secrets set ENV=production DEBUG=false \
+  SECRET_KEY="$(openssl rand -base64 32)" \
+  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
+fly deploy
+```
+
+Then set `NEXT_PUBLIC_API_URL=https://praxis-api.fly.dev` in your frontend deployment and remove `NEXT_PUBLIC_DEMO_MODE`.
+
+Full instructions for all three paths: [docs/architecture/deployment-guide.md](docs/architecture/deployment-guide.md)
+
+---
+
 ## Repo Structure
 
 ```text
