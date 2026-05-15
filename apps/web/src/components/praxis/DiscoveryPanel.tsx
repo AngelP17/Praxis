@@ -6,6 +6,8 @@ import { Binoculars, GitBranch, Question } from "@phosphor-icons/react";
 
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
 
 type DiscoverySnapshot = {
   object_candidates: Array<{ object_key?: string; object_type?: string; display_name?: string; confidence?: number }>;
@@ -73,49 +75,66 @@ export function DiscoveryPanel({ packId = "manufacturing-printer-gpo" }: { packI
     };
   }, [packs, proof, resolvedPackId]);
 
-  if (!proof || !snapshot) return null;
+  if (!proof || !snapshot) {
+    return (
+      <WorkbenchShell topbar={<TopbarTitle title="Discovery" subtitle="Loading…" />}>
+        <div className="p-8"><LoadingSkeleton /></div>
+      </WorkbenchShell>
+    );
+  }
 
   const recommendedPack = packs.find((entry) => entry.id === snapshot.recommended_solution_pack);
 
+  const topbarRight = (
+    <>
+      <Pill tone="argon">{snapshot.object_candidates.length} objects</Pill>
+      <Pill>{snapshot.inferred_links.length} links</Pill>
+    </>
+  );
+
   return (
-    <div className="grid grid-flow-dense gap-4 lg:grid-cols-12">
-      <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <Binoculars className="h-10 w-10 text-[var(--praxis-violet)]" weight="duotone" />
-        <div className="mt-8 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Recommended solution pack</div>
-        <div className="mt-3 font-display text-4xl leading-tight">{recommendedPack?.name ?? snapshot.recommended_solution_pack}</div>
-        <div className="mt-4 text-sm leading-6 text-[var(--praxis-muted)]">
-          Mapping confidence {snapshot.mapping_confidence.toFixed(2)} across {snapshot.object_candidates.length} discovered objects.
-        </div>
-      </article>
-      <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
-          <GitBranch className="h-4 w-4 text-[var(--praxis-violet)]" />
-          Inferred links
-        </div>
-        <div className="mt-5 space-y-3">
-          {snapshot.inferred_links.map((link, index) => (
-            <div key={`${link.source}-${link.target}-${index}`} className="border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] p-4">
-              <div className="text-sm">{link.source} → {link.target}</div>
-              <div className="mt-1 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
-                {link.relation ?? "correlates_with"} {typeof link.confidence === "number" ? `· conf ${link.confidence.toFixed(2)}` : ""}
+    <WorkbenchShell
+      topbar={<TopbarTitle title="Discovery" subtitle={`conf ${snapshot.mapping_confidence.toFixed(2)} · ${snapshot.object_candidates.length} candidates`} right={topbarRight} />}
+    >
+      <div className="grid grid-flow-dense gap-4 p-6 lg:grid-cols-12">
+        <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
+          <Binoculars className="h-10 w-10 text-[var(--praxis-violet)]" weight="duotone" />
+          <div className="mt-8 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">Recommended solution pack</div>
+          <div className="mt-3 font-display text-4xl leading-tight">{recommendedPack?.name ?? snapshot.recommended_solution_pack}</div>
+          <div className="mt-4 text-sm leading-6 text-[var(--praxis-muted)]">
+            Mapping confidence {snapshot.mapping_confidence.toFixed(2)} across {snapshot.object_candidates.length} discovered objects.
+          </div>
+        </article>
+        <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
+          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
+            <GitBranch className="h-4 w-4 text-[var(--praxis-violet)]" />
+            Inferred links
+          </div>
+          <div className="mt-5 space-y-3">
+            {snapshot.inferred_links.map((link, index) => (
+              <div key={`${link.source}-${link.target}-${index}`} className="border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] p-4">
+                <div className="text-sm">{link.source} → {link.target}</div>
+                <div className="mt-1 font-mono text-[10px] uppercase text-[var(--praxis-muted)]">
+                  {link.relation ?? "correlates_with"} {typeof link.confidence === "number" ? `· conf ${link.confidence.toFixed(2)}` : ""}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </article>
-      <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
-        <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
-          <Question className="h-4 w-4 text-[var(--praxis-violet)]" />
-          Next best questions
-        </div>
-        <div className="mt-5 space-y-3">
-          {snapshot.next_best_questions.map((entry, index) => (
-            <div key={`${questionText(entry)}-${index}`} className="border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] p-4 text-sm leading-6">
-              {questionText(entry)}
-            </div>
-          ))}
-        </div>
-      </article>
-    </div>
+            ))}
+          </div>
+        </article>
+        <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
+          <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
+            <Question className="h-4 w-4 text-[var(--praxis-violet)]" />
+            Next best questions
+          </div>
+          <div className="mt-5 space-y-3">
+            {snapshot.next_best_questions.map((entry, index) => (
+              <div key={`${questionText(entry)}-${index}`} className="border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] p-4 text-sm leading-6">
+                {questionText(entry)}
+              </div>
+            ))}
+          </div>
+        </article>
+      </div>
+    </WorkbenchShell>
   );
 }
