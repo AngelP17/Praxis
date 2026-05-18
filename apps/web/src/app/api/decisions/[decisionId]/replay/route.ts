@@ -2,10 +2,23 @@ import { NextResponse } from "next/server";
 
 import { proxyBackend } from "@/app/api/_lib/praxis-server";
 import { DEMO_EVENT_STREAM, getDemoReplay } from "@/lib/demo-scenario";
+import { deterministicHash } from "@/lib/deterministic-hash";
 
-function demoReplay(decisionId: string) {
+async function demoReplay(decisionId: string) {
   const base = getDemoReplay("INC-4821");
   const event = DEMO_EVENT_STREAM[0];
+  const replayHash = await deterministicHash({
+    scenario_id: decisionId,
+    source: event.source,
+    event_type: event.event_type,
+    asset_id: "printer.weifps01",
+    site: event.site ?? "",
+    line: "",
+    payload: {
+      severity: "high",
+      raw: { decision_id: decisionId },
+    },
+  });
   return {
     decision: {
       id: Number(decisionId),
@@ -14,7 +27,7 @@ function demoReplay(decisionId: string) {
       confidence_score: 0.88,
       root_cause_hypothesis: "printer_fleet_dependency_disruption",
       risk_level: "high",
-      replay_hash: `sha256:${decisionId}.demo`,
+      replay_hash: replayHash,
       recommendations: [],
     },
     original_event: {
@@ -34,8 +47,8 @@ function demoReplay(decisionId: string) {
         ],
       },
     },
-    stored_replay_hash: `sha256:${decisionId}.demo`,
-    replayed_hash: `sha256:${decisionId}.demo`,
+    stored_replay_hash: replayHash,
+    replayed_hash: replayHash,
     determinism: true,
     feedback: base.operator_feedback,
     replayed_at: new Date("2026-04-27T16:42:00.000Z").toISOString(),
@@ -44,9 +57,10 @@ function demoReplay(decisionId: string) {
 
 export async function POST(_: Request, { params }: { params: Promise<{ decisionId: string }> }) {
   const { decisionId } = await params;
+  const demoResponse = await demoReplay(decisionId);
   return proxyBackend(
     `/api/decisions/${decisionId}/replay`,
     { method: "POST" },
-    () => NextResponse.json(demoReplay(decisionId)),
+    () => NextResponse.json(demoResponse),
   );
 }

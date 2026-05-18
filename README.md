@@ -84,6 +84,24 @@ That path emits a `printer.offline` CloudEvent, stores it in `operational_events
 
 See [docs/praxis/printer-offline-slice.md](docs/praxis/printer-offline-slice.md) for the exact commands and proof steps.
 
+## Deterministic Scenario Benchmarks
+
+Every registered scenario produces a stable replay hash. Run `make praxis-scenario-benchmark` to regenerate.
+The frontend fallback artifact at `apps/web/src/lib/generated/scenarios.generated.json` is generated from the Python registry with `make praxis-sync-frontend-scenarios`.
+
+| Scenario | Event Type | Risk | Deterministic | Est. Annual Value |
+|----------|-----------|------|:---:|-------:|
+| Printer GPO Offline | com.praxis.asset.printer.offline | high | True | $38,400 |
+| HVAC Temp Drift | com.praxis.asset.hvac.temp_drift | critical | True | $62,000 |
+| MQTT Broker Lag | com.praxis.infra.mqtt.queue_depth_spike | high | True | $29,500 |
+| AD Policy Drift | com.praxis.identity.ad.gpo_drift | critical | True | $110,000 |
+| EHS Safety Breach | com.praxis.safety.ehs.voc_threshold_breach | critical | True | $250,000 |
+| SAP Batch Stall | com.praxis.erp.sap.batch_stall | high | True | $47,000 |
+| WMS Pick Timeout | com.praxis.warehouse.wms.pick_timeout_cascade | medium | True | $31,000 |
+| RFID Reader Dropout | com.praxis.iot.rfid.reader_dropout | medium | True | $18,500 |
+
+Run a single scenario with `make praxis-run-scenario SCENARIO=printer-offline` or all with `make praxis-run-all-scenarios`.
+
 ---
 
 ## Screenshots

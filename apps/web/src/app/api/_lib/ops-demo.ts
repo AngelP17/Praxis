@@ -8,6 +8,13 @@ import {
 } from "@/lib/demo-scenario";
 import { getDemoProof } from "@/lib/praxis-demo-data";
 import type { CatalogOptions, TicketAttachment, TicketComment, TicketDetailPayload } from "@/types";
+import { createHash } from "crypto";
+
+function deterministicTicketHash(ticketId: string): string {
+  const data = JSON.stringify({ ticket_id: ticketId });
+  const digest = createHash("sha256").update(data).digest("hex").slice(0, 32);
+  return `sha256:${digest}`;
+}
 
 type Ticket = (typeof DEMO_TICKETS)[number];
 
@@ -124,7 +131,7 @@ function buildDecision(ticket: Ticket) {
     confidence_score: confidence,
     root_cause_hypothesis: ticket.root_cause_hypothesis || "correlated operational signal",
     decision_ts: ticket.created_at,
-    replay_hash: `sha256:${ticket.ticket_id.toLowerCase()}.demo`,
+    replay_hash: deterministicTicketHash(ticket.ticket_id),
     recommendations: [
       {
         id: Number(`${Number(ticket.ticket_id.replace(/\D/g, "")) || 4821}1`),

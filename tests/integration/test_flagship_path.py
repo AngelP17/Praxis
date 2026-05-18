@@ -113,6 +113,33 @@ def test_replay_decision():
     assert "determinism" in data
 
 
+def test_scenario_run_hash_aligns_with_replay_and_scenario_api():
+    scenarios_response = client.get("/api/scenarios")
+    assert scenarios_response.status_code == 200
+    scenarios = scenarios_response.json()
+    assert isinstance(scenarios, list)
+    assert len(scenarios) >= 1
+    assert scenarios[0]["id"] == "printer-offline"
+
+    run_response = client.post("/api/scenarios/printer-offline/run")
+    assert run_response.status_code == 200
+    run_data = run_response.json()
+    assert run_data["scenario_id"] == "printer-offline"
+    assert run_data["replay_hash"].startswith("sha256:")
+
+    decision_response = client.get(f"/api/decisions/{run_data['decision_id']}")
+    assert decision_response.status_code == 200
+    decision = decision_response.json()
+    assert decision["replay_hash"] == run_data["replay_hash"]
+
+    replay_response = client.post(f"/api/decisions/{run_data['decision_id']}/replay")
+    assert replay_response.status_code == 200
+    replay = replay_response.json()
+    assert replay["stored_replay_hash"] == run_data["replay_hash"]
+    assert replay["replayed_hash"] == run_data["replay_hash"]
+    assert replay["determinism"] is True
+
+
 def test_feedback_approve():
     payload = printer_offline_event(asset_id="printer.feedback").model_dump(mode="json")
     create_resp = client.post("/api/decisions/evaluate", json=payload)

@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Graph, ArrowsOut, MagnifyingGlass } from "@phosphor-icons/react";
 
 import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
-import { SCENARIOS, type Scenario } from "@/lib/scenarios";
+import { useScenarios } from "@/lib/hooks/useScenarios";
+import { type Scenario } from "@/lib/scenarios";
 
 type OntologyNode = {
   id: string;
@@ -26,47 +27,6 @@ type OntologyEdge = {
   strength: "strong" | "medium" | "weak";
 };
 
-function buildGraph(scenario: Scenario): { nodes: OntologyNode[]; edges: OntologyEdge[] } {
-  const asset: OntologyNode = {
-    id: "asset",
-    label: scenario.assetId.split(".").pop() ?? scenario.assetId,
-    type: scenario.assetType.replace(/_/g, " "),
-    criticality: scenario.severity === "critical" ? "critical" : scenario.severity === "high" ? "high" : "medium",
-    owner: scenario.ownerTeam,
-    x: 50,
-    y: 50,
-  };
-
-  const nodes: OntologyNode[] = [asset];
-  const edges: OntologyEdge[] = [];
-
-  const positions = [
-    { x: 20, y: 20 }, { x: 80, y: 20 }, { x: 15, y: 75 },
-    { x: 85, y: 75 }, { x: 50, y: 88 },
-  ];
-
-  scenario.impactedSystems.slice(0, 5).forEach((sys, idx) => {
-    const nodeId = `dep-${idx}`;
-    nodes.push({
-      id: nodeId,
-      label: sys,
-      type: "dependency",
-      criticality: idx === 0 ? "critical" : idx === 1 ? "high" : "medium",
-      owner: scenario.ownerTeam,
-      x: positions[idx].x,
-      y: positions[idx].y,
-    });
-    edges.push({
-      from: "asset",
-      to: nodeId,
-      label: idx === 0 ? "supports" : idx === 1 ? "feeds" : "depends_on",
-      strength: idx === 0 ? "strong" : idx <= 2 ? "medium" : "weak",
-    });
-  });
-
-  return { nodes, edges };
-}
-
 const CRIT_COLORS: Record<string, { fill: string; stroke: string; text: string }> = {
   critical: { fill: "rgba(239,68,68,0.12)", stroke: "rgba(239,68,68,0.5)", text: "#fca5a5" },
   high: { fill: "rgba(245,158,11,0.12)", stroke: "rgba(245,158,11,0.5)", text: "#fcd34d" },
@@ -82,11 +42,46 @@ const EDGE_OPACITY: Record<string, number> = {
 
 export default function OntologyPage() {
   const toast = useToast();
-  const [activeScenario, setActiveScenario] = useState<Scenario>(SCENARIOS[0]);
+  const { scenarios } = useScenarios();
+  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [nodes, setNodes] = useState<OntologyNode[]>([]);
+  const [edges, setEdges] = useState<OntologyEdge[]>([]);
+  const [ontologyStatus, setOntologyStatus] = useState<"loading" | "ready" | "error">("loading");
 
-  const { nodes, edges } = buildGraph(activeScenario);
+  const fetchOntology = useCallback(async (scenario: Scenario) => {
+    setOntologyStatus("loading");
+    try {
+      const res = await fetch(`/api/scenarios/${scenario.id}/ontology`);
+      if (res.ok) {
+        const data = await res.json();
+        setNodes(data.nodes ?? []);
+        setEdges(data.edges ?? []);
+        setOntologyStatus("ready");
+        return;
+      }
+    } catch {
+      // fall through to error
+    }
+    setOntologyStatus("error");
+  }, []);
+
+  useEffect(() => {
+    void fetchOntology(activeScenario);
+  }, [activeScenario, fetchOntology]);
+
+  useEffect(() => {
+    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    if (updated) {
+      setActiveScenario(updated);
+    }
+  }, [activeScenario.id, scenarios]);
+
+  function handleScenarioChange(scenario: Scenario) {
+    setActiveScenario(scenario);
+    setSelected(null);
+  }
 
   const filteredNodes = search.trim()
     ? nodes.filter((n) => n.label.toLowerCase().includes(search.toLowerCase()) || n.type.toLowerCase().includes(search.toLowerCase()))
@@ -120,7 +115,7 @@ export default function OntologyPage() {
                   Operational objects, inferred links, and blast-radius relationships compiled from signals and asset data. Click a node to inspect.
                 </p>
               </div>
-              <ScenarioPicker activeId={activeScenario.id} onChange={(s) => { setActiveScenario(s); setSelected(null); }} />
+              <ScenarioPicker activeId={activeScenario.id} onChange={handleScenarioChange} />
             </div>
           </section>
 
@@ -143,6 +138,21 @@ export default function OntologyPage() {
 
                 {/* SVG graph */}
                 <div className="relative h-[400px] overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/50">
+                  {ontologyStatus === "loading" ? (
+                    <div className="flex items-center justify-center h-full text-sm text-zinc-500">
+                      Loading ontology from backend…
+                    </div>
+                  ) : ontologyStatus === "error" ? (
+                    <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-zinc-500">
+                      <span>Backend unavailable</span>
+                      <button
+                        onClick={() => void fetchOntology(activeScenario)}
+                        className="rounded-full border border-zinc-700/60 bg-zinc-800/50 px-3 py-1.5 font-mono text-[10px] text-zinc-400 hover:text-zinc-200 transition-all"
+                      >
+                        Retry
+                      </button>
+                    </div>
+                  ) : (
                   <svg viewBox="0 0 100 100" className="h-full w-full" style={{ fontFamily: "monospace" }}>
                     {/* Edges */}
                     {edges.map((edge, idx) => {
@@ -216,8 +226,10 @@ export default function OntologyPage() {
                       );
                     })}
                   </svg>
+                  )}
 
                   {/* Legend */}
+                  {(ontologyStatus === "ready") && (
                   <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
                     {Object.entries(CRIT_COLORS).map(([crit, colors]) => (
                       <div key={crit} className="flex items-center gap-1">
@@ -226,6 +238,7 @@ export default function OntologyPage() {
                       </div>
                     ))}
                   </div>
+                  )}
                 </div>
               </div>
             </div>

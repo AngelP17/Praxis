@@ -6,6 +6,16 @@ from sqlalchemy.orm import Session
 from apps.api_gateway.services.operational_intelligence import fetch_ticket_row
 
 
+def _json_serialize(obj: object) -> str:
+    return json.dumps(obj, default=_json_default)
+
+
+def _json_default(obj: object) -> str:
+    if hasattr(obj, "isoformat"):
+        return obj.isoformat()
+    return str(obj)
+
+
 class EventService:
     def __init__(self, db: Session):
         self.db = db
@@ -130,6 +140,7 @@ class EventService:
                     "subject": payload.get("subject"),
                     "time": payload.get("time"),
                 },
+                "scenario_id": data.get("scenario_id"),
                 "asset_id": data.get("asset_id"),
                 "site": data.get("site"),
                 "line": data.get("line"),
@@ -186,8 +197,8 @@ class EventService:
                 else payload.get("line"),
                 "severity": payload.get("severity", "low"),
                 "occurred_at": occurred_at,
-                "payload": json.dumps(payload.get("payload", {})),
-                "normalized_payload": json.dumps(
+                "payload": _json_serialize(payload.get("payload", {})),
+                "normalized_payload": _json_serialize(
                     payload.get("normalized_payload") or self._normalize_payload(payload)
                 ),
             },

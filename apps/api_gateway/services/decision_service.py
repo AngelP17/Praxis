@@ -13,6 +13,7 @@ from apps.api_gateway.services.operational_intelligence import (
     fetch_ticket_row,
 )
 from astraea.praxis_decision import decide
+from domain.hashing import canonical_hash, replay_identity_bundle
 from infrastructure.db.models.outbox_message import OutboxMessage
 
 
@@ -356,16 +357,38 @@ class DecisionService:
         event["normalized_payload"] = self._deserialize_payload(event.get("normalized_payload"))
         return event
 
-    def _build_event_decision_bundle(
-        self, event_dict: dict[str, object], blast_radius: list[dict], decision_payload: dict[str, object]
-    ) -> dict[str, object]:
-        return {
-            "event": event_dict,
-            "blast_radius": blast_radius,
-            "policy_version": decision_payload["policy_version"],
-            "policy": EVENT_POLICY,
-            "decision": decision_payload,
-        }
+    def _build_event_identity_bundle(self, event_dict: dict[str, object]) -> dict[str, object]:
+        """Canonical event identity bundle for deterministic replay hashing.
+
+        Only includes fields that define the logical identity of the event,
+        not auto-generated values (id, event_id, occurred_at) that vary per run.
+        """
+        payload = event_dict.get("payload") or {}
+        if isinstance(payload, str):
+            payload = self._deserialize_payload(payload)
+        normalized_payload = event_dict.get("normalized_payload") or {}
+        if isinstance(normalized_payload, str):
+            normalized_payload = self._deserialize_payload(normalized_payload)
+        raw_payload = payload
+        scenario_id = None
+        if isinstance(payload, dict):
+            scenario_id = payload.get("scenario_id")
+            raw_payload = payload.get("raw", payload)
+        if isinstance(normalized_payload, dict):
+            scenario_id = scenario_id or normalized_payload.get("scenario_id")
+            raw_payload = normalized_payload.get("raw", raw_payload)
+        if not isinstance(raw_payload, dict):
+            raw_payload = {"value": raw_payload}
+        return replay_identity_bundle(
+            scenario_id=str(scenario_id) if scenario_id else None,
+            source=str(event_dict.get("source", "")),
+            event_type=str(event_dict.get("event_type", "")),
+            asset_id=str(event_dict.get("asset_id", "")),
+            site=str(event_dict.get("site", "")),
+            line=str(event_dict.get("line", "")),
+            severity=str(event_dict.get("severity", "")),
+            payload=raw_payload,
+        )
 
     def evaluate_event(self, payload: dict[str, object]) -> dict[str, object]:
         event_service = __import__(
@@ -382,12 +405,8 @@ class DecisionService:
         blast_radius = graph.blast_radius_for_asset(str(asset_ref)) if asset_ref else []
         decision_result = decide(event=event_dict, blast_radius=blast_radius, policy=EVENT_POLICY)
         decision_payload = asdict(decision_result)
-        decision_bundle = self._build_event_decision_bundle(
-            event_dict=event_dict,
-            blast_radius=blast_radius,
-            decision_payload=decision_payload,
-        )
-        replay_hash = self._compute_replay_hash(decision_bundle)
+        identity_bundle = self._build_event_identity_bundle(event_dict)
+        replay_hash = self._compute_replay_hash(identity_bundle)
 
         inserted = (
             self.db.execute(
@@ -590,13 +609,8 @@ class DecisionService:
         blast_radius = graph.blast_radius_for_asset(str(asset_ref)) if asset_ref else []
         decision_result = decide(event=event_dict, blast_radius=blast_radius, policy=EVENT_POLICY)
         decision_payload = asdict(decision_result)
-        replayed_hash = self._compute_replay_hash(
-            self._build_event_decision_bundle(
-                event_dict=event_dict,
-                blast_radius=blast_radius,
-                decision_payload=decision_payload,
-            )
-        )
+        identity_bundle = self._build_event_identity_bundle(event_dict)
+        replayed_hash = self._compute_replay_hash(identity_bundle)
 
         feedback_rows = self.db.execute(
             text(
@@ -683,17 +697,7 @@ class DecisionService:
         return round(sum(scores) / len(scores) - penalty, 4)
 
     def _compute_replay_hash(self, payload: dict[str, object]) -> str:
-        import hashlib
-
-        canonical = json.dumps(
-            payload,
-            sort_keys=True,
-            separators=(",", ":"),
-            default=lambda value: value.isoformat()
-            if hasattr(value, "isoformat")
-            else str(value),
-        )
-        return f"sha256:{hashlib.sha256(canonical.encode()).hexdigest()[:32]}"
+        return canonical_hash(payload)
 
     def _build_feature_snapshot(self, payload: dict[str, object]) -> dict[str, object]:
         return {

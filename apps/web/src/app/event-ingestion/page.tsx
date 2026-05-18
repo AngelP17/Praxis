@@ -11,7 +11,9 @@ import { EmptyState } from "@/components/empty-state";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
-import { SCENARIOS, type Scenario } from "@/lib/scenarios";
+import { deterministicHash } from "@/lib/deterministic-hash";
+import { useScenarios } from "@/lib/hooks/useScenarios";
+import { type Scenario } from "@/lib/scenarios";
 import { DEMO_EVENT_STREAM } from "@/lib/demo-scenario";
 
 type EventRow = {
@@ -44,14 +46,15 @@ const SEVERITY_BADGE: Record<string, string> = {
 export default function EventIngestionPage() {
   const router = useRouter();
   const toast = useToast();
+  const { scenarios } = useScenarios();
   const [events, setEvents] = useState<EventRow[]>([]);
   const [pageStatus, setPageStatus] = useState<"loading" | "ready">("loading");
-  const [activeScenario, setActiveScenario] = useState<Scenario>(SCENARIOS[0]);
-  const [source, setSource] = useState(SCENARIOS[0].source);
-  const [eventType, setEventType] = useState(SCENARIOS[0].eventType);
-  const [severity, setSeverity] = useState<string>(SCENARIOS[0].severity);
-  const [site, setSite] = useState(SCENARIOS[0].site);
-  const [assetId, setAssetId] = useState(SCENARIOS[0].assetId);
+  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
+  const [source, setSource] = useState(scenarios[0].source);
+  const [eventType, setEventType] = useState(scenarios[0].eventType);
+  const [severity, setSeverity] = useState<string>(scenarios[0].severity);
+  const [site, setSite] = useState(scenarios[0].site);
+  const [assetId, setAssetId] = useState(scenarios[0].assetId);
   const [ingesting, setIngesting] = useState(false);
   const [evaluating, setEvaluating] = useState(false);
   const [lastResult, setLastResult] = useState<EvaluateResult | null>(null);
@@ -71,6 +74,18 @@ export default function EventIngestionPage() {
   useEffect(() => {
     void loadEvents();
   }, [loadEvents]);
+
+  useEffect(() => {
+    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    if (updated) {
+      setActiveScenario(updated);
+      setSource(updated.source);
+      setEventType(updated.eventType);
+      setSeverity(updated.severity);
+      setSite(updated.site);
+      setAssetId(updated.assetId);
+    }
+  }, [activeScenario.id, scenarios]);
 
   function applyScenario(scenario: Scenario) {
     setActiveScenario(scenario);
@@ -118,7 +133,14 @@ export default function EventIngestionPage() {
         asset_id: assetId,
         specversion: "1.0",
         type: eventType,
-        data: activeScenario.payload,
+        data: {
+          scenario_id: activeScenario.id,
+          asset_id: assetId,
+          site,
+          line: activeScenario.line,
+          severity,
+          raw: activeScenario.payload,
+        },
         subject: `asset:${assetId}`,
       };
       const result = await postJsonWithTimeout<EvaluateResult>("/api/decisions/evaluate", payload);
@@ -126,14 +148,26 @@ export default function EventIngestionPage() {
       toast.success("Decision generated", `Priority ${result.priority_score?.toFixed(1)} · ${result.risk_level} risk`);
     } catch (err) {
       toast.error("Evaluation failed (using demo fallback)", err instanceof Error ? err.message : "");
+      const replayHash = await deterministicHash({
+        scenario_id: activeScenario.id,
+        source,
+        event_type: eventType,
+        asset_id: assetId,
+        site,
+        line: activeScenario.line,
+        payload: {
+          severity,
+          raw: activeScenario.payload,
+        },
+      });
       setLastResult({
-        id: Math.floor(Math.random() * 9000 + 1000),
-        event_id: `evt_${Math.random().toString(36).slice(2, 10)}`,
+        id: 9000 + scenarios.findIndex((s) => s.id === activeScenario.id) + 1,
+        event_id: `evt-demo-${activeScenario.id}`,
         priority_score: activeScenario.priorityScore,
         risk_level: activeScenario.severity === "critical" ? "critical" : activeScenario.severity === "high" ? "high" : "medium",
         confidence_score: activeScenario.confidenceScore,
         root_cause_hypothesis: activeScenario.rootCause,
-        replay_hash: `sha256:${Math.random().toString(36).slice(2, 18)}`,
+        replay_hash: replayHash,
       });
     } finally {
       setEvaluating(false);
@@ -168,7 +202,7 @@ export default function EventIngestionPage() {
                 <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
                   Submit operational events into the Praxis spine. Switch scenarios with the picker or press{" "}
                   <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">1</kbd>–
-                  <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">8</kbd>.
+                  <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">{scenarios.length}</kbd>.
                 </p>
               </div>
               <ScenarioPicker activeId={activeScenario.id} onChange={applyScenario} />
@@ -307,7 +341,7 @@ export default function EventIngestionPage() {
           <section className="praxis-v2-panel p-5 py-20 sm:py-24">
             <div className="praxis-v2-eyebrow mb-4">Quick scenario select</div>
             <div className="grid grid-flow-dense grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
-              {SCENARIOS.map((scenario, idx) => (
+              {scenarios.map((scenario, idx) => (
                 <button
                   key={scenario.id}
                   onClick={() => applyScenario(scenario)}

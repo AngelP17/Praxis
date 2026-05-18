@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Sparkle, ArrowClockwise } from "@phosphor-icons/react";
 
 import { postJsonWithTimeout } from "@/lib/client-api";
@@ -8,7 +8,8 @@ import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
-import { SCENARIOS, SEVERITY_COLORS, type Scenario } from "@/lib/scenarios";
+import { useScenarios } from "@/lib/hooks/useScenarios";
+import { SEVERITY_COLORS, type Scenario } from "@/lib/scenarios";
 
 type RecommendationRow = {
   id: number;
@@ -22,10 +23,10 @@ type RecommendationRow = {
   scenarioId: string;
 };
 
-function buildRows(scenario: Scenario): RecommendationRow[] {
+function buildRows(scenario: Scenario, scenarioIndex: number): RecommendationRow[] {
   return [
     {
-      id: 9000 + SCENARIOS.findIndex((s) => s.id === scenario.id) * 3,
+      id: 9000 + scenarioIndex * 3,
       ticket_id: scenario.ticketId,
       ticket_title: scenario.title,
       action_label: scenario.recommendation,
@@ -36,7 +37,7 @@ function buildRows(scenario: Scenario): RecommendationRow[] {
       scenarioId: scenario.id,
     },
     {
-      id: 9001 + SCENARIOS.findIndex((s) => s.id === scenario.id) * 3,
+      id: 9001 + scenarioIndex * 3,
       ticket_id: scenario.ticketId,
       ticket_title: scenario.title,
       action_label: `Route ${scenario.ownerTeam} with evidence bundle · runbook ${scenario.runbookId}`,
@@ -47,7 +48,7 @@ function buildRows(scenario: Scenario): RecommendationRow[] {
       scenarioId: scenario.id,
     },
     {
-      id: 9002 + SCENARIOS.findIndex((s) => s.id === scenario.id) * 3,
+      id: 9002 + scenarioIndex * 3,
       ticket_id: scenario.ticketId,
       ticket_title: scenario.title,
       action_label: "Attach replay packet before closure",
@@ -74,13 +75,24 @@ const STATUS_BADGE: Record<string, string> = {
 
 export default function RecommendationsPage() {
   const toast = useToast();
-  const [activeScenario, setActiveScenario] = useState<Scenario>(SCENARIOS[0]);
-  const [rows, setRows] = useState<RecommendationRow[]>(() => buildRows(SCENARIOS[0]));
+  const { scenarios } = useScenarios();
+  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
+  const [rows, setRows] = useState<RecommendationRow[]>(() => buildRows(scenarios[0], 0));
   const [actioning, setActioning] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    if (updated) {
+      setActiveScenario(updated);
+      const idx = scenarios.findIndex((scenario) => scenario.id === updated.id);
+      setRows(buildRows(updated, Math.max(0, idx)));
+    }
+  }, [activeScenario.id, scenarios]);
 
   function handleScenarioChange(scenario: Scenario) {
     setActiveScenario(scenario);
-    setRows(buildRows(scenario));
+    const idx = scenarios.findIndex((s) => s.id === scenario.id);
+    setRows(buildRows(scenario, Math.max(0, idx)));
     setActioning(new Set());
   }
 
@@ -126,9 +138,10 @@ export default function RecommendationsPage() {
   }
 
   function handleReset() {
-    setRows(buildRows(activeScenario));
+    const idx = scenarios.findIndex((s) => s.id === activeScenario.id);
+    setRows(buildRows(activeScenario, Math.max(0, idx)));
     setActioning(new Set());
-    toast.info("Queue reset", `${activeScenario.label} · ${buildRows(activeScenario).length} recommendations loaded`);
+    toast.info("Queue reset", `${activeScenario.label} · ${buildRows(activeScenario, Math.max(0, idx)).length} recommendations loaded`);
   }
 
   const sevClasses = SEVERITY_COLORS[activeScenario.severity] ?? SEVERITY_COLORS.medium;
@@ -253,7 +266,7 @@ export default function RecommendationsPage() {
           <div className="praxis-v2-panel-enhanced p-6 sm:p-8">
             <div className="praxis-v2-eyebrow-enhanced mb-5">All scenarios · select to load recommendations</div>
             <div className="grid grid-flow-dense grid-cols-2 gap-2 sm:grid-cols-4">
-              {SCENARIOS.map((s, i) => {
+              {scenarios.map((s, i) => {
                 const sc = SEVERITY_COLORS[s.severity] ?? SEVERITY_COLORS.medium;
                 return (
                   <button

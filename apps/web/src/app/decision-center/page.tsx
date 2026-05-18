@@ -14,6 +14,7 @@ import {
 
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 import { DEMO_EVENT_STREAM } from "@/lib/demo-scenario";
+import { deterministicHash } from "@/lib/deterministic-hash";
 import { CommandShell } from "@/components/command-shell";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 import { ErrorState } from "@/components/error-state";
@@ -81,7 +82,19 @@ type ReplayPayload = {
   replayed_at?: string;
 };
 
-function buildDemoDecision(event: EventRow): DecisionPayload {
+async function buildDemoDecision(event: EventRow): Promise<DecisionPayload> {
+  const replayHash = await deterministicHash({
+    scenario_id: event.event_id,
+    source: event.source,
+    event_type: event.event_type,
+    asset_id: "",
+    site: event.site ?? "",
+    line: "",
+    payload: {
+      severity: event.severity,
+      raw: { event_id: event.event_id },
+    },
+  });
   return {
     id: 4800 + DEMO_EVENT_STREAM.findIndex((item) => item.event_id === event.event_id) + 1,
     event_id: event.event_id,
@@ -90,7 +103,7 @@ function buildDemoDecision(event: EventRow): DecisionPayload {
     root_cause_hypothesis: `${event.event_type}_operational_dependency_disruption`,
     risk_level: event.severity === "critical" ? "high" : "medium",
     decision_ts: event.occurred_at || new Date().toISOString(),
-    replay_hash: `sha256:${event.event_id}.demo`,
+    replay_hash: replayHash,
     recommendations: [
       {
         id: 1,
@@ -189,7 +202,7 @@ export default function DecisionCenterPage() {
           source_ref: `asset:${eventId}`,
           line: null,
         };
-        const fallbackDecision = buildDemoDecision(fallbackEvent);
+        const fallbackDecision = await buildDemoDecision(fallbackEvent);
         setEventDetail(fallbackDetail);
         setDecision(fallbackDecision);
         setReplay(buildDemoReplay(fallbackDetail, fallbackDecision));

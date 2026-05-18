@@ -1,4 +1,4 @@
-.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo praxis-install praxis-fieldlab-up praxis-fieldlab-down praxis-demo praxis-validate-pack praxis-readout praxis-proof praxis-proof-open praxis-benchmark praxis-test praxis-floci-verify praxis-canvas-verify praxis-proof-hashes praxis-seed-graph praxis-printer-slice praxis-validate-all
+.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo praxis-install praxis-fieldlab-up praxis-fieldlab-down praxis-demo praxis-validate-pack praxis-readout praxis-proof praxis-proof-open praxis-benchmark praxis-test praxis-floci-verify praxis-canvas-verify praxis-proof-hashes praxis-seed-graph praxis-printer-slice praxis-validate-all praxis-run-scenario praxis-run-all-scenarios praxis-scenario-benchmark praxis-sync-frontend-scenarios
 
 install:
 	python3 -m venv .venv
@@ -132,3 +132,17 @@ praxis-printer-slice:
 
 praxis-validate-all: lint test praxis-benchmark praxis-floci-verify praxis-canvas-verify praxis-proof-hashes
 	@echo "All validation checks completed."
+
+# Deterministic scenario targets
+
+praxis-run-scenario:
+	.venv/bin/python scripts/run_scenario.py $(SCENARIO)
+
+praxis-run-all-scenarios:
+	.venv/bin/python scripts/run_scenario.py --all --approve
+
+praxis-scenario-benchmark:
+	.venv/bin/python scripts/run_scenario.py --benchmark
+
+praxis-sync-frontend-scenarios:
+	.venv/bin/python scripts/generate_frontend_scenarios.py

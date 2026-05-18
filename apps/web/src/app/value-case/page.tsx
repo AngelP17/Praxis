@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowSquareOut, CurrencyDollar, TrendDown, ChartBar, Export } from "@phosphor-icons/react";
 
 import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
-import { SCENARIOS, type Scenario } from "@/lib/scenarios";
+import { useScenarios } from "@/lib/hooks/useScenarios";
+import { type Scenario } from "@/lib/scenarios";
 
 function fmtUsd(n: number) {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
@@ -53,8 +54,16 @@ const ASSUMPTIONS = (s: Scenario) => [
 
 export default function ValueCasePage() {
   const toast = useToast();
-  const [activeScenario, setActiveScenario] = useState<Scenario>(SCENARIOS[0]);
+  const { scenarios } = useScenarios();
+  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
   const [exporting, setExporting] = useState(false);
+
+  useEffect(() => {
+    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    if (updated) {
+      setActiveScenario(updated);
+    }
+  }, [activeScenario.id, scenarios]);
 
   const breakdown = CATEGORY_BREAKDOWN(activeScenario);
   const assumptions = ASSUMPTIONS(activeScenario);
@@ -204,7 +213,7 @@ export default function ValueCasePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {SCENARIOS.map((s) => (
+                  {scenarios.map((s) => (
                     <tr
                       key={s.id}
                       onClick={() => setActiveScenario(s)}
@@ -230,7 +239,7 @@ export default function ValueCasePage() {
             <div className="mt-4 flex items-center justify-between">
               <div className="font-mono text-xs text-zinc-600">click a row to set active scenario</div>
               <div className="font-mono text-sm font-semibold text-zinc-100">
-                Total portfolio · {fmtUsd(SCENARIOS.reduce((acc, s) => acc + s.estimatedValueUsd, 0))}/yr
+                Total portfolio · {fmtUsd(scenarios.reduce((acc, s) => acc + s.estimatedValueUsd, 0))}/yr
               </div>
             </div>
           </section>

@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "lint:gpt-taste": "ESLINT_USE_FLAT_CONFIG=false eslint -c .gpt-taste.eslintrc.cjs --ext .tsx,.ts,.jsx,.js src/",
-    "lint:gpt-taste:ci": "ESLINT_USE_FLAT_CONFIG=false eslint -c .gpt-taste.eslintrc.cjs --ext .tsx,.ts,.jsx,.js --max-warnings=0 src/",
-    "lint:gpt-taste:json": "ESLINT_USE_FLAT_CONFIG=false eslint -c .gpt-taste.eslintrc.cjs --ext .tsx,.ts,.jsx,.js --format json src/",
+    "lint:gpt-taste": "eslint -c eslint.gpt-taste.config.mjs \"src/**/*.{tsx,ts,jsx,js}\"",
+    "lint:gpt-taste:ci": "eslint -c eslint.gpt-taste.config.mjs --max-warnings=0 \"src/**/*.{tsx,ts,jsx,js}\"",
+    "lint:gpt-taste:json": "eslint -c eslint.gpt-taste.config.mjs --format json \"src/**/*.{tsx,ts,jsx,js}\"",
     "typecheck": "tsc --noEmit",
     "test:smoke": "playwright test tests/*.smoke.spec.ts"
   },
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.4",
+    "@typescript-eslint/parser": "^8.46.2",
     "@types/node": "^22.14.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",

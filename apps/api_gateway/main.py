@@ -36,6 +36,7 @@ from apps.api_gateway.routes.deployment_plans import router as deployment_plans_
 from apps.api_gateway.routes.discovery import router as discovery_router
 from apps.api_gateway.routes.pack_metrics import router as pack_metrics_router
 from apps.api_gateway.routes.floci_health import router as floci_health_router
+from apps.api_gateway.routes.scenarios import router as scenarios_router
 
 
 @asynccontextmanager
@@ -99,6 +100,7 @@ app.include_router(proofs_replay_router, tags=["proofs-replay"])
 app.include_router(health_router, tags=["health"])
 app.include_router(pack_metrics_router, tags=["pack-metrics"])
 app.include_router(floci_health_router, tags=["floci-health"])
+app.include_router(scenarios_router, tags=["scenarios"])
 
 
 @app.get("/health")

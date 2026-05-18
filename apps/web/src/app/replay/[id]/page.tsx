@@ -1,5 +1,6 @@
 import { getDemoReplay } from "@/lib/demo-scenario";
 import { getServerApiUrl } from "@/lib/server-api";
+import { deterministicHash } from "@/lib/deterministic-hash";
 import { PraxisReplayWorkbench } from "@/components/praxis/workbench/replay-workbench";
 
 type ReplayPayload = {
@@ -47,8 +48,20 @@ type ReplayPayload = {
   replayed_at?: string;
 };
 
-function buildDemoReplay(id: string): ReplayPayload {
+async function buildDemoReplay(id: string): Promise<ReplayPayload> {
   const base = getDemoReplay(id);
+  const replayHash = await deterministicHash({
+    scenario_id: id,
+    source: "praxis.adapters.printer",
+    event_type: "com.praxis.asset.printer.offline",
+    asset_id: "printer.weifps01",
+    site: "TX",
+    line: "",
+    payload: {
+      severity: "high",
+      raw: { replay_id: id },
+    },
+  });
   return {
     decision: {
       id: Number(id) || 4821,
@@ -56,7 +69,7 @@ function buildDemoReplay(id: string): ReplayPayload {
       confidence_score: 0.88,
       root_cause_hypothesis: base.latest_decision?.root_cause_hypothesis,
       risk_level: "high",
-      replay_hash: `sha256:${id}.demo`,
+      replay_hash: replayHash,
     },
     original_event: {
       event_id: `evt-${id.toLowerCase()}`,
@@ -77,8 +90,8 @@ function buildDemoReplay(id: string): ReplayPayload {
         ],
       },
     },
-    stored_replay_hash: `sha256:${id}.demo`,
-    replayed_hash: `sha256:${id}.demo`,
+    stored_replay_hash: replayHash,
+    replayed_hash: replayHash,
     determinism: true,
     feedback: base.operator_feedback,
     replayed_at: new Date("2026-04-27T16:42:00.000Z").toISOString(),
@@ -96,14 +109,14 @@ async function loadReplay(
     if (!response.ok) {
       return {
         mode: "demo",
-        payload: buildDemoReplay(id),
+        payload: await buildDemoReplay(id),
       };
     }
     return { mode: "live", payload: (await response.json()) as ReplayPayload };
   } catch (error) {
     return {
       mode: "demo",
-      payload: buildDemoReplay(id),
+      payload: await buildDemoReplay(id),
       notice: undefined,
     };
   }
