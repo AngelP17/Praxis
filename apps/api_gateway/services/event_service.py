@@ -103,16 +103,54 @@ class EventService:
                 return payload
         return payload
 
+    def _normalize_cloudevent(self, payload: dict[str, object]) -> dict[str, object]:
+        if payload.get("specversion") != "1.0" or "data" not in payload:
+            return payload
+
+        data = payload.get("data")
+        if not isinstance(data, dict):
+            data = {}
+
+        return {
+            "event_id": payload.get("id"),
+            "source": payload.get("source", "unknown"),
+            "source_ref": payload.get("subject"),
+            "event_type": payload.get("type", "unknown"),
+            "asset_id": data.get("asset_id"),
+            "site": data.get("site"),
+            "line": data.get("line"),
+            "severity": data.get("severity", "low"),
+            "occurred_at": payload.get("time"),
+            "payload": data,
+            "normalized_payload": {
+                "cloudevent": {
+                    "id": payload.get("id"),
+                    "source": payload.get("source"),
+                    "type": payload.get("type"),
+                    "subject": payload.get("subject"),
+                    "time": payload.get("time"),
+                },
+                "asset_id": data.get("asset_id"),
+                "site": data.get("site"),
+                "line": data.get("line"),
+                "severity": data.get("severity", "low"),
+                "signal": data.get("signal"),
+                "confidence": data.get("confidence"),
+                "raw": data.get("raw", {}),
+            },
+        }
+
     def ingest_event(self, payload: dict[str, object]) -> dict[str, object]:
-        from datetime import datetime
+        from datetime import datetime, timezone
         import uuid
 
+        payload = self._normalize_cloudevent(payload)
         event_id = payload.get("event_id") or f"evt_{uuid.uuid4().hex[:12]}"
         occurred_at = payload.get("occurred_at")
         if isinstance(occurred_at, str):
             occurred_at = datetime.fromisoformat(occurred_at.replace("Z", "+00:00"))
         else:
-            occurred_at = datetime.utcnow()
+            occurred_at = datetime.now(timezone.utc)
 
         self.db.execute(
             text(

@@ -89,6 +89,8 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 
 - FieldLab up: `make praxis-fieldlab-up`
 - FieldLab down: `make praxis-fieldlab-down`
+- Seed operational asset graph: `make praxis-seed-graph`
+- Run printer-offline spine demo: `make praxis-printer-slice`
 - Run flagship demo: `make praxis-demo`
 - Validate solution pack: `make praxis-validate-pack`
 - Generate executive readout: `make praxis-readout RUN_ID=<id>`
@@ -142,7 +144,9 @@ The proof path emits `artifacts/latest/praxis_proof.json` and `artifacts/latest/
 - Determinism matters. Decision scoring, replay hashes, and audit records should remain reproducible for the same inputs.
 - Human-in-the-loop is a product constraint. Do not add unilateral automation paths unless explicitly requested.
 - Prefer shared domain models in `packages/domain/` and existing service APIs over duplicating shapes.
+- CloudEvents 1.0 are accepted on the existing ingest/evaluate path. The shared contract lives in `packages/domain/domain/events.py` and should be imported as `domain.events`.
 - Raw events are intended to be immutable; decision records and evidence are audit artifacts.
+- The operational-resilience spine uses `apps/api_gateway/services/graph_service.py`, `packages/astraea-core/astraea/praxis_decision.py`, `infrastructure/db/models/asset_edge.py`, and `infrastructure/db/models/outbox_message.py`.
 - The Floci-backed FieldLab path uses `packages/pipelines/pipelines/fieldlab/floci_*.py`, `apps/api_gateway/services/fieldlab_service.py`, and `scripts/run_fieldlab_demo.py`. Keep SQS/S3/DynamoDB/EventBridge behavior deterministic and locally reproducible.
 - SQLite files such as `praxis.db`, `test_praxis.db`, and `.venv/` are local artifacts and should not be edited manually.
 
@@ -208,6 +212,7 @@ If a command cannot run because services, ports, dependencies, or credentials ar
 - The requested behavior or documentation change is implemented without unrelated behavior changes.
 - Relevant commands are run and results are reported.
 - Any unknowns, blockers, or intentionally skipped checks are explicit.
+- Event-spine work is only done when `make praxis-seed-graph` succeeds, `/api/decisions/evaluate` accepts a printer CloudEvent, `/api/decisions/{id}/approve` records feedback plus an outbox row, and `/api/decisions/{id}/replay` reports deterministic hash equality.
 - Frontend changes pass the GPT-taste/design gate or list concrete remaining violations.
 - Documentation changes reflect commands and conventions that exist in this repo, not invented workflow.
 - Praxis visual changes follow `docs/praxis/Praxis-Brand-Replication.md` or document the intentional divergence.

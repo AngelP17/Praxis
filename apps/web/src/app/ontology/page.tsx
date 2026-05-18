@@ -159,11 +159,11 @@ export default function OntologyPage() {
                             y1={fromNode.y}
                             x2={toNode.x}
                             y2={toNode.y}
-                            stroke="#8B5CFF"
+                            stroke="var(--praxis-plasma)"
                             strokeWidth={isHighlighted ? "0.6" : "0.3"}
                             strokeDasharray={edge.strength === "weak" ? "1 1" : undefined}
                           />
-                          <text x={mx} y={my - 1} textAnchor="middle" fill="#86819F" fontSize="2.5">
+                          <text x={mx} y={my - 1} textAnchor="middle" fill="var(--praxis-mute)" fontSize="2.5">
                             {edge.label}
                           </text>
                         </g>
@@ -207,7 +207,7 @@ export default function OntologyPage() {
                           <text
                             textAnchor="middle"
                             dy={node.id === "asset" ? "12" : "10"}
-                            fill="#48455A"
+                            fill="var(--praxis-hairline)"
                             fontSize="2"
                           >
                             {node.type}
@@ -310,7 +310,7 @@ export default function OntologyPage() {
               {/* Stats */}
               <div className="praxis-v2-panel-enhanced p-5">
                 <div className="praxis-v2-eyebrow-enhanced mb-3">Graph stats</div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-flow-dense grid-cols-2 gap-2">
                   {[
                     { label: "Nodes", value: nodes.length },
                     { label: "Edges", value: edges.length },

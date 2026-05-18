@@ -1,4 +1,4 @@
-.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo praxis-install praxis-fieldlab-up praxis-fieldlab-down praxis-demo praxis-validate-pack praxis-readout praxis-proof praxis-proof-open praxis-benchmark praxis-test praxis-floci-verify praxis-canvas-verify praxis-proof-hashes praxis-validate-all
+.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo praxis-install praxis-fieldlab-up praxis-fieldlab-down praxis-demo praxis-validate-pack praxis-readout praxis-proof praxis-proof-open praxis-benchmark praxis-test praxis-floci-verify praxis-canvas-verify praxis-proof-hashes praxis-seed-graph praxis-printer-slice praxis-validate-all
 
 install:
 	python3 -m venv .venv
@@ -122,6 +122,13 @@ praxis-canvas-verify:
 
 praxis-proof-hashes:
 	.venv/bin/python scripts/check_no_fake_proof_hashes.py
+
+praxis-seed-graph:
+	.venv/bin/python scripts/seed_operational_graph.py
+
+praxis-printer-slice:
+	.venv/bin/python scripts/seed_operational_graph.py
+	.venv/bin/python adapters/printer_adapter/emit_printer_offline.py
 
 praxis-validate-all: lint test praxis-benchmark praxis-floci-verify praxis-canvas-verify praxis-proof-hashes
 	@echo "All validation checks completed."

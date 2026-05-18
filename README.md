@@ -70,6 +70,20 @@ The proof path emits `artifacts/latest/praxis_proof.json` and `artifacts/latest/
 
 > **Tag:** `praxis-v1` — Field-Deployed Decision Platform
 
+## Operational-Resilience Spine
+
+Praxis now also supports a concrete event-driven resilience slice on the existing API path:
+
+```bash
+make praxis-seed-graph
+make dev-api
+make praxis-printer-slice
+```
+
+That path emits a `printer.offline` CloudEvent, stores it in `operational_events`, resolves the asset dependency graph, computes a deterministic Astraea decision, writes `decision_records`, records human feedback through the existing approval endpoints, persists a durable outbox row, and replays the decision by recomputing the canonical hash.
+
+See [docs/praxis/printer-offline-slice.md](docs/praxis/printer-offline-slice.md) for the exact commands and proof steps.
+
 ---
 
 ## Screenshots

@@ -165,7 +165,7 @@ export default function RecommendationsPage() {
           </section>
 
           {/* Stats bar */}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-flow-dense grid-cols-3 gap-4">
             {[
               { label: "Pending", value: pending, color: "text-zinc-100" },
               { label: "Accepted", value: accepted, color: "text-emerald-400" },
@@ -252,7 +252,7 @@ export default function RecommendationsPage() {
           {/* All scenarios quick list */}
           <div className="praxis-v2-panel-enhanced p-6 sm:p-8">
             <div className="praxis-v2-eyebrow-enhanced mb-5">All scenarios · select to load recommendations</div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+            <div className="grid grid-flow-dense grid-cols-2 gap-2 sm:grid-cols-4">
               {SCENARIOS.map((s, i) => {
                 const sc = SEVERITY_COLORS[s.severity] ?? SEVERITY_COLORS.medium;
                 return (

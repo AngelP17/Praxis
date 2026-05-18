@@ -51,7 +51,10 @@ export function ScenarioPicker({ activeId, onChange }: Props) {
             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
               Scenario · {SCENARIOS.length} incidents · press 1–{SCENARIOS.length}
             </div>
-            <button onClick={() => setOpen(false)} className="text-zinc-600 hover:text-zinc-400">
+            <button
+              onClick={() => setOpen(false)}
+              className="inline-flex items-center justify-center rounded-full text-zinc-600 transition-transform duration-300 hover:scale-105 hover:text-zinc-400"
+            >
               <X size={14} />
             </button>
           </div>

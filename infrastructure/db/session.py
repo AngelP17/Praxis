@@ -82,6 +82,7 @@ def _import_models() -> None:
     import infrastructure.db.models.action_run  # noqa: F401
     import infrastructure.db.models.assignee  # noqa: F401
     import infrastructure.db.models.asset  # noqa: F401
+    import infrastructure.db.models.asset_edge  # noqa: F401
     import infrastructure.db.models.audit_record  # noqa: F401
     import infrastructure.db.models.category  # noqa: F401
     import infrastructure.db.models.decision_record  # noqa: F401
@@ -93,6 +94,7 @@ def _import_models() -> None:
     import infrastructure.db.models.label  # noqa: F401
     import infrastructure.db.models.operator_feedback  # noqa: F401
     import infrastructure.db.models.operational_event  # noqa: F401
+    import infrastructure.db.models.outbox_message  # noqa: F401
     import infrastructure.db.models.platform_incident  # noqa: F401
     import infrastructure.db.models.recommendation  # noqa: F401
     import infrastructure.db.models.similar_case_link  # noqa: F401
@@ -155,6 +157,41 @@ def _ensure_legacy_compatibility() -> None:
             """
             ALTER TABLE ticket_comments
             ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS asset_edges (
+                id SERIAL PRIMARY KEY,
+                from_asset_id INTEGER NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
+                to_asset_id INTEGER NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
+                relationship VARCHAR(100) NOT NULL,
+                weight INTEGER DEFAULT 1,
+                metadata_json JSONB DEFAULT '{}'::jsonb
+            )
+            """,
+            """
+            CREATE INDEX IF NOT EXISTS ix_asset_edges_from_asset_id ON asset_edges(from_asset_id)
+            """,
+            """
+            CREATE INDEX IF NOT EXISTS ix_asset_edges_to_asset_id ON asset_edges(to_asset_id)
+            """,
+            """
+            CREATE INDEX IF NOT EXISTS ix_asset_edges_relationship ON asset_edges(relationship)
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS outbox_messages (
+                id SERIAL PRIMARY KEY,
+                topic VARCHAR(200) NOT NULL,
+                payload JSONB NOT NULL,
+                status VARCHAR(30) NOT NULL DEFAULT 'pending',
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                published_at TIMESTAMP NULL
+            )
+            """,
+            """
+            CREATE INDEX IF NOT EXISTS ix_outbox_messages_topic ON outbox_messages(topic)
+            """,
+            """
+            CREATE INDEX IF NOT EXISTS ix_outbox_messages_status ON outbox_messages(status)
             """,
         ]
         for statement in compatibility_statements:

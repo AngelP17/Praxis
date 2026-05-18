@@ -192,7 +192,7 @@ export default function EventIngestionPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                <div className="mt-6 grid grid-flow-dense gap-3 sm:grid-cols-2">
                   <Field label="Source" value={source} onChange={setSource} mono />
                   <Field label="Event Type" value={eventType} onChange={setEventType} mono />
                   <Field label="Severity" value={severity} onChange={setSeverity} />
@@ -239,14 +239,14 @@ export default function EventIngestionPage() {
                 <div className="praxis-v2-panel-enhanced p-6">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <div className="praxis-v2-eyebrow-enhanced" style={{ color: "var(--praxis-argon, #3effa8)" }}>Decision Generated</div>
+                      <div className="praxis-v2-eyebrow-enhanced" style={{ color: "var(--praxis-argon)" }}>Decision Generated</div>
                       <div className="mt-1 font-mono text-xs text-zinc-500">{lastResult.event_id}</div>
                     </div>
                     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
                       <Check size={16} />
                     </div>
                   </div>
-                  <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <div className="mt-4 grid grid-flow-dense grid-cols-2 gap-3 sm:grid-cols-4">
                     <StatCard label="Decision ID" value={String(lastResult.id)} />
                     <StatCard label="Priority" value={typeof lastResult.priority_score === "number" ? lastResult.priority_score.toFixed(1) : "—"} />
                     <StatCard label="Risk" value={lastResult.risk_level ?? "—"} />
@@ -304,9 +304,9 @@ export default function EventIngestionPage() {
           </div>
 
           {/* Scenario quick-select strip */}
-          <section className="praxis-v2-panel p-5">
+          <section className="praxis-v2-panel p-5 py-20 sm:py-24">
             <div className="praxis-v2-eyebrow mb-4">Quick scenario select</div>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+            <div className="grid grid-flow-dense grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
               {SCENARIOS.map((scenario, idx) => (
                 <button
                   key={scenario.id}

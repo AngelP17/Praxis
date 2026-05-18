@@ -9,6 +9,8 @@ erDiagram
     INCIDENT ||--o{ TICKET : owns
     DECISION_RECORD ||--o{ RECOMMENDATION : emits
     DECISION_RECORD ||--o{ HUMAN_FEEDBACK : receives
+    ASSET ||--o{ ASSET_EDGE : supports
+    DECISION_RECORD ||--o{ OUTBOX_MESSAGE : triggers
     INCIDENT ||--o{ EVIDENCE_ARTIFACT : contains
     INCIDENT ||--o{ REPLAY_EVENT : reconstructs
 
@@ -71,6 +73,8 @@ erDiagram
 
 ## Core Tables
 
+Note: the live SQLAlchemy models in this repo are integer-backed for primary keys in the current checkout, even though some older architecture notes still describe UUID-centric shapes.
+
 ### operational_event
 Stores all ingested signals in normalized form.
 
@@ -128,6 +132,30 @@ Stores operator feedback on decisions.
 | feedback_type | VARCHAR | accept/reject/override |
 | note | TEXT | Optional context |
 | created_at | TIMESTAMP | Feedback time |
+
+### asset_edges
+Stores directional asset dependencies for blast-radius scoring.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| from_asset_id | INTEGER | Upstream asset |
+| to_asset_id | INTEGER | Downstream affected asset |
+| relationship | VARCHAR | Dependency label such as `supports` |
+| weight | INTEGER | Relative dependency weight |
+| metadata_json | JSONB | Edge-specific metadata |
+
+### outbox_messages
+Stores durable execution handoff records after decision feedback.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| topic | VARCHAR | Event topic such as `praxis.decision.feedback_recorded` |
+| payload | JSONB | Durable handoff payload |
+| status | VARCHAR | Publishing state, default `pending` |
+| created_at | TIMESTAMP | Enqueue time |
+| published_at | TIMESTAMP | Publish completion time |
 
 ### evidence_artifact
 Stores platform evidence linked to incidents.

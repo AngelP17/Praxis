@@ -1,13 +1,25 @@
-from datetime import datetime
-from sqlalchemy.orm import Session
-from sqlalchemy import text
+from dataclasses import asdict
+from datetime import datetime, timezone
+import json
 
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+
+from apps.api_gateway.services.decision_explanation import build_decision_explanation
+from apps.api_gateway.services.graph_service import GraphService
 from apps.api_gateway.services.operational_intelligence import (
     compute_live_decision,
     count_similar_cases,
     fetch_ticket_row,
 )
-from apps.api_gateway.services.decision_explanation import build_decision_explanation
+from astraea.praxis_decision import decide
+from infrastructure.db.models.outbox_message import OutboxMessage
+
+
+EVENT_POLICY = {
+    "version": "operational-resilience-v1",
+    "human_review_threshold": 0.45,
+}
 
 
 class DecisionService:
@@ -124,10 +136,8 @@ class DecisionService:
                 {
                     **decision,
                     "ticket_pk": ticket["id"],
-                    "feature_snapshot_json": __import__("json").dumps(
-                        decision["feature_snapshot_json"]
-                    ),
-                    "explanation_json": __import__("json").dumps(decision["explanation_json"]),
+                    "feature_snapshot_json": json.dumps(decision["feature_snapshot_json"]),
+                    "explanation_json": json.dumps(decision["explanation_json"]),
                 },
             )
             .mappings()
@@ -181,10 +191,7 @@ class DecisionService:
                     )
                     """
                 ),
-                {
-                    **recommendation,
-                    "decision_record_id": decision_id,
-                },
+                {**recommendation, "decision_record_id": decision_id},
             )
 
         self.db.execute(
@@ -212,7 +219,7 @@ class DecisionService:
             ),
             {
                 "ticket_pk": ticket["id"],
-                "payload_json": __import__("json").dumps(
+                "payload_json": json.dumps(
                     {
                         "priority_score": decision["priority_score"],
                         "root_cause_hypothesis": decision["root_cause_hypothesis"],
@@ -307,28 +314,80 @@ class DecisionService:
         )
         return row["replay_hash"] if row else ""
 
-    def evaluate_event(self, payload: dict[str, object]) -> dict[str, object]:
-        import uuid
+    def _deserialize_payload(self, payload: object) -> object:
+        if isinstance(payload, str):
+            try:
+                return json.loads(payload)
+            except json.JSONDecodeError:
+                return payload
+        return payload
 
-        event_id = payload.get("event_id") or f"evt_{uuid.uuid4().hex[:12]}"
-        payload = {**payload, "event_id": event_id}
-        event_service = __import__(
-            "apps.api_gateway.services.event_service", fromlist=["EventService"]
-        ).EventService(self.db)
-        event_service.ingest_event(payload)
-
-        event_row = (
+    def _load_operational_event(self, event_id: str) -> dict[str, object] | None:
+        row = (
             self.db.execute(
-                text("SELECT id FROM operational_events WHERE event_id = :event_id"),
+                text(
+                    """
+                    SELECT
+                        id,
+                        event_id,
+                        source,
+                        source_ref,
+                        event_type,
+                        asset_id,
+                        site,
+                        line,
+                        severity,
+                        occurred_at,
+                        payload,
+                        normalized_payload
+                    FROM operational_events
+                    WHERE event_id = :event_id
+                    """
+                ),
                 {"event_id": event_id},
             )
             .mappings()
             .first()
         )
-        event_pk = event_row["id"] if event_row else None
+        if not row:
+            return None
+        event = dict(row)
+        event["payload"] = self._deserialize_payload(event.get("payload"))
+        event["normalized_payload"] = self._deserialize_payload(event.get("normalized_payload"))
+        return event
 
-        priority_score = self._compute_priority_score(payload)
-        replay_hash = self._compute_replay_hash(payload)
+    def _build_event_decision_bundle(
+        self, event_dict: dict[str, object], blast_radius: list[dict], decision_payload: dict[str, object]
+    ) -> dict[str, object]:
+        return {
+            "event": event_dict,
+            "blast_radius": blast_radius,
+            "policy_version": decision_payload["policy_version"],
+            "policy": EVENT_POLICY,
+            "decision": decision_payload,
+        }
+
+    def evaluate_event(self, payload: dict[str, object]) -> dict[str, object]:
+        event_service = __import__(
+            "apps.api_gateway.services.event_service", fromlist=["EventService"]
+        ).EventService(self.db)
+        ingested = event_service.ingest_event(payload)
+        event_id = str(ingested["event_id"])
+        event_dict = self._load_operational_event(event_id)
+        if event_dict is None:
+            return {"event_id": event_id, "status": "error"}
+
+        graph = GraphService(self.db)
+        asset_ref = event_dict.get("asset_id")
+        blast_radius = graph.blast_radius_for_asset(str(asset_ref)) if asset_ref else []
+        decision_result = decide(event=event_dict, blast_radius=blast_radius, policy=EVENT_POLICY)
+        decision_payload = asdict(decision_result)
+        decision_bundle = self._build_event_decision_bundle(
+            event_dict=event_dict,
+            blast_radius=blast_radius,
+            decision_payload=decision_payload,
+        )
+        replay_hash = self._compute_replay_hash(decision_bundle)
 
         inserted = (
             self.db.execute(
@@ -352,29 +411,25 @@ class DecisionService:
                 """
                 ),
                 {
-                    "event_pk": event_pk,
-                    "feature_snapshot_json": __import__("json").dumps(
-                        self._build_feature_snapshot(payload)
-                    ),
-                    "severity_score": payload.get("severity_score", 0.5),
-                    "urgency_score": payload.get("urgency_score", 0.5),
-                    "business_impact_score": payload.get("business_impact_score", 0.5),
-                    "sla_risk_score": payload.get("sla_risk_score", 0.5),
-                    "recurrence_score": payload.get("recurrence_score", 0.0),
-                    "dependency_criticality_score": payload.get(
-                        "dependency_criticality_score", 0.5
-                    ),
-                    "actionability_score": payload.get("actionability_score", 0.5),
-                    "uncertainty_penalty": payload.get("uncertainty_penalty", 0.0),
-                    "priority_score": priority_score,
-                    "root_cause_hypothesis": payload.get("root_cause_hypothesis", "unknown"),
-                    "confidence_score": payload.get("confidence_score", 0.7),
-                    "risk_level": payload.get("risk_level", "medium"),
-                    "requires_human_review": 1 if payload.get("requires_human_review", True) else 0,
+                    "event_pk": event_dict["id"],
+                    "feature_snapshot_json": json.dumps(self._build_feature_snapshot(decision_payload)),
+                    "severity_score": decision_result.severity_score,
+                    "urgency_score": decision_result.urgency_score,
+                    "business_impact_score": decision_result.business_impact_score,
+                    "sla_risk_score": decision_result.sla_risk_score,
+                    "recurrence_score": decision_result.recurrence_score,
+                    "dependency_criticality_score": decision_result.dependency_criticality_score,
+                    "actionability_score": decision_result.actionability_score,
+                    "uncertainty_penalty": decision_result.uncertainty_penalty,
+                    "priority_score": decision_result.priority_score,
+                    "root_cause_hypothesis": decision_result.root_cause_hypothesis,
+                    "confidence_score": decision_result.confidence_score,
+                    "risk_level": decision_result.risk_level,
+                    "requires_human_review": 1 if decision_result.requires_human_review else 0,
                     "decision_version": "astraea-v1",
-                    "rule_version": "rules-2026-q2",
+                    "rule_version": decision_result.policy_version,
                     "replay_hash": replay_hash,
-                    "explanation_json": __import__("json").dumps(self._build_explanation(payload)),
+                    "explanation_json": json.dumps(decision_result.rationale),
                 },
             )
             .mappings()
@@ -388,7 +443,18 @@ class DecisionService:
             else inserted["decision_ts"]
         )
 
-        recommendations = payload.get("recommendations", self._default_recommendations(payload))
+        recommendations = [
+            {
+                "rank": 1,
+                "action_type": "workflow",
+                "action_label": decision_result.recommendation,
+                "rationale": "Generated by Astraea from event severity, dependency graph, and blast radius.",
+                "risk_level": decision_result.risk_level,
+                "expected_benefit": "Reduce operational downtime and preserve auditability.",
+                "confidence": decision_result.confidence_score,
+                "recommended_runbook_id": "printer-outage-response",
+            }
+        ]
         for rec in recommendations:
             self.db.execute(
                 text(
@@ -403,28 +469,18 @@ class DecisionService:
                     )
                     """
                 ),
-                {
-                    "decision_record_id": decision_id,
-                    "rank": rec.get("rank", 1),
-                    "action_type": rec.get("action_type", "runbook"),
-                    "action_label": rec.get("action_label", "Review incident"),
-                    "rationale": rec.get("rationale", "Automated recommendation"),
-                    "risk_level": rec.get("risk_level", "medium"),
-                    "expected_benefit": rec.get("expected_benefit", ""),
-                    "confidence": rec.get("confidence", 0.7),
-                    "recommended_runbook_id": rec.get("recommended_runbook_id"),
-                },
+                {"decision_record_id": decision_id, **rec},
             )
 
         self.db.commit()
         return {
             "id": decision_id,
             "event_id": event_id,
-            "priority_score": priority_score,
-            "root_cause_hypothesis": payload.get("root_cause_hypothesis", "unknown"),
-            "confidence_score": payload.get("confidence_score", 0.7),
-            "risk_level": payload.get("risk_level", "medium"),
-            "requires_human_review": payload.get("requires_human_review", True),
+            "priority_score": decision_result.priority_score,
+            "root_cause_hypothesis": decision_result.root_cause_hypothesis,
+            "confidence_score": decision_result.confidence_score,
+            "risk_level": decision_result.risk_level,
+            "requires_human_review": decision_result.requires_human_review,
             "replay_hash": replay_hash,
             "recommendations": self._load_recommendations(decision_id),
             "decision_ts": decision_ts,
@@ -494,11 +550,24 @@ class DecisionService:
         decision = self.get_decision_by_id(decision_id)
         if not decision:
             return None
+
         event_row = (
             self.db.execute(
                 text(
                     """
-                SELECT oe.event_id, oe.payload, oe.normalized_payload, oe.occurred_at
+                SELECT
+                    oe.id,
+                    oe.event_id,
+                    oe.source,
+                    oe.source_ref,
+                    oe.event_type,
+                    oe.asset_id,
+                    oe.site,
+                    oe.line,
+                    oe.severity,
+                    oe.payload,
+                    oe.normalized_payload,
+                    oe.occurred_at
                 FROM decision_records dr
                 JOIN operational_events oe ON oe.id = dr.event_id
                 WHERE dr.id = :decision_id
@@ -509,6 +578,26 @@ class DecisionService:
             .mappings()
             .first()
         )
+        if not event_row:
+            return None
+
+        event_dict = dict(event_row)
+        event_dict["payload"] = self._deserialize_payload(event_dict.get("payload"))
+        event_dict["normalized_payload"] = self._deserialize_payload(event_dict.get("normalized_payload"))
+
+        graph = GraphService(self.db)
+        asset_ref = event_dict.get("asset_id")
+        blast_radius = graph.blast_radius_for_asset(str(asset_ref)) if asset_ref else []
+        decision_result = decide(event=event_dict, blast_radius=blast_radius, policy=EVENT_POLICY)
+        decision_payload = asdict(decision_result)
+        replayed_hash = self._compute_replay_hash(
+            self._build_event_decision_bundle(
+                event_dict=event_dict,
+                blast_radius=blast_radius,
+                decision_payload=decision_payload,
+            )
+        )
+
         feedback_rows = self.db.execute(
             text(
                 """
@@ -520,11 +609,17 @@ class DecisionService:
             ),
             {"decision_id": decision_id},
         ).mappings()
+
+        stored_hash = str(decision.get("replay_hash", ""))
         return {
             "decision": decision,
-            "original_event": dict(event_row) if event_row else None,
+            "original_event": event_dict,
+            "replayed_decision": decision_payload,
+            "stored_replay_hash": stored_hash,
+            "replayed_hash": replayed_hash,
+            "determinism": stored_hash == replayed_hash,
             "feedback": [dict(r) for r in feedback_rows],
-            "replayed_at": datetime.utcnow().isoformat(),
+            "replayed_at": datetime.now(timezone.utc).isoformat(),
         }
 
     def record_feedback(self, decision_id: int, feedback_type: str, note: str) -> dict[str, object]:
@@ -557,6 +652,22 @@ class DecisionService:
                 "status": "accepted" if feedback_type == "approve" else "rejected",
             },
         )
+        self.db.add(
+            OutboxMessage(
+                topic="praxis.decision.feedback_recorded",
+                payload={
+                    "decision_id": decision_id,
+                    "feedback_type": feedback_type,
+                    "note": note,
+                    "next_action": (
+                        "queue_remediation_workflow"
+                        if feedback_type == "approve"
+                        else "stop_workflow"
+                    ),
+                },
+                status="pending",
+            )
+        )
         self.db.commit()
         return {"decision_id": decision_id, "feedback_type": feedback_type, "status": "recorded"}
 
@@ -573,9 +684,15 @@ class DecisionService:
 
     def _compute_replay_hash(self, payload: dict[str, object]) -> str:
         import hashlib
-        import json
 
-        canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+        canonical = json.dumps(
+            payload,
+            sort_keys=True,
+            separators=(",", ":"),
+            default=lambda value: value.isoformat()
+            if hasattr(value, "isoformat")
+            else str(value),
+        )
         return f"sha256:{hashlib.sha256(canonical.encode()).hexdigest()[:32]}"
 
     def _build_feature_snapshot(self, payload: dict[str, object]) -> dict[str, object]:

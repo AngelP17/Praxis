@@ -28,6 +28,24 @@ class OperationalEvent:
     received_at: datetime  # Ingestion timestamp
 ```
 
+## CloudEvents 1.0 Input Contract
+
+The existing `/api/events/ingest` and `/api/decisions/evaluate` endpoints now accept CloudEvents 1.0 in addition to the older ad hoc Praxis payload shape.
+
+Current shared contract:
+
+- `domain.events.CloudEvent`
+- `domain.events.PrinterOfflineData`
+- `domain.events.printer_offline_event(...)`
+
+The ingest path preserves the existing storage model:
+
+- `payload`: the CloudEvent `data` object
+- `normalized_payload`: canonical fields plus a `cloudevent` envelope containing `id`, `source`, `type`, `subject`, and `time`
+- relational columns: `event_id`, `source`, `source_ref`, `event_type`, `asset_id`, `site`, `line`, `severity`, `occurred_at`
+
+This keeps CloudEvents as an accepted wire contract without replacing the repo’s stored `OperationalEvent` schema.
+
 ## Normalization Rules
 
 ### Severity Mapping

@@ -44,6 +44,14 @@ class ReplayBundle:
     audit_hash: str
 ```
 
+For the operational-resilience spine, `/api/decisions/{decision_id}/replay` now does more than return stored rows. It:
+
+1. loads the original `operational_events` row
+2. rebuilds the asset blast radius from `asset_edges`
+3. recomputes the pure Astraea decision
+4. re-hashes the canonical decision bundle
+5. returns both stored and replayed hashes plus a `determinism` boolean
+
 ## Timeline Reconstruction
 
 The timeline is reconstructed from:
@@ -138,6 +146,7 @@ With replay:
 ## Verification
 
 - Integration test: `test_audit_export` - audit export returns structured document
+- Integration test: `test_graph_aware_replay_is_deterministic` - graph-backed replay recomputes the same hash
 
 ## Immutable Records
 

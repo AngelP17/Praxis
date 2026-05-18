@@ -4,7 +4,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from apps.api_gateway.main import app
+from domain.events import printer_offline_event
 from infrastructure.db.base import Base
+from infrastructure.db.models.outbox_message import OutboxMessage
 from infrastructure.db.session import clean_database_url
 
 TEST_DATABASE_URL = "sqlite:///./test_praxis.db"
@@ -60,18 +62,17 @@ def test_event_ingest():
     assert data["event_id"].startswith("evt_")
 
 
+def test_event_ingest_accepts_cloudevent():
+    payload = printer_offline_event().model_dump(mode="json")
+    response = client.post("/api/events/ingest", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "ingested"
+    assert data["event_id"] == payload["id"]
+
+
 def test_decision_evaluate():
-    payload = {
-        "source": "k8s",
-        "event_type": "pod_failure",
-        "severity_score": 0.8,
-        "urgency_score": 0.7,
-        "business_impact_score": 0.6,
-        "sla_risk_score": 0.9,
-        "actionability_score": 0.8,
-        "recommended_action": "Run pod crash recovery",
-        "recommended_runbook_id": "pod-crash",
-    }
+    payload = printer_offline_event(asset_id="printer.no_graph").model_dump(mode="json")
     response = client.post("/api/decisions/evaluate", json=payload)
     assert response.status_code == 200
     data = response.json()
@@ -81,16 +82,7 @@ def test_decision_evaluate():
 
 
 def test_public_event_detail_and_decision_paths():
-    payload = {
-        "source": "k8s",
-        "event_type": "pod_failure",
-        "severity_score": 0.8,
-        "urgency_score": 0.7,
-        "business_impact_score": 0.6,
-        "sla_risk_score": 0.9,
-        "actionability_score": 0.8,
-        "recommended_action": "Run pod crash recovery",
-    }
+    payload = printer_offline_event(asset_id="printer.public").model_dump(mode="json")
     create_resp = client.post("/api/decisions/evaluate", json=payload)
     assert create_resp.status_code == 200
     created = create_resp.json()
@@ -109,16 +101,7 @@ def test_public_event_detail_and_decision_paths():
 
 
 def test_replay_decision():
-    # First create a decision
-    payload = {
-        "source": "k8s",
-        "event_type": "high_latency",
-        "severity_score": 0.6,
-        "urgency_score": 0.5,
-        "business_impact_score": 0.5,
-        "sla_risk_score": 0.4,
-        "actionability_score": 0.7,
-    }
+    payload = printer_offline_event(asset_id="printer.replay").model_dump(mode="json")
     create_resp = client.post("/api/decisions/evaluate", json=payload)
     decision_id = create_resp.json()["id"]
 
@@ -127,24 +110,24 @@ def test_replay_decision():
     data = response.json()
     assert "decision" in data
     assert "original_event" in data
+    assert "determinism" in data
 
 
 def test_feedback_approve():
-    payload = {
-        "source": "manual",
-        "event_type": "test_event",
-        "severity_score": 0.5,
-        "urgency_score": 0.5,
-        "business_impact_score": 0.5,
-        "sla_risk_score": 0.5,
-        "actionability_score": 0.5,
-    }
+    payload = printer_offline_event(asset_id="printer.feedback").model_dump(mode="json")
     create_resp = client.post("/api/decisions/evaluate", json=payload)
     decision_id = create_resp.json()["id"]
 
     response = client.post(f"/api/decisions/{decision_id}/approve", json={"note": "Looks good"})
     assert response.status_code == 200
     assert response.json()["status"] == "recorded"
+    db = TestingSessionLocal()
+    try:
+        outbox = db.query(OutboxMessage).order_by(OutboxMessage.id.desc()).first()
+        assert outbox is not None
+        assert outbox.topic == "praxis.decision.feedback_recorded"
+    finally:
+        db.close()
 
 
 def test_list_events():

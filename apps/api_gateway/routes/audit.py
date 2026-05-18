@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Any
+from datetime import datetime, timezone
 
 from apps.api_gateway.deps import get_db
 
@@ -24,7 +25,6 @@ def list_audit_events(source: str | None = None, db: Session = Depends(get_db)):
 @router.get("/export/{incident_id}")
 def export_audit(incident_id: str, db: Session = Depends(get_db)):
     from sqlalchemy import text
-    from datetime import datetime
 
     incident_row = (
         db.execute(
@@ -78,7 +78,7 @@ def export_audit(incident_id: str, db: Session = Depends(get_db)):
     return {
         "incident_id": incident_id,
         "incident_title": incident_row["title"],
-        "exported_at": datetime.utcnow().isoformat(),
+        "exported_at": datetime.now(timezone.utc).isoformat(),
         "events": [dict(row) for row in events],
         "decisions": [dict(row) for row in decisions],
         "feedback": [dict(row) for row in feedback],

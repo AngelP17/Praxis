@@ -179,7 +179,7 @@ export default function ValueCasePage() {
               {/* Assumptions table */}
               <div className="praxis-v2-panel-enhanced p-6 sm:p-8">
                 <div className="praxis-v2-eyebrow-enhanced mb-4">Model assumptions</div>
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-flow-dense grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {assumptions.map((a) => (
                     <div key={a.label} className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-3">
                       <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{a.label}</div>
@@ -192,7 +192,7 @@ export default function ValueCasePage() {
           </div>
 
           {/* All scenarios comparison */}
-          <section className="praxis-v2-panel-enhanced p-6 sm:p-8">
+          <section className="praxis-v2-panel-enhanced p-6 py-20 sm:p-8 sm:py-24">
             <div className="praxis-v2-eyebrow-enhanced mb-6">All scenarios · comparative value</div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[600px] border-collapse">
