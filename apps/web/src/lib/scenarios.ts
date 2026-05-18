@@ -1,0 +1,338 @@
+export type Scenario = {
+  id: string;
+  label: string;
+  site: string;
+  category: string;
+  severity: "critical" | "high" | "medium" | "low";
+  icon: string;
+  ticketId: string;
+  incidentId: string;
+  title: string;
+  rootCause: string;
+  priorityScore: number;
+  confidenceScore: number;
+  // Event ingestion fields
+  source: string;
+  eventType: string;
+  assetId: string;
+  line: string;
+  payload: Record<string, unknown>;
+  // Decision fields
+  recommendation: string;
+  rationale: string;
+  runbookId: string;
+  // ROI
+  estimatedValueUsd: number;
+  mttrReductionPct: number;
+  recurrenceReductionPct: number;
+  // Blast radius
+  impactedSystems: string[];
+  // Ontology context
+  assetType: string;
+  ownerTeam: string;
+};
+
+export const SCENARIOS: Scenario[] = [
+  {
+    id: "printer-offline",
+    label: "Printer GPO Offline",
+    site: "Plant-TX",
+    category: "Endpoint",
+    severity: "high",
+    icon: "🖨",
+    ticketId: "INC-4821",
+    incidentId: "IR-2026-041",
+    title: "Print server WEIFPS01 offline — labeling workflow blocked",
+    rootCause: "printer_firmware_regression",
+    priorityScore: 87,
+    confidenceScore: 0.91,
+    source: "praxis.adapters.printer",
+    eventType: "com.praxis.asset.printer.offline",
+    assetId: "printer.weifps01",
+    line: "line-tx-01",
+    payload: {
+      hostname: "WEIFPS01",
+      ping: "failed",
+      last_seen_minutes: 14,
+      signal: "offline",
+      detected_by: "printer_adapter",
+      confidence: 0.91,
+    },
+    recommendation: "Restart print spooler on WEIFPS01 and validate Zebra label queue.",
+    rationale: "Print server unreachable for 14 min; Zebra Labeling and Texas Production Line depend on it.",
+    runbookId: "printer-outage-response",
+    estimatedValueUsd: 38400,
+    mttrReductionPct: 52,
+    recurrenceReductionPct: 45,
+    impactedSystems: ["Zebra Labeling", "Epicor ERP", "Texas Production Line", "Shipping Label Workflow"],
+    assetType: "print_server",
+    ownerTeam: "IT Operations",
+  },
+  {
+    id: "hvac-drift",
+    label: "HVAC Temp Drift",
+    site: "Plant-A",
+    category: "Facilities",
+    severity: "critical",
+    icon: "❄️",
+    ticketId: "INC-4814",
+    incidentId: "IR-2026-040",
+    title: "Cold storage unit B2 temperature drifted 4°C above setpoint",
+    rootCause: "hvac_compressor_overload",
+    priorityScore: 93,
+    confidenceScore: 0.88,
+    source: "hvac.gateway",
+    eventType: "com.praxis.asset.hvac.temp_drift",
+    assetId: "hvac.cold-storage-b2",
+    line: "cold-storage",
+    payload: {
+      unit: "COLD-STORAGE-B2",
+      setpoint_c: 2,
+      actual_c: 6.1,
+      drift_c: 4.1,
+      compressor_load_pct: 97,
+      alarm_code: "HIGH_TEMP_001",
+    },
+    recommendation: "Dispatch facilities team to inspect compressor; check refrigerant levels and condenser coil.",
+    rationale: "4.1°C drift above setpoint with compressor at 97% load. SLA breach in <30 min if unresolved.",
+    runbookId: "hvac-compressor-response",
+    estimatedValueUsd: 62000,
+    mttrReductionPct: 61,
+    recurrenceReductionPct: 38,
+    impactedSystems: ["Cold Storage B2", "QA Hold Process", "Outbound Shipping"],
+    assetType: "hvac_unit",
+    ownerTeam: "Facilities Engineering",
+  },
+  {
+    id: "mqtt-broker-lag",
+    label: "MQTT Broker Lag",
+    site: "Core-Cluster",
+    category: "Messaging",
+    severity: "high",
+    icon: "📡",
+    ticketId: "INC-4799",
+    incidentId: "IR-2026-039",
+    title: "MQTT broker queue depth spiking — telemetry ingest lagging 18s",
+    rootCause: "broker_queue_saturation",
+    priorityScore: 84,
+    confidenceScore: 0.85,
+    source: "mqtt.monitor",
+    eventType: "com.praxis.infra.mqtt.queue_depth_spike",
+    assetId: "mqtt.broker-primary",
+    line: "telemetry-ingest",
+    payload: {
+      broker: "mqtt-broker-primary",
+      queue_depth: 142000,
+      consumer_lag_ms: 18200,
+      publish_rate_msg_s: 4200,
+      consume_rate_msg_s: 3100,
+      topic: "sensors/plant/+/telemetry",
+    },
+    recommendation: "Scale MQTT consumer group horizontally and temporarily increase retention buffer.",
+    rationale: "Consumer lag of 18s will cascade to telemetry pipeline and Historian within 8 min at current rates.",
+    runbookId: "mqtt-broker-saturation",
+    estimatedValueUsd: 29500,
+    mttrReductionPct: 44,
+    recurrenceReductionPct: 55,
+    impactedSystems: ["Telemetry Ingest API", "Historian DB", "Astraea Signal Feed", "Dashboard Real-time"],
+    assetType: "message_broker",
+    ownerTeam: "Platform Reliability",
+  },
+  {
+    id: "ad-policy-drift",
+    label: "AD Policy Drift",
+    site: "ERP",
+    category: "Access Control",
+    severity: "critical",
+    icon: "🔐",
+    ticketId: "INC-4785",
+    incidentId: "IR-2026-038",
+    title: "Active Directory GPO conflict — 34 ERP users lost MFA enforcement",
+    rootCause: "gpo_inheritance_block",
+    priorityScore: 96,
+    confidenceScore: 0.94,
+    source: "ad.monitor",
+    eventType: "com.praxis.identity.ad.gpo_drift",
+    assetId: "ad.gpo.erp-mfa-policy",
+    line: "identity-control",
+    payload: {
+      policy_name: "ERP-MFA-Enforcement",
+      affected_users: 34,
+      ou: "OU=ERP-Users,DC=corp,DC=example,DC=com",
+      conflict_gpo: "Legacy-Default-Domain",
+      mfa_status: "not_enforced",
+      detected_by: "ad_audit_hook",
+    },
+    recommendation: "Override GPO inheritance block on ERP-Users OU; re-apply MFA enforcement policy immediately.",
+    rationale: "34 users with active ERP sessions lack MFA. SOC 2 control CC6.1 in breach.",
+    runbookId: "ad-gpo-mfa-remediation",
+    estimatedValueUsd: 110000,
+    mttrReductionPct: 78,
+    recurrenceReductionPct: 82,
+    impactedSystems: ["Active Directory", "Epicor ERP", "SSO Gateway", "SOC 2 Compliance"],
+    assetType: "identity_policy",
+    ownerTeam: "Security Engineering",
+  },
+  {
+    id: "ehs-threshold",
+    label: "EHS Safety Breach",
+    site: "Plant-B",
+    category: "Safety",
+    severity: "critical",
+    icon: "⚠️",
+    ticketId: "INC-4770",
+    incidentId: "IR-2026-037",
+    title: "VOC sensor Plant-B Zone 4 exceeded OSHA TWA threshold",
+    rootCause: "solvent_ventilation_failure",
+    priorityScore: 99,
+    confidenceScore: 0.97,
+    source: "ehs.sensor.gateway",
+    eventType: "com.praxis.safety.ehs.voc_threshold_breach",
+    assetId: "ehs.sensor.zone4-b",
+    line: "zone-4",
+    payload: {
+      sensor_id: "VOC-ZONE4-B",
+      reading_ppm: 148,
+      osha_twa_limit_ppm: 100,
+      exceedance_pct: 48,
+      duration_seconds: 420,
+      evacuation_required: true,
+    },
+    recommendation: "Trigger Zone 4 evacuation protocol, disable solvent applicator, dispatch EHS officer.",
+    rationale: "VOC reading 48% above OSHA TWA limit for 7 min. OSHA 29 CFR 1910.1000 table Z-1 breach.",
+    runbookId: "ehs-voc-evacuation",
+    estimatedValueUsd: 250000,
+    mttrReductionPct: 90,
+    recurrenceReductionPct: 70,
+    impactedSystems: ["Plant-B Zone 4", "HVAC Ventilation", "Worker Safety", "OSHA Compliance"],
+    assetType: "safety_sensor",
+    ownerTeam: "EHS & Compliance",
+  },
+  {
+    id: "sap-batch-stall",
+    label: "SAP Batch Stall",
+    site: "Supply-Net",
+    category: "ERP",
+    severity: "high",
+    icon: "📦",
+    ticketId: "INC-4755",
+    incidentId: "IR-2026-036",
+    title: "SAP MM batch job MRP_RUN_WEEKLY stalled at 23% — 4h overrun",
+    rootCause: "sap_lock_contention",
+    priorityScore: 81,
+    confidenceScore: 0.82,
+    source: "sap.batch.monitor",
+    eventType: "com.praxis.erp.sap.batch_stall",
+    assetId: "sap.batch.mrp-run-weekly",
+    line: "mrp-batch",
+    payload: {
+      job_name: "MRP_RUN_WEEKLY",
+      progress_pct: 23,
+      started_at: "2026-04-27T02:00:00Z",
+      expected_end: "2026-04-27T04:30:00Z",
+      current_time: "2026-04-27T08:47:00Z",
+      overrun_hours: 4.3,
+      lock_table_entries: 18400,
+    },
+    recommendation: "Release SM12 lock entries for MRP run; restart job with reduced material scope.",
+    rationale: "4.3h overrun blocking procurement planning for 3 plants. $2.1M purchase orders pending.",
+    runbookId: "sap-mrp-lock-release",
+    estimatedValueUsd: 47000,
+    mttrReductionPct: 56,
+    recurrenceReductionPct: 42,
+    impactedSystems: ["SAP ERP", "Procurement Planning", "Purchase Orders", "Supply Chain"],
+    assetType: "erp_batch_job",
+    ownerTeam: "SAP Basis",
+  },
+  {
+    id: "wms-pick-timeout",
+    label: "WMS Pick Timeout",
+    site: "Warehouse-2",
+    category: "Warehouse",
+    severity: "medium",
+    icon: "🏭",
+    ticketId: "INC-4744",
+    incidentId: "IR-2026-035",
+    title: "WMS pick task timeout cascade — 214 orders stuck in HOLD state",
+    rootCause: "wms_worker_pool_exhaustion",
+    priorityScore: 72,
+    confidenceScore: 0.78,
+    source: "wms.event.stream",
+    eventType: "com.praxis.warehouse.wms.pick_timeout_cascade",
+    assetId: "wms.task-processor",
+    line: "pick-pack",
+    payload: {
+      stuck_orders: 214,
+      timeout_threshold_ms: 30000,
+      worker_pool_utilization_pct: 99,
+      average_pick_time_ms: 47800,
+      carrier_cutoff_minutes_remaining: 42,
+    },
+    recommendation: "Scale WMS worker pool, release HOLD state on priority orders, notify carrier for cutoff extension.",
+    rationale: "214 orders in HOLD with 42 min to carrier cutoff. Automatic SLA breach for same-day shipping.",
+    runbookId: "wms-pick-timeout-recovery",
+    estimatedValueUsd: 31000,
+    mttrReductionPct: 48,
+    recurrenceReductionPct: 35,
+    impactedSystems: ["WMS Task Processor", "Carrier Integration", "Same-Day Shipping SLA", "Order Management"],
+    assetType: "wms_service",
+    ownerTeam: "Warehouse Operations",
+  },
+  {
+    id: "rfid-reader-drop",
+    label: "RFID Reader Dropout",
+    site: "Plant-C",
+    category: "IoT",
+    severity: "medium",
+    icon: "📶",
+    ticketId: "INC-4731",
+    incidentId: "IR-2026-034",
+    title: "RFID reader array Plant-C dock — 6 of 8 readers dropped from network",
+    rootCause: "rfid_switch_port_flap",
+    priorityScore: 65,
+    confidenceScore: 0.74,
+    source: "rfid.gateway",
+    eventType: "com.praxis.iot.rfid.reader_dropout",
+    assetId: "rfid.array.plant-c-dock",
+    line: "dock-c",
+    payload: {
+      total_readers: 8,
+      offline_readers: 6,
+      online_readers: 2,
+      switch_port: "SW-C-DOCK-02/GigE0/4",
+      last_heartbeat_age_seconds: 380,
+      affected_zone: "Receiving Dock C",
+    },
+    recommendation: "Cycle SW-C-DOCK-02 port 4, verify RFID reader power and network config for dock C array.",
+    rationale: "75% of dock C readers offline. Receiving dock inventory tracking blind for 6.3 min.",
+    runbookId: "rfid-reader-network-recovery",
+    estimatedValueUsd: 18500,
+    mttrReductionPct: 41,
+    recurrenceReductionPct: 60,
+    impactedSystems: ["RFID Array Plant-C", "Inventory Management", "Receiving Dock C", "WMS Receiving"],
+    assetType: "rfid_reader_array",
+    ownerTeam: "IoT & Networking",
+  },
+];
+
+export function getScenarioById(id: string): Scenario {
+  return SCENARIOS.find((s) => s.id === id) ?? SCENARIOS[0];
+}
+
+export function getScenarioByTicketId(ticketId: string): Scenario {
+  return SCENARIOS.find((s) => s.ticketId === ticketId) ?? SCENARIOS[0];
+}
+
+export const SEVERITY_COLORS: Record<string, string> = {
+  critical: "text-rose-200 border-rose-500/40 bg-rose-500/10",
+  high: "text-amber-200 border-amber-500/40 bg-amber-500/10",
+  medium: "text-yellow-200 border-yellow-500/40 bg-yellow-500/10",
+  low: "text-emerald-200 border-emerald-500/40 bg-emerald-500/10",
+};
+
+export const SEVERITY_DOT: Record<string, string> = {
+  critical: "bg-rose-500",
+  high: "bg-amber-500",
+  medium: "bg-yellow-500",
+  low: "bg-emerald-500",
+};

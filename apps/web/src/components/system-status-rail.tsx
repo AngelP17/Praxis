@@ -16,23 +16,37 @@ import {
   Shield,
   SignOut,
   Lightning,
+  Graph,
+  CurrencyDollar,
+  ArrowsClockwise,
+  Package,
+  MapTrifold,
+  Terminal,
+  MagnifyingGlass,
 } from "@phosphor-icons/react";
 
 import { clearStoredSession } from "@/lib/auth";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: Gauge },
-  { label: "Platform", href: "/platform", icon: Lightning },
-  { label: "Command", href: "/command-center", icon: Scan },
-  { label: "Decisions", href: "/decision-center", icon: Brain },
-  { label: "Recommendations", href: "/recommendations", icon: Sparkle },
-  { label: "Ingestion", href: "/event-ingestion", icon: Pulse },
-  { label: "Board", href: "/board", icon: SquaresFour },
-  { label: "Incidents", href: "/incidents", icon: Shield },
-  { label: "Assets", href: "/assets", icon: HardDrives },
-  { label: "Tickets", href: "/tickets/new", icon: Ticket },
-  { label: "Reports", href: "/reports", icon: Table },
-  { label: "Audit", href: "/audit", icon: FileText },
+  { label: "Dashboard", href: "/dashboard", icon: Gauge, group: "main" },
+  { label: "Platform", href: "/platform", icon: Lightning, group: "main" },
+  { label: "Command", href: "/command-center", icon: Scan, group: "main" },
+  { label: "Decisions", href: "/decision-center", icon: Brain, group: "ops" },
+  { label: "Recommendations", href: "/recommendations", icon: Sparkle, group: "ops" },
+  { label: "Ingestion", href: "/event-ingestion", icon: Pulse, group: "ops" },
+  { label: "Incidents", href: "/incidents", icon: Shield, group: "ops" },
+  { label: "Board", href: "/board", icon: SquaresFour, group: "ops" },
+  { label: "Replay", href: "/replay/INC-4821", icon: ArrowsClockwise, group: "ops" },
+  { label: "Assets", href: "/assets", icon: HardDrives, group: "data" },
+  { label: "Ontology", href: "/ontology", icon: Graph, group: "data" },
+  { label: "Discovery", href: "/discovery", icon: MagnifyingGlass, group: "data" },
+  { label: "Solution Packs", href: "/solution-packs", icon: Package, group: "data" },
+  { label: "Value Case", href: "/value-case", icon: CurrencyDollar, group: "output" },
+  { label: "Expansion", href: "/expansion-map", icon: MapTrifold, group: "output" },
+  { label: "Reports", href: "/reports", icon: Table, group: "output" },
+  { label: "Audit", href: "/audit", icon: FileText, group: "output" },
+  { label: "Console", href: "/console", icon: Terminal, group: "output" },
+  { label: "Tickets", href: "/tickets/new", icon: Ticket, group: "output" },
 ];
 
 export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
@@ -50,27 +64,32 @@ export function SystemStatusRail({ activeLabel }: { activeLabel?: string }) {
         <Lightning weight="fill" className="h-5 w-5" />
       </div>
 
-      <nav className="mt-6 flex flex-1 flex-col justify-center gap-1">
-        {navItems.map((item) => {
+      <nav className="mt-4 flex flex-1 flex-col overflow-y-auto gap-0.5 pb-2">
+        {navItems.map((item, idx) => {
           const Icon = item.icon;
           const isActive = activeLabel === item.label;
+          const showDivider = idx > 0 && navItems[idx - 1].group !== item.group;
           return (
-            <Link
-              key={item.label}
-              href={item.href}
-              className={`group relative overflow-hidden border px-4 py-3 text-sm transition-transform duration-700 hover:translate-x-1 ${
-                isActive
-                  ? "border-[var(--praxis-plasma)] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--praxis-plasma)_16%,transparent),rgba(19,18,31,0.74))] text-[var(--praxis-bone)]"
-                  : "border-[var(--praxis-line)] bg-[rgba(19,18,31,0.42)] text-[var(--praxis-mute)] hover:border-[var(--praxis-hairline)] hover:bg-[rgba(19,18,31,0.7)] hover:text-[var(--praxis-bone)]"
-              }`}
-            >
-              <span
-                className="absolute inset-y-0 left-0 w-[2px] bg-[var(--praxis-plasma)] opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-                style={{ opacity: isActive ? 1 : undefined }}
-              />
-              <Icon className="h-4 w-4 shrink-0" weight={isActive ? "fill" : "regular"} />
-              <span className="ops-rail-label font-medium">{item.label}</span>
-            </Link>
+            <div key={item.label}>
+              {showDivider && (
+                <div className="mx-3 my-1.5 border-t border-[var(--praxis-line)] opacity-40" />
+              )}
+              <Link
+                href={item.href}
+                className={`group relative flex items-center gap-2.5 overflow-hidden border px-3 py-2 text-[13px] transition-transform duration-700 hover:translate-x-1 ${
+                  isActive
+                    ? "border-[var(--praxis-plasma)] bg-[linear-gradient(90deg,color-mix(in_srgb,var(--praxis-plasma)_16%,transparent),rgba(19,18,31,0.74))] text-[var(--praxis-bone)]"
+                    : "border-[var(--praxis-line)] bg-[rgba(19,18,31,0.42)] text-[var(--praxis-mute)] hover:border-[var(--praxis-hairline)] hover:bg-[rgba(19,18,31,0.7)] hover:text-[var(--praxis-bone)]"
+                }`}
+              >
+                <span
+                  className="absolute inset-y-0 left-0 w-[2px] bg-[var(--praxis-plasma)] opacity-0 transition-opacity duration-700 group-hover:opacity-100"
+                  style={{ opacity: isActive ? 1 : undefined }}
+                />
+                <Icon className="h-3.5 w-3.5 shrink-0" weight={isActive ? "fill" : "regular"} />
+                <span className="ops-rail-label font-medium">{item.label}</span>
+              </Link>
+            </div>
           );
         })}
       </nav>
