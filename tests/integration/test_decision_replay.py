@@ -1,12 +1,14 @@
 from domain.events import printer_offline_event
+from infrastructure.db.base import Base
 from infrastructure.db.models.asset import Asset
 from infrastructure.db.models.asset_edge import AssetEdge
 from infrastructure.db.session import _import_models
-from tests.integration.test_flagship_path import TestingSessionLocal, client
+from tests.integration.test_flagship_path import TestingSessionLocal, client, engine
 
 
 def seed_graph() -> None:
     _import_models()
+    Base.metadata.create_all(bind=engine)
     db = TestingSessionLocal()
     try:
         db.query(AssetEdge).delete()
