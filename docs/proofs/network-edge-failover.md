@@ -12,7 +12,7 @@ This document contains the engineering audit trail and proof signature for the N
 At the logistics warehouse, automated barcode scanner terminals rely on continuous websocket connectivity to register inventory movements. Due to an upstream ISP route instability, the primary high-speed fiber gateway suffered severe packet loss (up to 45%). However, the edge router did not complete a physical link drop, preventing the backup satellite link from engaging automatically. This "partial failure" or "gray failure" state left scanner endpoints intermittently disconnected, stalling automated conveyor sortation.
 
 ## Signals Ingested (Event Spine)
-The platform ingested 10 distinct operational signals, including:
+The platform ingested 8 distinct operational signals, including:
 1. `wan_packet_loss_high`: Telemetry showing packet loss > 40% on `NET-GW-02`.
 2. `ping_latency_spike`: Round-trip times exceeding 900ms.
 3. `websocket_disconnects`: Intermittent connection drops from scanner terminals.

@@ -113,7 +113,7 @@ export default function LoginPage() {
             <div className="mt-2 grid grid-cols-[1fr,1fr,1fr] gap-2 grid-flow-dense">
               <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.72)] px-2.5 py-2">
                 <div className="text-[10px] text-[var(--praxis-mute)]">Queue</div>
-                <div className="mt-1 font-mono text-xs text-[var(--praxis-bone)]">INC-4821 selected</div>
+                <div className="mt-1 font-mono text-xs text-[var(--praxis-bone)]">Session ready</div>
               </div>
               <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.72)] px-2.5 py-2">
                 <div className="text-[10px] text-[var(--praxis-mute)]">Decision</div>

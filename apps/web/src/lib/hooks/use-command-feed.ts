@@ -58,8 +58,6 @@ function isClosedStatus(status: string) {
 }
 
 function signalPriorityOrder(a: Ticket, b: Ticket) {
-  if (a.ticket_id === "INC-4821" && b.ticket_id !== "INC-4821") return -1;
-  if (b.ticket_id === "INC-4821" && a.ticket_id !== "INC-4821") return 1;
   return (b.priority_score ?? 0) - (a.priority_score ?? 0);
 }
 
@@ -84,22 +82,20 @@ function describeAction(ticket: QueueTicket | undefined): string {
 
 function toQueueTicket(ticket: Ticket): QueueTicket {
   const mappedRecommendation =
-    ticket.ticket_id === "INC-4821"
-      ? "Route to mechanical team and schedule bearing replacement."
-      : ticket.resolution_notes?.trim() ||
-        describeAction({
-          ticketId: ticket.ticket_id,
-          title: ticket.title,
-          status: ticket.status,
-          priority: ticket.priority_raw,
-          score: ticket.priority_score ?? 0,
-          assignee: ticket.assignee || "Unassigned",
-          category: ticket.category || ticket.root_cause_hypothesis || "Unknown",
-          daysOpen: ticket.days_open,
-          createdAt: ticket.created_at,
-          incidentId: ticket.incident_id,
-          recommendation: "Validate ownership, root cause, and next concrete action.",
-        });
+    ticket.resolution_notes?.trim() ||
+      describeAction({
+        ticketId: ticket.ticket_id,
+        title: ticket.title,
+        status: ticket.status,
+        priority: ticket.priority_raw,
+        score: ticket.priority_score ?? 0,
+        assignee: ticket.assignee || "Unassigned",
+        category: ticket.category || ticket.root_cause_hypothesis || "Unknown",
+        daysOpen: ticket.days_open,
+        createdAt: ticket.created_at,
+        incidentId: ticket.incident_id,
+        recommendation: "Validate ownership, root cause, and next concrete action.",
+      });
 
   return {
     ticketId: ticket.ticket_id,

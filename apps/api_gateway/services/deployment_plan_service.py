@@ -13,7 +13,7 @@ class DeploymentPlanService:
     def create_plan(self, payload: dict) -> dict:
         plan_id = f"dp_{uuid.uuid4().hex[:12]}"
         timeline_weeks = payload.get("timeline_weeks", 8)
-        pack_id = payload.get("solution_pack_id", "manufacturing-printer-gpo")
+        pack_id = payload.get("solution_pack_id", "unknown")
         plan = {
             "plan_id": plan_id,
             "solution_pack_id": pack_id,
@@ -29,7 +29,7 @@ class DeploymentPlanService:
         if plan_id in _STORE:
             return _STORE[plan_id]
         
-        pack_id = "manufacturing-printer-gpo"
+        pack_id = "unknown"
         for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
             if p in plan_id:
                 pack_id = p

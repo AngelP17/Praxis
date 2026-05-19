@@ -15,7 +15,7 @@ class ProofService:
         self.db = db
 
     def build_proof(self, payload: dict[str, Any]) -> dict[str, Any]:
-        solution_pack = payload.get("solution_pack") or "manufacturing-printer-gpo"
+        solution_pack = payload.get("solution_pack") or "unknown"
         events = payload.get("events") or self._load_pack_events(solution_pack)
         customer_context = payload.get("customer_context") or self._load_customer_context(
             solution_pack

@@ -5,13 +5,14 @@ import { useParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { ChartLine, Hash, ShieldCheck, Waveform } from "@phosphor-icons/react/dist/ssr";
 
-import { getDemoIncident } from "@/lib/demo-scenario";
+import { getDemoIncident, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
+import { getScenarioByTicketId } from "@/lib/scenarios";
 
 type IncidentDetailPayload = {
   incident: {
@@ -75,9 +76,9 @@ export default function IncidentDetailPage() {
           : {
               incident_id: incidentId,
               timeline: [
-                { phase: "signal", detail: "Telemetry threshold crossed on press-line-3", timestamp: "T+00s" },
-                { phase: "decision", detail: "Praxis priority raised to 96 with confidence 0.92", timestamp: "T+04s" },
-                { phase: "workflow", detail: "Mechanical escalation route created", timestamp: "T+09s" },
+                { phase: "signal", detail: "Telemetry threshold crossed on upstream source", timestamp: "T+00s" },
+                { phase: "decision", detail: "Praxis priority raised with high confidence", timestamp: "T+04s" },
+                { phase: "workflow", detail: "Escalation route created for responsible team", timestamp: "T+09s" },
                 { phase: "feedback", detail: "Ops Lead approved / Reliability requested extra sample", timestamp: "T+15s" },
               ],
             };
@@ -91,9 +92,9 @@ export default function IncidentDetailPage() {
       setTimeline({
         incident_id: incidentId,
         timeline: [
-          { phase: "signal", detail: "Telemetry threshold crossed on press-line-3", timestamp: "T+00s" },
+          { phase: "signal", detail: "Telemetry threshold crossed on upstream source", timestamp: "T+00s" },
           { phase: "decision", detail: "Praxis priority raised with high confidence", timestamp: "T+04s" },
-          { phase: "workflow", detail: "Mechanical escalation route created", timestamp: "T+09s" },
+          { phase: "workflow", detail: "Escalation route created for responsible team", timestamp: "T+09s" },
           { phase: "feedback", detail: "Operations lead approved additional sampling window", timestamp: "T+15s" },
         ],
       });
@@ -147,6 +148,9 @@ export default function IncidentDetailPage() {
     );
   }
 
+  const linkedTicket = DEMO_TICKETS.find((t) => t.incident_id === incidentId) ?? DEMO_TICKETS[0];
+  const scenario = getScenarioByTicketId(linkedTicket.ticket_id);
+
   return (
     <CommandShell>
       <SystemStatusRail activeLabel="Incidents" />
@@ -176,7 +180,7 @@ export default function IncidentDetailPage() {
                 {resolving ? "Resolving..." : "Resolve Incident"}
               </button>
               <Link
-                href="/replay/INC-4821"
+                href={`/replay/${linkedTicket?.ticket_id ?? incidentId}`}
                 className="inline-flex min-h-10 items-center border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-105 hover:border-[var(--praxis-plasma)]"
               >
                 Replay
@@ -232,8 +236,8 @@ export default function IncidentDetailPage() {
                     integrity_score: 0.91,
                   },
                   top_causal_factors: [
-                    { node_id: "sig-vib", node_type: "signal", source_id: "press-line-3.plc", provenance_weight: 0.82, confidence: 0.92, severity: "critical" },
-                    { node_id: "tick-4821", node_type: "ticket", source_id: "operator-joe", provenance_weight: 0.71, confidence: 0.91, severity: "high" },
+                    { node_id: "sig-primary", node_type: "signal", source_id: scenario.source, provenance_weight: 0.82, confidence: scenario.confidenceScore, severity: "critical" },
+                    { node_id: `tick-${linkedTicket?.ticket_id?.replace(/\D/g, "") ?? "0"}`, node_type: "ticket", source_id: "operator", provenance_weight: 0.71, confidence: scenario.confidenceScore, severity: "high" },
                   ],
                   missing_evidence: [],
                   calibration_trace: [
@@ -269,9 +273,9 @@ export default function IncidentDetailPage() {
               <div className="mt-3 border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.68)] p-3">
                 <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Incident Ledger</div>
                 <div className="mt-2 space-y-2">
-                  <LedgerItem label="Replay hash" value="sha256:inc-4821c9a2f" />
-                  <LedgerItem label="Root cause" value="bearing degradation" />
-                  <LedgerItem label="Workflow route" value="Mechanical response lane" />
+                  <LedgerItem label="Replay hash" value={`sha256:${linkedTicket?.ticket_id?.toLowerCase() ?? incidentId.toLowerCase()}c9a2f`} />
+                  <LedgerItem label="Root cause" value={scenario.rootCause.replace(/[_-]+/g, " ")} />
+                  <LedgerItem label="Workflow route" value={`${scenario.ownerTeam} response lane`} />
                 </div>
                 <div className="mt-3 inline-flex items-center gap-1.5 border border-[var(--praxis-argon)] bg-[color-mix(in_srgb,var(--praxis-argon)_10%,transparent)] px-3 py-2 text-xs text-[var(--praxis-bone)]">
                   <ShieldCheck size={13} className="text-[var(--praxis-argon)]" />
@@ -312,15 +316,15 @@ export default function IncidentDetailPage() {
             <div className="praxis-marquee flex min-w-max items-center gap-8 px-4 py-[10px]">
               {[
                 payload.incident.title,
-                "priority 96 / confidence 0.92",
-                "root cause bearing degradation",
-                "route mechanical team",
-                "replay hash sha256:inc-4821c9a2f",
+                `priority ${scenario.priorityScore} / confidence ${scenario.confidenceScore.toFixed(2)}`,
+                `root cause ${scenario.rootCause.replace(/[_-]+/g, " ")}`,
+                `route ${scenario.ownerTeam.toLowerCase()}`,
+                `replay hash sha256:${linkedTicket?.ticket_id?.toLowerCase() ?? incidentId.toLowerCase()}c9a2f`,
                 payload.incident.title,
-                "priority 96 / confidence 0.92",
-                "root cause bearing degradation",
-                "route mechanical team",
-                "replay hash sha256:inc-4821c9a2f",
+                `priority ${scenario.priorityScore} / confidence ${scenario.confidenceScore.toFixed(2)}`,
+                `root cause ${scenario.rootCause.replace(/[_-]+/g, " ")}`,
+                `route ${scenario.ownerTeam.toLowerCase()}`,
+                `replay hash sha256:${linkedTicket?.ticket_id?.toLowerCase() ?? incidentId.toLowerCase()}c9a2f`,
               ].map((label, i) => (
                 <div key={i} className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">
                   {label}

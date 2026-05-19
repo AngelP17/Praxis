@@ -244,8 +244,8 @@ export function PraxisReplayWorkbench({
                     integrity_score: payload.determinism ? 0.94 : 0.81,
                   },
                   top_causal_factors: [
-                    { node_id: "sig-vib", node_type: "signal", source_id: "press-line-3.plc", provenance_weight: 0.82, confidence: 0.92, severity: "critical" },
-                    { node_id: "tick-4821", node_type: "ticket", source_id: "operator-joe", provenance_weight: 0.71, confidence: 0.91, severity: "high" },
+                    { node_id: "sig-primary", node_type: "signal", source_id: payload.original_event?.asset_id || "upstream-source", provenance_weight: 0.82, confidence: latest?.confidence_score ?? 0.92, severity: "critical" },
+                    { node_id: `tick-${id.replace(/\D/g, "") || "0"}`, node_type: "ticket", source_id: "operator", provenance_weight: 0.71, confidence: latest?.confidence_score ?? 0.91, severity: "high" },
                   ],
                   missing_evidence: [],
                   calibration_trace: payload.feedback.map((feedback) => ({
@@ -263,8 +263,8 @@ export function PraxisReplayWorkbench({
                     baseline_score: latest?.priority_score ? latest.priority_score / 100 : 0.85,
                     baseline_confidence: latest?.confidence_score ?? 0.85,
                     perturbations: [
-                      { name: "Remove vibration telemetry", action: "remove", target_node_id: "sig-vib", score_delta: -0.18, confidence_delta: -0.12, new_score: 0.73, new_confidence: 0.8 },
-                      { name: "Remove operator ticket", action: "remove", target_node_id: "tick-4821", score_delta: -0.09, confidence_delta: -0.06, new_score: 0.82, new_confidence: 0.86 },
+                      { name: "Remove primary telemetry", action: "remove", target_node_id: "sig-primary", score_delta: -0.18, confidence_delta: -0.12, new_score: 0.73, new_confidence: 0.8 },
+                      { name: "Remove operator ticket", action: "remove", target_node_id: `tick-${id.replace(/\D/g, "") || "0"}`, score_delta: -0.09, confidence_delta: -0.06, new_score: 0.82, new_confidence: 0.86 },
                     ],
                     stability_score: 0.88,
                   },

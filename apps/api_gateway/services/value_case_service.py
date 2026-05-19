@@ -15,7 +15,7 @@ from astraea.praxis.use_case_score import UseCaseScorer  # noqa: E402
 from astraea.praxis.expansion_graph import ExpansionGraph  # noqa: E402
 
 PACKS_DIR = ROOT / "solution-packs"
-DEFAULT_PACK = "manufacturing-printer-gpo"
+DEFAULT_PACK = "unknown"
 
 # In-process store for created value cases (keyed by value_case_id)
 _STORE: dict[str, dict] = {}

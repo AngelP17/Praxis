@@ -511,7 +511,7 @@ The benchmark suite validates all solution packs end-to-end:
 
 | Pack | Scenario | Events | Proof Valid | Value Case |
 |------|----------|--------|-------------|------------|
-| `manufacturing-printer-gpo` | Printer GPO deployment drift | 8 | **PASS** | $38.4K |
+| `manufacturing-printer-gpo` | Printer GPO deployment drift | 12 | **PASS** | $38.4K |
 | `network-edge-failover` | Network Edge Failover | 8 | **PASS** | $47.1K |
 | `identity-onboarding-drift` | Identity Onboarding Drift | 8 | **PASS** | $64.8K |
 | `database-failover-lag` | Database Replication Lag | 12 | **PASS** | $110.0K |

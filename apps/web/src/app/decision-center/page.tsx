@@ -13,8 +13,9 @@ import {
 } from "@phosphor-icons/react";
 
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
-import { DEMO_EVENT_STREAM } from "@/lib/demo-scenario";
+import { DEMO_EVENT_STREAM, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { deterministicHash } from "@/lib/deterministic-hash";
+import { getScenarioByTicketId } from "@/lib/scenarios";
 import { CommandShell } from "@/components/command-shell";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 import { ErrorState } from "@/components/error-state";
@@ -124,17 +125,25 @@ function buildDemoReplay(event: EventDetail, decision: DecisionPayload): ReplayP
     original_event: {
       event_id: event.event_id,
       event_type: event.event_type,
-      asset_id: event.asset_id || "printer.weifps01",
-      site: event.site || "TX",
+      asset_id: event.asset_id || "unknown",
+      site: event.site || "Unknown site",
       severity: event.severity,
     },
     replayed_decision: {
       rationale: {
-        impacted_assets: [
-          { asset_name: "Zebra Labeling", criticality: "critical", depth: 1, relationship: "supports" },
-          { asset_name: "Texas Production Line", criticality: "critical", depth: 2, relationship: "supports" },
-          { asset_name: "Shipping Label Workflow", criticality: "high", depth: 2, relationship: "supports" },
-        ],
+        impacted_assets: (() => {
+          const matchedTicket = DEMO_TICKETS.find((t) => t.requester === event.source);
+          if (matchedTicket) {
+            const sc = getScenarioByTicketId(matchedTicket.ticket_id);
+            return sc.impactedSystems.slice(0, 3).map((name, idx) => ({
+              asset_name: name,
+              criticality: idx === 0 ? "critical" as const : "high" as const,
+              depth: idx === 0 ? 1 : 2,
+              relationship: "supports",
+            }));
+          }
+          return [];
+        })(),
       },
     },
     stored_replay_hash: decision.replay_hash,
@@ -198,7 +207,11 @@ export default function DecisionCenterPage() {
           DEMO_EVENT_STREAM.find((item) => item.event_id === eventId) ?? DEMO_EVENT_STREAM[0];
         const fallbackDetail: EventDetail = {
           ...fallbackEvent,
-          asset_id: "printer.weifps01",
+          asset_id: (() => {
+            const matchedTicket = DEMO_TICKETS.find((t) => t.requester === fallbackEvent.source);
+            if (matchedTicket) return getScenarioByTicketId(matchedTicket.ticket_id).assetId;
+            return `asset:${eventId}`;
+          })(),
           source_ref: `asset:${eventId}`,
           line: null,
         };

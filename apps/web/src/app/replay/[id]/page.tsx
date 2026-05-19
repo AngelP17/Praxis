@@ -1,6 +1,7 @@
-import { getDemoReplay } from "@/lib/demo-scenario";
+import { DEMO_TICKETS, getDemoReplay } from "@/lib/demo-scenario";
 import { getServerApiUrl } from "@/lib/server-api";
 import { deterministicHash } from "@/lib/deterministic-hash";
+import { getScenarioByTicketId } from "@/lib/scenarios";
 import { PraxisReplayWorkbench } from "@/components/praxis/workbench/replay-workbench";
 
 type ReplayPayload = {
@@ -49,45 +50,49 @@ type ReplayPayload = {
 };
 
 async function buildDemoReplay(id: string): Promise<ReplayPayload> {
-  const base = getDemoReplay(id);
+  const ticket = DEMO_TICKETS.find((t) => t.ticket_id === id) ?? DEMO_TICKETS[0];
+  const base = getDemoReplay(ticket.ticket_id);
+  const scenario = getScenarioByTicketId(ticket.ticket_id);
   const replayHash = await deterministicHash({
     scenario_id: id,
-    source: "praxis.adapters.printer",
-    event_type: "com.praxis.asset.printer.offline",
-    asset_id: "printer.weifps01",
-    site: "TX",
+    source: scenario.source,
+    event_type: scenario.eventType,
+    asset_id: scenario.assetId,
+    site: ticket.site || "",
     line: "",
     payload: {
-      severity: "high",
+      severity: ticket.priority_raw === "Critical" ? "critical" : "high",
       raw: { replay_id: id },
     },
   });
+  const impactedAssets = scenario.impactedSystems.slice(0, 3).map((name, idx) => ({
+    asset_name: name,
+    criticality: idx === 0 ? "critical" : "high",
+    depth: idx === 0 ? 1 : 2,
+    relationship: "supports",
+  }));
   return {
     decision: {
-      id: Number(id) || 4821,
+      id: Number(id) || Number(ticket.ticket_id.replace(/\D/g, "")) || 0,
       priority_score: base.latest_decision?.priority_score,
-      confidence_score: 0.88,
+      confidence_score: ticket.confidence_score ?? 0.88,
       root_cause_hypothesis: base.latest_decision?.root_cause_hypothesis,
-      risk_level: "high",
+      risk_level: ticket.priority_raw === "Critical" ? "critical" : "high",
       replay_hash: replayHash,
     },
     original_event: {
       event_id: `evt-${id.toLowerCase()}`,
-      event_type: "com.praxis.asset.printer.offline",
-      asset_id: "printer.weifps01",
-      site: "TX",
-      severity: "high",
+      event_type: scenario.eventType,
+      asset_id: scenario.assetId,
+      site: ticket.site || "",
+      severity: ticket.priority_raw === "Critical" ? "critical" : "high",
     },
     replayed_decision: {
       priority_score: base.latest_decision?.priority_score,
-      confidence_score: 0.88,
+      confidence_score: ticket.confidence_score ?? 0.88,
       root_cause_hypothesis: base.latest_decision?.root_cause_hypothesis,
       rationale: {
-        impacted_assets: [
-          { asset_name: "Zebra Labeling", criticality: "critical", depth: 1, relationship: "supports" },
-          { asset_name: "Texas Production Line", criticality: "critical", depth: 2, relationship: "supports" },
-          { asset_name: "Shipping Label Workflow", criticality: "high", depth: 2, relationship: "supports" },
-        ],
+        impacted_assets: impactedAssets,
       },
     },
     stored_replay_hash: replayHash,

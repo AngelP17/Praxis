@@ -12,7 +12,7 @@ This document contains the engineering audit trail and proof signature for the D
 During heavy nightly batch runs, the main inventory database `DB-PRIMARY-01` experienced high write contention, leading to database lock escalations. Because of disk queue saturation, the read-replica `DB-REPLICA-01` fell behind by more than 180 seconds. Consequently, logistics dashboard widgets displayed stale inventory levels, prompting operators to initiate duplicate inventory re-runs and causing severe batch processing queue backlogs.
 
 ## Signals Ingested (Event Spine)
-The platform ingested 10 distinct operational signals, including:
+The platform ingested 12 distinct operational signals, including:
 1. `replica_lag_spike`: Disk replication lag exceeding 180 seconds on `DB-REPLICA-01`.
 2. `lock_escalation_warning`: Row locks converting to exclusive table locks.
 3. `slow_query_logs`: Queries on the primary server taking longer than 5.5 seconds.

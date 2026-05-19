@@ -90,4 +90,4 @@ class DiscoveryService:
             or "lag" in signal_text
         ):
             return "database-failover-lag"
-        return "manufacturing-printer-gpo"
+        return "unknown"
