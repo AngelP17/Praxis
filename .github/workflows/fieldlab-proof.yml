@@ -19,7 +19,7 @@ jobs:
           pip install -e ".[dev]" -e packages/astraea-core -e packages/domain -e packages/pipelines
       - name: Run solution pack validation
         run: |
-          python scripts/validate_solution_pack.py solution-packs/manufacturing-printer-gpo
+          python scripts/validate_all_solution_packs.py
       - name: Verify Docker is available
         run: docker info > /dev/null 2>&1 || (echo "Docker is not available" && exit 1)
       - name: Pull Floci image

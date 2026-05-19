@@ -151,9 +151,14 @@ class FieldLabService:
                 "summary_json": None,
                 "created_at": item.get("updated_at", ""),
             }
+        pack_id = "manufacturing-printer-gpo"
+        for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+            if p in run_id:
+                pack_id = p
+                break
         return {
             "run_id": run_id,
-            "solution_pack_id": "manufacturing-printer-gpo",
+            "solution_pack_id": pack_id,
             "customer_profile": {},
             "status": "running",
             "floci_endpoint": self.floci_endpoint,
@@ -448,7 +453,13 @@ class FieldLabService:
 
     def _build_run_proof(self, run_id: str) -> dict:
         item = _MEMORY_STORE.get(run_id, {})
-        pack_id = item.get("pack_id", "manufacturing-printer-gpo")
+        pack_id = item.get("pack_id")
+        if not pack_id:
+            pack_id = "manufacturing-printer-gpo"
+            for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+                if p in run_id:
+                    pack_id = p
+                    break
         metadata = item.get("metadata", {})
         captured_action = _MEMORY_ACTIONS.get(run_id, metadata.get("captured_action", {}))
         events = self._load_pack_events(pack_id)

@@ -19,10 +19,16 @@ sys.path.insert(0, str(ROOT / "services" / "platform-service" / "src"))
 
 def make_db() -> "Session":
     from sqlalchemy import create_engine
-    from sqlalchemy.orm import Session
+    from sqlalchemy.orm import sessionmaker
+    from infrastructure.db.base import Base
+    from infrastructure.db.session import _import_models
 
-    engine = create_engine("sqlite:///./praxis.db", echo=False)
-    return Session(engine)
+    engine = create_engine("sqlite:///./praxis.db", connect_args={"check_same_thread": False})
+    _import_models()
+    Base.metadata.create_all(bind=engine)
+
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    return SessionLocal()
 
 
 def run_one(scenario_id: str, auto_approve: bool = False) -> dict | None:
