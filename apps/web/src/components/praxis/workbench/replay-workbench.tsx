@@ -53,7 +53,7 @@ function fmtTs(value: string) {
 function ReplayStat({ label, value, tone = "default" }: { label: string; value: string; tone?: "default" | "plasma" | "argon" }) {
   const color = tone === "plasma" ? "var(--praxis-plasma)" : tone === "argon" ? "var(--praxis-argon)" : "var(--praxis-bone)";
   return (
-    <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.9),rgba(10,10,20,0.82))] p-4 transition-transform duration-700 hover:scale-[1.02]">
+    <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.9),rgba(10,10,20,0.82))] p-4">
       <div className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">{label}</div>
       <div className="mt-3 font-display text-[26px] font-semibold tracking-[-0.03em]" style={{ color }}>
         {value}
@@ -291,7 +291,7 @@ export function PraxisReplayWorkbench({
                 impactedAssets.map((asset, index) => (
                   <div
                     key={`${asset.asset_name}-${index}`}
-                    className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] px-4 py-4 transition-transform duration-700 hover:scale-[1.02] hover:border-[var(--praxis-plasma)]"
+                    className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] px-4 py-4"
                   >
                     <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{asset.relationship || "supports"} · depth {asset.depth ?? "?"}</div>
                     <div className="mt-2 text-[15px] leading-6 text-[var(--praxis-bone)]">{asset.asset_name || "Unknown asset"}</div>

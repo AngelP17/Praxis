@@ -17,6 +17,7 @@ import {
 
 import { FileDropzone } from "@/components/file-dropzone";
 import { useToast } from "@/components/notifications";
+import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { authApi, catalogApi, ticketsApi } from "@/lib/api";
 import { canWriteTickets, isAdmin, readStoredUser, type AuthUser } from "@/lib/auth";
 import type {
@@ -444,36 +445,57 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
 
   if (isLoading) {
     return (
-      <div className="ops-shell min-h-[100dvh] px-4 py-5 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2rem] border border-zinc-800 bg-black/20 p-8">
+      <WorkbenchShell topbar={<TopbarTitle title={ticketId ? "Ticket Workspace" : "New Ticket"} subtitle="Loading…" />}>
+        <div className="px-4 py-5 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl praxis-v2-panel-enhanced p-8">
           <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-violet-300">Loading workspace</div>
           <div className="mt-4 text-sm text-zinc-400">Pulling ticket state, operators, categories, labels, and comments.</div>
         </div>
-      </div>
+        </div>
+      </WorkbenchShell>
     );
   }
 
   if (error || !options) {
     return (
-      <div className="ops-shell min-h-[100dvh] px-4 py-5 text-white sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl rounded-[2rem] border border-rose-500/20 bg-black/20 p-8">
+      <WorkbenchShell topbar={<TopbarTitle title={ticketId ? "Ticket Workspace" : "New Ticket"} subtitle="Unavailable" />}>
+        <div className="px-4 py-5 text-white sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl praxis-v2-panel-enhanced p-8">
           <div className="flex items-center gap-3 text-rose-300">
             <Warning className="h-5 w-5" />
             <span className="mono-data text-[11px] uppercase tracking-[0.28em]">Workspace unavailable</span>
           </div>
           <div className="mt-4 text-sm leading-7 text-zinc-300">{error || "The ticket workspace could not load."}</div>
         </div>
-      </div>
+        </div>
+      </WorkbenchShell>
     );
   }
 
   const comments = detail?.comments ?? [];
   const attachments = detail?.attachments ?? [];
+  const statusSubtitle = ticketId
+    ? `${form.status} · ${form.priority} priority · ${comments.length} comments · ${attachments.length} files`
+    : "Create a new operational ticket";
 
   return (
-    <div className="ops-shell min-h-[100dvh] px-4 py-5 text-white sm:px-6 lg:px-8">
+    <WorkbenchShell
+      topbar={
+        <TopbarTitle
+          title={ticketId ? detail?.ticket.title || ticketId : "New Ticket"}
+          subtitle={statusSubtitle}
+          right={
+            <>
+              {user ? <Pill tone="plasma">{roleLabels[user.role] || user.role}</Pill> : null}
+              {ticketId ? <Pill tone="argon">{ticketId}</Pill> : <Pill tone="argon">draft</Pill>}
+            </>
+          }
+        />
+      }
+    >
+    <div className="px-4 py-5 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl space-y-6">
-        <div className="ops-glass rounded-[2rem] px-5 py-5 sm:px-7">
+        <div className="praxis-v2-panel-enhanced px-5 py-5 sm:px-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0">
               <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-violet-300">
@@ -503,13 +525,13 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
             <div className="flex flex-wrap gap-3">
               <Link
                 href="/command-center"
-                className="rounded-full border border-zinc-700/70 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                className="rounded-full border border-zinc-700/70 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-[1.01] duration-500"
               >
                 Back to queue
               </Link>
               <Link
                 href="/admin"
-                className="rounded-full border border-zinc-700/70 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                className="rounded-full border border-zinc-700/70 bg-zinc-950/60 px-4 py-2.5 text-sm font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-[1.01] duration-500"
               >
                 Admin console
               </Link>
@@ -517,7 +539,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                 <button
                   type="button"
                   onClick={handleDeleteTicket}
-                  className="inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-4 py-2.5 text-sm font-medium text-rose-100 transition hover:bg-rose-500/20 hover:scale-105 transition-transform duration-500"
+                  className="inline-flex items-center gap-2 rounded-full border border-rose-400/20 bg-rose-500/10 px-4 py-2.5 text-sm font-medium text-rose-100 transition hover:bg-rose-500/20 hover:scale-[1.01] duration-500"
                 >
                   <Trash className="h-4 w-4" />
                   Delete
@@ -527,7 +549,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                 type="button"
                 onClick={handleFloppyDiskTicket}
                 disabled={isSaving}
-                className="inline-flex items-center gap-2 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
+                className="inline-flex items-center gap-2 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-[1.01] duration-500"
               >
                 <FloppyDisk className="h-4 w-4" />
                 {isSaving ? "Saving..." : ticketId ? "FloppyDisk changes" : "Create ticket"}
@@ -538,7 +560,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
 
         <div className="grid grid-flow-dense gap-6 xl:grid-cols-[1.15fr,0.85fr]">
           <section className="space-y-6 py-20">
-            <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
+            <div className="praxis-v2-panel-enhanced p-6 hover:scale-[1.01] transition-transform duration-500">
               <div className="flex items-center gap-3">
                 <FileText className="h-5 w-5 text-violet-300" />
                 <div>
@@ -619,7 +641,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                       <button
                         type="button"
                         onClick={handleCreateCategory}
-                        className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                        className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-[1.01] duration-500"
                       >
                         Add
                       </button>
@@ -627,7 +649,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                         type="button"
                         onClick={handleDeleteCategory}
                         disabled={!form.category_id}
-                        className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50 hover:scale-105 transition-transform duration-500"
+                        className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50 hover:scale-[1.01] duration-500"
                       >
                         Delete selected
                       </button>
@@ -659,7 +681,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                       <button
                         type="button"
                         onClick={handleCreateAssignee}
-                        className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                        className="rounded-full border border-zinc-700 bg-black/30 px-3 py-2 text-xs font-medium text-zinc-200 transition hover:border-zinc-500 hover:scale-[1.01] duration-500"
                       >
                         Add
                       </button>
@@ -667,7 +689,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                         type="button"
                         onClick={handleDeleteAssignee}
                         disabled={!form.staff_assigned.trim()}
-                        className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50 hover:scale-105 transition-transform duration-500"
+                        className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-2 text-xs font-medium text-rose-100 transition hover:bg-rose-500/20 disabled:cursor-not-allowed disabled:opacity-50 hover:scale-[1.01] duration-500"
                       >
                         Delete selected
                       </button>
@@ -729,7 +751,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                               : [...current.label_ids, label.id],
                           }))
                         }
-                        className={`rounded-full border px-3 py-2 text-xs font-medium transition hover:scale-105 transition-transform duration-500 ${
+                        className={`rounded-full border px-3 py-2 text-xs font-medium transition hover:scale-[1.01] duration-500 ${
                           active
                             ? "border-violet-400/30 bg-violet-500/12 text-violet-100"
                             : "border-zinc-700 bg-zinc-950/60 text-zinc-300 hover:border-zinc-500"
@@ -744,7 +766,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
               </div>
             </div>
 
-            <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
+            <div className="praxis-v2-panel-enhanced p-6 hover:scale-[1.01] transition-transform duration-500">
               <div className="flex items-center gap-3">
                 <Paperclip className="h-5 w-5 text-violet-300" />
                 <div>
@@ -767,7 +789,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                             href={attachmentLink(attachment)}
                             target="_blank"
                             rel="noreferrer"
-                            className="truncate text-sm font-medium text-violet-100 hover:text-violet-200 hover:scale-105 transition-transform duration-500"
+                            className="truncate text-sm font-medium text-violet-100 hover:text-violet-200 hover:scale-[1.01] duration-500"
                           >
                             {attachment.original_name}
                           </a>
@@ -779,7 +801,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                           <button
                             type="button"
                             onClick={() => handleDeleteAttachment(attachment.id)}
-                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-700 bg-black/30 text-zinc-400 transition hover:border-rose-400/40 hover:text-rose-200 hover:scale-105 transition-transform duration-500"
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-zinc-700 bg-black/30 text-zinc-400 transition hover:border-rose-400/40 hover:text-rose-200 hover:scale-[1.01] duration-500"
                           >
                             <Trash className="h-4 w-4" />
                           </button>
@@ -803,7 +825,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
           </section>
 
           <section className="space-y-6 py-20">
-            <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
+            <div className="praxis-v2-panel-enhanced p-6 hover:scale-[1.01] transition-transform duration-500">
               <div className="flex items-center gap-3">
                 <Chat className="h-5 w-5 text-violet-300" />
                 <div>
@@ -824,7 +846,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   type="button"
                   onClick={handleSubmitComment}
                   disabled={isSubmittingComment}
-                  className="inline-flex items-center gap-2 rounded-full bg-violet-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-violet-300 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-105 transition-transform duration-500"
+                  className="inline-flex items-center gap-2 rounded-full bg-violet-400 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-violet-300 disabled:cursor-not-allowed disabled:opacity-70 hover:scale-[1.01] duration-500"
                 >
                   <Plus className="h-4 w-4" />
                   {isSubmittingComment ? "Posting..." : "Add comment"}
@@ -848,14 +870,14 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                                 setEditingCommentId(comment.id);
                                 setEditingCommentBody(comment.body);
                               }}
-                              className="rounded-full border border-zinc-700 bg-black/30 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                              className="rounded-full border border-zinc-700 bg-black/30 px-3 py-1.5 text-xs text-zinc-300 transition hover:border-zinc-500 hover:scale-[1.01] duration-500"
                             >
                               Edit
                             </button>
                             <button
                               type="button"
                               onClick={() => handleDeleteComment(comment.id)}
-                              className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-xs text-rose-100 transition hover:bg-rose-500/20 hover:scale-105 transition-transform duration-500"
+                              className="rounded-full border border-rose-400/20 bg-rose-500/10 px-3 py-1.5 text-xs text-rose-100 transition hover:bg-rose-500/20 hover:scale-[1.01] duration-500"
                             >
                               Delete
                             </button>
@@ -873,7 +895,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                             <button
                               type="button"
                               onClick={handleUpdateComment}
-                              className="rounded-full bg-violet-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-violet-400 hover:scale-105 transition-transform duration-500"
+                              className="rounded-full bg-violet-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-violet-400 hover:scale-[1.01] duration-500"
                             >
                               FloppyDisk edit
                             </button>
@@ -883,7 +905,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                                 setEditingCommentId(null);
                                 setEditingCommentBody("");
                               }}
-                              className="rounded-full border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
+                              className="rounded-full border border-zinc-700 bg-zinc-950/60 px-4 py-2 text-sm font-medium text-zinc-300 transition hover:border-zinc-500 hover:scale-[1.01] duration-500"
                             >
                               Cancel
                             </button>
@@ -902,7 +924,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                                     href={attachmentLink(attachment)}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="truncate text-sm font-medium text-violet-100 hover:text-violet-200 hover:scale-105 transition-transform duration-500"
+                                    className="truncate text-sm font-medium text-violet-100 hover:text-violet-200 hover:scale-[1.01] duration-500"
                                   >
                                     {attachment.original_name}
                                   </a>
@@ -914,7 +936,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                                   <button
                                     type="button"
                                     onClick={() => handleDeleteAttachment(attachment.id)}
-                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-zinc-700 bg-black/30 text-zinc-400 transition hover:border-rose-400/40 hover:text-rose-200 hover:scale-105 transition-transform duration-500"
+                                    className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-zinc-700 bg-black/30 text-zinc-400 transition hover:border-rose-400/40 hover:text-rose-200 hover:scale-[1.01] duration-500"
                                   >
                                     <Trash className="h-4 w-4" />
                                   </button>
@@ -945,7 +967,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
             </div>
 
             {detail ? (
-              <div className="legacy-card rounded-[1.75rem] p-6 hover:scale-105 transition-transform duration-500">
+              <div className="praxis-v2-panel-enhanced p-6 hover:scale-[1.01] transition-transform duration-500">
                 <div className="flex items-center gap-3">
                   <Shield className="h-5 w-5 text-violet-300" />
                   <div>
@@ -975,5 +997,6 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
         </div>
       </div>
     </div>
+    </WorkbenchShell>
   );
 }

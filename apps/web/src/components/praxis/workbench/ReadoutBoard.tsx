@@ -75,7 +75,7 @@ export function ReadoutBoard({ packId: propPackId, runId }: { packId?: string; r
         className="flex h-full justify-center overflow-hidden p-[30px]"
         style={{ background: "radial-gradient(ellipse at 50% 0%, var(--praxis-surface-2) 0%, var(--praxis-obsidian) 60%)" }}
       >
-        <article className="relative w-full max-w-[780px] overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.98),rgba(10,10,20,0.96))] p-11 transition-transform duration-700 ease-out hover:scale-[1.005]" style={{ boxShadow: "0 30px 80px rgba(0,0,0,0.45)" }}>
+        <article className="relative w-full max-w-[780px] overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.98),rgba(10,10,20,0.96))] p-11" style={{ boxShadow: "0 30px 80px rgba(0,0,0,0.45)" }}>
           <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">
             Executive readout &middot; {runId_.toUpperCase()} &middot; FieldLab
           </div>

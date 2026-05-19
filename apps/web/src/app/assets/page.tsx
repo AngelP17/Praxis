@@ -3,11 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { HardDrives, MagnifyingGlass } from "@phosphor-icons/react";
 
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
+import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { fetchJsonWithTimeout } from "@/lib/client-api";
 
 type Asset = {
@@ -61,32 +60,42 @@ export default function AssetsPage() {
 
   if (status === "loading") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Assets" />
-        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+      <WorkbenchShell topbar={<TopbarTitle title="Asset Inventory" subtitle="Loading…" />}>
+        <div className="p-4 sm:p-6 lg:p-8">
           <LoadingSkeleton />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   if (status === "error") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Assets" />
-        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+      <WorkbenchShell topbar={<TopbarTitle title="Asset Inventory" subtitle="Error" />}>
+        <div className="p-4 sm:p-6 lg:p-8">
           <ErrorState title="Asset inventory unavailable" message={notice || "Could not load assets."} onRetry={loadAssets} />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Assets" />
-      <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+    <WorkbenchShell
+      topbar={
+        <TopbarTitle
+          title="Asset Inventory"
+          subtitle={`Operational graph posture · ${filtered.length} visible assets · ${new Set(assets.map((asset) => asset.site_id)).size || 0} sites`}
+          right={
+            <>
+              <Pill tone="argon">{filtered.length} visible</Pill>
+              <Pill>{new Set(assets.map((asset) => asset.asset_type)).size || 0} types</Pill>
+            </>
+          }
+        />
+      }
+    >
+      <div className="overflow-auto px-4 py-6 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-4">
-          <section className="praxis-v2-panel-strong p-5 sm:p-6 py-20">
+          <section className="praxis-v2-panel-enhanced p-5 py-20 sm:p-6 sm:py-20">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <div className="praxis-v2-eyebrow">Asset Management</div>
@@ -147,6 +156,6 @@ export default function AssetsPage() {
           </section>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
