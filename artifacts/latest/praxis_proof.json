@@ -110,15 +110,15 @@
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
     "actions_available": 6,
-    "links_created": 144,
-    "mapping_confidence": 0.5733,
+    "links_created": 4,
+    "mapping_confidence": 0.5333,
     "objects_created": 5
   },
-  "proof_hash": "sha256:f76f26dcb71a9e4c077eb1bde1fae0cb9f9a8d0a528c21c740a0181fc0ece3f3",
+  "proof_hash": "sha256:0369f17d1c7080fa74510c0bed40e2546ea101f2a8d73175a80b77d6f34bc599",
   "proof_id": "proof_praxis_manufacturing_printer_gpo_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:fe9f6453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed40f",
+    "replay_hash": "sha256:27ec7bc2d641ecd2ca1250176e83aa4893c0e645585201b08943e1a1c4fe19c1",
     "verified_at": "2026-05-12T00:00:00Z"
   },
   "run_id": "fieldlab_run_manufacturing-printer-gpo",

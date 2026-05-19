@@ -146,3 +146,13 @@ praxis-scenario-benchmark:
 
 praxis-sync-frontend-scenarios:
 	.venv/bin/python scripts/generate_frontend_scenarios.py
+
+praxis-flagship-proof:
+	.venv/bin/python scripts/validate_all_solution_packs.py
+	.venv/bin/python scripts/run_scenario.py --all --approve
+	.venv/bin/python scripts/run_scenario.py --benchmark
+	.venv/bin/python scripts/run_fieldlab_demo.py --solution-pack manufacturing-printer-gpo --emit-proof
+	.venv/bin/python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json
+	.venv/bin/python scripts/render_proof_summary.py artifacts/latest/praxis_proof.json
+	.venv/bin/python scripts/generate_frontend_scenarios.py
+

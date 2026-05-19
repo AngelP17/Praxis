@@ -63,15 +63,11 @@ Praxis is verified through a local FieldLab run, not a pre-recorded video. The f
 ```bash
 make install
 make praxis-fieldlab-up
-make praxis-proof
-make praxis-benchmark
-make praxis-floci-verify
-make praxis-canvas-verify
-make praxis-proof-hashes
+make praxis-flagship-proof
 make praxis-fieldlab-down
 ```
 
-The proof path emits `artifacts/latest/praxis_proof.json` and `artifacts/latest/proof-summary.md`.
+The flagship proof path emits the `artifacts/latest/praxis_proof.json` proof object and the `artifacts/latest/proof-summary.md` executive summary.
 
 > **Tag:** `praxis-v1` — Field-Deployed Decision Platform
 

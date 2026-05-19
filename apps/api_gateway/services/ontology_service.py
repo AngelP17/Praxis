@@ -23,39 +23,81 @@ class OntologyService:
         }
 
     def list_objects(self) -> list[dict]:
-        return [
-            {
-                "object_key": "site-georgia",
-                "object_type": "Site",
-                "display_name": "Georgia Plant",
-                "properties_json": {},
-                "source_refs_json": [],
-                "confidence": 0.85,
-            },
-            {
-                "object_key": "asset-weifps01",
-                "object_type": "Asset",
-                "display_name": "WEIFPS01",
-                "properties_json": {},
-                "source_refs_json": [],
-                "confidence": 0.82,
-            },
-        ]
+        from domain.scenarios import SCENARIOS
+        objects = []
+        seen = set()
+        
+        for s in SCENARIOS:
+            site_key = f"site-{s.site.lower().replace(' ', '-')}"
+            if site_key not in seen:
+                seen.add(site_key)
+                objects.append({
+                    "object_key": site_key,
+                    "object_type": "Site",
+                    "display_name": f"{s.site} Site",
+                    "properties_json": {},
+                    "source_refs_json": [],
+                    "confidence": 0.95,
+                })
+            
+            asset_key = f"asset-{s.asset_id.lower().replace(' ', '-')}"
+            if asset_key not in seen:
+                seen.add(asset_key)
+                objects.append({
+                    "object_key": asset_key,
+                    "object_type": "Asset",
+                    "display_name": s.asset_id,
+                    "properties_json": {"asset_type": s.asset_type},
+                    "source_refs_json": [],
+                    "confidence": 0.91,
+                })
+                
+            process_key = f"process-{s.line.lower().replace(' ', '-')}"
+            if process_key not in seen:
+                seen.add(process_key)
+                objects.append({
+                    "object_key": process_key,
+                    "object_type": "BusinessProcess",
+                    "display_name": f"{s.line.replace('-', ' ').title()} Process",
+                    "properties_json": {},
+                    "source_refs_json": [],
+                    "confidence": 0.88,
+                })
+        return objects
 
     def get_object(self, object_key: str) -> dict:
+        objects = self.list_objects()
+        for obj in objects:
+            if obj["object_key"] == object_key:
+                return obj
         return {
             "object_key": object_key,
             "object_type": "Asset",
-            "display_name": object_key,
+            "display_name": object_key.split("-")[-1].upper(),
             "properties_json": {},
             "source_refs_json": [],
             "confidence": 0.8,
         }
 
     def list_links(self) -> list[dict]:
-        return [
-            {"source": "site-georgia", "target": "asset-weifps01", "link_type": "owns"},
-        ]
+        from domain.scenarios import SCENARIOS
+        links = []
+        seen = set()
+        for s in SCENARIOS:
+            site_key = f"site-{s.site.lower().replace(' ', '-')}"
+            asset_key = f"asset-{s.asset_id.lower().replace(' ', '-')}"
+            process_key = f"process-{s.line.lower().replace(' ', '-')}"
+            
+            link1 = (site_key, asset_key, "owns")
+            if link1 not in seen:
+                seen.add(link1)
+                links.append({"source": site_key, "target": asset_key, "link_type": "owns"})
+                
+            link2 = (process_key, asset_key, "depends_on")
+            if link2 not in seen:
+                seen.add(link2)
+                links.append({"source": process_key, "target": asset_key, "link_type": "depends_on"})
+        return links
 
     def list_actions(self) -> list[dict]:
         return [
