@@ -1,0 +1,11 @@
+{
+  "incident_id": "TKT-4814",
+  "replay_hash": "sha256:e6d36453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed20f",
+  "decision_ts": "2026-05-01T10:25:00Z",
+  "priority_score": 0.88,
+  "evidence_trust": 0.88,
+  "recommendation": "Restore Starlink routing, reset interface leases, and failover traffic to LTE backup",
+  "action_taken": "approved",
+  "replayed_at": "2026-05-01T12:00:00Z",
+  "hash_verified": true
+}

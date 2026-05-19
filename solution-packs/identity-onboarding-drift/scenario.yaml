@@ -1,0 +1,25 @@
+id: identity-onboarding-drift
+name: Identity Onboarding Drift
+industry: logistics
+buyer_persona: VP of Human Resources
+technical_persona: Identity Platform Engineer
+economic_buyer: Director of Supply Chain
+primary_pain: Fragmented access onboarding ownership causing new hires to be blocked from ERP and printer networks for days
+systems:
+  - active_directory
+  - identity_provider
+  - erp_shipping_workflow
+  - msp_ticketing
+  - print_server
+signals:
+  - ad_onboarding_drift
+  - access_denied_erp
+  - group_membership_conflict
+  - license_allocation_failed
+business_metrics:
+  - onboarding_downtime_hours
+  - average_triage_latency_minutes
+  - employee_onboarding_delay
+  - support_hours
+target_outcome: Align GPO memberships, resolve Active Directory onboarding drift, and clear user onboarding queues automatically
+demo_length_minutes: 5

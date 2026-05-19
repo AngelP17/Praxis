@@ -1,0 +1,26 @@
+id: network-edge-failover
+name: Network Edge Failover
+industry: manufacturing
+buyer_persona: Director of Infrastructure
+technical_persona: Network SRE
+economic_buyer: VP of Manufacturing Operations
+primary_pain: Edge primary ISP outage causing complete shipping and ERP offline status due to misconfigured backup routes
+systems:
+  - Firewall-EDGE-01
+  - ISP-PRIMARY
+  - Starlink-Backup-01
+  - LTE-GATEWAY-01
+  - Shipping Network
+  - ERP Access
+signals:
+  - primary_isp_offline
+  - failover_route_degraded
+  - starlink_dhcp_failed
+  - dns_resolution_timeout
+business_metrics:
+  - delayed_shipments
+  - downtime_minutes
+  - support_hours
+  - vendor_escalations
+target_outcome: Restore Starlink routing, verify ERP network visibility, and provide audit-ready proof of network availability
+demo_length_minutes: 6

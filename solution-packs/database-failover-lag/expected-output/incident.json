@@ -1,0 +1,15 @@
+{
+  "incident_id": "TX-DB-FAILOVER-099",
+  "title": "Database Replication Lag Spike & Patroni Failover — Dallas",
+  "status": "identified",
+  "severity": "critical",
+  "site": "Dallas",
+  "asset": "asset-postgres-replica",
+  "affected_business_process": "Checkout Transactions Workflow",
+  "root_cause_hypothesis": "Critical PostgreSQL replication lag (180s) coupled with client connection pool saturation leading to checkout transaction timeouts during Patroni promotion",
+  "priority_score": 0.95,
+  "evidence_trust": 0.96,
+  "requires_human_review": true,
+  "detected_events": 12,
+  "recurrence_count": 3
+}

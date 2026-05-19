@@ -1,0 +1,69 @@
+objects:
+  - type: Site
+    key: site-plant-a
+    display_name: Plant-A
+  - type: Asset
+    key: asset-firewall-edge-01
+    display_name: Firewall-EDGE-01
+  - type: Asset
+    key: asset-starlink-backup-01
+    display_name: Starlink-Backup-01
+  - type: BusinessProcess
+    key: process-shipping-network
+    display_name: Shipping Network
+  - type: BusinessProcess
+    key: process-erp-access
+    display_name: ERP Access
+  - type: Vendor
+    key: vendor-primary-isp
+    display_name: ISP-PRIMARY
+  - type: Control
+    key: control-failover-policy
+    display_name: WAN Failover Policy
+  - type: Stakeholder
+    key: stakeholder-robert-sanchez
+    display_name: Robert Sanchez (Director of Infrastructure)
+  - type: Stakeholder
+    key: stakeholder-jane-doe
+    display_name: Jane Doe (Network SRE)
+
+links:
+  - source: site-plant-a
+    target: asset-firewall-edge-01
+    type: owns
+  - source: asset-firewall-edge-01
+    target: process-shipping-network
+    type: supports
+  - source: asset-firewall-edge-01
+    target: process-erp-access
+    type: supports
+  - source: asset-starlink-backup-01
+    target: asset-firewall-edge-01
+    type: backup_for
+  - source: vendor-primary-isp
+    target: asset-firewall-edge-01
+    type: provides_wan_to
+  - source: control-failover-policy
+    target: asset-firewall-edge-01
+    type: governs
+  - source: stakeholder-robert-sanchez
+    target: process-erp-access
+    type: accountable_for
+
+actions:
+  - type: acknowledge_incident
+    mode: HUMAN_APPROVAL
+  - type: assign_owner
+    mode: ASSISTED_ACTION
+  - type: toggle_starlink_interface
+    mode: ASSISTED_ACTION
+  - type: reset_dhcp_lease
+    mode: ASSISTED_ACTION
+  - type: flush_dns_cache
+    mode: READ_ONLY
+  - type: route_traffic_lte
+    mode: ASSISTED_ACTION
+  - type: approve_remediation
+    mode: HUMAN_APPROVAL
+  - type: close_with_evidence
+    mode: WRITEBACK

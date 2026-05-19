@@ -13,6 +13,7 @@ router = APIRouter(prefix="/health", tags=["health"])
 
 try:
     from services.fieldlab_service import FlociClient
+
     HAS_FLOCI = True
 except ImportError:
     HAS_FLOCI = False
@@ -35,7 +36,11 @@ async def floci_health():
         services = {}
         for svc in ["sqs", "s3", "dynamodb", "events"]:
             try:
-                status = client.check_service(svc) if hasattr(client, 'check_service') else {"status": "ok"}
+                status = (
+                    client.check_service(svc)
+                    if hasattr(client, "check_service")
+                    else {"status": "ok"}
+                )
                 services[svc] = {
                     "status": "healthy" if status.get("status") == "ok" else "degraded",
                     "endpoint": "http://localhost:4566",

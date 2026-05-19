@@ -1,0 +1,96 @@
+{
+  "action": {
+    "action_log_hash": "sha256:d8b2d18721c5f87b8979e3e7fde922c2e0220269fb9df3fc5163b07e51c78a0c",
+    "actor": "operator",
+    "mode": "HUMAN_APPROVAL",
+    "recommended_action": "verify_failover_status",
+    "risk": "low",
+    "rollback": "Patroni fallback node rollback available",
+    "run_id": "fieldlab_run_database-failover-lag",
+    "status": "approved"
+  },
+  "customer_context_hash": "sha256:a6b29f0374bcd8ffaedd80ef3bf5cff48c1a902667b045e4c037218c78c34a99",
+  "decision": {
+    "confidence": 0.959,
+    "next_best_questions": [
+      {
+        "acquisition_feasibility": 0.8,
+        "business_impact_weight": 0.8,
+        "expected_confidence_gain": 0.12,
+        "field": "checkout_timeout_count",
+        "question": "What is the checkout_timeout_count?",
+        "reason": "Expected confidence gain: 0.12"
+      }
+    ],
+    "priority_score": 0.9525,
+    "requires_human_review": true,
+    "root_cause_hypothesis": "postgresql_replication_lag_exhaustion",
+    "signals": {
+      "actionability": 0.92,
+      "business_process_criticality": 0.98,
+      "customer_visible_impact": 0.95,
+      "recurrence_risk": 0.89,
+      "severity_score": 0.9416,
+      "sla_exposure": 0.95
+    }
+  },
+  "evidence": {
+    "corroboration_score": 0.95,
+    "evidence_trust": 0.959,
+    "freshness_score": 0.98,
+    "raw_events": 12,
+    "source_coverage": 1.0,
+    "sources": [
+      "postgres-replica",
+      "pgpool_load_balancer",
+      "monitoring_alerts",
+      "Patroni",
+      "helpdesk",
+      "praxis",
+      "checkout_microservice",
+      "operator_note"
+    ]
+  },
+  "expansion": [
+    {
+      "expansion_score": 0.88,
+      "factors": {
+        "executive_visibility": 0.9,
+        "implementation_reuse": 0.85,
+        "measurable_value": 0.92,
+        "shared_data_model": 0.95,
+        "stakeholder_overlap": 0.8,
+        "urgency": 0.85
+      },
+      "id": "connection-pool-isolation",
+      "name": "Database Connection Pool Isolation"
+    }
+  ],
+  "generated_at": "2026-05-12T00:00:00Z",
+  "ontology": {
+    "actions_available": 8,
+    "links_created": 196,
+    "mapping_confidence": 0.94,
+    "objects_created": 9
+  },
+  "proof_hash": "sha256:7f0c2a2cb71a9e4c077eb1bde1fae0cb9f9a8d0a528c21c740a0181fc0ece3fb",
+  "proof_id": "proof_praxis_database_failover_lag_001",
+  "replay": {
+    "deterministic": true,
+    "replay_hash": "sha256:4a0f3d53cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed4bf",
+    "verified_at": "2026-05-12T00:00:00Z"
+  },
+  "run_id": "fieldlab_run_database-failover-lag",
+  "solution_pack": "database-failover-lag",
+  "value_case": {
+    "bucket": "demo and scope",
+    "confidence": 0.959,
+    "estimated_annual_value": 108281.67,
+    "primary_value_driver": "Keep transactional systems available during failovers, optimize connection pools, and provide audit-ready proof of platform health",
+    "roi_calculations": {
+      "annual_value": 108281.67,
+      "monthly_delay_cost_avoided": 9000.0,
+      "monthly_labor_cost_saved": 23.47
+    }
+  }
+}

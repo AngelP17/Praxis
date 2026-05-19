@@ -104,9 +104,13 @@ class FieldLabService:
             try:
                 dynamo_items = self.store.list_runs()
                 items = [
-                    {"run_id": i["run_id"], "pack_id": i.get("pack_id", ""),
-                     "status": i.get("status", "unknown"), "updated_at": i.get("updated_at", ""),
-                     "metadata": i.get("metadata", {})}
+                    {
+                        "run_id": i["run_id"],
+                        "pack_id": i.get("pack_id", ""),
+                        "status": i.get("status", "unknown"),
+                        "updated_at": i.get("updated_at", ""),
+                        "metadata": i.get("metadata", {}),
+                    }
                     for i in dynamo_items
                 ]
             except Exception:
@@ -162,18 +166,26 @@ class FieldLabService:
     def ingest_events(self, run_id: str, events: list[dict]) -> dict:
         item = _MEMORY_STORE.get(run_id) or {}
         pack_id = item.get("pack_id", "")
-        _MEMORY_STORE[run_id] = {**item, "status": "events_ingested",
-                                  "metadata": {**item.get("metadata", {}), "event_count": len(events)},
-                                  "updated_at": datetime.now(timezone.utc).isoformat()}
+        _MEMORY_STORE[run_id] = {
+            **item,
+            "status": "events_ingested",
+            "metadata": {**item.get("metadata", {}), "event_count": len(events)},
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
         if self._floci_available:
             try:
                 result = self.sink.ingest_solution_pack_events(run_id, pack_id, events)
-                self.store.update_run_status(run_id, "events_ingested", {"event_count": len(events)})
+                self.store.update_run_status(
+                    run_id, "events_ingested", {"event_count": len(events)}
+                )
                 return result
             except Exception:
                 pass
-        return {"sqs": len(events), "s3": {"key": f"runs/{run_id}/events.jsonl"},
-                "workflow": {"status": "simulated"}}
+        return {
+            "sqs": len(events),
+            "s3": {"key": f"runs/{run_id}/events.jsonl"},
+            "workflow": {"status": "simulated"},
+        }
 
     def execute_run(self, run_id: str) -> dict:
         """Execute a FieldLab run, optionally using Lambda for production-grade compute.
@@ -199,7 +211,9 @@ class FieldLabService:
                 import sys
 
                 # Import Lambda handler module
-                sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', 'packages', 'fieldlab'))
+                sys.path.insert(
+                    0, os.path.join(os.path.dirname(__file__), "..", "..", "packages", "fieldlab")
+                )
                 from lambda_handler import lambda_handler
 
                 # Prepare Lambda event
@@ -219,18 +233,21 @@ class FieldLabService:
                 proof = json.loads(result["body"])
 
                 item = _MEMORY_STORE.get(run_id, {})
-                _MEMORY_STORE[run_id] = {**item, "status": "executed",
-                                           "metadata": {
-                                               **item.get("metadata", {}),
-                                               "priority_score": proof["decision"]["priority_score"],
-                                               "evidence_trust": proof["evidence"]["evidence_trust"],
-                                               "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
-                                               "proof_hash": proof["proof_hash"],
-                                               },
-                                           "updated_at": datetime.now(timezone.utc).isoformat()}
+                _MEMORY_STORE[run_id] = {
+                    **item,
+                    "status": "executed",
+                    "metadata": {
+                        **item.get("metadata", {}),
+                        "priority_score": proof["decision"]["priority_score"],
+                        "evidence_trust": proof["evidence"]["evidence_trust"],
+                        "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
+                        "proof_hash": proof["proof_hash"],
+                    },
+                    "updated_at": datetime.now(timezone.utc).isoformat(),
+                }
 
                 # Log to CloudWatch
-                if hasattr(self, 'cw'):
+                if hasattr(self, "cw"):
                     self.cw.log_metric("lambda_compute_success", 1.0)
 
                 return {
@@ -252,23 +269,30 @@ class FieldLabService:
         # Fallback to local FastAPI compute
         proof = self._build_run_proof(run_id)
         item = _MEMORY_STORE.get(run_id, {})
-        _MEMORY_STORE[run_id] = {**item, "status": "executed",
-                                  "metadata": {
-                                      **item.get("metadata", {}),
-                                      "priority_score": proof["decision"]["priority_score"],
-                                      "evidence_trust": proof["evidence"]["evidence_trust"],
-                                      "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
-                                      "proof_hash": proof["proof_hash"],
-                                  },
-                                  "updated_at": datetime.now(timezone.utc).isoformat()}
+        _MEMORY_STORE[run_id] = {
+            **item,
+            "status": "executed",
+            "metadata": {
+                **item.get("metadata", {}),
+                "priority_score": proof["decision"]["priority_score"],
+                "evidence_trust": proof["evidence"]["evidence_trust"],
+                "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
+                "proof_hash": proof["proof_hash"],
+            },
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
         if self._floci_available:
             try:
-                self.store.update_run_status(run_id, "executed", {
-                    "priority_score": proof["decision"]["priority_score"],
-                    "evidence_trust": proof["evidence"]["evidence_trust"],
-                    "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
-                    "proof_hash": proof["proof_hash"],
-                })
+                self.store.update_run_status(
+                    run_id,
+                    "executed",
+                    {
+                        "priority_score": proof["decision"]["priority_score"],
+                        "evidence_trust": proof["evidence"]["evidence_trust"],
+                        "estimated_annual_value": proof["value_case"]["estimated_annual_value"],
+                        "proof_hash": proof["proof_hash"],
+                    },
+                )
             except Exception:
                 pass
         return {
@@ -291,21 +315,50 @@ class FieldLabService:
         metadata = item.get("metadata", {})
         status = item.get("status", "computed") if item else "computed"
         events = [
-            {"event_type": "FieldLabRunStarted", "status": "complete",
-             "actor": "system", "proof_impact": "run_id"},
-            {"event_type": "FieldLabRunEventsIngested", "status": "complete",
-             "actor": "fieldlab", "proof_impact": f"{proof['evidence']['raw_events']} raw events"},
-            {"event_type": "DecisionGenerated", "status": "complete",
-             "actor": "praxis-decision-engine", "proof_impact": proof["decision"]["priority_score"]},
-            {"event_type": "ActionCaptured", "status": proof["action"]["status"],
-             "actor": proof["action"]["actor"], "proof_impact": proof["action"]["action_log_hash"]},
-            {"event_type": "ValueCaseReady", "status": "complete",
-             "actor": "roi-calculator", "proof_impact": proof["value_case"]["estimated_annual_value"]},
-            {"event_type": "FieldLabRunCompleted", "status": status,
-             "actor": "fieldlab", "proof_impact": proof["proof_hash"]},
+            {
+                "event_type": "FieldLabRunStarted",
+                "status": "complete",
+                "actor": "system",
+                "proof_impact": "run_id",
+            },
+            {
+                "event_type": "FieldLabRunEventsIngested",
+                "status": "complete",
+                "actor": "fieldlab",
+                "proof_impact": f"{proof['evidence']['raw_events']} raw events",
+            },
+            {
+                "event_type": "DecisionGenerated",
+                "status": "complete",
+                "actor": "praxis-decision-engine",
+                "proof_impact": proof["decision"]["priority_score"],
+            },
+            {
+                "event_type": "ActionCaptured",
+                "status": proof["action"]["status"],
+                "actor": proof["action"]["actor"],
+                "proof_impact": proof["action"]["action_log_hash"],
+            },
+            {
+                "event_type": "ValueCaseReady",
+                "status": "complete",
+                "actor": "roi-calculator",
+                "proof_impact": proof["value_case"]["estimated_annual_value"],
+            },
+            {
+                "event_type": "FieldLabRunCompleted",
+                "status": status,
+                "actor": "fieldlab",
+                "proof_impact": proof["proof_hash"],
+            },
         ]
-        return {"run_id": run_id, "solution_pack_id": proof["solution_pack"],
-                "status": status, "metadata": metadata, "events": events}
+        return {
+            "run_id": run_id,
+            "solution_pack_id": proof["solution_pack"],
+            "status": status,
+            "metadata": metadata,
+            "events": events,
+        }
 
     def capture_action(self, run_id: str, action: dict) -> dict:
         captured = {
@@ -318,30 +371,45 @@ class FieldLabService:
         _MEMORY_ACTIONS[run_id] = captured
         item = _MEMORY_STORE.get(run_id, {})
         metadata = {**item.get("metadata", {}), "captured_action": captured}
-        _MEMORY_STORE[run_id] = {**item, "status": "action_captured",
-                                  "metadata": metadata,
-                                  "updated_at": datetime.now(timezone.utc).isoformat()}
+        _MEMORY_STORE[run_id] = {
+            **item,
+            "status": "action_captured",
+            "metadata": metadata,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
         if self._floci_available:
             try:
                 self.store.update_run_status(run_id, "action_captured", metadata)
             except Exception:
                 pass
         proof = self._build_run_proof(run_id)
-        return {"run_id": run_id, "status": "action_captured",
-                "action": proof["action"], "proof_hash": proof["proof_hash"]}
+        return {
+            "run_id": run_id,
+            "status": "action_captured",
+            "action": proof["action"],
+            "proof_hash": proof["proof_hash"],
+        }
 
     def get_replay(self, run_id: str) -> dict:
         if self._floci_available:
             try:
                 replay = self.archive.get_proof(run_id)
-                return {"run_id": run_id, "decisions": [], "events": [],
-                        "replayed_at": datetime.now(timezone.utc).isoformat(),
-                        "proof_available": replay is not None}
+                return {
+                    "run_id": run_id,
+                    "decisions": [],
+                    "events": [],
+                    "replayed_at": datetime.now(timezone.utc).isoformat(),
+                    "proof_available": replay is not None,
+                }
             except Exception:
                 pass
-        return {"run_id": run_id, "decisions": [], "events": [],
-                "replayed_at": datetime.now(timezone.utc).isoformat(),
-                "proof_available": False}
+        return {
+            "run_id": run_id,
+            "decisions": [],
+            "events": [],
+            "replayed_at": datetime.now(timezone.utc).isoformat(),
+            "proof_available": False,
+        }
 
     def get_executive_readout(self, run_id: str) -> dict:
         proof = self._build_run_proof(run_id)
@@ -351,7 +419,8 @@ class FieldLabService:
         )[0]
         expansions = proof.get("expansion") or ExpansionGraph().top_expansions(pack_id)
         return {
-            "run_id": run_id, "solution_pack_id": pack_id,
+            "run_id": run_id,
+            "solution_pack_id": pack_id,
             "incident_summary": {
                 "incident_id": proof["proof_id"],
                 "primary_impact": scenario.get("primary_pain", ""),

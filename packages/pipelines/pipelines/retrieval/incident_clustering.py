@@ -6,6 +6,7 @@ from typing import Optional
 
 from apps.api_gateway.services.operational_intelligence import synthesize_incidents
 
+
 def find_or_create_incident(ticket_ids: list[int]) -> Optional[int]:
     """
     Given a list of ticket IDs, find an existing incident or create a new one.

@@ -75,9 +75,7 @@ class FlociStateStore:
                     "StreamViewType": "NEW_AND_OLD_IMAGES",
                 },
             )
-            self._stream_arn = response.get("TableDescription", {}).get(
-                "LatestStreamArn", ""
-            )
+            self._stream_arn = response.get("TableDescription", {}).get("LatestStreamArn", "")
             self._stream_enabled = True
             self.client.cw.log_metric("dynamodb_streams/enabled", 1.0)
             return {

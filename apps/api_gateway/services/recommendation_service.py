@@ -60,9 +60,10 @@ class RecommendationService:
         feedback_type: str,
         feedback_note: str | None,
     ):
-        row = self.db.execute(
-            text(
-                """
+        row = (
+            self.db.execute(
+                text(
+                    """
                 SELECT
                     r.id,
                     r.decision_record_id,
@@ -73,9 +74,12 @@ class RecommendationService:
                 JOIN tickets t ON t.id = dr.ticket_id
                 WHERE r.id = :recommendation_id
                 """
-            ),
-            {"recommendation_id": recommendation_id},
-        ).mappings().first()
+                ),
+                {"recommendation_id": recommendation_id},
+            )
+            .mappings()
+            .first()
+        )
         if row is None:
             return None
 

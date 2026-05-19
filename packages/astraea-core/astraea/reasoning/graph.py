@@ -215,8 +215,9 @@ class GraphReasoningEngine:
 
         root_cause = max(
             candidates,
-            key=lambda n: self.graph.nodes[n].anomaly_score
-            + self.graph.nodes[n].failure_probability,
+            key=lambda n: (
+                self.graph.nodes[n].anomaly_score + self.graph.nodes[n].failure_probability
+            ),
         )
         return root_cause
 

@@ -66,7 +66,7 @@ def test_scenario_run_replay_hash_is_deterministic_for_same_scenario():
     assert result1["replay_hash"] == result2["replay_hash"]
 
 
-def test_scenario_benchmark_returns_all_eight():
+def test_scenario_benchmark_returns_all_four():
     svc = make_service()
     benchmarks = svc.benchmarks()
     assert len(benchmarks) == len(SCENARIOS)

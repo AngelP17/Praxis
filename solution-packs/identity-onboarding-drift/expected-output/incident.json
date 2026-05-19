@@ -1,0 +1,15 @@
+{
+  "incident_id": "TKT-4799",
+  "title": "Identity Onboarding Drift — Plant-A",
+  "status": "identified",
+  "severity": "high",
+  "site": "Plant-A",
+  "asset": "Active Directory",
+  "affected_business_process": "User Onboarding",
+  "root_cause_hypothesis": "Active Directory group synchronization policy drift preventing proper ERP license and role allocations",
+  "priority_score": 0.85,
+  "evidence_trust": 0.87,
+  "requires_human_review": true,
+  "detected_events": 8,
+  "recurrence_count": 2
+}

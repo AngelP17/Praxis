@@ -1,0 +1,11 @@
+{
+  "bucket": "demo and scope",
+  "confidence": 0.88,
+  "estimated_annual_value": 47100.0,
+  "primary_value_driver": "Restore Starlink routing, verify ERP network visibility, and provide audit-ready proof of network availability",
+  "roi_calculations": {
+    "annual_value": 47100.0,
+    "monthly_delay_cost_avoided": 3600.0,
+    "monthly_labor_cost_saved": 325.0
+  }
+}

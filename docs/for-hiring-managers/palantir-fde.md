@@ -4,7 +4,7 @@ Praxis demonstrates competencies directly applicable to the FDE and Forward-Depl
 
 | Praxis Component | Palantir FDE Competency | Evidence |
 |-----------------|------------------------|-----------|
-| **Solution Packs** | Customer-specific deployment packaging | 3 solution packs (manufacturing GPO, ERP access, K8s ingress) with buyer personas, ROI models, demo scripts, security answers, and implementation plans. |
+| **Solution Packs** | Customer-specific deployment packaging | 4 consolidated flagship solution packs (manufacturing GPO, network edge ISP failover, AD identity onboarding drift, PostgreSQL database failover lag) with buyer personas, ROI models, demo scripts, security answers, and implementation plans. |
 | **Ontology Compiler** | Data modeling from messy real-world records | Maps raw operational signals (tickets, logs, operator notes) to typed objects, relationships, actions, and value metrics. |
 | **FieldLab (Floci)** | Local, reproducible environment for customer workflows | Docker-based local AWS substrate (SQS, S3, DynamoDB, EventBridge) that reproduces customer infrastructure before production access. |
 | **Deterministic Replay** | Verifiable, auditable decision provenance | Bit-deterministic proof generation with CI gate enforcement. Same inputs = same proof hash every time. |

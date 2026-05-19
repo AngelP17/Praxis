@@ -34,9 +34,7 @@ class IamRoleService:
         """Load IAM policy from filesystem."""
         filename = ROLE_POLICIES.get(role)
         if not filename:
-            raise ValueError(
-                f"Unknown role: '{role}'. Available: {list(ROLE_POLICIES.keys())}"
-            )
+            raise ValueError(f"Unknown role: '{role}'. Available: {list(ROLE_POLICIES.keys())}")
 
         path = IAM_DIR / filename
         if not path.exists():
@@ -56,8 +54,7 @@ class IamRoleService:
             if isinstance(allowed_actions, str):
                 allowed_actions = [allowed_actions]
             if action in allowed_actions or any(
-                pol.endswith("*") and action.startswith(pol.rstrip("*"))
-                for pol in allowed_actions
+                pol.endswith("*") and action.startswith(pol.rstrip("*")) for pol in allowed_actions
             ):
                 return True
         return False
@@ -65,9 +62,7 @@ class IamRoleService:
     def authorize(self, action: str) -> None:
         """Raise PermissionError if action is not allowed."""
         if not self.is_allowed(action):
-            raise PermissionError(
-                f"Action '{action}' not allowed for role '{self.role}'"
-            )
+            raise PermissionError(f"Action '{action}' not allowed for role '{self.role}'")
 
     def authorize_writer_actions(self, actions: list[str]) -> None:
         """Authorize a list of write operations."""

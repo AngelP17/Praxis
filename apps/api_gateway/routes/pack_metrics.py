@@ -75,9 +75,7 @@ async def get_pack_metrics():
             "total_runs": metrics.total_runs,
             "valid_proofs": metrics.valid_proofs,
             "validity_rate": round(metrics.validity_rate(), 3),
-            "avg_latency_ms": round(
-                metrics.total_latency_ms / max(metrics.total_runs, 1), 1
-            ),
+            "avg_latency_ms": round(metrics.total_latency_ms / max(metrics.total_runs, 1), 1),
             "p50_latency_ms": round(metrics.p50_latency(), 1),
             "p95_latency_ms": round(metrics.p95_latency(), 1),
         }

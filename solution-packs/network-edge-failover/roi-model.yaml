@@ -1,0 +1,24 @@
+variables:
+  incidents_per_month: 4
+  average_minutes_lost_per_incident: 120
+  loaded_labor_rate_per_hour: 65
+  shipment_delay_cost_per_hour: 450
+  current_triage_minutes: 90
+  praxis_triage_minutes: 15
+
+formulas:
+  monthly_labor_cost_saved:
+    expression: incidents_per_month * ((current_triage_minutes - praxis_triage_minutes) / 60) * loaded_labor_rate_per_hour
+    description: Labor hours saved by automated WAN triage
+  monthly_delay_cost_avoided:
+    expression: incidents_per_month * (average_minutes_lost_per_incident / 60) * shipment_delay_cost_per_hour
+    description: Outage-related shipping delay penalties avoided
+  annual_value:
+    expression: 12 * (monthly_labor_cost_saved + monthly_delay_cost_avoided)
+    description: Total annual value delivered by Praxis Network Resilience
+
+calculations:
+  monthly_labor_cost_saved: 325.00
+  monthly_delay_cost_avoided: 3600.00
+  monthly_total: 3925.00
+  annual_value: 47100.00

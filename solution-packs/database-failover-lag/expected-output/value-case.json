@@ -1,0 +1,11 @@
+{
+  "bucket": "demo and scope",
+  "confidence": 0.959,
+  "estimated_annual_value": 108281.67,
+  "primary_value_driver": "Keep transactional systems available during failovers, optimize connection pools, and provide audit-ready proof of platform health",
+  "roi_calculations": {
+    "annual_value": 108281.67,
+    "monthly_delay_cost_avoided": 9000.0,
+    "monthly_labor_cost_saved": 23.47
+  }
+}

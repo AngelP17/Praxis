@@ -76,13 +76,9 @@ class ReportService:
             if matched_incident is None:
                 raise LookupError(f"Incident {incident_id} not found")
 
-            incident_ticket_ids = {
-                ticket["ticket_id"] for ticket in matched_incident["tickets"]
-            }
+            incident_ticket_ids = {ticket["ticket_id"] for ticket in matched_incident["tickets"]}
             snapshots = [
-                snapshot
-                for snapshot in snapshots
-                if snapshot["ticket_id"] in incident_ticket_ids
+                snapshot for snapshot in snapshots if snapshot["ticket_id"] in incident_ticket_ids
             ]
             incidents = [
                 {

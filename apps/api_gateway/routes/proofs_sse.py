@@ -49,11 +49,7 @@ def _build_proof(pack_id: str) -> dict:
     events_path = pack_dir / "sample-events.jsonl"
     if not events_path.is_file():
         return {}
-    events = [
-        json.loads(line)
-        for line in events_path.read_text().splitlines()
-        if line.strip()
-    ]
+    events = [json.loads(line) for line in events_path.read_text().splitlines() if line.strip()]
     run_id = f"fieldlab_run_sse_{pack_id}"
     return PraxisProofBuilder().build(
         ProofInputs(solution_pack=pack_id, events=events, run_id=run_id)
@@ -69,19 +65,22 @@ async def generate_proof_events(pack_id: str):
     for i, stage in enumerate(STAGES):
         await asyncio.sleep(0.8)
         import hashlib
+
         stage_hash = hashlib.sha256(f"{run_id}:{stage}:{time.time()}".encode()).hexdigest()[:16]
         yield {
             "event": "stage",
-            "data": json.dumps({
-                "stage": stage,
-                "label": STAGE_LABELS.get(stage, stage),
-                "index": i,
-                "total": len(STAGES),
-                "progress": (i + 1) / len(STAGES),
-                "run_id": run_id,
-                "stage_hash": stage_hash,
-                "timestamp": int(time.time() * 1000),
-            }),
+            "data": json.dumps(
+                {
+                    "stage": stage,
+                    "label": STAGE_LABELS.get(stage, stage),
+                    "index": i,
+                    "total": len(STAGES),
+                    "progress": (i + 1) / len(STAGES),
+                    "run_id": run_id,
+                    "stage_hash": stage_hash,
+                    "timestamp": int(time.time() * 1000),
+                }
+            ),
         }
 
     ontology = proof.get("ontology", {})
@@ -91,19 +90,21 @@ async def generate_proof_events(pack_id: str):
 
     yield {
         "event": "completed",
-        "data": json.dumps({
-            "run_id": run_id,
-            "solution_pack": pack_id,
-            "proof_hash": proof.get("proof_hash", ""),
-            "conformance": "L1",
-            "events_processed": evidence.get("raw_events", 0),
-            "ontology_objects": ontology.get("objects_created", 0),
-            "priority_score": decision.get("priority_score", 0.0),
-            "evidence_trust": evidence.get("evidence_trust", 0.0),
-            "estimated_value": value_case.get("estimated_annual_value", 0),
-            "download_url": f"/api/proofs/{pack_id}",
-            "verify_command": f"curl -s http://localhost:8000/api/proofs/{pack_id} | python -m astraea.praxis.proof_verifier -",
-        }),
+        "data": json.dumps(
+            {
+                "run_id": run_id,
+                "solution_pack": pack_id,
+                "proof_hash": proof.get("proof_hash", ""),
+                "conformance": "L1",
+                "events_processed": evidence.get("raw_events", 0),
+                "ontology_objects": ontology.get("objects_created", 0),
+                "priority_score": decision.get("priority_score", 0.0),
+                "evidence_trust": evidence.get("evidence_trust", 0.0),
+                "estimated_value": value_case.get("estimated_annual_value", 0),
+                "download_url": f"/api/proofs/{pack_id}",
+                "verify_command": f"curl -s http://localhost:8000/api/proofs/{pack_id} | python -m astraea.praxis.proof_verifier -",
+            }
+        ),
     }
 
 

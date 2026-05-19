@@ -1,7 +1,8 @@
 packs:
   - manufacturing-printer-gpo
-  - erp-access-disruption
-  - k8s-ingress-degradation
+  - network-edge-failover
+  - identity-onboarding-drift
+  - database-failover-lag
 metrics:
   - ontology_mapping_confidence
   - decision_replay_match

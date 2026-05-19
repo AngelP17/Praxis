@@ -1,0 +1,25 @@
+id: database-failover-lag
+name: Database Failover and Replication Lag Degradation
+industry: technology-services
+buyer_persona: Director of Infrastructure
+technical_persona: Principal Database Engineer
+economic_buyer: VP of Engineering
+primary_pain: Transactional delays and replication lag causing order confirmation timeouts and database failovers
+systems:
+  - postgresql_primary
+  - postgresql_replica
+  - pgpool_load_balancer
+  - checkout_microservice
+  - monitoring_alerts
+signals:
+  - database_replication_lag_critical
+  - primary_unreachable
+  - failover_triggered
+  - connection_pool_saturated
+business_metrics:
+  - checkout_timeout_count
+  - average_query_latency_ms
+  - database_downtime_minutes
+  - engineer_triage_hours
+target_outcome: Keep transactional systems available during failovers, optimize connection pools, and provide audit-ready proof of platform health
+demo_length_minutes: 8

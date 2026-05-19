@@ -1,0 +1,11 @@
+{
+  "bucket": "demo and scope",
+  "confidence": 0.85,
+  "estimated_annual_value": 64800.0,
+  "primary_value_driver": "Align GPO memberships, resolve Active Directory onboarding drift, and clear user onboarding queues automatically",
+  "roi_calculations": {
+    "annual_value": 64800.0,
+    "monthly_delay_cost_avoided": 4800.0,
+    "monthly_labor_cost_saved": 600.0
+  }
+}

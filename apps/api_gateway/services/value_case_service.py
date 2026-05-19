@@ -159,11 +159,14 @@ class ValueCaseService:
         if "monthly_delay_cost_avoided" in calcs:
             key_metrics["monthly_delay_avoided"] = calcs["monthly_delay_cost_avoided"]
 
-        recommendations = scenario.get("recommended_actions", [
-            "Validate root cause hypothesis",
-            "Review ontology coverage",
-            "Confirm human-approval action",
-        ])
+        recommendations = scenario.get(
+            "recommended_actions",
+            [
+                "Validate root cause hypothesis",
+                "Review ontology coverage",
+                "Confirm human-approval action",
+            ],
+        )
 
         return {
             "value_case_id": value_case_id,

@@ -64,7 +64,11 @@ class ReplayService:
             "decision_history": [
                 {
                     "id": row["id"],
-                    "decision_ts": row["decision_ts"].isoformat() if hasattr(row["decision_ts"], "isoformat") else row["decision_ts"] if row["decision_ts"] else None,
+                    "decision_ts": row["decision_ts"].isoformat()
+                    if hasattr(row["decision_ts"], "isoformat")
+                    else row["decision_ts"]
+                    if row["decision_ts"]
+                    else None,
                     "priority_score": row["priority_score"],
                     "root_cause_hypothesis": row["root_cause_hypothesis"],
                     "confidence_score": row["confidence_score"],
@@ -77,7 +81,11 @@ class ReplayService:
                 {
                     "feedback_type": row["feedback_type"],
                     "feedback_note": row["feedback_note"],
-                    "feedback_ts": row["feedback_ts"].isoformat() if hasattr(row["feedback_ts"], "isoformat") else row["feedback_ts"] if row["feedback_ts"] else None,
+                    "feedback_ts": row["feedback_ts"].isoformat()
+                    if hasattr(row["feedback_ts"], "isoformat")
+                    else row["feedback_ts"]
+                    if row["feedback_ts"]
+                    else None,
                     "operator_id": row["operator_id"],
                 }
                 for row in feedback

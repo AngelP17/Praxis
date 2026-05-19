@@ -1,0 +1,15 @@
+{
+  "incident_id": "TKT-4814",
+  "title": "Network Edge Failover Degradation — Plant-A",
+  "status": "identified",
+  "severity": "high",
+  "site": "Plant-A",
+  "asset": "Firewall-EDGE-01",
+  "affected_business_process": "Shipping Network",
+  "root_cause_hypothesis": "Edge primary ISP outage causing complete shipping and ERP offline status due to misconfigured backup routes",
+  "priority_score": 0.88,
+  "evidence_trust": 0.88,
+  "requires_human_review": true,
+  "detected_events": 8,
+  "recurrence_count": 3
+}

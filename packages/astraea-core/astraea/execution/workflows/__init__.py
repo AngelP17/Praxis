@@ -232,9 +232,7 @@ class WorkflowExecutor:
         for workflow_type in WorkflowType:
             definition = IndustrialWorkflows.get_workflow(workflow_type)
             if definition:
-                self.engine.register_workflow(
-                    definition.workflow_id.value, definition.steps
-                )
+                self.engine.register_workflow(definition.workflow_id.value, definition.steps)
 
     async def execute(
         self,
@@ -242,9 +240,7 @@ class WorkflowExecutor:
         context: dict[str, Any],
         trace_id: str | None = None,
     ) -> WorkflowResult:
-        return await self.engine.execute_workflow(
-            workflow_type.value, context, trace_id
-        )
+        return await self.engine.execute_workflow(workflow_type.value, context, trace_id)
 
     def get_available_workflows(self) -> list[dict[str, str]]:
         return [{"id": wt.value, "name": wt.name} for wt in WorkflowType]

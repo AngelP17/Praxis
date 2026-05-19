@@ -92,7 +92,9 @@ app.include_router(fieldlab_router, prefix="/api/fieldlab", tags=["fieldlab"])
 app.include_router(solution_packs_router, prefix="/api/solution-packs", tags=["solution-packs"])
 app.include_router(ontology_router, prefix="/api/ontology", tags=["ontology"])
 app.include_router(value_cases_router, prefix="/api/value-cases", tags=["value-cases"])
-app.include_router(deployment_plans_router, prefix="/api/deployment-plans", tags=["deployment-plans"])
+app.include_router(
+    deployment_plans_router, prefix="/api/deployment-plans", tags=["deployment-plans"]
+)
 app.include_router(discovery_router, prefix="/api/discovery", tags=["discovery"])
 app.include_router(proofs_router, prefix="/api/proofs", tags=["proofs"])
 app.include_router(proofs_sse_router, tags=["proofs-sse"])

@@ -88,7 +88,11 @@ async def platform_summary() -> dict[str, Any]:
         "replicas": {"desired": 3, "available": 3, "ready": 3},
         "slo": {
             "availability": {"target": 99.5, "current": 99.982, "status": "met"},
-            "mttr": {"target_seconds": 30, "current_seconds": latest["duration_seconds"], "status": "met" if latest["slo_met"] else "breached"},
+            "mttr": {
+                "target_seconds": 30,
+                "current_seconds": latest["duration_seconds"],
+                "status": "met" if latest["slo_met"] else "breached",
+            },
             "error_rate": {"target_percent": 0.5, "current_percent": 0.14, "status": "met"},
             "p95_latency_ms": {"target_ms": 500, "current_ms": 184, "status": "met"},
         },
@@ -127,20 +131,74 @@ async def platform_incident_detail(incident_id: str) -> dict[str, Any]:
             "runbook_annotation": "runbooks/pod-crash.md",
         },
         "timeline": [
-            {"phase": "detect", "label": "Alert detected", "timestamp": "T+04s", "detail": "Replica availability dropped below desired state"},
-            {"phase": "snapshot", "label": "Context captured", "timestamp": "T+05s", "detail": "Pods, events, logs, deployment and service state recorded"},
-            {"phase": "runbook", "label": "Runbook selected", "timestamp": "T+06s", "detail": "Alert mapped to runbooks/pod-crash.md"},
-            {"phase": "recover", "label": "Replica restored", "timestamp": "T+10s", "detail": "Deployment controller created replacement pod"},
-            {"phase": "validate", "label": "SLO validated", "timestamp": "T+12s", "detail": "MTTR 12s under 30s objective"},
-            {"phase": "audit", "label": "Report generated", "timestamp": "T+13s", "detail": "Incident report and decision record preserved"},
+            {
+                "phase": "detect",
+                "label": "Alert detected",
+                "timestamp": "T+04s",
+                "detail": "Replica availability dropped below desired state",
+            },
+            {
+                "phase": "snapshot",
+                "label": "Context captured",
+                "timestamp": "T+05s",
+                "detail": "Pods, events, logs, deployment and service state recorded",
+            },
+            {
+                "phase": "runbook",
+                "label": "Runbook selected",
+                "timestamp": "T+06s",
+                "detail": "Alert mapped to runbooks/pod-crash.md",
+            },
+            {
+                "phase": "recover",
+                "label": "Replica restored",
+                "timestamp": "T+10s",
+                "detail": "Deployment controller created replacement pod",
+            },
+            {
+                "phase": "validate",
+                "label": "SLO validated",
+                "timestamp": "T+12s",
+                "detail": "MTTR 12s under 30s objective",
+            },
+            {
+                "phase": "audit",
+                "label": "Report generated",
+                "timestamp": "T+13s",
+                "detail": "Incident report and decision record preserved",
+            },
         ],
         "artifacts": [
-            {"name": "snapshot-pre/", "type": "cluster-context", "available": (INCIDENTS_DIR / incident_id / "snapshot-pre").exists()},
-            {"name": "result.json", "type": "slo-result", "available": _artifact_available(incident_id, "result.json")},
-            {"name": "report.md", "type": "incident-report", "available": _artifact_available(incident_id, "report.md")},
-            {"name": "remediation.log", "type": "remediation-log", "available": _artifact_available(incident_id, "remediation.log")},
-            {"name": "remediation-decision.json", "type": "decision-record", "available": _artifact_available(incident_id, "remediation-decision.json")},
-            {"name": "experiment-summary.md", "type": "rollup", "available": (INCIDENTS_DIR / "experiment-summary.md").exists()},
+            {
+                "name": "snapshot-pre/",
+                "type": "cluster-context",
+                "available": (INCIDENTS_DIR / incident_id / "snapshot-pre").exists(),
+            },
+            {
+                "name": "result.json",
+                "type": "slo-result",
+                "available": _artifact_available(incident_id, "result.json"),
+            },
+            {
+                "name": "report.md",
+                "type": "incident-report",
+                "available": _artifact_available(incident_id, "report.md"),
+            },
+            {
+                "name": "remediation.log",
+                "type": "remediation-log",
+                "available": _artifact_available(incident_id, "remediation.log"),
+            },
+            {
+                "name": "remediation-decision.json",
+                "type": "decision-record",
+                "available": _artifact_available(incident_id, "remediation-decision.json"),
+            },
+            {
+                "name": "experiment-summary.md",
+                "type": "rollup",
+                "available": (INCIDENTS_DIR / "experiment-summary.md").exists(),
+            },
         ],
     }
 
@@ -195,14 +253,62 @@ async def platform_runbooks() -> list[dict[str, Any]]:
 async def platform_topology() -> dict[str, Any]:
     return {
         "nodes": [
-            {"id": "local", "label": "Local Host", "group": "Local Host", "status": "healthy", "role": "Developer, CI, and demo operator entrypoint"},
-            {"id": "k3d", "label": "k3d Cluster", "group": "k3d Cluster", "status": "healthy", "role": "Three-node local Kubernetes control plane"},
-            {"id": "service", "label": "Kubernetes Service", "group": "Application Namespace", "status": "healthy", "role": "Routes localhost:8080 traffic to FastAPI pods"},
-            {"id": "pods", "label": "FastAPI Pods", "group": "Application Namespace", "status": "healthy", "role": "Three replicas with probes and RED metrics"},
-            {"id": "prometheus", "label": "Prometheus", "group": "Monitoring Namespace", "status": "observing", "role": "Scrapes /metrics and evaluates SLO rules"},
-            {"id": "grafana", "label": "Grafana", "group": "Monitoring Namespace", "status": "observing", "role": "Visualizes RED and Kubernetes metrics"},
-            {"id": "argocd", "label": "ArgoCD", "group": "GitOps Namespace", "status": "reconciling", "role": "Reconciles manifests from Git"},
-            {"id": "github", "label": "GitHub Manifests", "group": "CI/CD", "status": "synced", "role": "Desired state and DevSecOps pipeline source"},
+            {
+                "id": "local",
+                "label": "Local Host",
+                "group": "Local Host",
+                "status": "healthy",
+                "role": "Developer, CI, and demo operator entrypoint",
+            },
+            {
+                "id": "k3d",
+                "label": "k3d Cluster",
+                "group": "k3d Cluster",
+                "status": "healthy",
+                "role": "Three-node local Kubernetes control plane",
+            },
+            {
+                "id": "service",
+                "label": "Kubernetes Service",
+                "group": "Application Namespace",
+                "status": "healthy",
+                "role": "Routes localhost:8080 traffic to FastAPI pods",
+            },
+            {
+                "id": "pods",
+                "label": "FastAPI Pods",
+                "group": "Application Namespace",
+                "status": "healthy",
+                "role": "Three replicas with probes and RED metrics",
+            },
+            {
+                "id": "prometheus",
+                "label": "Prometheus",
+                "group": "Monitoring Namespace",
+                "status": "observing",
+                "role": "Scrapes /metrics and evaluates SLO rules",
+            },
+            {
+                "id": "grafana",
+                "label": "Grafana",
+                "group": "Monitoring Namespace",
+                "status": "observing",
+                "role": "Visualizes RED and Kubernetes metrics",
+            },
+            {
+                "id": "argocd",
+                "label": "ArgoCD",
+                "group": "GitOps Namespace",
+                "status": "reconciling",
+                "role": "Reconciles manifests from Git",
+            },
+            {
+                "id": "github",
+                "label": "GitHub Manifests",
+                "group": "CI/CD",
+                "status": "synced",
+                "role": "Desired state and DevSecOps pipeline source",
+            },
         ],
         "edges": [
             {"source": "local", "target": "service", "label": "http://localhost:8080"},
@@ -218,26 +324,116 @@ async def platform_topology() -> dict[str, Any]:
 @router.get("/controls")
 async def platform_controls() -> list[dict[str, Any]]:
     return [
-        {"category": "Runtime Safety", "name": "Liveness probe", "artifact": "manifests/deployment.yaml", "status": "configured", "risk_reduced": "Restarts failed containers automatically", "why": "Detects application process failure"},
-        {"category": "Runtime Safety", "name": "Readiness probe", "artifact": "manifests/deployment.yaml", "status": "configured", "risk_reduced": "Removes unready pods from service routing", "why": "Prevents bad pods from receiving traffic"},
-        {"category": "Runtime Safety", "name": "Non-root container", "artifact": "policy/kubernetes.rego", "status": "enforced", "risk_reduced": "Limits container privilege", "why": "Reduces blast radius if the app is compromised"},
-        {"category": "Availability and Recovery", "name": "PodDisruptionBudget", "artifact": "manifests/poddisruptionbudget.yaml", "status": "configured", "risk_reduced": "Maintains minimum replicas during voluntary disruptions", "why": "Protects availability during maintenance"},
-        {"category": "Availability and Recovery", "name": "HorizontalPodAutoscaler", "artifact": "manifests/hpa.yaml", "status": "documented gap", "risk_reduced": "Scales replicas on CPU once metrics-server is present", "why": "Adds capacity during sustained load"},
-        {"category": "Network and Access Control", "name": "NetworkPolicy", "artifact": "manifests/networkpolicy.yaml", "status": "configured", "risk_reduced": "Restricts ingress, egress, Prometheus scrape, and DNS paths", "why": "Limits lateral movement"},
-        {"category": "Policy and CI Gates", "name": "OPA/Rego validation", "artifact": "policy/kubernetes.rego", "status": "configured", "risk_reduced": "Blocks unsafe Kubernetes manifest patterns", "why": "Turns platform standards into code"},
-        {"category": "Policy and CI Gates", "name": "Bandit scan", "artifact": ".github/workflows/devsecops.yml", "status": "configured", "risk_reduced": "Finds Python security issues before merge", "why": "Shifts app security left"},
-        {"category": "Policy and CI Gates", "name": "Trivy scan", "artifact": ".github/workflows/devsecops.yml", "status": "configured", "risk_reduced": "Blocks critical container vulnerabilities", "why": "Protects the delivery path"},
-        {"category": "Observability and Alerting", "name": "Prometheus RED metrics", "artifact": "app/main.py", "status": "configured", "risk_reduced": "Measures rate, errors, and duration", "why": "Makes service behavior observable"},
-        {"category": "Observability and Alerting", "name": "Burn-rate alerts", "artifact": "monitoring/prometheus-rules.yaml", "status": "configured", "risk_reduced": "Detects fast and slow error-budget consumption", "why": "Connects alerts to SLO impact"},
-        {"category": "Availability and Recovery", "name": "ArgoCD self-heal", "artifact": "setup_argocd.sh", "status": "configured", "risk_reduced": "Reconciles drift back to Git state", "why": "Keeps runtime aligned with reviewed manifests"},
+        {
+            "category": "Runtime Safety",
+            "name": "Liveness probe",
+            "artifact": "manifests/deployment.yaml",
+            "status": "configured",
+            "risk_reduced": "Restarts failed containers automatically",
+            "why": "Detects application process failure",
+        },
+        {
+            "category": "Runtime Safety",
+            "name": "Readiness probe",
+            "artifact": "manifests/deployment.yaml",
+            "status": "configured",
+            "risk_reduced": "Removes unready pods from service routing",
+            "why": "Prevents bad pods from receiving traffic",
+        },
+        {
+            "category": "Runtime Safety",
+            "name": "Non-root container",
+            "artifact": "policy/kubernetes.rego",
+            "status": "enforced",
+            "risk_reduced": "Limits container privilege",
+            "why": "Reduces blast radius if the app is compromised",
+        },
+        {
+            "category": "Availability and Recovery",
+            "name": "PodDisruptionBudget",
+            "artifact": "manifests/poddisruptionbudget.yaml",
+            "status": "configured",
+            "risk_reduced": "Maintains minimum replicas during voluntary disruptions",
+            "why": "Protects availability during maintenance",
+        },
+        {
+            "category": "Availability and Recovery",
+            "name": "HorizontalPodAutoscaler",
+            "artifact": "manifests/hpa.yaml",
+            "status": "documented gap",
+            "risk_reduced": "Scales replicas on CPU once metrics-server is present",
+            "why": "Adds capacity during sustained load",
+        },
+        {
+            "category": "Network and Access Control",
+            "name": "NetworkPolicy",
+            "artifact": "manifests/networkpolicy.yaml",
+            "status": "configured",
+            "risk_reduced": "Restricts ingress, egress, Prometheus scrape, and DNS paths",
+            "why": "Limits lateral movement",
+        },
+        {
+            "category": "Policy and CI Gates",
+            "name": "OPA/Rego validation",
+            "artifact": "policy/kubernetes.rego",
+            "status": "configured",
+            "risk_reduced": "Blocks unsafe Kubernetes manifest patterns",
+            "why": "Turns platform standards into code",
+        },
+        {
+            "category": "Policy and CI Gates",
+            "name": "Bandit scan",
+            "artifact": ".github/workflows/devsecops.yml",
+            "status": "configured",
+            "risk_reduced": "Finds Python security issues before merge",
+            "why": "Shifts app security left",
+        },
+        {
+            "category": "Policy and CI Gates",
+            "name": "Trivy scan",
+            "artifact": ".github/workflows/devsecops.yml",
+            "status": "configured",
+            "risk_reduced": "Blocks critical container vulnerabilities",
+            "why": "Protects the delivery path",
+        },
+        {
+            "category": "Observability and Alerting",
+            "name": "Prometheus RED metrics",
+            "artifact": "app/main.py",
+            "status": "configured",
+            "risk_reduced": "Measures rate, errors, and duration",
+            "why": "Makes service behavior observable",
+        },
+        {
+            "category": "Observability and Alerting",
+            "name": "Burn-rate alerts",
+            "artifact": "monitoring/prometheus-rules.yaml",
+            "status": "configured",
+            "risk_reduced": "Detects fast and slow error-budget consumption",
+            "why": "Connects alerts to SLO impact",
+        },
+        {
+            "category": "Availability and Recovery",
+            "name": "ArgoCD self-heal",
+            "artifact": "setup_argocd.sh",
+            "status": "configured",
+            "risk_reduced": "Reconciles drift back to Git state",
+            "why": "Keeps runtime aligned with reviewed manifests",
+        },
     ]
 
 
 @router.post("/chaos/degraded")
 async def platform_chaos_degraded() -> dict[str, Any]:
-    return {"status": "degraded", "message": "Use /simulate-crash?mode=degraded&probability=0.5 to enable API chaos mode."}
+    return {
+        "status": "degraded",
+        "message": "Use /simulate-crash?mode=degraded&probability=0.5 to enable API chaos mode.",
+    }
 
 
 @router.post("/chaos/reset")
 async def platform_chaos_reset() -> dict[str, Any]:
-    return {"status": "reset", "message": "Use /simulate-crash?mode=reset to disable API chaos mode."}
+    return {
+        "status": "reset",
+        "message": "Use /simulate-crash?mode=reset to disable API chaos mode.",
+    }

@@ -25,21 +25,29 @@ function getDimensions(packId: string): Dimension[] {
       { label: "consistency", score: 0.78, trend: "stable", description: "No contradictions found" },
       { label: "auditability", score: 0.88, trend: "up", description: "Full chain of custody" },
     ],
-    "erp-access-disruption": [
-      { label: "source reliability", score: 0.78, trend: "stable", description: "5 corroborating sources" },
-      { label: "freshness", score: 0.89, trend: "up", description: "Events within 2 hours" },
-      { label: "corroboration", score: 0.71, trend: "up", description: "IdP and WMS align" },
-      { label: "completeness", score: 0.76, trend: "down", description: "Missing fallback logs" },
-      { label: "consistency", score: 0.82, trend: "stable", description: "Clear causality chain" },
-      { label: "auditability", score: 0.85, trend: "stable", description: "Ticket trail complete" },
+    "network-edge-failover": [
+      { label: "source reliability", score: 0.88, trend: "up", description: "4 corroborating sources" },
+      { label: "freshness", score: 0.91, trend: "stable", description: "Real-time edge alert" },
+      { label: "corroboration", score: 0.85, trend: "up", description: "MSP ticket and operator note" },
+      { label: "completeness", score: 0.88, trend: "up", description: "Downtime impact verified" },
+      { label: "consistency", score: 0.88, trend: "stable", description: "Consistent route loss" },
+      { label: "auditability", score: 0.88, trend: "up", description: "Replay proof generated" },
     ],
-    "k8s-ingress-degradation": [
-      { label: "source reliability", score: 0.86, trend: "up", description: "6 corroborating sources" },
-      { label: "freshness", score: 0.93, trend: "up", description: "Real-time telemetry" },
-      { label: "corroboration", score: 0.77, trend: "up", description: "Metrics and logs align" },
-      { label: "completeness", score: 0.79, trend: "stable", description: "Deployment context captured" },
-      { label: "consistency", score: 0.81, trend: "stable", description: "No conflicting signals" },
-      { label: "auditability", score: 0.90, trend: "up", description: "GitOps trace present" },
+    "identity-onboarding-drift": [
+      { label: "source reliability", score: 0.85, trend: "stable", description: "4 corroborating sources" },
+      { label: "freshness", score: 0.88, trend: "up", description: "Sync logs within 3 hours" },
+      { label: "corroboration", score: 0.82, trend: "up", description: "AD and ERP logs align" },
+      { label: "completeness", score: 0.85, trend: "stable", description: "GPO drift scope verified" },
+      { label: "consistency", score: 0.85, trend: "stable", description: "No conflicting records" },
+      { label: "auditability", score: 0.85, trend: "up", description: "Audit trail fully intact" },
+    ],
+    "database-failover-lag": [
+      { label: "source reliability", score: 0.92, trend: "up", description: "5 corroborating sources" },
+      { label: "freshness", score: 0.95, trend: "up", description: "Sub-second metrics streams" },
+      { label: "corroboration", score: 0.90, trend: "up", description: "Replica and PGPool align" },
+      { label: "completeness", score: 0.92, trend: "stable", description: "All pooling options loaded" },
+      { label: "consistency", score: 0.92, trend: "stable", description: "Confirmed lock contention" },
+      { label: "auditability", score: 0.92, trend: "up", description: "Decisions cryptographically signed" },
     ],
   };
   return packs[packId] || packs["manufacturing-printer-gpo"];

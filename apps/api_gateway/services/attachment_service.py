@@ -71,30 +71,39 @@ class AttachmentService:
         if len(file_data) > MAX_ATTACHMENT_BYTES:
             raise ValueError("File too large (max 5MB)")
 
-        ticket_row = self.db.execute(
-            text("SELECT id FROM tickets WHERE ticket_id = :ticket_id"),
-            {"ticket_id": ticket_id},
-        ).mappings().first()
+        ticket_row = (
+            self.db.execute(
+                text("SELECT id FROM tickets WHERE ticket_id = :ticket_id"),
+                {"ticket_id": ticket_id},
+            )
+            .mappings()
+            .first()
+        )
         if ticket_row is None:
             return None
 
         if comment_id is not None:
-            comment = self.db.execute(
-                text(
-                    """
+            comment = (
+                self.db.execute(
+                    text(
+                        """
                     SELECT id
                     FROM ticket_comments
                     WHERE id = :comment_id AND ticket_id = :ticket_id
                     """
-                ),
-                {"comment_id": comment_id, "ticket_id": ticket_id},
-            ).mappings().first()
+                    ),
+                    {"comment_id": comment_id, "ticket_id": ticket_id},
+                )
+                .mappings()
+                .first()
+            )
             if comment is None:
                 raise LookupError("Comment not found for attachment upload")
 
-        inserted = self.db.execute(
-            text(
-                """
+        inserted = (
+            self.db.execute(
+                text(
+                    """
                 INSERT INTO ticket_attachments (
                     ticket_id,
                     comment_id,
@@ -124,18 +133,21 @@ class AttachmentService:
                     uploaded_by,
                     comment_id
                 """
-            ),
-            {
-                "ticket_id": ticket_id,
-                "comment_id": comment_id,
-                "filename": file.filename,
-                "original_name": file.filename,
-                "mime_type": file.content_type,
-                "file_data": file_data,
-                "file_size": len(file_data),
-                "uploaded_by": actor["username"],
-            },
-        ).mappings().one()
+                ),
+                {
+                    "ticket_id": ticket_id,
+                    "comment_id": comment_id,
+                    "filename": file.filename,
+                    "original_name": file.filename,
+                    "mime_type": file.content_type,
+                    "file_data": file_data,
+                    "file_size": len(file_data),
+                    "uploaded_by": actor["username"],
+                },
+            )
+            .mappings()
+            .one()
+        )
 
         self.events.record_ticket_event(
             ticket_pk=int(ticket_row["id"]),
@@ -161,16 +173,20 @@ class AttachmentService:
         }
 
     def get_attachment(self, attachment_id: int):
-        row = self.db.execute(
-            text(
-                """
+        row = (
+            self.db.execute(
+                text(
+                    """
                 SELECT id, original_name, mime_type, file_data
                 FROM ticket_attachments
                 WHERE id = :attachment_id
                 """
-            ),
-            {"attachment_id": attachment_id},
-        ).mappings().first()
+                ),
+                {"attachment_id": attachment_id},
+            )
+            .mappings()
+            .first()
+        )
         if row is None:
             return None
         return {
@@ -182,25 +198,33 @@ class AttachmentService:
         }
 
     def delete_attachment(self, attachment_id: int, actor: dict[str, str]):
-        row = self.db.execute(
-            text(
-                """
+        row = (
+            self.db.execute(
+                text(
+                    """
                 SELECT id, ticket_id, uploaded_by
                 FROM ticket_attachments
                 WHERE id = :attachment_id
                 """
-            ),
-            {"attachment_id": attachment_id},
-        ).mappings().first()
+                ),
+                {"attachment_id": attachment_id},
+            )
+            .mappings()
+            .first()
+        )
         if row is None:
             return False
         if actor["role"] not in {"admin", "agent"}:
             raise PermissionError("Insufficient privileges")
 
-        ticket_row = self.db.execute(
-            text("SELECT id FROM tickets WHERE ticket_id = :ticket_id"),
-            {"ticket_id": row["ticket_id"]},
-        ).mappings().first()
+        ticket_row = (
+            self.db.execute(
+                text("SELECT id FROM tickets WHERE ticket_id = :ticket_id"),
+                {"ticket_id": row["ticket_id"]},
+            )
+            .mappings()
+            .first()
+        )
 
         self.db.execute(
             text("DELETE FROM ticket_attachments WHERE id = :attachment_id"),

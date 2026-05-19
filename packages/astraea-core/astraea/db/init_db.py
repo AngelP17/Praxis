@@ -1,5 +1,3 @@
-
-
 async def init_db():
     from .models import Base
     from .session import engine

@@ -44,7 +44,11 @@ class EventService:
         events = [
             {
                 "event_type": row["event_type"],
-                "event_ts": row["event_ts"].isoformat() if hasattr(row["event_ts"], "isoformat") else row["event_ts"] if row["event_ts"] else None,
+                "event_ts": row["event_ts"].isoformat()
+                if hasattr(row["event_ts"], "isoformat")
+                else row["event_ts"]
+                if row["event_ts"]
+                else None,
                 "actor_type": row["actor_type"],
                 "actor_id": row["actor_id"],
                 "payload": self._deserialize_payload(row["payload_json"]),
@@ -237,7 +241,11 @@ class EventService:
                 "source": row["source"],
                 "event_type": row["event_type"],
                 "severity": row["severity"],
-                "occurred_at": row["occurred_at"].isoformat() if hasattr(row["occurred_at"], "isoformat") else row["occurred_at"] if row["occurred_at"] else None,
+                "occurred_at": row["occurred_at"].isoformat()
+                if hasattr(row["occurred_at"], "isoformat")
+                else row["occurred_at"]
+                if row["occurred_at"]
+                else None,
                 "payload": self._deserialize_payload(row["payload"]),
             }
             for row in rows
@@ -270,9 +278,17 @@ class EventService:
             "site": row["site"],
             "line": row["line"],
             "severity": row["severity"],
-            "occurred_at": row["occurred_at"].isoformat() if hasattr(row["occurred_at"], "isoformat") else row["occurred_at"] if row["occurred_at"] else None,
+            "occurred_at": row["occurred_at"].isoformat()
+            if hasattr(row["occurred_at"], "isoformat")
+            else row["occurred_at"]
+            if row["occurred_at"]
+            else None,
             "payload": self._deserialize_payload(row["payload"]),
             "normalized_payload": self._deserialize_payload(row["normalized_payload"]),
             "replay_hash": row["replay_hash"],
-            "created_at": row["created_at"].isoformat() if hasattr(row["created_at"], "isoformat") else row["created_at"] if row["created_at"] else None,
+            "created_at": row["created_at"].isoformat()
+            if hasattr(row["created_at"], "isoformat")
+            else row["created_at"]
+            if row["created_at"]
+            else None,
         }

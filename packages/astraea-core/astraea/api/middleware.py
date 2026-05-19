@@ -1,4 +1,3 @@
-
 from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 

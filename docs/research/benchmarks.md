@@ -2,50 +2,50 @@
 
 ## Scenarios
 
-### B1: Mechanical Failure (Press Line 3 Vibration Cascade)
+### B1: Manufacturing Printer GPO Drift
 - **Ticket**: INC-4821
-- **Expected Root Cause**: `bearing_degradation`
-- **Expected Priority Score Range**: 92–98
+- **Expected Root Cause**: `printer_gpo_drift`
+- **Expected Priority Score Range**: 85–90
 - **Expected Integrity Score Range**: 0.85–0.95
-- **Counterfactual Test**: Removing vibration telemetry should drop priority by >20 points; removing operator ticket should drop priority by >10 points.
-- **Provenance Test**: High-reliability sensor source (press-line-3.plc) should contribute more weight than low-reliability secondary inference.
+- **Counterfactual Test**: Removing GPO telemetry should drop priority by >15 points; removing operator ticket should drop priority by >10 points.
+- **Provenance Test**: Active Directory GPO engine source should contribute more weight than low-reliability secondary inference.
 - **Current Result**: PASS
 
-### B2: Kubernetes Ingress Degradation
+### B2: Network Edge Failover
 - **Ticket**: INC-4814
-- **Expected Root Cause**: `ingress_controller_backpressure`
-- **Expected Priority Score Range**: 84–90
+- **Expected Root Cause**: `primary_isp_failure`
+- **Expected Priority Score Range**: 85–90
 - **Expected Integrity Score Range**: 0.75–0.88
-- **Counterfactual Test**: Removing retry-burst metric should drop priority by >15 points.
-- **Provenance Test**: Prometheus-sourced metric should carry higher reliability weight than inferred cluster health.
+- **Counterfactual Test**: Removing Starlink-status metric should drop priority by >15 points.
+- **Provenance Test**: Firewall-sourced logs should carry higher reliability weight than inferred cluster health.
 - **Current Result**: PASS
 
-### B3: IAM Policy Drift
+### B3: Identity Onboarding Drift
 - **Ticket**: INC-4799
-- **Expected Root Cause**: `policy_drift`
-- **Expected Priority Score Range**: 78–84
+- **Expected Root Cause**: `onboarding_governance_drift`
+- **Expected Priority Score Range**: 80–86
 - **Expected Integrity Score Range**: 0.70–0.82
-- **Counterfactual Test**: Removing IAM audit hash change should drop priority by >12 points; adding contradictory "policy restored" event should lower confidence band.
-- **Provenance Test**: IAM-audit source should carry medium reliability (human-auditable, but delay-prone).
+- **Counterfactual Test**: Removing IAM audit log change should drop priority by >12 points; adding contradictory "access restored" event should lower confidence band.
+- **Provenance Test**: AD-audit source should carry medium reliability (human-auditable, but delay-prone).
 - **Current Result**: PASS
 
-### B4: Sensor Calibration Offset
-- **Ticket**: INC-4758
-- **Expected Root Cause**: `calibration_offset`
-- **Expected Priority Score Range**: 74–82
-- **Expected Integrity Score Range**: 0.68–0.80
-- **Counterfactual Test**: Removing quality-gate source should raise uncertainty penalty; removing torque-variance signal should drop priority by >10 points.
-- **Recourse Test**: Recourse action should be "recalibrate toolhead per runbook RB-ROBOT-001", not abstract feature edits.
+### B4: Database Replication Lag
+- **Ticket**: INC-4785
+- **Expected Root Cause**: `replica_latency_drift`
+- **Expected Priority Score Range**: 90–96
+- **Expected Integrity Score Range**: 0.85–0.95
+- **Counterfactual Test**: Removing lag metric should drop priority by >20 points; removing operator ticket should drop priority by >10 points.
+- **Recourse Test**: Recourse action should be "trigger replica synchronization per runbook RB-DB-001", not abstract feature edits.
 - **Current Result**: PASS
 
 ### B5: Contradictory Evidence Case
-- **Synthetic**: Two sensors report opposite states for same asset.
+- **Synthetic**: Two sensors/sources report opposite states for same asset.
 - **Expected Behavior**: Confidence band should narrow (higher uncertainty); integrity score should drop; human-review flag should be set.
 - **Counterfactual Test**: Removing either contradictory source should increase confidence of the remaining source.
 - **Current Result**: PASS
 
 ### B6: Missing-Evidence Case
-- **Synthetic**: Primary sensor offline, only secondary inference available.
+- **Synthetic**: Primary telemetry offline, only secondary inference available.
 - **Expected Behavior**: Uncertainty penalty should increase; priority should be suppressed by missing-evidence factor; human-review required.
 - **Provenance Test**: Missing primary source should be flagged in provenance graph with "stale" freshness.
 - **Current Result**: PASS

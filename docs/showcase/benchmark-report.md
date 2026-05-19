@@ -7,8 +7,9 @@ The benchmark suite validates all solution packs end-to-end:
 | Pack | Scenario | Events | Proof Valid | Value Case |
 |------|----------|--------|-------------|------------|
 | `manufacturing-printer-gpo` | Printer GPO deployment drift | 12 | **PASS** | $38.4K |
-| `erp-access-disruption` | SSO/ERP access provisioning failure | 6 | **PASS** | $67.2K |
-| `k8s-ingress-degradation` | Ingress config rollback conflict | 6 | **PASS** | $94.5K |
+| `network-edge-failover` | Network Edge Failover | 8 | **PASS** | $47.1K |
+| `identity-onboarding-drift` | Identity Onboarding Drift | 8 | **PASS** | $64.8K |
+| `database-failover-lag` | Database Replication Lag | 12 | **PASS** | $110.0K |
 
 ## Run Benchmarks
 

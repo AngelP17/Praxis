@@ -1,0 +1,102 @@
+{
+  "action": {
+    "action_log_hash": "sha256:4ceca61d9ddf2c0413929720e4bfc0d0a68682bd695df3161f9b4587bb034feb",
+    "actor": "operator",
+    "mode": "HUMAN_APPROVAL",
+    "recommended_action": "acknowledge_incident",
+    "risk": "low",
+    "rollback": "No runtime mutation",
+    "run_id": "fieldlab_run_network-edge-failover",
+    "status": "approved"
+  },
+  "customer_context_hash": "sha256:3639282e0e26ced69207d9dd7ae21c3293a4143e1df2ae40d204994c787888cd",
+  "decision": {
+    "confidence": 0.7667,
+    "next_best_questions": [
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.95,
+        "expected_confidence_gain": 0.57,
+        "field": "downtime_minutes",
+        "question": "How many production minutes were lost or delayed?",
+        "reason": "Expected confidence gain: 0.57"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "delayed_shipments",
+        "question": "What is the value for delayed_shipments?",
+        "reason": "Expected confidence gain: 0.17"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "support_hours",
+        "question": "What is the value for support_hours?",
+        "reason": "Expected confidence gain: 0.17"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "vendor_escalations",
+        "question": "What is the value for vendor_escalations?",
+        "reason": "Expected confidence gain: 0.17"
+      }
+    ],
+    "priority_score": 0.5849,
+    "requires_human_review": false,
+    "root_cause_hypothesis": "edge_primary_isp_outage_causing_complete_shipping_erp_offline_status_due_misconfigured",
+    "signals": {
+      "actionability": 0.52,
+      "business_process_criticality": 0.5,
+      "customer_visible_impact": 0.45,
+      "recurrence_risk": 0.57,
+      "severity_score": 0.8313,
+      "sla_exposure": 0.42
+    }
+  },
+  "evidence": {
+    "corroboration_score": 0.65,
+    "evidence_trust": 0.7667,
+    "freshness_score": 0.91,
+    "raw_events": 8,
+    "source_coverage": 0.57,
+    "sources": [
+      "msp_ticketing",
+      "network_monitor",
+      "operator_note",
+      "praxis"
+    ]
+  },
+  "expansion": [],
+  "generated_at": "2026-05-12T00:00:00Z",
+  "ontology": {
+    "actions_available": 6,
+    "links_created": 64,
+    "mapping_confidence": 0.5848,
+    "objects_created": 6
+  },
+  "proof_hash": "sha256:866cde4ad666c6b3b126d8c49cb71effe962694802f13a9c1cf26a1af8a7cdc7",
+  "proof_id": "proof_praxis_network_edge_failover_001",
+  "replay": {
+    "deterministic": true,
+    "replay_hash": "sha256:b761cfb143334e69184d490263fa1a838ec94faaf13ccf7609442a2b3c103580",
+    "verified_at": "2026-05-12T00:00:00Z"
+  },
+  "run_id": "fieldlab_run_network-edge-failover",
+  "solution_pack": "network-edge-failover",
+  "value_case": {
+    "bucket": "discovery required",
+    "confidence": 0.6131,
+    "estimated_annual_value": 47100.0,
+    "primary_value_driver": "Restore Starlink routing, verify ERP network visibility, and provide audit-ready proof of network availability",
+    "roi_calculations": {
+      "annual_value": 47100.0,
+      "monthly_delay_cost_avoided": 3600.0,
+      "monthly_labor_cost_saved": 325.0
+    }
+  }
+}

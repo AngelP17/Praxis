@@ -1,6 +1,6 @@
 # Demo Script
 
-## Scenario: Press Vibration Cascade
+## Scenario: Database Replication Lag
 
 ### Setup
 
@@ -12,19 +12,19 @@
 
 ### Step 1: Signal Ingestion
 
-Ingest a machine sensor event:
+Ingest a PostgreSQL replication lag event:
 
 ```bash
 curl -X POST http://localhost:8000/api/events/ingest \
   -H "Content-Type: application/json" \
   -d '{
-    "event_id": "evt_press_001",
-    "source": "machine_sensor",
-    "event_type": "degradation",
+    "event_id": "evt_db_lag_001",
+    "source": "postgres-replica",
+    "event_type": "database_replication_lag_critical",
     "severity": "high",
-    "asset_id": "press-line-3",
-    "payload": {"vibration_rms": 12.5, "threshold": 8.0, "trend": "increasing"},
-    "occurred_at": "2024-01-15T08:30:00Z"
+    "asset_id": "asset-postgres-replica",
+    "payload": {"site": "Dallas", "description": "Replication lag exceeds SLA threshold of 60 seconds (current: 180s)"},
+    "occurred_at": "2026-05-01T08:15:00Z"
   }'
 ```
 
@@ -35,20 +35,20 @@ Evaluate the decision:
 ```bash
 curl -X POST http://localhost:8000/api/decisions/evaluate \
   -H "Content-Type: application/json" \
-  -d '{"event_id": "evt_press_001"}'
+  -d '{"event_id": "evt_db_lag_001"}'
 ```
 
 Expected response shows:
-- Priority score: 85+
+- Priority score: 90+
 - Confidence: 0.90+
-- Root cause: Bearing degradation
+- Root cause: Replica latency drift
 - Requires human review: true
 
 ### Step 3: Command Room Inspection
 
 Open the command center:
 
-1. Observe the signal queue: `evt_press_001` appears with high priority
+1. Observe the signal queue: `evt_db_lag_001` appears with high priority
 2. Click the event to inspect details
 3. Review the Astraea decision explanation
 4. Note the replay hash
@@ -61,27 +61,27 @@ Submit operator feedback:
 curl -X POST http://localhost:8000/api/feedback \
   -H "Content-Type: application/json" \
   -d '{
-    "decision_id": "dec_press_001",
+    "decision_id": "dec_db_lag_001",
     "feedback_type": "accept",
-    "note": "Correct assessment. Maintenance scheduled."
+    "note": "Assessment approved. Synchronizing database replicas per runbook."
   }'
 ```
 
 ### Step 5: Incident Correlation
 
-Ingest a related ticket:
+Ingest a related connection pool event:
 
 ```bash
 curl -X POST http://localhost:8000/api/events/ingest \
   -H "Content-Type: application/json" \
   -d '{
-    "event_id": "evt_ticket_042",
-    "source": "ticketing",
-    "event_type": "anomaly",
+    "event_id": "evt_conn_pool_001",
+    "source": "pgpool_load_balancer",
+    "event_type": "connection_pool_saturated",
     "severity": "medium",
-    "asset_id": "press-line-3",
-    "payload": {"title": "Unusual noise from press", "category": "mechanical"},
-    "occurred_at": "2024-01-15T08:35:00Z"
+    "asset_id": "asset-pgpool",
+    "payload": {"description": "Client connections reaching 98% of maximum pooled connections"},
+    "occurred_at": "2026-05-01T08:22:00Z"
   }'
 ```
 

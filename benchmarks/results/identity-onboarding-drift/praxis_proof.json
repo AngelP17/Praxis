@@ -1,0 +1,103 @@
+{
+  "action": {
+    "action_log_hash": "sha256:de99a5d003ef0a3f331d8c66b607389b9c7d03ab7a58ea832a5177173fe15aa4",
+    "actor": "operator",
+    "mode": "HUMAN_APPROVAL",
+    "recommended_action": "acknowledge_incident",
+    "risk": "low",
+    "rollback": "No runtime mutation",
+    "run_id": "fieldlab_run_identity-onboarding-drift",
+    "status": "approved"
+  },
+  "customer_context_hash": "sha256:d35087bf4a22d4683d2d05c1f629a1abe9cae0e02cd9c99555571f796baacb48",
+  "decision": {
+    "confidence": 0.8,
+    "next_best_questions": [
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "average_triage_latency_minutes",
+        "question": "What is the value for average_triage_latency_minutes?",
+        "reason": "Expected confidence gain: 0.17"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "employee_onboarding_delay",
+        "question": "What is the value for employee_onboarding_delay?",
+        "reason": "Expected confidence gain: 0.17"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "onboarding_downtime_hours",
+        "question": "What is the value for onboarding_downtime_hours?",
+        "reason": "Expected confidence gain: 0.17"
+      },
+      {
+        "acquisition_feasibility": 0.7,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.17,
+        "field": "support_hours",
+        "question": "What is the value for support_hours?",
+        "reason": "Expected confidence gain: 0.17"
+      }
+    ],
+    "priority_score": 0.5891,
+    "requires_human_review": false,
+    "root_cause_hypothesis": "fragmented_access_onboarding_ownership_causing_new_hires_be_blocked_erp_printer_networks",
+    "signals": {
+      "actionability": 0.52,
+      "business_process_criticality": 0.5,
+      "customer_visible_impact": 0.45,
+      "recurrence_risk": 0.57,
+      "severity_score": 0.8313,
+      "sla_exposure": 0.42
+    }
+  },
+  "evidence": {
+    "corroboration_score": 0.7,
+    "evidence_trust": 0.8,
+    "freshness_score": 0.91,
+    "raw_events": 8,
+    "source_coverage": 0.71,
+    "sources": [
+      "active_directory",
+      "identity_provider",
+      "msp_ticketing",
+      "operator_note",
+      "praxis"
+    ]
+  },
+  "expansion": [],
+  "generated_at": "2026-05-12T00:00:00Z",
+  "ontology": {
+    "actions_available": 6,
+    "links_created": 64,
+    "mapping_confidence": 0.5802,
+    "objects_created": 5
+  },
+  "proof_hash": "sha256:2aa7156895b8a673ba5920bf91b7f3753cc1294432fafc051a44b41d159b0642",
+  "proof_id": "proof_praxis_identity_onboarding_drift_001",
+  "replay": {
+    "deterministic": true,
+    "replay_hash": "sha256:55986055fa34da001a4b671d6045094fbcb2d2af471348f8b162cf2ad7f83aa9",
+    "verified_at": "2026-05-12T00:00:00Z"
+  },
+  "run_id": "fieldlab_run_identity-onboarding-drift",
+  "solution_pack": "identity-onboarding-drift",
+  "value_case": {
+    "bucket": "demo and scope",
+    "confidence": 0.6631,
+    "estimated_annual_value": 64800.0,
+    "primary_value_driver": "Align GPO memberships, resolve Active Directory onboarding drift, and clear user onboarding queues automatically",
+    "roi_calculations": {
+      "annual_value": 64800.0,
+      "monthly_delay_cost_avoided": 4800.0,
+      "monthly_labor_cost_saved": 600.0
+    }
+  }
+}

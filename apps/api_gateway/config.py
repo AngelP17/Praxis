@@ -4,7 +4,12 @@ from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 env_file = Path(__file__).parent.parent.parent / ".env"
-LOCAL_ORIGIN_PREFIXES = ("http://localhost", "http://127.0.0.1", "https://localhost", "https://127.0.0.1")
+LOCAL_ORIGIN_PREFIXES = (
+    "http://localhost",
+    "http://127.0.0.1",
+    "https://localhost",
+    "https://127.0.0.1",
+)
 INSECURE_SECRET_PREFIXES = ("change-me-in-production", "replace-me", "example-secret")
 
 
@@ -58,15 +63,21 @@ class Settings(BaseSettings):
 
         normalized_secret = self.SECRET_KEY.strip()
         if not normalized_secret or normalized_secret.startswith(INSECURE_SECRET_PREFIXES):
-            raise ValueError("SECRET_KEY must be overridden with a strong value when ENV=production")
+            raise ValueError(
+                "SECRET_KEY must be overridden with a strong value when ENV=production"
+            )
 
         origins = [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if origin.strip()]
         if not origins or "*" in origins:
-            raise ValueError("ALLOWED_ORIGINS must list explicit public frontend origins when ENV=production")
+            raise ValueError(
+                "ALLOWED_ORIGINS must list explicit public frontend origins when ENV=production"
+            )
 
         has_public_origin = any(not origin.startswith(LOCAL_ORIGIN_PREFIXES) for origin in origins)
         if not has_public_origin:
-            raise ValueError("ALLOWED_ORIGINS must include at least one non-localhost origin when ENV=production")
+            raise ValueError(
+                "ALLOWED_ORIGINS must include at least one non-localhost origin when ENV=production"
+            )
 
         return self
 

@@ -182,11 +182,7 @@ def _build_ontology_nodes(
     deps = blast_radius if blast_radius else scenario.impacted_systems
     for idx, dep in enumerate(deps[:5]):
         node_id = f"dep-{idx}"
-        label = (
-            dep.get("asset_name", dep)
-            if isinstance(dep, dict)
-            else str(dep)
-        )
+        label = dep.get("asset_name", dep) if isinstance(dep, dict) else str(dep)
         criticality_raw = (
             dep.get("criticality", "medium")
             if isinstance(dep, dict)

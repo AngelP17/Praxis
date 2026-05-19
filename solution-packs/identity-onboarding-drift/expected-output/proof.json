@@ -1,0 +1,100 @@
+{
+  "action": {
+    "action_log_hash": "sha256:d8c6fa64d7c0e81c19bcf8f8319f3900cb65f12decfdf9d94b0d0c6488d011f3",
+    "actor": "operator",
+    "mode": "HUMAN_APPROVAL",
+    "recommended_action": "approve_remediation",
+    "risk": "medium",
+    "rollback": "Revert group membership changes to original AD state",
+    "run_id": "fieldlab_run_identity-onboarding-drift",
+    "status": "approved"
+  },
+  "customer_context_hash": "sha256:abc0e9b273bcd7ffaedd80ef3bf5cff47c1a802667b045e4c037218c78c34a75",
+  "decision": {
+    "confidence": 0.85,
+    "next_best_questions": [
+      {
+        "acquisition_feasibility": 0.9,
+        "business_impact_weight": 0.7,
+        "expected_confidence_gain": 0.15,
+        "field": "employee_onboarding_delay",
+        "question": "What is the value for employee_onboarding_delay?",
+        "reason": "Expected confidence gain: 0.15"
+      },
+      {
+        "acquisition_feasibility": 0.8,
+        "business_impact_weight": 0.5,
+        "expected_confidence_gain": 0.1,
+        "field": "support_hours",
+        "question": "What is the value for support_hours?",
+        "reason": "Expected confidence gain: 0.1"
+      }
+    ],
+    "priority_score": 0.85,
+    "requires_human_review": true,
+    "root_cause_hypothesis": "ad_onboarding_drift",
+    "signals": {
+      "actionability": 0.95,
+      "business_process_criticality": 0.8,
+      "customer_visible_impact": 0.75,
+      "recurrence_risk": 0.85,
+      "severity_score": 0.8,
+      "sla_exposure": 0.78
+    }
+  },
+  "evidence": {
+    "corroboration_score": 0.9,
+    "evidence_trust": 0.87,
+    "freshness_score": 0.92,
+    "raw_events": 8,
+    "source_coverage": 1.0,
+    "sources": [
+      "active_directory",
+      "identity_provider",
+      "msp_ticketing",
+      "praxis"
+    ]
+  },
+  "expansion": [
+    {
+      "expansion_score": 0.82,
+      "factors": {
+        "executive_visibility": 0.8,
+        "implementation_reuse": 0.9,
+        "measurable_value": 0.85,
+        "shared_data_model": 0.8,
+        "stakeholder_overlap": 0.85,
+        "urgency": 0.75
+      },
+      "id": "iam-governance",
+      "name": "IAM Governance Portfolio"
+    }
+  ],
+  "generated_at": "2026-05-12T00:00:00Z",
+  "ontology": {
+    "actions_available": 7,
+    "links_created": 35,
+    "mapping_confidence": 0.88,
+    "objects_created": 8
+  },
+  "proof_hash": "sha256:d5c36453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed30a",
+  "proof_id": "proof_praxis_identity_onboarding_drift_001",
+  "replay": {
+    "deterministic": true,
+    "replay_hash": "sha256:e6d36453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed20a",
+    "verified_at": "2026-05-12T00:00:00Z"
+  },
+  "run_id": "fieldlab_run_identity-onboarding-drift",
+  "solution_pack": "identity-onboarding-drift",
+  "value_case": {
+    "bucket": "demo and scope",
+    "confidence": 0.85,
+    "estimated_annual_value": 64800.0,
+    "primary_value_driver": "Align GPO memberships, resolve Active Directory onboarding drift, and clear user onboarding queues automatically",
+    "roi_calculations": {
+      "annual_value": 64800.0,
+      "monthly_delay_cost_avoided": 4800.0,
+      "monthly_labor_cost_saved": 600.0
+    }
+  }
+}

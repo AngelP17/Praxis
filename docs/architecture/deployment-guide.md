@@ -137,8 +137,7 @@ cp .env.example .env
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 # 4. Seed demo data (optional)
-docker compose exec api-gateway python scripts/demo/seed_scenario.py \
-  sample-data/scenarios/press-vibration-cascade.json
+docker compose exec api-gateway python scripts/run_scenario.py --all --approve
 
 # 5. Verify the gateway is healthy
 curl http://localhost:8000/health

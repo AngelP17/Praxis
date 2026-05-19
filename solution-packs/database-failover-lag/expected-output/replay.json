@@ -1,0 +1,11 @@
+{
+  "incident_id": "TX-DB-FAILOVER-099",
+  "replay_hash": "sha256:4a0f3d53cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed4bf",
+  "decision_ts": "2026-05-01T15:00:00Z",
+  "priority_score": 0.95,
+  "evidence_trust": 0.96,
+  "recommendation": "Patroni auto-failover active but PgPool-II connection scale and read traffic redirect required to mitigate checkouttimeouts",
+  "action_taken": "approved",
+  "replayed_at": "2026-05-01T15:00:00Z",
+  "hash_verified": true
+}

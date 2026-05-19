@@ -24,7 +24,9 @@ async def replay_determinism_check(pack_id: str):
     if not events_path.is_file():
         return {"error": f"No sample events for pack {pack_id}", "equal": False}
 
-    events = [json.loads(line) for line in events_path.read_text().strip().splitlines() if line.strip()]
+    events = [
+        json.loads(line) for line in events_path.read_text().strip().splitlines() if line.strip()
+    ]
 
     try:
         from astraea.praxis import PraxisProofBuilder, ProofInputs

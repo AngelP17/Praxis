@@ -37,14 +37,15 @@ def test_feature_extractor_normalizes_manufacturing_signals():
 
 
 def test_feature_extractor_derives_distinct_root_causes():
-    erp_events, erp_scenario = load_pack("erp-access-disruption")
-    k8s_events, k8s_scenario = load_pack("k8s-ingress-degradation")
+    identity_events, identity_scenario = load_pack("identity-onboarding-drift")
+    network_events, network_scenario = load_pack("network-edge-failover")
 
-    erp = EventFeatureExtractor().extract(erp_events, erp_scenario)
-    k8s = EventFeatureExtractor().extract(k8s_events, k8s_scenario)
+    identity = EventFeatureExtractor().extract(identity_events, identity_scenario)
+    network = EventFeatureExtractor().extract(network_events, network_scenario)
 
-    assert erp["root_cause_hypothesis"] == "role_mapping_drift"
-    assert k8s["root_cause_hypothesis"] == "ingress_retry_timeout_config_mismatch"
-    assert erp["asset_id"] == "ERP-S4"
-    assert k8s["asset_id"] == "api-ingress"
+    assert identity["root_cause_hypothesis"] == "fragmented_access_onboarding_ownership_causing_new_hires_be_blocked_erp_printer_networks"
+    assert network["root_cause_hypothesis"] == "edge_primary_isp_outage_causing_complete_shipping_erp_offline_status_due_misconfigured"
+    assert identity["asset_id"] == "Active Directory"
+    assert network["asset_id"] == "Firewall-EDGE-01"
+
 

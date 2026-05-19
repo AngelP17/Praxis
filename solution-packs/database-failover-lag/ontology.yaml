@@ -1,0 +1,72 @@
+objects:
+  - type: Site
+    key: site-dallas
+    display_name: Dallas Datacenter
+  - type: Asset
+    key: asset-postgres-primary
+    display_name: PostgreSQL Primary DB
+  - type: Asset
+    key: asset-postgres-replica
+    display_name: PostgreSQL Replica DB
+  - type: Asset
+    key: asset-pgpool
+    display_name: PgPool-II Load Balancer
+  - type: BusinessProcess
+    key: process-checkout-transactions
+    display_name: Checkout Transactions Workflow
+  - type: Vendor
+    key: vendor-db-support-pro
+    display_name: DBSupportPro
+  - type: Control
+    key: control-automatic-failover
+    display_name: Patroni Automatic Failover Control
+  - type: Stakeholder
+    key: stakeholder-marcus-vance
+    display_name: Marcus Vance (Director of Infrastructure)
+  - type: Stakeholder
+    key: stakeholder-elena-rostova
+    display_name: Elena Rostova (Principal DB Engineer)
+
+links:
+  - source: site-dallas
+    target: asset-postgres-primary
+    type: owns
+  - source: site-dallas
+    target: asset-postgres-replica
+    type: owns
+  - source: asset-postgres-primary
+    target: process-checkout-transactions
+    type: supports
+  - source: asset-postgres-replica
+    target: asset-postgres-primary
+    type: replicates
+  - source: asset-pgpool
+    target: asset-postgres-primary
+    type: routes_to
+  - source: vendor-db-support-pro
+    target: asset-postgres-primary
+    type: manages
+  - source: control-automatic-failover
+    target: asset-postgres-primary
+    type: governs
+  - source: stakeholder-marcus-vance
+    target: process-checkout-transactions
+    type: accountable_for
+
+actions:
+  - type: acknowledge_incident
+    mode: HUMAN_APPROVAL
+  - type: redirect_read_traffic
+    mode: ASSISTED_ACTION
+  - type: trigger_failover_sequence
+    mode: HUMAN_APPROVAL
+  - type: inspect_replication_lag
+    mode: READ_ONLY
+  - type: scale_connection_pool
+    mode: ASSISTED_ACTION
+  - type: escalate_to_vendor_support
+    mode: ASSISTED_ACTION
+  - type: verify_failover_status
+    mode: HUMAN_APPROVAL
+  - type: complete_incident_writeback
+    mode: WRITEBACK

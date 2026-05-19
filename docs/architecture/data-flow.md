@@ -6,7 +6,7 @@ The full data pipeline from raw operational signals through to deterministic pro
 flowchart TB
     subgraph Ingestion["1. Signal Ingestion"]
         Excel["Legacy: tickets.xlsx<br/>excel_loader → delta_detector"]
-        FieldLab["FieldLab: Solution Packs<br/>manufacturing / ERP / k8s"]
+        FieldLab["FieldLab: Solution Packs<br/>printer-gpo / network / identity / db"]
         SQS["SQS: praxis-incident-events<br/>event queue"]
         S3["S3: praxis-raw-events<br/>event archive"]
     end
