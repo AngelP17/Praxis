@@ -111,10 +111,10 @@ const DEMO_ATTACHMENTS: TicketAttachment[] = [
 const DEMO_COMMENTS: TicketComment[] = [
   {
     id: 7001,
-    ticket_id: "INC-4821",
+    ticket_id: DEMO_TICKETS[0].ticket_id,
     author_username: "operator",
     author_display_name: "Demo Operator",
-    body: "Mechanical route confirmed. Bearing replacement window approved for the next maintenance stop.",
+    body: "Route confirmed. Remediation window approved for the next maintenance stop.",
     created_at: new Date("2026-04-27T16:24:00.000Z").toISOString(),
     updated_at: new Date("2026-04-27T16:24:00.000Z").toISOString(),
     attachments: [],
@@ -273,7 +273,7 @@ export function getDemoTicketDetail(ticketId: string): TicketDetailPayload {
         demoCategories.find((category) => category.name.toLowerCase() === (ticket.category ?? "").toLowerCase())?.id ?? 1,
       request_type: "incident",
       labels: demoLabels.filter((label) =>
-        ticket.ticket_id === "INC-4821" ? ["needs-triage", "mechanical"].includes(label.name) : label.name === "needs-triage",
+        ticket.ticket_id === DEMO_TICKETS[0].ticket_id ? ["needs-triage", "mechanical"].includes(label.name) : label.name === "needs-triage",
       ),
     },
     decision: {
@@ -293,8 +293,8 @@ export function getDemoTicketDetail(ticketId: string): TicketDetailPayload {
       },
     ],
     similar_cases: [
-      { ticket_id: "INC-2023-089", title: "Bearing degradation on Press Line 2", status: "Resolved" },
-      { ticket_id: "INC-2024-112", title: "Telemetry drift after toolhead warmup", status: "Closed" },
+      { ticket_id: "INC-2023-089", title: "Recurring operational anomaly on related subsystem", status: "Resolved" },
+      { ticket_id: "INC-2024-112", title: "Telemetry drift after configuration change", status: "Closed" },
     ],
     events: DEMO_EVENT_STREAM.slice(0, 4).map((event, index) => ({
       event_type: event.event_type,
@@ -308,8 +308,8 @@ export function getDemoTicketDetail(ticketId: string): TicketDetailPayload {
       },
     })),
     linked_incident: ticket.incident_id ? { id: ticket.incident_id, title: getDemoIncident(ticket.incident_id).incident.title } : undefined,
-    comments: ticket.ticket_id === "INC-4821" ? DEMO_COMMENTS : [],
-    attachments: ticket.ticket_id === "INC-4821" ? DEMO_ATTACHMENTS : [],
+    comments: ticket.ticket_id === DEMO_TICKETS[0].ticket_id ? DEMO_COMMENTS : [],
+    attachments: ticket.ticket_id === DEMO_TICKETS[0].ticket_id ? DEMO_ATTACHMENTS : [],
   };
 }
 
@@ -383,7 +383,10 @@ export function getDemoAuditExport(incidentId: string) {
     incident_title: getDemoIncident(incidentId).incident.title,
     exported_at: new Date("2026-04-27T16:42:00.000Z").toISOString(),
     events: DEMO_EVENT_STREAM,
-    decisions: [getDemoDecision("INC-4821")],
+    decisions: (() => {
+      const ticket = DEMO_TICKETS.find((t) => t.incident_id === incidentId) ?? DEMO_TICKETS[0];
+      return [getDemoDecision(ticket.ticket_id)];
+    })(),
     feedback: DEMO_AUDIT,
   };
 }
@@ -392,9 +395,9 @@ export function getDemoIncidentTimeline(incidentId: string) {
   return {
     incident_id: incidentId,
     timeline: [
-      { phase: "signal", detail: "Telemetry threshold crossed on press-line-3", timestamp: "T+00s" },
-      { phase: "decision", detail: "Praxis priority raised to 96 with confidence 0.92", timestamp: "T+04s" },
-      { phase: "workflow", detail: "Mechanical escalation route created", timestamp: "T+09s" },
+      { phase: "signal", detail: "Telemetry threshold crossed on upstream source", timestamp: "T+00s" },
+      { phase: "decision", detail: "Praxis priority raised with high confidence", timestamp: "T+04s" },
+      { phase: "workflow", detail: "Escalation route created for responsible team", timestamp: "T+09s" },
       { phase: "feedback", detail: "Ops Lead approved / Reliability requested extra sample", timestamp: "T+15s" },
     ],
   };

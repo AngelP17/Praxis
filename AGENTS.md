@@ -131,6 +131,7 @@ If a command in any doc conflicts with the Makefile or a workflow file, the exec
 - Run all registered scenarios: `make praxis-run-all-scenarios`
 - Benchmark all scenarios: `make praxis-scenario-benchmark`
 - Sync Python scenarios to frontend artifact: `make praxis-sync-frontend-scenarios`
+- Run full flagship proof (validate, run, benchmark, proof, sync): `make praxis-flagship-proof`
 
 ## End-To-End Runtime Proof
 

@@ -1,12 +1,13 @@
 import { proxyBackend } from "@/app/api/_lib/praxis-server";
+import { DEMO_TICKETS } from "@/lib/demo-scenario";
 
 const CSV = [
   "tab,metric,value",
   "Executive Summary,Total Tickets,10",
   "Executive Summary,Open Queue,7",
   "Executive Summary,Critical Tickets,1",
-  "Operational Queue,Primary Incident,INC-4821",
-  "Decision Intelligence,Confidence,0.92",
+  `Operational Queue,Primary Incident,${DEMO_TICKETS[0].ticket_id}`,
+  `Decision Intelligence,Confidence,${DEMO_TICKETS[0].confidence_score}`,
 ].join("\n");
 
 export async function GET() {

@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 
 
 class ProofCreateRequest(BaseModel):
-    solution_pack: str = Field(default="manufacturing-printer-gpo")
+    solution_pack: str
     run_id: str | None = None
     events: list[dict[str, Any]] = Field(default_factory=list)
     customer_context: str = ""

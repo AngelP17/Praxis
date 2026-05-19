@@ -12,7 +12,7 @@ This document contains the engineering audit trail and proof signature for the I
 During a rapid operational scale-up, newly hired warehouse operators were provisioned using a legacy onboarding template. This template suffered from access control list (ACL) drift, failing to assign the required security groups and nested roles for centralized ERP access. As a result, 12 new operators could not access the ERP inventory entry modules, halting their onboarding flow and forcing shift supervisors to perform manual database lookups and entry proxies.
 
 ## Signals Ingested (Event Spine)
-The platform ingested 10 distinct operational signals, including:
+The platform ingested 8 distinct operational signals, including:
 1. `iam_acl_mismatch`: Detection of drifted security group memberships on new user accounts.
 2. `erp_auth_failure`: Repeated authentication blocks on ERP inventory endpoint.
 3. `legacy_template_detected`: Flag identifying legacy provisioning script run.

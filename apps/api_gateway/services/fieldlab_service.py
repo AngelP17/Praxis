@@ -151,7 +151,7 @@ class FieldLabService:
                 "summary_json": None,
                 "created_at": item.get("updated_at", ""),
             }
-        pack_id = "manufacturing-printer-gpo"
+        pack_id = "unknown"
         for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
             if p in run_id:
                 pack_id = p
@@ -455,7 +455,7 @@ class FieldLabService:
         item = _MEMORY_STORE.get(run_id, {})
         pack_id = item.get("pack_id")
         if not pack_id:
-            pack_id = "manufacturing-printer-gpo"
+            pack_id = "unknown"
             for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
                 if p in run_id:
                     pack_id = p

@@ -25,6 +25,7 @@ import {
   MagnifyingGlass,
 } from "@phosphor-icons/react";
 
+import { DEMO_TICKETS } from "@/lib/demo-scenario";
 import { clearStoredSession } from "@/lib/auth";
 
 const navItems = [
@@ -36,7 +37,7 @@ const navItems = [
   { label: "Ingestion", href: "/event-ingestion", icon: Pulse, group: "ops" },
   { label: "Incidents", href: "/incidents", icon: Shield, group: "ops" },
   { label: "Board", href: "/board", icon: SquaresFour, group: "ops" },
-  { label: "Replay", href: "/replay/INC-4821", icon: ArrowsClockwise, group: "ops" },
+  { label: "Replay", href: `/replay/${DEMO_TICKETS[0].ticket_id}`, icon: ArrowsClockwise, group: "ops" },
   { label: "Assets", href: "/assets", icon: HardDrives, group: "data" },
   { label: "Ontology", href: "/ontology", icon: Graph, group: "data" },
   { label: "Discovery", href: "/discovery", icon: MagnifyingGlass, group: "data" },

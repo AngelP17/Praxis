@@ -1,50 +1,56 @@
 import { NextResponse } from "next/server";
 
 import { buildBackendUrl } from "@/app/api/_lib/praxis-server";
-import { DEMO_EVENT_STREAM, getDemoReplay } from "@/lib/demo-scenario";
+import { DEMO_EVENT_STREAM, DEMO_TICKETS, getDemoReplay } from "@/lib/demo-scenario";
 import { deterministicHash } from "@/lib/deterministic-hash";
+import { getScenarioByTicketId } from "@/lib/scenarios";
 
 async function demoReplay(decisionId: string) {
-  const base = getDemoReplay("INC-4821");
-  const event = DEMO_EVENT_STREAM[0];
+  const ticket = DEMO_TICKETS.find((t) => t.ticket_id === decisionId) ?? DEMO_TICKETS[0];
+  const base = getDemoReplay(ticket.ticket_id);
+  const scenario = getScenarioByTicketId(ticket.ticket_id);
+  const event = DEMO_EVENT_STREAM.find((e) => e.source === ticket.requester) ?? DEMO_EVENT_STREAM[0];
+  const rootCause = ticket.root_cause_hypothesis || "correlated_operational_signal";
   const replayHash = await deterministicHash({
     scenario_id: decisionId,
     source: event.source,
     event_type: event.event_type,
-    asset_id: "printer.weifps01",
+    asset_id: scenario.assetId,
     site: event.site ?? "",
     line: "",
     payload: {
-      severity: "high",
+      severity: event.severity || "high",
       raw: { decision_id: decisionId },
     },
   });
+  const impactedAssets = scenario.impactedSystems.slice(0, 3).map((name, idx) => ({
+    asset_name: name,
+    criticality: idx === 0 ? "critical" : "high",
+    depth: idx === 0 ? 1 : 2,
+    relationship: "supports",
+  }));
   return {
     decision: {
-      id: Number(decisionId),
+      id: Number(decisionId) || Number(ticket.ticket_id.replace(/\D/g, "")) || 0,
       event_id: event.event_id,
-      priority_score: 0.78,
-      confidence_score: 0.88,
-      root_cause_hypothesis: "printer_fleet_dependency_disruption",
-      risk_level: "high",
+      priority_score: (ticket.priority_score ?? 78) / 100,
+      confidence_score: ticket.confidence_score ?? 0.88,
+      root_cause_hypothesis: rootCause,
+      risk_level: ticket.priority_raw === "Critical" ? "critical" : "high",
       replay_hash: replayHash,
       recommendations: [],
     },
     original_event: {
       ...event,
-      asset_id: "printer.weifps01",
+      asset_id: scenario.assetId,
       site: event.site,
     },
     replayed_decision: {
-      priority_score: 0.78,
-      confidence_score: 0.88,
-      root_cause_hypothesis: "printer_fleet_dependency_disruption",
+      priority_score: (ticket.priority_score ?? 78) / 100,
+      confidence_score: ticket.confidence_score ?? 0.88,
+      root_cause_hypothesis: rootCause,
       rationale: {
-        impacted_assets: [
-          { asset_name: "Zebra Labeling", criticality: "critical", depth: 1, relationship: "supports" },
-          { asset_name: "Texas Production Line", criticality: "critical", depth: 2, relationship: "supports" },
-          { asset_name: "Shipping Label Workflow", criticality: "high", depth: 2, relationship: "supports" },
-        ],
+        impacted_assets: impactedAssets,
       },
     },
     stored_replay_hash: replayHash,
@@ -129,7 +135,7 @@ function mapDecisionReplay(decisionId: string, payload: BackendDecisionReplay) {
   const original = payload.original_decision ?? {};
   return {
     decision: {
-      id: Number(original.decision_id ?? decisionId) || 4821,
+      id: Number(original.decision_id ?? decisionId) || Number(DEMO_TICKETS[0].ticket_id.replace(/\D/g, "")) || 0,
       event_id: original.event_id,
       priority_score: original.priority_score,
       confidence_score: original.confidence_score,
@@ -151,7 +157,7 @@ function mapIncidentReplay(decisionId: string, payload: BackendIncidentReplay) {
   const event = payload.events?.[0] ?? {};
   return {
     decision: {
-      id: Number(decision.id ?? decisionId) || 4821,
+      id: Number(decision.id ?? decisionId) || Number(DEMO_TICKETS[0].ticket_id.replace(/\D/g, "")) || 0,
       event_id: event.event_id,
       priority_score: decision.priority_score,
       confidence_score: decision.confidence_score ?? payload.incident?.confidence_score,

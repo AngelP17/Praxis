@@ -8,7 +8,7 @@ import { SystemStatusRail } from "@/components/system-status-rail";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
-import { DEMO_AUDIT } from "@/lib/demo-scenario";
+import { DEMO_AUDIT, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout } from "@/lib/client-api";
 
 type AuditEvent = {
@@ -107,11 +107,11 @@ export default function AuditTrailPage() {
                 <p className="mt-2 text-sm text-zinc-400">Event chain sourced from <span className="mono-data">/api/audit/events</span> with incident-level export bundles.</p>
               </div>
               <button
-                onClick={() => void exportIncident("INC-4821")}
+                onClick={() => void exportIncident(DEMO_TICKETS[0].ticket_id)}
                 className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-4 py-2 text-sm text-zinc-200 hover:border-zinc-500 hover:scale-105 transition-transform duration-500"
               >
                 <FileArrowDown size={14} />
-                Export INC-4821
+                Export {DEMO_TICKETS[0].ticket_id}
               </button>
             </div>
             {notice ? <div className="mt-3 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{notice}</div> : null}

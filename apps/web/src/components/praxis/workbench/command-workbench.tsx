@@ -39,7 +39,6 @@ function statusLabel(feedStatus: FeedStatus, feedMode: FeedMode, visibleCount: n
 
 function confidenceFor(ticket?: QueueTicket) {
   if (!ticket) return 0.84;
-  if (ticket.ticketId === "INC-4821") return 0.92;
   return Math.max(0.55, Math.min(0.95, ticket.score / 100));
 }
 
@@ -279,7 +278,7 @@ export function PraxisCommandWorkbench(props: {
                     onClick={() => router.push(`/decision?ticket=${encodeURIComponent(selectedTicket?.ticketId ?? "")}`)}
                   />
                   <ActionButton
-                    label="Send to mechanical"
+                    label="Escalate to responsible team"
                     tone="ghost"
                     onClick={() => router.push(`/executive-readout?ticket=${encodeURIComponent(selectedTicket?.ticketId ?? "")}`)}
                   />
