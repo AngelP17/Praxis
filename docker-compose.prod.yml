@@ -12,11 +12,19 @@
 #
 # Optional:
 #   NEXT_PUBLIC_API_URL — public URL of the API gateway (default: http://localhost:8000)
+#   API_INTERNAL_URL — internal URL used by the Next.js server proxy (default: http://api-gateway:8000)
+#
+# Note: Backend services remain on the internal Docker network. Put a reverse
+# proxy (Nginx/Caddy) in front of the api-gateway for TLS and public routing.
+# This override uses Compose list reset semantics to clear dev-only published
+# backend ports while keeping the services reachable on the internal Docker
+# network.
 
 services:
   postgres:
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports: !override []
 
   api-gateway:
     restart: unless-stopped
@@ -26,24 +34,24 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       DATABASE_URL: postgresql://praxis:${POSTGRES_PASSWORD}@postgres:5432/praxis
-    # Remove the dev port binding in production — put a reverse proxy in front
-    ports: []
+    ports: !override []
 
   decision-service:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://praxis:${POSTGRES_PASSWORD}@postgres:5432/praxis
-    ports: []
+    ports: !override []
 
   platform-service:
     restart: unless-stopped
     environment:
       DATABASE_URL: postgresql://praxis:${POSTGRES_PASSWORD}@postgres:5432/praxis
-    ports: []
+    ports: !override []
 
   web:
     restart: unless-stopped
     environment:
+      API_INTERNAL_URL: ${API_INTERNAL_URL:-http://api-gateway:8000}
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
     ports:
       - "3000:3000"

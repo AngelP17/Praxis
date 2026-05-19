@@ -1,4 +1,9 @@
-from domain.scenarios import SCENARIOS, Scenario, get_scenario_by_id
+from domain.scenarios import (
+    SCENARIOS,
+    Scenario,
+    get_scenario_by_external_id,
+    get_scenario_by_id,
+)
 
 
 def test_all_eight_scenarios_registered():
@@ -44,6 +49,16 @@ def test_get_scenario_by_id_returns_scenario():
 
 def test_get_scenario_by_id_unknown_returns_none():
     assert get_scenario_by_id("nonexistent") is None
+
+
+def test_get_scenario_by_external_id_supports_ticket_and_incident_ids():
+    by_ticket = get_scenario_by_external_id("INC-4821")
+    by_incident = get_scenario_by_external_id("IR-2026-041")
+
+    assert by_ticket is not None
+    assert by_incident is not None
+    assert by_ticket.id == "printer-offline"
+    assert by_incident.id == "printer-offline"
 
 
 def test_scenarios_are_valid_models():

@@ -2,13 +2,21 @@
 
 This guide records commands that exist in the current repository. If a command here conflicts with `Makefile`, `package.json`, `apps/web/package.json`, or `.github/workflows/*.yml`, trust the executable file and update this guide.
 
+For the authoritative agent-entry guide, see `AGENTS.md` at the repo root.
+
+Use this file as the compact verification reference. Use `README.md` for product/runtime orientation and `docs/verification/README.md` for preserving durable run evidence.
+
 ## Local Setup
 
 ```bash
-make install
+make install                # Full setup: Python venv + editable packages + frontend deps
+# or
+pnpm install                # Frontend-only, from repo root
+# or
+make praxis-install         # Combined reinstall (pnpm + Python venv)
 ```
 
-`make install` creates `.venv`, installs the editable Python packages, and runs `pnpm install` in `apps/web`.
+`make install` creates `.venv`, installs the editable Python packages (`.` `packages/astraea-core` `packages/domain` `packages/pipelines`), and runs `pnpm install` in `apps/web`. `pnpm install` from the repo root only installs Node dependencies — use this when you do not need the Python backend.
 
 Runtime versions are derived from local manifests and CI:
 
@@ -21,11 +29,13 @@ Runtime versions are derived from local manifests and CI:
 
 ```bash
 make lint
+make format
 make test
 make praxis-test
 ```
 
 - `make lint` runs `ruff check apps packages services`.
+- `make format` runs `ruff format apps packages services`.
 - `make test` runs `pytest tests/unit tests/integration -v`.
 - `make praxis-test` runs `pytest tests/praxis tests/integration -v`.
 
@@ -113,10 +123,25 @@ make praxis-benchmark
 make demo
 make demo-seed
 make demo-validate
+make demo-reset
 make clean-demo
 ```
 
-`make demo` starts the API gateway, platform service, decision service, and web app. `make demo-seed` loads a deterministic scenario, and `make demo-validate` checks the flagship path. These commands assume dependencies are installed and the local ports are available.
+`make demo` starts the API gateway, platform service, decision service, and web app. `make demo-seed` loads a deterministic scenario, `make demo-validate` checks the flagship path, `make demo-reset` clears demo state, and `make clean-demo` stops running demo processes. These commands assume dependencies are installed and the local ports are available.
+
+## Scenario Gates
+
+```bash
+make praxis-run-scenario SCENARIO=<name>
+make praxis-run-all-scenarios
+make praxis-scenario-benchmark
+make praxis-sync-frontend-scenarios
+```
+
+- `make praxis-run-scenario` runs a single deterministic scenario by name.
+- `make praxis-run-all-scenarios` runs every registered scenario with auto-approval.
+- `make praxis-scenario-benchmark` benchmarks all scenarios.
+- `make praxis-sync-frontend-scenarios` regenerates `apps/web/src/lib/generated/scenarios.generated.json` from the Python registry. Do not hand-edit that file.
 
 ## CI Gates
 
@@ -129,7 +154,8 @@ GitHub Actions currently include:
 ## Choosing A Narrow Verification Set
 
 - Documentation-only change: targeted `rg` checks plus the nearest doc-specific verification, such as `make praxis-canvas-verify` for canvas docs or `make praxis-proof-hashes` for proof docs.
-- Python-only change: `make lint` and `make test`; add `make praxis-test` for Praxis algorithms or FieldLab-adjacent logic.
+- Python-only change: `make lint`, `make format`, and `make test`; add `make praxis-test` for Praxis algorithms or FieldLab-adjacent logic.
+- Praxis algorithm change: `make lint`, `make praxis-test`, and the CI Astraea reasoning test suite.
 - Frontend route/component change: `pnpm web:typecheck`, `pnpm web:lint:gpt-taste:ci`, `pnpm web:build`, and smoke tests when links/routes or browser behavior changed.
 - FieldLab/proof change: bring Floci up, run the proof and benchmark commands, verify Floci, then bring Floci down.
 - Screenshot/visual change: run the web app, capture or inspect the affected pages, and report screenshot paths. Refresh committed screenshots only when the task asks for it.
@@ -138,6 +164,7 @@ GitHub Actions currently include:
 
 - The requested change is complete without unrelated behavior changes.
 - Commands run, pass/fail results, skipped checks, and exact blockers are reported.
-- Generated files, local databases, screenshots, and build outputs are not edited unless the task explicitly requires it.
+- Generated files (proof artifacts under `artifacts/latest/`, `apps/web/src/lib/generated/scenarios.generated.json`, screenshots, local databases) are not edited unless the task explicitly requires it.
 - Documentation reflects executable commands and current repo conventions.
+- Verification choice matches the narrowest useful gate for the change instead of defaulting to the broadest suite.
 - UI claims include screenshot evidence or a clear reason screenshots were not captured.

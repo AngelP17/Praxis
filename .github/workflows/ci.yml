@@ -148,3 +148,88 @@ jobs:
           base: ""
           head: HEAD
           extra_args: --only-verified
+
+  docker-compose-production-proof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare production proof env
+        run: |
+          cat > .env <<'EOF'
+          POSTGRES_PASSWORD=praxis-ci-proof-2026
+          SECRET_KEY=ci-proof-secret-key-please-change-in-real-deployments-2026
+          ENV=production
+          DEBUG=false
+          ALLOWED_ORIGINS=https://praxis-ci.example.com,http://localhost:3000
+          NEXT_PUBLIC_API_URL=http://localhost:8000
+          API_INTERNAL_URL=http://api-gateway:8000
+          EOF
+      - name: Render merged Compose config
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml config
+      - name: Boot production Compose stack
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+      - name: Wait for healthy backend services
+        run: |
+          for service in postgres api-gateway decision-service platform-service; do
+            echo "Waiting for $service to become healthy..."
+            for i in $(seq 1 60); do
+              status="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' praxis-${service} 2>/dev/null || true)"
+              if [ "$status" = "healthy" ]; then
+                echo "$service is healthy"
+                break
+              fi
+              if [ "$i" -eq 60 ]; then
+                echo "$service did not become healthy"
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail 200
+                exit 1
+              fi
+              sleep 2
+            done
+          done
+          for i in $(seq 1 60); do
+            code="$(curl -s -o /dev/null -w '%{http_code}' http://localhost:3000/api/auth/login -X POST -H 'content-type: application/json' -d '{\"username\":\"operator\",\"password\":\"operator\"}' || true)"
+            if [ "$code" = "200" ]; then
+              echo "web is responding on localhost:3000"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "web did not become ready"
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail 200
+          exit 1
+      - name: Verify backend-backed web auth and replay
+        run: |
+          auth_file="$(mktemp)"
+          replay_file="$(mktemp)"
+          curl -sS -f \
+            -H 'content-type: application/json' \
+            -d '{"username":"operator","password":"operator"}' \
+            http://localhost:3000/api/auth/login > "$auth_file"
+          python - <<'PY' "$auth_file"
+          import json, sys
+          payload = json.load(open(sys.argv[1]))
+          assert payload["user"]["username"] == "operator"
+          assert payload["access_token"]
+          print("Verified backend-backed web auth")
+          PY
+          curl -sS -f -X POST http://localhost:3000/api/decisions/INC-4821/replay > "$replay_file"
+          python - <<'PY' "$replay_file"
+          import json, sys
+          payload = json.load(open(sys.argv[1]))
+          assert payload["decision"]["id"] == 4821
+          assert payload["original_event"]["event_type"] == "com.praxis.asset.printer.offline"
+          assert payload["replayed_decision"]["root_cause_hypothesis"] == "printer_firmware_regression"
+          assert str(payload["stored_replay_hash"]).startswith("sha256:")
+          print("Verified backend-backed INC-4821 replay through the web route")
+          PY
+      - name: Show Compose status
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+      - name: Show Compose logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail 200
+      - name: Stop production Compose stack
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml down -v

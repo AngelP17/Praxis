@@ -35,13 +35,34 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - `scripts/`: seeding, reports, screenshot capture, replay/index utilities.
 - `screenshots/`: generated product screenshots. Do not hand-edit.
 
+## Source Of Truth Hierarchy
+
+When docs conflict, trust in this order:
+
+1. **Executable files**: `Makefile`, root `package.json`, `apps/web/package.json`, `.github/workflows/*.yml`
+2. **`AGENTS.md`** (this file): authoritative agent-entry guide, derived from executables
+3. **`docs/13-validation-and-quality-gates.md`**: human-readable gate reference, derived from executables
+4. **Other `docs/` files**: narrative and product context; may lag behind executables
+
+If a command in any doc conflicts with the Makefile or a workflow file, the executable is correct. Fix the doc.
+
+## Fast Start For Codex
+
+- Start with `AGENTS.md`, then inspect the executable sources you actually need: `Makefile`, root `package.json`, `apps/web/package.json`, and any relevant workflow under `.github/workflows/`.
+- Use `README.md` for product overview, runtime modes, and human-oriented repo orientation.
+- Use `docs/13-validation-and-quality-gates.md` when you need a compact verification matrix.
+- Use `docs/verification/README.md` when the task is preserving a durable validation run or proof log.
+- Treat other `docs/` content as architecture, product, or narrative context unless the task explicitly targets those docs.
+
 ## Setup
 
-- Install everything: `make install`
-- Python environment: `.venv` is created by `make install`.
-- Frontend package manager: `pnpm@10.29.3` from the root `package.json`.
+- **Full install** (Python venv + Node deps): `make install`
+  - Creates `.venv`, installs editable Python packages (`.` `packages/astraea-core` `packages/domain` `packages/pipelines`), then runs `pnpm install` in `apps/web`.
+- **Frontend-only install**: `pnpm install` (from repo root, no Python setup)
+- **Workspace note**: root `pnpm install` uses the workspace lockfile and installs Node dependencies for the monorepo; `make install` is still the standard setup path when Python-backed services or verification commands are involved.
+- **Combined reinstall**: `make praxis-install` (runs `pnpm install` + Python venv setup)
 - Python: `pyproject.toml` requires Python `>=3.11`; CI currently uses Python `3.12`.
-- Node: CI uses Node `22`.
+- Node: CI uses Node `22`; pnpm is pinned at `pnpm@10.29.3` in root `package.json`.
 - FieldLab runtime dependencies, including `boto3`, are declared in `packages/pipelines/pyproject.toml` and installed by `make install`.
 - Docker is required for Floci/FieldLab targets such as `make praxis-fieldlab-up`, `make praxis-floci-verify`, and `make praxis-validate-all`.
 
@@ -50,6 +71,7 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Full monorepo dev: `make demo`
 - Seed flagship scenario: `make demo-seed`
 - Validate flagship path: `make demo-validate`
+- Reset demo state: `make demo-reset`
 - Stop demo processes: `make clean-demo`
 - API gateway dev: `make dev-api`
 - Platform service dev: `make dev-platform`
@@ -69,13 +91,15 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 
 ## Publishability Reality Check
 
+- Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path.
+- The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`) and the local FieldLab proof (`make praxis-proof`).
+- The Docker Compose self-hosted path (`docker-compose.yml` + `docker-compose.prod.yml`) is the recommended backend deployment target. CI now includes a Docker Compose production-proof job in `.github/workflows/ci.yml`; until that job has a green GitHub run on the active branch, do not overstate the path as historically CI-verified.
 - Do not describe Praxis as fully public-production-ready unless you verify both the frontend and backend release path in the current checkout.
-- The verified fast path today is a frontend-only public demo with `NEXT_PUBLIC_DEMO_MODE=1`.
 - The root `vercel.json` is intentionally frontend-only. Do not reintroduce implicit multi-service Vercel deploy assumptions unless the user explicitly asks for that work.
 - For real public production, always inspect:
-  - `apps/api_gateway/config.py`
+  - `apps/api_gateway/config.py` (production safety guard)
   - `.env.example`
-  - `docker-compose.yml`
+  - `docker-compose.yml` + `docker-compose.prod.yml` (recommended backend path)
   - `users.json`
   - `docs/architecture/deployment-guide.md`
   - `docs/release/public-launch-checklist.md`
@@ -84,6 +108,7 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
   - localhost-only `ALLOWED_ORIGINS`
   - demo credentials left in `users.json`
   - deployment docs that imply a cloud path not exercised by CI
+- The functional-enough production acceptance bar is documented in `docs/release/public-launch-checklist.md` and `docs/architecture/deployment-guide.md`.
 
 ## Praxis-Specific Commands
 
@@ -95,12 +120,17 @@ This repository is a PNPM/Turbo and Python monorepo for Praxis, a forward-deploy
 - Validate solution pack: `make praxis-validate-pack`
 - Generate executive readout: `make praxis-readout RUN_ID=<id>`
 - Generate and verify proof object: `make praxis-proof`
+- Open proof summary in browser: `make praxis-proof-open`
 - Run solution-pack benchmarks: `make praxis-benchmark`
 - Praxis algorithm tests: `make praxis-test`
 - Verify Floci runtime: `make praxis-floci-verify`
 - Verify Praxis canvas/design references: `make praxis-canvas-verify`
 - Verify active proof code has no fake hashes: `make praxis-proof-hashes`
 - Run full Praxis validation suite: `make praxis-validate-all`
+- Run a single scenario: `make praxis-run-scenario SCENARIO=<name>`
+- Run all registered scenarios: `make praxis-run-all-scenarios`
+- Benchmark all scenarios: `make praxis-scenario-benchmark`
+- Sync Python scenarios to frontend artifact: `make praxis-sync-frontend-scenarios`
 
 ## End-To-End Runtime Proof
 
@@ -180,6 +210,7 @@ New algorithms live in `packages/astraea-core/astraea/praxis/`:
 - `pnpm-lock.yaml` unless dependencies actually change.
 - Generated screenshots in `screenshots/` and `docs/demo/screenshots/` unless the task is screenshot refresh.
 - Generated verification artifacts under `artifacts/latest/`, including `praxis_proof.json` and `proof-summary.md`, unless the task is proof regeneration.
+- Generated frontend artifacts: `apps/web/src/lib/generated/scenarios.generated.json` unless the task explicitly regenerates via `make praxis-sync-frontend-scenarios`.
 - Local databases: `*.db`, including `praxis.db`, `test_praxis.db`, and `test_aether_sentinel.db`.
 - Canvas export zips and uploads under `praxis-canvas/praxis/` unless the task explicitly asks to regenerate or package the design canvas.
 - User-created untracked experiments unless the task explicitly asks to promote them.
@@ -195,7 +226,15 @@ Pick the narrowest useful checks for the change:
 - Documentation-only changes: run targeted text searches plus the narrowest relevant checks, such as `make praxis-canvas-verify` when touching design docs or `make praxis-proof-hashes` when touching proof docs.
 - Screenshot or visual changes: run the web app, inspect affected pages, and refresh screenshots only when requested.
 
-If a command cannot run because services, ports, dependencies, or credentials are unavailable, record the exact blocker and the command attempted.
+If a command cannot run because services, ports, dependencies, Docker, or credentials are unavailable, record the exact blocker and the command attempted.
+
+### Blocker Reporting
+
+When a verification command is blocked, report:
+
+1. The exact command attempted
+2. The specific blocker (missing service, port conflict, absent dependency, Docker unavailable, etc.)
+3. Whether the blocker is expected for the current environment (e.g., Floci not running locally is expected without Docker)
 
 ## CI Notes And Current Caveats
 
@@ -215,6 +254,7 @@ If a command cannot run because services, ports, dependencies, or credentials ar
 - Event-spine work is only done when `make praxis-seed-graph` succeeds, `/api/decisions/evaluate` accepts a printer CloudEvent, `/api/decisions/{id}/approve` records feedback plus an outbox row, and `/api/decisions/{id}/replay` reports deterministic hash equality.
 - Frontend changes pass the GPT-taste/design gate or list concrete remaining violations.
 - Documentation changes reflect commands and conventions that exist in this repo, not invented workflow.
+- Documentation updates leave future agents with a clear source-of-truth path, a narrow verification choice, and explicit unknowns where the repo cannot prove a claim locally.
 - Praxis visual changes follow `docs/praxis/Praxis-Brand-Replication.md` or document the intentional divergence.
 - UI claims include a screenshot path or an explicit reason screenshots were not captured.
 - CTA/link work includes a route or handler audit for the affected surfaces.
