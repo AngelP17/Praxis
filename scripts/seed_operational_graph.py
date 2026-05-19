@@ -70,6 +70,7 @@ def add_edge(db, from_id: int, to_id: int, relationship: str, weight: int) -> No
 def main() -> None:
     init_db()
     with get_db_context() as db:
+        # Printer GPO drift assets
         weifps01 = upsert_asset(
             db, "WEIFPS01", "print_server", "TX", "high", "IT", {"asset_id": "printer.weifps01"}
         )
@@ -104,13 +105,62 @@ def main() -> None:
             {"asset_id": "process.shipping_labels"},
         )
 
+        # Network Edge Failover assets
+        firewall = upsert_asset(
+            db, "Firewall-EDGE-01", "firewall", "TX", "critical", "IT", {"asset_id": "firewall.edge_01"}
+        )
+        isp_primary = upsert_asset(
+            db, "ISP-PRIMARY", "network", "TX", "high", "IT", {"asset_id": "network.isp_primary"}
+        )
+        starlink = upsert_asset(
+            db, "Starlink-Backup-01", "network", "TX", "high", "IT", {"asset_id": "network.starlink_backup"}
+        )
+
+        # Identity Onboarding Drift assets
+        ad = upsert_asset(
+            db, "Active Directory", "identity_provider", "Global", "critical", "IT", {"asset_id": "auth.active_directory"}
+        )
+
+        # Database Replication Lag assets
+        db_replica = upsert_asset(
+            db, "asset-postgres-replica", "database", "Dallas", "critical", "SRE", {"asset_id": "database.postgres_replica"}
+        )
+        pgpool = upsert_asset(
+            db, "asset-pgpool", "load_balancer", "Dallas", "high", "SRE", {"asset_id": "network.pgpool"}
+        )
+        checkout = upsert_asset(
+            db,
+            "Checkout Transactions Workflow",
+            "business_process",
+            "Dallas",
+            "critical",
+            "Operations",
+            {"asset_id": "process.checkout_transactions"},
+        )
+
         db.query(AssetEdge).delete()
         db.flush()
 
+        # Printer relationships
         add_edge(db, weifps01, zebra, "supports", 5)
         add_edge(db, zebra, production, "supports", 5)
         add_edge(db, epicor, zebra, "depends_on", 4)
         add_edge(db, zebra, shipping, "supports", 4)
+
+        # Network relationships
+        add_edge(db, firewall, isp_primary, "depends_on", 5)
+        add_edge(db, firewall, starlink, "depends_on", 4)
+        add_edge(db, firewall, shipping, "supports", 4)
+
+        # Identity relationships
+        add_edge(db, ad, epicor, "supports", 5)
+        add_edge(db, ad, weifps01, "supports", 4)
+
+        # Database relationships
+        add_edge(db, pgpool, db_replica, "supports", 5)
+        add_edge(db, db_replica, checkout, "supports", 5)
+        add_edge(db, epicor, db_replica, "depends_on", 4)
+        
         db.commit()
 
     print("Seeded operational graph.")

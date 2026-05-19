@@ -76,16 +76,21 @@ class CommentService:
         ]
 
     def create_comment(self, ticket_id: str, body: str, actor: dict[str, str]):
-        ticket_row = self.db.execute(
-            text("SELECT id FROM tickets WHERE ticket_id = :ticket_id"),
-            {"ticket_id": ticket_id},
-        ).mappings().first()
+        ticket_row = (
+            self.db.execute(
+                text("SELECT id FROM tickets WHERE ticket_id = :ticket_id"),
+                {"ticket_id": ticket_id},
+            )
+            .mappings()
+            .first()
+        )
         if ticket_row is None:
             return None
 
-        comment = self.db.execute(
-            text(
-                """
+        comment = (
+            self.db.execute(
+                text(
+                    """
                 INSERT INTO ticket_comments (
                     ticket_id,
                     author_username,
@@ -102,14 +107,17 @@ class CommentService:
                     created_at,
                     updated_at
                 """
-            ),
-            {
-                "ticket_id": ticket_id,
-                "author_username": actor["username"],
-                "author_display_name": actor["display_name"],
-                "body": body.strip(),
-            },
-        ).mappings().one()
+                ),
+                {
+                    "ticket_id": ticket_id,
+                    "author_username": actor["username"],
+                    "author_display_name": actor["display_name"],
+                    "body": body.strip(),
+                },
+            )
+            .mappings()
+            .one()
+        )
 
         self.events.record_ticket_event(
             ticket_pk=int(ticket_row["id"]),
@@ -125,24 +133,29 @@ class CommentService:
         }
 
     def update_comment(self, ticket_id: str, comment_id: int, body: str, actor: dict[str, str]):
-        existing = self.db.execute(
-            text(
-                """
+        existing = (
+            self.db.execute(
+                text(
+                    """
                 SELECT id, author_username
                 FROM ticket_comments
                 WHERE id = :comment_id AND ticket_id = :ticket_id
                 """
-            ),
-            {"comment_id": comment_id, "ticket_id": ticket_id},
-        ).mappings().first()
+                ),
+                {"comment_id": comment_id, "ticket_id": ticket_id},
+            )
+            .mappings()
+            .first()
+        )
         if existing is None:
             return None
         if actor["role"] != "admin" and existing["author_username"] != actor["username"]:
             raise PermissionError("Only the author or an admin can edit this comment")
 
-        updated = self.db.execute(
-            text(
-                """
+        updated = (
+            self.db.execute(
+                text(
+                    """
                 UPDATE ticket_comments
                 SET body = :body, updated_at = CURRENT_TIMESTAMP
                 WHERE id = :comment_id AND ticket_id = :ticket_id
@@ -155,23 +168,30 @@ class CommentService:
                     created_at,
                     updated_at
                 """
-            ),
-            {"comment_id": comment_id, "ticket_id": ticket_id, "body": body.strip()},
-        ).mappings().first()
+                ),
+                {"comment_id": comment_id, "ticket_id": ticket_id, "body": body.strip()},
+            )
+            .mappings()
+            .first()
+        )
         self.db.commit()
         return dict(updated) if updated else None
 
     def delete_comment(self, ticket_id: str, comment_id: int, actor: dict[str, str]):
-        existing = self.db.execute(
-            text(
-                """
+        existing = (
+            self.db.execute(
+                text(
+                    """
                 SELECT id, author_username
                 FROM ticket_comments
                 WHERE id = :comment_id AND ticket_id = :ticket_id
                 """
-            ),
-            {"comment_id": comment_id, "ticket_id": ticket_id},
-        ).mappings().first()
+                ),
+                {"comment_id": comment_id, "ticket_id": ticket_id},
+            )
+            .mappings()
+            .first()
+        )
         if existing is None:
             return False
         if actor["role"] != "admin" and existing["author_username"] != actor["username"]:

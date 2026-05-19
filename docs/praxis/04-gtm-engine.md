@@ -19,8 +19,7 @@ Solution packs are the GTM centerpiece. Each pack contains:
 
 | Pack | Industry | Primary Pain |
 |------|----------|--------------|
-| manufacturing-printer-gpo | Manufacturing | Printer deployment failures |
-| erp-access-disruption | Cross-industry | ERP access incidents |
-| k8s-ingress-degradation | Infrastructure | Kubernetes ingress issues |
-| email-quarantine-disruption | Security | Email quarantine workflow |
-| machine-cascade-maintenance | Manufacturing | Machine maintenance cascades |
+| manufacturing-printer-gpo | Manufacturing | Printer GPO deployment drift |
+| network-edge-failover | Plant Edge | Edge ISP/Starlink backup route failover |
+| identity-onboarding-drift | IAM / Active Directory | IAM access onboarding governance drift |
+| database-failover-lag | SRE / Database | PostgreSQL replica latency/failover safeguards |

@@ -431,7 +431,9 @@ class DecisionService:
                 ),
                 {
                     "event_pk": event_dict["id"],
-                    "feature_snapshot_json": json.dumps(self._build_feature_snapshot(decision_payload)),
+                    "feature_snapshot_json": json.dumps(
+                        self._build_feature_snapshot(decision_payload)
+                    ),
                     "severity_score": decision_result.severity_score,
                     "urgency_score": decision_result.urgency_score,
                     "business_impact_score": decision_result.business_impact_score,
@@ -602,7 +604,9 @@ class DecisionService:
 
         event_dict = dict(event_row)
         event_dict["payload"] = self._deserialize_payload(event_dict.get("payload"))
-        event_dict["normalized_payload"] = self._deserialize_payload(event_dict.get("normalized_payload"))
+        event_dict["normalized_payload"] = self._deserialize_payload(
+            event_dict.get("normalized_payload")
+        )
 
         graph = GraphService(self.db)
         asset_ref = event_dict.get("asset_id")

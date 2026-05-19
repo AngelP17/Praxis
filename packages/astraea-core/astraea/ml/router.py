@@ -105,9 +105,7 @@ class ModelRouter:
         suitable_models = []
 
         for name, config in self._models.items():
-            if not any(
-                cap in config.capabilities for cap in request.required_capabilities
-            ):
+            if not any(cap in config.capabilities for cap in request.required_capabilities):
                 continue
             if (
                 config.tier != request.preferred_tier
@@ -118,9 +116,7 @@ class ModelRouter:
 
         if not suitable_models:
             for name, config in self._models.items():
-                if any(
-                    cap in config.capabilities for cap in request.required_capabilities
-                ):
+                if any(cap in config.capabilities for cap in request.required_capabilities):
                     suitable_models.append((name, config))
 
         if not suitable_models:
@@ -138,9 +134,7 @@ class ModelRouter:
         reasoning = [f"Selected {selected_name} ({selected_config.tier.value})"]
 
         if len(suitable_models) > 1:
-            reasoning.append(
-                f"Cheaper than alternatives: {[n for n, _ in suitable_models[1:]]}"
-            )
+            reasoning.append(f"Cheaper than alternatives: {[n for n, _ in suitable_models[1:]]}")
 
         return RoutingDecision(
             model_name=selected_name,
@@ -183,9 +177,7 @@ class ResilienceRouter:
 
 
 class CircuitBreaker:
-    def __init__(
-        self, name: str, failure_threshold: int = 5, timeout_seconds: float = 30.0
-    ):
+    def __init__(self, name: str, failure_threshold: int = 5, timeout_seconds: float = 30.0):
         self.name = name
         self.failure_threshold = failure_threshold
         self.timeout_seconds = timeout_seconds

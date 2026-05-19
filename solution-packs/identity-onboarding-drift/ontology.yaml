@@ -1,0 +1,64 @@
+objects:
+  - type: Site
+    key: site-plant-a
+    display_name: Plant-A
+  - type: Asset
+    key: asset-active-directory
+    display_name: Active Directory
+  - type: Asset
+    key: asset-identity-provider
+    display_name: OKTA-IDP
+  - type: BusinessProcess
+    key: process-erp-access
+    display_name: ERP Access
+  - type: BusinessProcess
+    key: process-onboarding
+    display_name: User Onboarding
+  - type: Control
+    key: control-gpo-governance
+    display_name: IAM GPO Governance
+  - type: Stakeholder
+    key: stakeholder-alice-smith
+    display_name: Alice Smith (Identity Platform Engineer)
+  - type: Stakeholder
+    key: stakeholder-robert-sanchez
+    display_name: Robert Sanchez (Director of Supply Chain)
+
+links:
+  - source: site-plant-a
+    target: asset-active-directory
+    type: owns
+  - source: asset-active-directory
+    target: process-onboarding
+    type: supports
+  - source: asset-identity-provider
+    target: asset-active-directory
+    type: syncs_with
+  - source: asset-active-directory
+    target: process-erp-access
+    type: governs
+  - source: control-gpo-governance
+    target: asset-active-directory
+    type: governs
+  - source: stakeholder-alice-smith
+    target: asset-active-directory
+    type: manages
+  - source: stakeholder-robert-sanchez
+    target: process-erp-access
+    type: accountable_for
+
+actions:
+  - type: acknowledge_incident
+    mode: HUMAN_APPROVAL
+  - type: assign_owner
+    mode: ASSISTED_ACTION
+  - type: sync_identity_groups
+    mode: ASSISTED_ACTION
+  - type: provision_erp_license
+    mode: ASSISTED_ACTION
+  - type: audit_onboarding_drift
+    mode: READ_ONLY
+  - type: approve_remediation
+    mode: HUMAN_APPROVAL
+  - type: close_with_evidence
+    mode: WRITEBACK

@@ -1,9 +1,9 @@
 # Praxis Benchmark Report
 
-- Packs tested: 3
-- Events processed: 24
-- Proof verification: 3/3 passed
+- Packs tested: 4
+- Events processed: 40
+- Proof verification: 4/4 passed
 - Replay determinism: 100%
-- Ontology confidence avg: 0.59
-- Evidence trust avg: 0.83
+- Ontology confidence avg: 0.58
+- Evidence trust avg: 0.81
 - Readout generation: 3/3 passed

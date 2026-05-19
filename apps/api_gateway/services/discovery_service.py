@@ -63,14 +63,31 @@ class DiscoveryService:
 
     def _recommend_pack(self, signals: list[dict], context: dict) -> str:
         signal_text = " ".join(str(s).lower() for s in signals)
-        if "printer" in signal_text or "gpo" in signal_text or "print" in signal_text:
+        if "printer" in signal_text or "print" in signal_text:
             return "manufacturing-printer-gpo"
-        if "k8s" in signal_text or "kubernetes" in signal_text or "ingress" in signal_text:
-            return "k8s-ingress-degradation"
-        if "erp" in signal_text or "access" in signal_text:
-            return "erp-access-disruption"
-        if "email" in signal_text or "quarantine" in signal_text:
-            return "email-quarantine-disruption"
-        if "machine" in signal_text or "cascade" in signal_text or "maintenance" in signal_text:
-            return "machine-cascade-maintenance"
+        if (
+            "network" in signal_text
+            or "wan" in signal_text
+            or "isp" in signal_text
+            or "starlink" in signal_text
+            or "failover" in signal_text
+        ):
+            return "network-edge-failover"
+        if (
+            "identity" in signal_text
+            or "onboarding" in signal_text
+            or "iam" in signal_text
+            or "gpo" in signal_text
+            or "access" in signal_text
+            or "erp" in signal_text
+        ):
+            return "identity-onboarding-drift"
+        if (
+            "database" in signal_text
+            or "db" in signal_text
+            or "replica" in signal_text
+            or "replication" in signal_text
+            or "lag" in signal_text
+        ):
+            return "database-failover-lag"
         return "manufacturing-printer-gpo"

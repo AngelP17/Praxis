@@ -1,1 +1,0 @@
-{"incident_id":"K8S-INGRESS-503","primary_impact":"Customer API latency and 5xx errors","root_cause_hypothesis":"ingress_retry_timeout_mismatch"}

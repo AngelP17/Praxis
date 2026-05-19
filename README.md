@@ -96,14 +96,10 @@ The frontend fallback artifact at `apps/web/src/lib/generated/scenarios.generate
 
 | Scenario | Event Type | Risk | Deterministic | Est. Annual Value |
 |----------|-----------|------|:---:|-------:|
-| Printer GPO Offline | com.praxis.asset.printer.offline | high | True | $38,400 |
-| HVAC Temp Drift | com.praxis.asset.hvac.temp_drift | critical | True | $62,000 |
-| MQTT Broker Lag | com.praxis.infra.mqtt.queue_depth_spike | high | True | $29,500 |
-| AD Policy Drift | com.praxis.identity.ad.gpo_drift | critical | True | $110,000 |
-| EHS Safety Breach | com.praxis.safety.ehs.voc_threshold_breach | critical | True | $250,000 |
-| SAP Batch Stall | com.praxis.erp.sap.batch_stall | high | True | $47,000 |
-| WMS Pick Timeout | com.praxis.warehouse.wms.pick_timeout_cascade | medium | True | $31,000 |
-| RFID Reader Dropout | com.praxis.iot.rfid.reader_dropout | medium | True | $18,500 |
+| Printer GPO Drift | com.praxis.asset.printer.offline | high | True | $38,400 |
+| Network Edge Failover | com.praxis.infra.wan.offline | high | True | $47,100 |
+| Identity Onboarding Drift | com.praxis.identity.ad.gpo_drift | high | True | $64,800 |
+| Database Replication Lag | com.praxis.database.replication.lag | high | True | $110,000 |
 
 Run a single scenario with `make praxis-run-scenario SCENARIO=printer-offline`, all with `make praxis-run-all-scenarios`, or benchmark all with `make praxis-scenario-benchmark`. Sync scenarios to the frontend artifact with `make praxis-sync-frontend-scenarios`.
 
@@ -421,7 +417,7 @@ NEXT_PUBLIC_DEMO_MODE=1
 ```bash
 make install      # set up Python venv + Node deps
 make demo         # start API gateway, decision service, platform service, and web on localhost
-make demo-seed    # load the press-vibration-cascade demo scenario
+make demo-seed    # seed the 4 consolidated flagship scenarios
 ```
 
 Open `http://localhost:3000`. Login credentials: `operator` / `operator` (agent role).
@@ -466,8 +462,9 @@ praxis/
 │   └── pipelines/         # Ingestion pipelines + fieldlab adapters
 ├── solution-packs/        # Repeatable demo systems
 │   ├── manufacturing-printer-gpo/
-│   ├── erp-access-disruption/
-│   └── k8s-ingress-degradation/
+│   ├── network-edge-failover/
+│   ├── identity-onboarding-drift/
+│   └── database-failover-lag/
 ├── infrastructure/
 │   ├── floci/             # FieldLab: docker-compose, terraform, bootstrap
 │   ├── db/                # SQLAlchemy models, migrations
@@ -518,9 +515,10 @@ The benchmark suite validates all solution packs end-to-end:
 
 | Pack | Scenario | Events | Proof Valid | Value Case |
 |------|----------|--------|-------------|------------|
-| `manufacturing-printer-gpo` | Printer GPO deployment drift | 12 | **PASS** | $38.4K |
-| `erp-access-disruption` | SSO/ERP access provisioning failure | 6 | **PASS** | $67.2K |
-| `k8s-ingress-degradation` | Ingress config rollback conflict | 6 | **PASS** | $94.5K |
+| `manufacturing-printer-gpo` | Printer GPO deployment drift | 8 | **PASS** | $38.4K |
+| `network-edge-failover` | Network Edge Failover | 8 | **PASS** | $47.1K |
+| `identity-onboarding-drift` | Identity Onboarding Drift | 8 | **PASS** | $64.8K |
+| `database-failover-lag` | Database Replication Lag | 12 | **PASS** | $110.0K |
 
 Run benchmarks:
 
@@ -528,7 +526,7 @@ Run benchmarks:
 make praxis-benchmark
 ```
 
-The benchmark framework is extensible — additional scenarios (press-line vibration, IAM policy drift, sensor calibration, contradictory evidence, missing evidence) can be added as new solution packs under `solution-packs/`.
+The benchmark framework is extensible — additional scenarios (custom network failures, access drifts, replication issues, contradictory evidence, missing evidence) can be added as new solution packs under `solution-packs/`.
 
 ### FieldLab Runtime Verification
 

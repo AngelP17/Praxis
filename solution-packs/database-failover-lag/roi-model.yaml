@@ -1,0 +1,26 @@
+variables:
+  failovers_per_year: 4
+  average_minutes_lost_per_failover: 45
+  checkout_downtime_cost_per_minute: 1200
+  database_engineer_labor_rate: 65
+  current_triage_minutes: 80
+  praxis_triage_minutes: 15
+
+formulas:
+  downtime_cost_saved:
+    expression: failovers_per_year * (average_minutes_lost_per_failover / 2) * checkout_downtime_cost_per_minute
+    description: 50% reduction in database recovery/failover impact window
+  
+  labor_cost_saved:
+    expression: failovers_per_year * ((current_triage_minutes - praxis_triage_minutes) / 60) * database_engineer_labor_rate
+    description: Database engineering hours saved during database triage
+  
+  annual_value:
+    expression: downtime_cost_saved + labor_cost_saved
+    description: Total annual value delivered by Praxis Database Failover Pack
+
+calculations:
+  downtime_cost_saved: 108000.00
+  labor_cost_saved: 281.67
+  monthly_total: 9023.47
+  annual_value: 108281.67

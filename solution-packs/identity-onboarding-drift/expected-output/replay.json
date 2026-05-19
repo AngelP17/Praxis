@@ -1,0 +1,11 @@
+{
+  "incident_id": "TKT-4799",
+  "replay_hash": "sha256:e6d36453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed20a",
+  "decision_ts": "2026-05-01T09:25:00Z",
+  "priority_score": 0.85,
+  "evidence_trust": 0.87,
+  "recommendation": "Synchronize Okta identity groups, reconcile Active Directory group policy settings, and provision required ERP application licenses",
+  "action_taken": "approved",
+  "replayed_at": "2026-05-01T12:00:00Z",
+  "hash_verified": true
+}

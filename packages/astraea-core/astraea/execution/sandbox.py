@@ -82,9 +82,7 @@ class Sandbox:
         self.timeout_ms = timeout_ms
         self._traces: dict[str, SandboxTrace] = {}
 
-    def _validate_action(
-        self, action_type: str, params: dict[str, Any]
-    ) -> tuple[bool, str | None]:
+    def _validate_action(self, action_type: str, params: dict[str, Any]) -> tuple[bool, str | None]:
         if action_type not in self.ALLOWED_ACTION_TYPES:
             return (
                 False,
@@ -134,9 +132,7 @@ class Sandbox:
             return handler(p)
 
         action = await asyncio.wait_for(
-            asyncio.to_thread(
-                self._execute_action_internal, action_type, params, async_handler
-            ),
+            asyncio.to_thread(self._execute_action_internal, action_type, params, async_handler),
             timeout=self.timeout_ms / 1000.0,
         )
 
@@ -292,9 +288,7 @@ class BoundedWorkflowEngine:
         completed_ids: set = set()
 
         for step in steps:
-            if step.depends_on and not all(
-                dep in completed_ids for dep in step.depends_on
-            ):
+            if step.depends_on and not all(dep in completed_ids for dep in step.depends_on):
                 continue
 
             handler = getattr(self.handlers, f"handle_{step.action_type}", None)

@@ -6,8 +6,8 @@ from domain.scenarios import (
 )
 
 
-def test_all_eight_scenarios_registered():
-    assert len(SCENARIOS) == 8
+def test_all_four_scenarios_registered():
+    assert len(SCENARIOS) == 4
 
 
 def test_scenario_ids_are_unique():
@@ -43,7 +43,7 @@ def test_get_scenario_by_id_returns_scenario():
     scenario = get_scenario_by_id("printer-offline")
     assert scenario is not None
     assert scenario.id == "printer-offline"
-    assert scenario.label == "Printer GPO Offline"
+    assert scenario.label == "Printer GPO Drift"
     assert scenario.asset_id == "printer.weifps01"
 
 
@@ -66,13 +66,14 @@ def test_scenarios_are_valid_models():
         assert isinstance(scenario, Scenario)
 
 
-def test_printer_offline_highest_priority_ehs_is_99():
-    ehs = get_scenario_by_id("ehs-threshold")
-    assert ehs is not None
-    assert ehs.priority_score == 99
+def test_highest_priority_scenario_is_database_failover():
+    db = get_scenario_by_id("database-failover-lag")
+    assert db is not None
+    assert db.priority_score == 92
 
 
-def test_rfid_lowest_priority_65():
-    rfid = get_scenario_by_id("rfid-reader-drop")
-    assert rfid is not None
-    assert rfid.priority_score == 65
+def test_lowest_priority_scenario_is_identity_onboarding():
+    iam = get_scenario_by_id("identity-onboarding-drift")
+    assert iam is not None
+    assert iam.priority_score == 85
+

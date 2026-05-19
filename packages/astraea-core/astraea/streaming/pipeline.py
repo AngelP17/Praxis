@@ -100,9 +100,7 @@ class StreamProcessor:
                         result = self.pipeline_func(stream_event.event)
                         stream_event.result = result
                         stream_event.processed = True
-                        processing_time = (
-                            datetime.now(UTC) - start
-                        ).total_seconds() * 1000
+                        processing_time = (datetime.now(UTC) - start).total_seconds() * 1000
                         stream_event.latency_ms = processing_time
                         self.metrics.total_processed += 1
                     except Exception:

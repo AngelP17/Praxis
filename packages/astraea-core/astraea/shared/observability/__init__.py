@@ -154,9 +154,7 @@ class PipelineObserver:
             self.observability.finish_trace(trace_id),
         )
 
-    def trace_stage(
-        self, trace_id: str, stage_name: str, stage_inputs: dict[str, Any]
-    ) -> Callable:
+    def trace_stage(self, trace_id: str, stage_name: str, stage_inputs: dict[str, Any]) -> Callable:
         span = self.observability.start_span(
             trace_id, f"stage.{stage_name}", {"inputs": str(stage_inputs)[:200]}
         )
@@ -170,9 +168,7 @@ class PipelineObserver:
             duration_ms = (time.perf_counter() - start) * 1000
             span.set_attribute("duration_ms", duration_ms)
             span.set_attribute("outputs", str(outputs)[:200] if outputs else None)
-            self.observability.record_metric(
-                f"stage.{stage_name}.duration_ms", duration_ms
-            )
+            self.observability.record_metric(f"stage.{stage_name}.duration_ms", duration_ms)
             self.observability.end_span(span, status, error)
             return outputs
 
@@ -189,9 +185,7 @@ class DecisionTrace:
     model_calls: list[dict[str, Any]] = field(default_factory=list)
     total_duration_ms: float = 0.0
 
-    def add_stage_trace(
-        self, stage_name: str, duration_ms: float, details: dict[str, Any]
-    ):
+    def add_stage_trace(self, stage_name: str, duration_ms: float, details: dict[str, Any]):
         self.pipeline_trace.append(
             {
                 "stage": stage_name,
@@ -236,9 +230,7 @@ class DecisionTracer:
             self._decision_traces[case_id].total_duration_ms = total_duration_ms
 
     def get_score_summary(self) -> dict[str, Any]:
-        traces_with_scores = [
-            t for t in self._decision_traces.values() if t.score_breakdown
-        ]
+        traces_with_scores = [t for t in self._decision_traces.values() if t.score_breakdown]
         if not traces_with_scores:
             return {"count": 0}
 

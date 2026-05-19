@@ -22,17 +22,20 @@ function getQuestions(packId: string): Question[] {
       { field: "vendor_sla", question: "What SLA applies to the current vendor?", gain: 0.09, rationale: "Affects escalation policy" },
       { field: "affected_department", question: "Which department absorbs the operational delay?", gain: 0.07, rationale: "Business impact scope" },
     ],
-    "erp-access-disruption": [
-      { field: "blocked_modules", question: "Which ERP modules are blocked per user group?", gain: 0.21, rationale: "Directly impacts remediation" },
-      { field: "fallback_process", question: "What is the fallback access process during SSO outages?", gain: 0.14, rationale: "Business continuity risk" },
-      { field: "provisioning_audit", question: "When was the last successful role provisioning audit?", gain: 0.10, rationale: "Recurrence prevention" },
-      { field: "fulfillment_window", question: "What is the critical fulfillment window?", gain: 0.08, rationale: "Time sensitivity" },
+    "network-edge-failover": [
+      { field: "failover_starlink_active", question: "Is Starlink routing configured for automatic failover?", gain: 0.22, rationale: "Validates route capability" },
+      { field: "isp_primary_outage_cause", question: "What is the physical cause of the primary ISP link failure?", gain: 0.15, rationale: "Estimates MTTR" },
+      { field: "backup_cabling_verified", question: "When was the backup LTE gateway cabling last physically inspected?", gain: 0.09, rationale: "Checks redundancy integrity" },
     ],
-    "k8s-ingress-degradation": [
-      { field: "ingress_changes", question: "Which ingress rules changed in the last deployment window?", gain: 0.19, rationale: "Root cause confirmation" },
-      { field: "p95_baseline", question: "What is the current p95 latency vs baseline?", gain: 0.13, rationale: "Severity assessment" },
-      { field: "rollback_policy", question: "What is the ingress rollback policy?", gain: 0.11, rationale: "Action feasibility" },
-      { field: "customer_impact", question: "Which customer segments are affected?", gain: 0.09, rationale: "Business priority" },
+    "identity-onboarding-drift": [
+      { field: "onboarding_flow_owner", question: "Which system is the source of truth for onboarding role definitions?", gain: 0.24, rationale: "Targets origin of fragmentation" },
+      { field: "new_hire_gpo_sync_hours", question: "What is the Active Directory sync interval for GPO propagation?", gain: 0.16, rationale: "Determines delay window" },
+      { field: "manual_onboarding_tickets", question: "How many manual onboarding tickets were filed this quarter?", gain: 0.11, rationale: "Estimates chronic volume" },
+    ],
+    "database-failover-lag": [
+      { field: "pg_replication_lag_seconds", question: "What is the replica lag in seconds vs transactional rate?", gain: 0.25, rationale: "Quantifies data loss risk" },
+      { field: "patroni_failover_safety", question: "Is Patroni configured for safe auto-failover or manual promotion?", gain: 0.18, rationale: "Assesses risk of split-brain" },
+      { field: "max_connection_pool_size", question: "What is the max pool size of the checkout microservice?", gain: 0.12, rationale: "Validates scaling limits" },
     ],
   };
   return packs[packId] || packs["manufacturing-printer-gpo"];

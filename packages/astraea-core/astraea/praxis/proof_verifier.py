@@ -10,6 +10,7 @@ from .proof_hash import proof_hash
 try:
     from cryptography.exceptions import InvalidSignature as CryptoInvalidSignature
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+
     HAS_CRYPTOGRAPHY = True
 except ImportError:
     HAS_CRYPTOGRAPHY = False

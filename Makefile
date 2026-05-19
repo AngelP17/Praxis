@@ -38,8 +38,8 @@ demo-web:
 	@cd apps/web && pnpm dev &
 
 demo-seed:
-	@echo "Seeding Press Vibration Cascade scenario..."
-	@.venv/bin/python scripts/demo/seed_scenario.py sample-data/scenarios/press-vibration-cascade.json
+	@echo "Seeding flagship scenarios..."
+	@.venv/bin/python scripts/run_scenario.py --all --approve
 
 demo-validate:
 	@echo "Validating flagship acceptance path..."

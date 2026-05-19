@@ -50,8 +50,8 @@ class TicketService:
         params["sql_offset"] = 0 if ranking else offset
         rows = list(
             self.db.execute(
-            text(
-                f"""
+                text(
+                    f"""
                 SELECT
                     t.id,
                     t.ticket_id,
@@ -78,8 +78,8 @@ class TicketService:
                 LIMIT :sql_limit
                 OFFSET :sql_offset
                 """
-            ),
-            params,
+                ),
+                params,
             ).mappings()
         )
 
@@ -209,9 +209,10 @@ class TicketService:
         priority = str(payload.get("priority") or "Low")
         resolved_at = self._resolved_at_for_status(status)
 
-        created = self.db.execute(
-            text(
-                """
+        created = (
+            self.db.execute(
+                text(
+                    """
                 INSERT INTO tickets (
                     ticket_id,
                     title,
@@ -248,22 +249,25 @@ class TicketService:
                 )
                 RETURNING id, ticket_id
                 """
-            ),
-            {
-                "ticket_id": ticket_id,
-                "title": title,
-                "status": status,
-                "priority": priority,
-                "request_type": request_type,
-                "category_id": category_id,
-                "staff_assigned": payload.get("staff_assigned") or None,
-                "requester": payload.get("requester") or None,
-                "description": payload.get("description") or None,
-                "resolution_notes": payload.get("resolution_notes") or None,
-                "resolved_at": resolved_at,
-                "site_id": payload.get("site_id") or None,
-            },
-        ).mappings().one()
+                ),
+                {
+                    "ticket_id": ticket_id,
+                    "title": title,
+                    "status": status,
+                    "priority": priority,
+                    "request_type": request_type,
+                    "category_id": category_id,
+                    "staff_assigned": payload.get("staff_assigned") or None,
+                    "requester": payload.get("requester") or None,
+                    "description": payload.get("description") or None,
+                    "resolution_notes": payload.get("resolution_notes") or None,
+                    "resolved_at": resolved_at,
+                    "site_id": payload.get("site_id") or None,
+                },
+            )
+            .mappings()
+            .one()
+        )
 
         label_ids = payload.get("label_ids") or []
         self._replace_ticket_labels(ticket_id, label_ids)
@@ -351,11 +355,15 @@ class TicketService:
         if existing is None:
             return False
 
-        self.db.execute(text("DELETE FROM tickets WHERE ticket_id = :ticket_id"), {"ticket_id": ticket_id})
+        self.db.execute(
+            text("DELETE FROM tickets WHERE ticket_id = :ticket_id"), {"ticket_id": ticket_id}
+        )
         self.db.commit()
         return True
 
-    def move_ticket(self, ticket_id: str, column: str | None, status: str | None, actor: dict[str, str]):
+    def move_ticket(
+        self, ticket_id: str, column: str | None, status: str | None, actor: dict[str, str]
+    ):
         next_status = status or self._column_to_status(column)
         if not next_status:
             raise ValueError("A valid target status or column is required")
@@ -392,7 +400,9 @@ class TicketService:
 
     def _replace_ticket_labels(self, ticket_id: str, label_ids: list[int] | object):
         normalized_ids = [int(label_id) for label_id in label_ids if str(label_id).strip()]
-        self.db.execute(text("DELETE FROM ticket_labels WHERE ticket_id = :ticket_id"), {"ticket_id": ticket_id})
+        self.db.execute(
+            text("DELETE FROM ticket_labels WHERE ticket_id = :ticket_id"), {"ticket_id": ticket_id}
+        )
         for label_id in normalized_ids:
             self.db.execute(
                 text(
@@ -407,24 +417,32 @@ class TicketService:
 
     def _resolve_request_type(self, category_id: object | None, request_type: object | None):
         if category_id:
-            row = self.db.execute(
-                text("SELECT name FROM categories WHERE id = :category_id"),
-                {"category_id": category_id},
-            ).mappings().first()
+            row = (
+                self.db.execute(
+                    text("SELECT name FROM categories WHERE id = :category_id"),
+                    {"category_id": category_id},
+                )
+                .mappings()
+                .first()
+            )
             if row:
                 return row["name"]
         return str(request_type or "").strip() or None
 
     def _get_next_ticket_id(self):
-        row = self.db.execute(
-            text(
-                """
+        row = (
+            self.db.execute(
+                text(
+                    """
                 SELECT MAX(CAST(SUBSTRING(ticket_id FROM 4) AS BIGINT)) AS max_ticket_number
                 FROM tickets
                 WHERE ticket_id LIKE 'IT-%'
                 """
+                )
             )
-        ).mappings().first()
+            .mappings()
+            .first()
+        )
         current_year_seed = int(f"{datetime.now(UTC).year}0000")
         next_number = max(int(row["max_ticket_number"] or 0) + 1, current_year_seed + 1)
         return f"IT-{next_number}"

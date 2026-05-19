@@ -25,7 +25,7 @@ def test_replay_incident_falls_back_to_canonical_scenario_registry():
     assert payload is not None
     assert payload["incident_id"] == "INC-4821"
     assert payload["incident"]["id"] == "IR-2026-041"
-    assert payload["incident"]["root_cause_hypothesis"] == "printer_firmware_regression"
+    assert payload["incident"]["root_cause_hypothesis"] == "gpo_permission_drift"
     assert payload["events"][0]["event_type"] == "com.praxis.asset.printer.offline"
     assert payload["decisions"][0]["id"] == 4821
     assert payload["decisions"][0]["replay_hash"].startswith("sha256:")

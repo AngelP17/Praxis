@@ -17,7 +17,9 @@ class ProofService:
     def build_proof(self, payload: dict[str, Any]) -> dict[str, Any]:
         solution_pack = payload.get("solution_pack") or "manufacturing-printer-gpo"
         events = payload.get("events") or self._load_pack_events(solution_pack)
-        customer_context = payload.get("customer_context") or self._load_customer_context(solution_pack)
+        customer_context = payload.get("customer_context") or self._load_customer_context(
+            solution_pack
+        )
         return PraxisProofBuilder().build(
             ProofInputs(
                 solution_pack=solution_pack,

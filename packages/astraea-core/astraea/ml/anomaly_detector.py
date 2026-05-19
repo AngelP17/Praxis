@@ -18,9 +18,7 @@ class AnomalyDetector:
             confidence=confidence,
         )
         top_features = self._top_features(fv)
-        explanation_factors = self._explanation_factors(
-            fv, anomaly_score, failure_probability
-        )
+        explanation_factors = self._explanation_factors(fv, anomaly_score, failure_probability)
 
         return ModelAssessment(
             event_id=fv.event_id,
@@ -51,12 +49,7 @@ class AnomalyDetector:
         duration_bonus = 0.10 if fv.context.get("extended_duration", False) else 0.0
         ratio_bonus = min(float(fv.features.get("ratio_max", 0.0)) * 0.10, 0.20)
 
-        score = (
-            0.45 * threshold_component
-            + 0.35 * event_bias
-            + duration_bonus
-            + ratio_bonus
-        )
+        score = 0.45 * threshold_component + 0.35 * event_bias + duration_bonus + ratio_bonus
         return min(max(score, 0.0), 1.0)
 
     def _score_failure(self, fv: FeatureVector) -> float:
@@ -81,16 +74,12 @@ class AnomalyDetector:
         source = str(fv.context.get("source", "")).lower()
 
         source_bonus = 0.05 if source in {"sensor_gateway", "plc_monitor"} else 0.0
-        consistency_bonus = (
-            0.05 if abs(anomaly_score - failure_probability) < 0.25 else 0.0
-        )
+        consistency_bonus = 0.05 if abs(anomaly_score - failure_probability) < 0.25 else 0.0
 
         confidence = 0.65 * top_signal + source_bonus + consistency_bonus
         return min(max(confidence, 0.0), 1.0)
 
-    def _uncertainty_interval(
-        self, anomaly_score: float, confidence: float
-    ) -> tuple[float, float]:
+    def _uncertainty_interval(self, anomaly_score: float, confidence: float) -> tuple[float, float]:
         spread = max(0.05, 0.30 * (1.0 - confidence))
         low = max(0.0, anomaly_score - spread)
         high = min(1.0, anomaly_score + spread)

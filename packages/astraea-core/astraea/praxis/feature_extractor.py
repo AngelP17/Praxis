@@ -38,9 +38,7 @@ class EventFeatureExtractor:
         recurrence_count = sum(
             1 for event_type in event_types if event_type.startswith("recurrence")
         )
-        has_vendor_escalation = any(
-            "vendor_escalation" in event_type for event_type in event_types
-        )
+        has_vendor_escalation = any("vendor_escalation" in event_type for event_type in event_types)
         has_support_escalation = any(
             "support_escalation" in event_type for event_type in event_types
         )
@@ -64,15 +62,11 @@ class EventFeatureExtractor:
         )
 
         customer_impact = business_impact if has_customer_impact else 0.35
-        sla_exposure = (
-            0.82 if has_vendor_escalation else 0.72 if has_support_escalation else 0.42
-        )
+        sla_exposure = 0.82 if has_vendor_escalation else 0.72 if has_support_escalation else 0.42
         actionability = (
             0.88 if has_root_cause and has_workaround else 0.74 if has_root_cause else 0.52
         )
-        completeness = (
-            0.78 if not missing_fields else max(0.55, 0.82 - 0.06 * len(missing_fields))
-        )
+        completeness = 0.78 if not missing_fields else max(0.55, 0.82 - 0.06 * len(missing_fields))
 
         signal = {
             "severity_score": round(severity_score, 4),
@@ -100,8 +94,7 @@ class EventFeatureExtractor:
 
     def _severity_score(self, events: list[dict[str, Any]]) -> float:
         scores = [
-            SEVERITY_SCORES.get(str(event.get("severity", "")).lower(), 0.5)
-            for event in events
+            SEVERITY_SCORES.get(str(event.get("severity", "")).lower(), 0.5) for event in events
         ]
         if not scores:
             return 0.5

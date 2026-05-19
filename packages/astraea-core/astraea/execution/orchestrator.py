@@ -188,9 +188,7 @@ class ExecutionEngine:
 
         return step
 
-    async def _execute_ml_assessment(
-        self, assessment: ModelAssessment
-    ) -> ExecutionStep:
+    async def _execute_ml_assessment(self, assessment: ModelAssessment) -> ExecutionStep:
         step = ExecutionStep(
             step_id=str(uuid.uuid4()),
             step_type="ml_assessment",

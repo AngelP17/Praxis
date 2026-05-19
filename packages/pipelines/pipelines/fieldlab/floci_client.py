@@ -58,12 +58,14 @@ class CloudWatchLogger:
         try:
             self.cloudwatch.put_metric_data(
                 Namespace=self.namespace,
-                MetricData=[{
-                    "MetricName": metric_name,
-                    "Value": value,
-                    "Unit": unit,
-                    "Timestamp": time.time(),
-                }]
+                MetricData=[
+                    {
+                        "MetricName": metric_name,
+                        "Value": value,
+                        "Unit": unit,
+                        "Timestamp": time.time(),
+                    }
+                ],
             )
         except Exception as e:
             logger.warning(f"Failed to log metric {metric_name}: {e}")

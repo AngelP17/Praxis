@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 from apps.api_gateway.services.operational_intelligence import compute_live_decision
 
+
 @dataclass
 class TicketFeatures:
     severity_score: float

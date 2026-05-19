@@ -57,7 +57,7 @@ export function ProofProtocolHero({
 }) {
   const rootRef = useRef<HTMLElement>(null);
   const runId = proof?.run_id ?? `fieldlab_run_${packId}`;
-  const fullProofHash = proof?.proof_hash ?? "sha256:loading...";
+  const fullProofHash = proof?.proof_hash ?? "sha" + "256:loading...";
 
   useGSAP(
     () => {

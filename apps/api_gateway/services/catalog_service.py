@@ -23,16 +23,20 @@ class CatalogService:
         return [dict(row) for row in rows]
 
     def create_category(self, name: str, color: str, icon: str):
-        row = self.db.execute(
-            text(
-                """
+        row = (
+            self.db.execute(
+                text(
+                    """
                 INSERT INTO categories (name, color, icon, is_custom, is_active)
                 VALUES (:name, :color, :icon, TRUE, TRUE)
                 RETURNING id, name, color, icon, is_custom, is_active
                 """
-            ),
-            {"name": name.strip(), "color": color, "icon": icon},
-        ).mappings().one()
+                ),
+                {"name": name.strip(), "color": color, "icon": icon},
+            )
+            .mappings()
+            .one()
+        )
         self.db.commit()
         return dict(row)
 
@@ -48,17 +52,21 @@ class CatalogService:
         if not updates:
             return self.get_category(category_id)
 
-        row = self.db.execute(
-            text(
-                f"""
+        row = (
+            self.db.execute(
+                text(
+                    f"""
                 UPDATE categories
                 SET {", ".join(updates)}
                 WHERE id = :category_id
                 RETURNING id, name, color, icon, is_custom, is_active
                 """
-            ),
-            params,
-        ).mappings().first()
+                ),
+                params,
+            )
+            .mappings()
+            .first()
+        )
         self.db.commit()
         return dict(row) if row else None
 
@@ -88,16 +96,20 @@ class CatalogService:
         return True
 
     def get_category(self, category_id: int):
-        row = self.db.execute(
-            text(
-                """
+        row = (
+            self.db.execute(
+                text(
+                    """
                 SELECT id, name, color, icon, is_custom, is_active
                 FROM categories
                 WHERE id = :category_id
                 """
-            ),
-            {"category_id": category_id},
-        ).mappings().first()
+                ),
+                {"category_id": category_id},
+            )
+            .mappings()
+            .first()
+        )
         return dict(row) if row else None
 
     def list_labels(self):
@@ -107,16 +119,20 @@ class CatalogService:
         return [dict(row) for row in rows]
 
     def create_label(self, name: str, color: str):
-        row = self.db.execute(
-            text(
-                """
+        row = (
+            self.db.execute(
+                text(
+                    """
                 INSERT INTO labels (name, color)
                 VALUES (:name, :color)
                 RETURNING id, name, color
                 """
-            ),
-            {"name": name.strip().upper(), "color": color},
-        ).mappings().one()
+                ),
+                {"name": name.strip().upper(), "color": color},
+            )
+            .mappings()
+            .one()
+        )
         self.db.commit()
         return dict(row)
 
@@ -129,40 +145,52 @@ class CatalogService:
         if not normalized_name:
             raise ValueError("Display name is required")
 
-        existing = self.db.execute(
-            text(
-                """
+        existing = (
+            self.db.execute(
+                text(
+                    """
                 SELECT id
                 FROM assignees
                 WHERE LOWER(display_name) = LOWER(:display_name)
                 """
-            ),
-            {"display_name": normalized_name},
-        ).mappings().first()
+                ),
+                {"display_name": normalized_name},
+            )
+            .mappings()
+            .first()
+        )
 
         if existing:
-            row = self.db.execute(
-                text(
-                    """
+            row = (
+                self.db.execute(
+                    text(
+                        """
                     UPDATE assignees
                     SET display_name = :display_name, is_active = TRUE
                     WHERE id = :assignee_id
                     RETURNING id, display_name, is_active
                     """
-                ),
-                {"display_name": normalized_name, "assignee_id": existing["id"]},
-            ).mappings().one()
+                    ),
+                    {"display_name": normalized_name, "assignee_id": existing["id"]},
+                )
+                .mappings()
+                .one()
+            )
         else:
-            row = self.db.execute(
-                text(
-                    """
+            row = (
+                self.db.execute(
+                    text(
+                        """
                     INSERT INTO assignees (display_name, is_active)
                     VALUES (:display_name, TRUE)
                     RETURNING id, display_name, is_active
                     """
-                ),
-                {"display_name": normalized_name},
-            ).mappings().one()
+                    ),
+                    {"display_name": normalized_name},
+                )
+                .mappings()
+                .one()
+            )
 
         self.db.commit()
         return dict(row)
@@ -172,16 +200,20 @@ class CatalogService:
         if not normalized_name:
             raise ValueError("Display name is required")
 
-        existing = self.db.execute(
-            text(
-                """
+        existing = (
+            self.db.execute(
+                text(
+                    """
                 SELECT id
                 FROM assignees
                 WHERE LOWER(display_name) = LOWER(:display_name)
                 """
-            ),
-            {"display_name": normalized_name},
-        ).mappings().first()
+                ),
+                {"display_name": normalized_name},
+            )
+            .mappings()
+            .first()
+        )
 
         if existing:
             self.db.execute(

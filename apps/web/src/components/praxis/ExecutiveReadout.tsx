@@ -96,7 +96,7 @@ export function ExecutiveReadout({ packId = "manufacturing-printer-gpo" }: Execu
           },
           {
             title: "Expansion",
-            copy: `Adjacent use cases include asset governance, vendor SLA tracking, and ${pack.id === "manufacturing-printer-gpo" ? "endpoint configuration drift" : pack.id === "erp-access-disruption" ? "identity lifecycle management" : "canary deployment validation"}.`,
+            copy: `Adjacent use cases include asset governance, vendor SLA tracking, and ${pack.id === "manufacturing-printer-gpo" ? "endpoint configuration drift" : pack.id === "identity-onboarding-drift" ? "identity lifecycle management" : pack.id === "network-edge-failover" ? "network failover validation" : "database resilience safeguards"}.`,
           },
           {
             title: "Deployment",

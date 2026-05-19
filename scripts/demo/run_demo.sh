@@ -53,9 +53,9 @@ pnpm dev > /tmp/praxis-web.log 2>&1 &
 WEB_PID=$!
 cd ../..
 
-# 6. Seed scenario
-echo "[6/6] Seeding Press Vibration Cascade scenario..."
-.venv/bin/python scripts/demo/seed_scenario.py sample-data/scenarios/press-vibration-cascade.json
+# 6. Seed scenarios
+echo "[6/6] Seeding flagship scenarios..."
+.venv/bin/python scripts/run_scenario.py --all --approve
 
 echo ""
 echo "=== Praxis is running ==="

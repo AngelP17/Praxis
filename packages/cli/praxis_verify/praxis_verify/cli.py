@@ -18,6 +18,7 @@ from typing import Any
 try:
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
     from cryptography.exceptions import InvalidSignature
+
     HAS_CRYPTOGRAPHY = True
 except ImportError:
     HAS_CRYPTOGRAPHY = False
@@ -38,6 +39,7 @@ def canonical_json(payload: Any) -> str:
 
 def sha256_hex(data: str) -> str:
     import hashlib
+
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
@@ -54,9 +56,18 @@ def compute_proof_hash(proof: dict[str, Any]) -> str:
 
 
 REQUIRED_TOP_LEVEL = {
-    "proof_id", "run_id", "solution_pack", "customer_context_hash",
-    "evidence", "ontology", "decision", "action", "value_case",
-    "replay", "proof_hash", "generated_at",
+    "proof_id",
+    "run_id",
+    "solution_pack",
+    "customer_context_hash",
+    "evidence",
+    "ontology",
+    "decision",
+    "action",
+    "value_case",
+    "replay",
+    "proof_hash",
+    "generated_at",
 }
 
 
@@ -96,7 +107,9 @@ def verify_proof(proof: dict[str, Any]) -> VerificationResult:
     if sig:
         try:
             public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(sig["public_key_hex"]))
-            public_key.verify(bytes.fromhex(sig["signature_hex"]), proof["proof_hash"].encode("utf-8"))
+            public_key.verify(
+                bytes.fromhex(sig["signature_hex"]), proof["proof_hash"].encode("utf-8")
+            )
             signature_verified = True
         except (InvalidSignature, ValueError, KeyError):
             signature_verified = False
@@ -106,7 +119,13 @@ def verify_proof(proof: dict[str, Any]) -> VerificationResult:
         errors.append("cryptography package not installed; cannot verify ed25519 signature")
 
     valid = not errors
-    conformance = "L2" if proof.get("attestation") and signature_verified else "L1" if signature_verified else "L0"
+    conformance = (
+        "L2"
+        if proof.get("attestation") and signature_verified
+        else "L1"
+        if signature_verified
+        else "L0"
+    )
     if not valid:
         conformance = "INVALID"
 
@@ -120,11 +139,11 @@ def verify_proof(proof: dict[str, Any]) -> VerificationResult:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(
-        description="Verify a Praxis proof object (PPP v0.1)"
-    )
+    parser = argparse.ArgumentParser(description="Verify a Praxis proof object (PPP v0.1)")
     parser.add_argument("proof_path", help="Path to praxis_proof.json")
-    parser.add_argument("--quiet", "-q", action="store_true", help="Suppress output, exit code only")
+    parser.add_argument(
+        "--quiet", "-q", action="store_true", help="Suppress output, exit code only"
+    )
     args = parser.parse_args()
 
     proof_path = Path(args.proof_path)
@@ -147,11 +166,15 @@ def main() -> int:
         print(f"  Proof file: {proof_path}")
         print(f"  Solution pack: {proof.get('solution_pack', 'unknown')}")
         print(f"  Events: {proof.get('evidence', {}).get('raw_events', 0)}")
-        print(f"  Ontology: {proof.get('ontology', {}).get('objects_created', 0)} objects, "
-              f"{proof.get('ontology', {}).get('links_created', 0)} links")
+        print(
+            f"  Ontology: {proof.get('ontology', {}).get('objects_created', 0)} objects, "
+            f"{proof.get('ontology', {}).get('links_created', 0)} links"
+        )
         print(f"  Decision: priority {proof.get('decision', {}).get('priority_score', 0):.2f}")
         print(f"  Action: {proof.get('action', {}).get('status', 'unknown')}")
-        print(f"  Value: ${proof.get('value_case', {}).get('estimated_annual_value', 0):,.0f} annualized")
+        print(
+            f"  Value: ${proof.get('value_case', {}).get('estimated_annual_value', 0):,.0f} annualized"
+        )
         print(f"  Replay hash: {proof.get('replay', {}).get('replay_hash', '')}")
         print(f"  Proof hash: {result.proof_hash}")
         if result.signature_verified is not None:

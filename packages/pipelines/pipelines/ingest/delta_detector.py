@@ -26,9 +26,7 @@ def detect_delta(tickets: Iterator[NormalizedTicket]) -> Iterator[DeltaResult]:
 
         for ticket in tickets:
             existing = (
-                db.query(Ticket)
-                .filter(Ticket.ticket_id == ticket.external_ticket_id)
-                .first()
+                db.query(Ticket).filter(Ticket.ticket_id == ticket.external_ticket_id).first()
             )
 
             if existing is None:

@@ -7,7 +7,12 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
-PACKS = ["manufacturing-printer-gpo", "erp-access-disruption", "k8s-ingress-degradation"]
+PACKS = [
+    "manufacturing-printer-gpo",
+    "network-edge-failover",
+    "identity-onboarding-drift",
+    "database-failover-lag",
+]
 
 
 def main() -> int:

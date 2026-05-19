@@ -37,12 +37,14 @@ class CloudWatchMiddleware(BaseHTTPMiddleware):
                 try:
                     cw.put_metric_data(
                         Namespace="Praxis/API",
-                        MetricData=[{
-                            "MetricName": f"{request.method.lower()}_{request.url.path.replace('/', '_')}_duration",
-                            "Value": duration_ms,
-                            "Unit": "Milliseconds",
-                            "Timestamp": time.time(),
-                        }]
+                        MetricData=[
+                            {
+                                "MetricName": f"{request.method.lower()}_{request.url.path.replace('/', '_')}_duration",
+                                "Value": duration_ms,
+                                "Unit": "Milliseconds",
+                                "Timestamp": time.time(),
+                            }
+                        ],
                     )
                 except Exception:
                     pass

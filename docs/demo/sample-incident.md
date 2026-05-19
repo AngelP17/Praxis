@@ -1,60 +1,59 @@
-# Sample Incident: Press Vibration Cascade
+# Sample Incident: Database Replication Lag
 
 ## Scenario
 
-At 08:30 UTC, Press P-001 on Line 3 reports abnormal vibration (RMS 12.4, threshold 8.0). The machine operator creates a ticket: "Press vibrating, unusual noise."
+At 08:15 UTC, the PostgreSQL database replica `asset-postgres-replica` on the Dallas site reports abnormal replication lag of 180 seconds, exceeding the SLA threshold of 60 seconds. The database operator synchronizes replicas per runbook and resolves the issue.
 
 ## Timeline
 
 | Time | Event | Source |
 |------|-------|--------|
-| 08:30:00 | Sensor alert: vibration_rms=12.4 | Machine telemetry |
-| 08:31:15 | Ticket created: "Press vibrating" | Operator |
-| 08:31:30 | Event ingested and normalized | API Gateway |
-| 08:31:45 | Astraea evaluates: priority_score=87, confidence=0.92 | Decision Engine |
-| 08:32:00 | Incident INC-2024-001 created, correlated with previous P-001 events | Incident Service |
-| 08:32:15 | Ticket routed to mechanical team | Workflow |
-| 08:45:00 | Operator alice accepts recommendation | Human Feedback |
-| 09:15:00 | Resolution confirmed: bearing replaced | Workflow |
+| 08:15:00 | Sensor alert: database_replication_lag_critical | postgres-replica |
+| 08:22:00 | Event alert: connection_pool_saturated | pgpool_load_balancer |
+| 08:22:15 | Event ingested and normalized | API Gateway |
+| 08:22:30 | Astraea evaluates: priority_score=92, confidence=0.94 | Decision Engine |
+| 08:22:45 | Incident INC-4785 created, correlating replication lag and pgpool saturation | Incident Service |
+| 08:23:00 | Recommendation routed to SRE database operations team | Workflow |
+| 08:30:00 | Operator accepts recommendation and triggers replica sync | Human Feedback |
+| 08:45:00 | Resolution confirmed: replication lag drops below 5s | Workflow |
 
 ## Decision Record
 
 ```json
 {
-  "decision_id": "DEC-2024-001",
-  "event_id": "EVT-2024-001",
-  "priority_score": 87,
-  "confidence_score": 0.92,
-  "severity_score": 1.0,
-  "urgency_score": 0.85,
-  "business_impact_score": 0.90,
-  "sla_risk_score": 0.75,
-  "recurrence_score": 0.60,
-  "dependency_criticality_score": 0.80,
-  "actionability_score": 0.95,
-  "uncertainty_penalty": 0.05,
-  "root_cause_hypothesis": "Bearing degradation causing vibration cascade. Similar to INC-2023-089.",
-  "replay_hash": "sha256:a1b2c3d4...",
+  "decision_id": "dec_db_lag_001",
+  "event_id": "evt_db_lag_001",
+  "priority_score": 92,
+  "confidence_score": 0.94,
+  "severity_score": 0.95,
+  "urgency_score": 0.90,
+  "business_impact_score": 0.92,
+  "sla_risk_score": 0.95,
+  "recurrence_score": 0.30,
+  "dependency_criticality_score": 0.95,
+  "actionability_score": 0.90,
+  "uncertainty_penalty": 0.03,
+  "root_cause_hypothesis": "Replica latency drift causing transactional lag. High risk to checkout flow.",
+  "replay_hash": "sha256:7d8a9b0c...",
   "explanation": {
-    "summary": "Critical vibration on production press with high business impact and clear actionability.",
+    "summary": "Critical replication lag on production Postgres replica impacting core transactions.",
     "key_factors": [
-      "Severity is critical (vibration 55% above threshold)",
-      "Business impact is high (Line 3 is primary production line)",
-      "Actionability is high (replace bearing, standard procedure)",
-      "Recurrence pattern matches previous bearing failures"
+      "Severity is high (replication lag 3x above SLA threshold)",
+      "Business impact is critical (Dallas checkout flow is affected)",
+      "Actionability is high (synchronize replica per runbook RB-DB-001)"
     ],
-    "recommendation": "Route to mechanical team immediately. Schedule bearing replacement within 2 hours."
+    "recommendation": "Route to SRE DB team immediately. Perform replica synchronization."
   },
   "decision_version": "1.2.0",
   "feature_snapshot": {
-    "severity": 1.0,
-    "urgency": 0.85,
-    "business_impact": 0.90,
-    "sla_risk": 0.75,
-    "recurrence": 0.60,
-    "dependency_criticality": 0.80,
-    "actionability": 0.95,
-    "uncertainty_penalty": 0.05
+    "severity": 0.95,
+    "urgency": 0.90,
+    "business_impact": 0.92,
+    "sla_risk": 0.95,
+    "recurrence": 0.30,
+    "dependency_criticality": 0.95,
+    "actionability": 0.90,
+    "uncertainty_penalty": 0.03
   }
 }
 ```
@@ -63,12 +62,12 @@ At 08:30 UTC, Press P-001 on Line 3 reports abnormal vibration (RMS 12.4, thresh
 
 ```json
 {
-  "feedback_id": "FB-2024-001",
-  "decision_id": "DEC-2024-001",
-  "actor": "alice",
+  "feedback_id": "FB-2026-001",
+  "decision_id": "dec_db_lag_001",
+  "actor": "operator",
   "feedback_type": "accept",
-  "note": "Correct priority. Bearing was indeed degraded.",
-  "created_at": "2024-01-15T08:45:00Z"
+  "note": "Replication lag confirmed. Performed replica synchronization successfully.",
+  "created_at": "2026-05-01T08:30:00Z"
 }
 ```
 
@@ -77,12 +76,12 @@ At 08:30 UTC, Press P-001 on Line 3 reports abnormal vibration (RMS 12.4, thresh
 To verify this decision:
 
 ```bash
-curl http://localhost:8000/api/replay/incidents/INC-2024-001
+curl http://localhost:8000/api/replay/incidents/INC-4785
 ```
 
 Expected output includes:
-- Raw sensor event
-- Normalized payload
+- Raw replication lag and connection pool events
+- Normalized event payloads
 - Feature snapshot
 - Decision record with matching replay hash
 - Operator feedback
@@ -91,7 +90,7 @@ Expected output includes:
 ## Audit Export
 
 ```bash
-curl http://localhost:8000/api/audit/export/INC-2024-001 -o audit_inc_2024_001.json
+curl http://localhost:8000/api/audit/export/INC-4785 -o audit_inc_4785.json
 ```
 
 The export contains the full timeline, all decisions, feedback, and evidence artifacts in a single structured document suitable for regulatory review.
