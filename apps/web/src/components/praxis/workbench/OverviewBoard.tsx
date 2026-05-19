@@ -8,7 +8,7 @@ import { useDashboardData } from "@/lib/hooks/use-dashboard-data";
 import { formatCurrency, formatPercent } from "@/lib/praxis-client";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
-import { WorkbenchShell, TopbarTitle, Pill, PrimaryAction } from "./WorkbenchShell";
+import { WorkbenchShell, TopbarTitle, PrimaryAction, GhostAction } from "./WorkbenchShell";
 import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
 import { ProofJourneyTimeline } from "@/components/praxis/ProofJourneyTimeline";
 
@@ -39,7 +39,7 @@ function Bars({ data, color, w = 120, h = 36, gap = 3 }: { data: number[]; color
 
 function MetricCard({ label, value, delta, deltaColor, chart }: { label: string; value: string; delta: string; deltaColor?: string; chart?: React.ReactNode }) {
   return (
-    <article className="flex min-h-[124px] flex-col gap-[10px] overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.02]">
+    <article className="flex min-h-[124px] flex-col gap-[10px] overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px]">
       <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{label}</div>
       <div className="font-display text-[38px] font-medium leading-none tracking-[-0.025em]">{value}</div>
       <div className="mt-auto flex items-center justify-between">
@@ -57,7 +57,7 @@ function SignalDensityChart() {
     return pts.join(" ");
   };
   return (
-    <article className="col-span-1 flex min-h-[230px] flex-col gap-3 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.01] md:col-span-3">
+    <article className="col-span-1 flex min-h-[230px] flex-col gap-3 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] md:col-span-3">
       <div className="flex justify-between">
         <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Signal density &middot; last 24h</div>
         <div className="flex gap-[14px] font-mono text-[10px] text-[var(--praxis-mute)]">
@@ -90,7 +90,15 @@ function SignalDensityChart() {
   );
 }
 
-export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; runId?: string }) {
+export function OverviewBoard({
+  packId: propPackId,
+  runId,
+  variant = "overview",
+}: {
+  packId?: string;
+  runId?: string;
+  variant?: "overview" | "dashboard";
+}) {
   const searchParams = useSearchParams();
   const packId = propPackId ?? searchParams.get("pack") ?? "manufacturing-printer-gpo";
   const { proof, loading, error, reload } = useProof(packId);
@@ -110,6 +118,7 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
   const packName = activePack?.name ?? packId;
   const runId_ = runId ?? proof.run_id;
   const sites = proof.evidence.sources.length;
+  const isDashboard = variant === "dashboard";
 
   const alerts = proof.evidence.sources.slice(0, 3).map((source, i) => ({
     source,
@@ -132,17 +141,33 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
 
   const topbarRight = (
     <>
-      <Pill>Time &middot; 24H</Pill>
-      <Pill tone="plasma">&middot; {alerts.length} alerts</Pill>
-      <PrimaryAction href={`/executive-readout/${runId_}`}>Export readout</PrimaryAction>
+      {isDashboard ? (
+        <>
+          <GhostAction href="/solution-packs">Portfolio · {packs.length} packs</GhostAction>
+          <GhostAction href="/fieldlab">{sites} sites live</GhostAction>
+        </>
+      ) : (
+        <>
+          <GhostAction href="/console">Time · 24H</GhostAction>
+          <GhostAction href={`/proof/${runId_}`}>{alerts.length} alerts</GhostAction>
+        </>
+      )}
+      <PrimaryAction href={isDashboard ? "/field-workbench" : `/executive-readout/${runId_}`}>
+        {isDashboard ? "Open flagship run" : "Export readout"}
+      </PrimaryAction>
     </>
   );
+
+  const title = isDashboard ? "Portfolio Dashboard" : "Operational Overview";
+  const subtitle = isDashboard
+    ? `Multi-pack posture · ${packs.length} packs · ${sites} sites in active evidence graph`
+    : `Real-time posture · ${sites} sites · ${activeRuns} active runs`;
 
   return (
     <WorkbenchShell
       runId={runId_}
       packName={packName}
-      topbar={<TopbarTitle title="Operational Overview" subtitle={`Real-time posture · ${sites} sites · ${activeRuns} active runs`} right={topbarRight} />}
+      topbar={<TopbarTitle title={title} subtitle={subtitle} right={topbarRight} />}
     >
       <ProofNarrativeStrip proof={proof} packName={packName} />
       <div className="grid grid-cols-1 grid-flow-dense auto-rows-min gap-[14px] p-[26px] md:grid-cols-2 lg:grid-cols-4">
@@ -166,8 +191,11 @@ export function OverviewBoard({ packId: propPackId, runId }: { packId?: string; 
           chart={<Spark data={[8, 9, 7, 10, 9, 11, 10, 12, 11, 13, 12]} color="var(--praxis-argon)" />}
         />
 
-        <article className="row-span-2 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.01]">
-          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Alerts &middot; requiring action</div>
+        <article className="row-span-2 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px]">
+          <div className="flex items-center justify-between gap-3">
+            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Alerts &middot; requiring action</div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">open proof</div>
+          </div>
           <div className="mt-2 font-display text-[30px] font-medium">{criticalTickets} open</div>
           <div className="mt-4 flex flex-col gap-[10px]">
             {alerts.map((e, i) => {

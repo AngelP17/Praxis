@@ -10,9 +10,8 @@ import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
 import { getScenarioByTicketId } from "@/lib/scenarios";
+import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 
 type IncidentDetailPayload = {
   incident: {
@@ -124,27 +123,25 @@ export default function IncidentDetailPage() {
 
   if (status === "loading") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Incidents" />
-        <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+      <WorkbenchShell topbar={<TopbarTitle title="Incident Detail" subtitle="Loading…" />}>
+        <div className="overflow-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1580px]">
             <LoadingSkeleton />
           </div>
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   if (status === "error" || !payload) {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Incidents" />
-        <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+      <WorkbenchShell topbar={<TopbarTitle title="Incident Detail" subtitle="Error" />}>
+        <div className="overflow-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1580px]">
             <ErrorState title="Incident detail unavailable" message={notice || "Could not load incident payload."} onRetry={() => void loadIncident()} />
           </div>
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
@@ -152,11 +149,24 @@ export default function IncidentDetailPage() {
   const scenario = getScenarioByTicketId(linkedTicket.ticket_id);
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Incidents" />
-      <div className="flex-1 overflow-auto px-4 py-6 sm:px-6 lg:px-8">
+    <WorkbenchShell
+      packName={scenario.label}
+      topbar={
+        <TopbarTitle
+          title="Incident Detail"
+          subtitle={`${payload.incident.title} · ${payload.incident.status} · ${payload.incident.ticket_count} linked tickets`}
+          right={
+            <>
+              <Pill tone="plasma">{payload.incident.status}</Pill>
+              <Pill tone="argon">{percent(payload.incident.confidence)} confidence</Pill>
+            </>
+          }
+        />
+      }
+    >
+      <div className="overflow-auto px-4 py-6 sm:px-6 lg:px-8">
       <div className="relative z-10 mx-auto w-full max-w-[1580px]">
-        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.94),rgba(10,10,20,0.88))] px-5 py-20 sm:px-6 md:py-24">
+        <section className="praxis-v2-panel-enhanced px-5 py-20 sm:px-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Incident Detail</div>
@@ -168,20 +178,20 @@ export default function IncidentDetailPage() {
             <div className="flex flex-wrap gap-2">
               <Link
                 href="/command-center"
-                className="inline-flex min-h-10 items-center border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-105 hover:border-[var(--praxis-plasma)]"
+                className="inline-flex min-h-10 items-center border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-[1.01] hover:border-[var(--praxis-plasma)]"
               >
                 Command center
               </Link>
               <button
                 onClick={() => void resolveIncident()}
                 disabled={resolving}
-                className="inline-flex min-h-10 items-center border border-[var(--praxis-argon)] bg-[color-mix(in_srgb,var(--praxis-argon)_12%,transparent)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-105 hover:bg-[color-mix(in_srgb,var(--praxis-argon)_18%,transparent)] disabled:opacity-60"
+                className="inline-flex min-h-10 items-center border border-[var(--praxis-argon)] bg-[color-mix(in_srgb,var(--praxis-argon)_12%,transparent)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-[1.01] hover:bg-[color-mix(in_srgb,var(--praxis-argon)_18%,transparent)] disabled:opacity-60"
               >
                 {resolving ? "Resolving..." : "Resolve Incident"}
               </button>
               <Link
                 href={`/replay/${linkedTicket?.ticket_id ?? incidentId}`}
-                className="inline-flex min-h-10 items-center border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-105 hover:border-[var(--praxis-plasma)]"
+                className="inline-flex min-h-10 items-center border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] px-4 py-2 text-sm text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-[1.01] hover:border-[var(--praxis-plasma)]"
               >
                 Replay
               </Link>
@@ -344,7 +354,7 @@ export default function IncidentDetailPage() {
         </footer>
       </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
 

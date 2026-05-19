@@ -55,7 +55,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
         <div className="lg:col-span-12">
           <ProofJourneyTimeline proof={proof} />
         </div>
-        <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.01] lg:col-span-8">
+        <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 lg:col-span-8">
           <div className="mb-4 flex items-center justify-between">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Live pipeline &middot; {packName}</div>
             <Pill tone="argon">streaming</Pill>
@@ -64,7 +64,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
         </article>
 
         <aside className="flex flex-col gap-[14px] lg:col-span-4">
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5 transition-transform duration-700 ease-out hover:scale-[1.01]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Active solution pack</div>
             <h3 className="mt-3 font-display text-[22px] font-medium tracking-[-0.015em]">{packName}</h3>
             <p className="mt-2 text-[13px] leading-6 text-[var(--praxis-mute)]">
@@ -87,7 +87,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
             <PrimaryAction href={`/proof/${runId}`}>Inspect proof</PrimaryAction>
           </article>
 
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5 transition-transform duration-700 ease-out hover:scale-[1.01]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Verify independently</div>
             <p className="mt-2 text-[13px] leading-6 text-[var(--praxis-mute)]">
               Anyone can verify this proof using the open-source Praxis verifier.
@@ -107,7 +107,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
           </div>
           <div className="grid grid-cols-2 grid-flow-dense gap-3 md:grid-cols-4">
             {FLOCI_SERVICES.map((svc) => (
-              <article key={svc.service} className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-4 transition-transform duration-700 ease-out hover:scale-[1.02]">
+              <article key={svc.service} className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-4">
                 <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-mute)]">{svc.service}</div>
                 <div className="mt-3 font-display text-[22px] tracking-[-0.015em]">{svc.resource}</div>
                 <div className="mt-1 font-mono text-[10px] uppercase" style={{ color: "var(--praxis-argon)" }}>{svc.status}</div>

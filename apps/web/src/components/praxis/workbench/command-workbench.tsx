@@ -169,7 +169,7 @@ export function PraxisCommandWorkbench(props: {
       topbar={<TopbarTitle title="Command Center" subtitle="Signal queue · Praxis Decision · replay chain · operator workflow" right={topbarRight} />}
     >
       <div className="grid grid-cols-1 grid-flow-dense gap-6 p-6 md:p-8 lg:grid-cols-[0.92fr_1.08fr_0.86fr]">
-        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] py-20 transition-transform duration-700 ease-out hover:scale-[1.005]">
+        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] py-20">
           <div className="border-b border-[var(--praxis-line)] px-5 py-4">
             <div className="flex items-center justify-between gap-3">
               <div>
@@ -233,7 +233,7 @@ export function PraxisCommandWorkbench(props: {
         </section>
 
         <section className="flex min-h-0 flex-col gap-6 py-20">
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.005]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
             <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-violet)]">Selected incident</div>
             <h2 className="mt-3 font-display text-[32px] font-medium leading-[1.1] tracking-[-0.025em]">
               {selectedTicket?.title ?? "Select a signal"}
@@ -249,7 +249,7 @@ export function PraxisCommandWorkbench(props: {
             </div>
           </article>
 
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.005]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
             <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">
               <ShieldCheck className="h-4 w-4 text-[var(--praxis-violet)]" />
               Praxis Decision
@@ -287,7 +287,7 @@ export function PraxisCommandWorkbench(props: {
             </div>
           </article>
 
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.005]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
             <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">
               <BracketsCurly className="h-4 w-4 text-[var(--praxis-argon)]" />
               Replay hash chain
@@ -308,7 +308,7 @@ export function PraxisCommandWorkbench(props: {
         </section>
 
         <section className="flex min-h-0 flex-col gap-6 py-20">
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.005]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
             <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">Operational posture</div>
             <div className="mt-5 grid grid-flow-dense grid-cols-2 gap-3">
               <FieldMetric label="Queue health" value={tickets.length > 0 ? "Active" : "Idle"} tone="var(--praxis-argon)" />
@@ -318,7 +318,7 @@ export function PraxisCommandWorkbench(props: {
             </div>
           </article>
 
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.005]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
             <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">Linked incident</div>
             {linkedIncident ? (
               <>
@@ -338,7 +338,7 @@ export function PraxisCommandWorkbench(props: {
             )}
           </article>
 
-          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 transition-transform duration-700 ease-out hover:scale-[1.005]">
+          <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
             <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">Next operator move</div>
             <div className="mt-4 text-[14px] leading-7 text-[var(--praxis-bone)]">
               Collapse duplicate queue motion, route the decision through a human approval path, and preserve the proof chain before any downstream comms leave the system.

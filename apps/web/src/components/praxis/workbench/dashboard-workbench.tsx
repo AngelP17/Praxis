@@ -1,1 +1,5 @@
-export { OverviewBoard as PraxisDashboardWorkbench } from "@/components/praxis/workbench/OverviewBoard";
+import { OverviewBoard } from "@/components/praxis/workbench/OverviewBoard";
+
+export function PraxisDashboardWorkbench() {
+  return <OverviewBoard variant="dashboard" />;
+}

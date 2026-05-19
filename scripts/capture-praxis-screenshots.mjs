@@ -5,7 +5,7 @@ import path from "node:path";
 const require = createRequire(import.meta.url);
 const { chromium } = require(path.resolve(process.cwd(), "apps/web/node_modules/playwright"));
 
-const BASE_URL = process.env.BASE_URL || "http://localhost:3456";
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 const OUT_DIR = path.resolve(process.cwd(), "screenshots/praxis");
 
 async function wait(ms) {
@@ -18,6 +18,7 @@ async function capture(page, fileName, route, options = {}) {
     waitForSelector,
     scrollToText,
     scrollToSelector,
+    screenshotSelector,
     postWaitMs = 2000,
     fullPage = false,
   } = options;
@@ -61,8 +62,22 @@ async function capture(page, fileName, route, options = {}) {
   
   await wait(postWaitMs);
   
+  const outPath = path.join(OUT_DIR, fileName);
+
+  if (screenshotSelector) {
+    try {
+      await page.locator(screenshotSelector).first().screenshot({
+        path: outPath,
+      });
+      console.log(`  Saved ${fileName}`);
+      return;
+    } catch (e) {
+      console.log(`  Selector '${screenshotSelector}' could not be screenshotted, falling back to full page...`);
+    }
+  }
+
   await page.screenshot({
-    path: path.join(OUT_DIR, fileName),
+    path: outPath,
     fullPage,
   });
   console.log(`  Saved ${fileName}`);
@@ -101,6 +116,11 @@ async function loginAsDemoOperator(page) {
   await page.goto(`${BASE_URL}/command-center`, { waitUntil: "domcontentloaded" });
 }
 
+async function login(page) {
+  await loginAsDemoOperator(page);
+  await wait(1000);
+}
+
 async function main() {
   await mkdir(OUT_DIR, { recursive: true });
   
@@ -116,8 +136,7 @@ async function main() {
   });
 
   try {
-    await loginAsDemoOperator(page);
-    await wait(1000);
+    await login(page);
 
     // 1. Landing / Hero
     await capture(page, "01-praxis-landing.png", "/", {
@@ -133,13 +152,15 @@ async function main() {
     });
     
     // 3. Proof Object
-    await capture(page, "03-proof-object.png", "/proof/manufacturing-printer-gpo?proofSource=offline", {
-      waitForText: "Proof object",
+    await capture(page, "03-proof-object.png", "/proof/fieldlab_run_manufacturing-printer-gpo?pack=manufacturing-printer-gpo", {
+      waitForText: "Active proof controls",
+      scrollToText: "Active proof controls",
+      screenshotSelector: 'section.border-y',
       postWaitMs: 2500,
     });
     
     // 4. Executive Readout
-    await capture(page, "04-executive-readout.png", "/executive-readout/manufacturing-printer-gpo", {
+    await capture(page, "04-executive-readout.png", "/executive-readout", {
       waitForText: "Executive Readout",
       postWaitMs: 2500,
     });
@@ -169,6 +190,20 @@ async function main() {
     await capture(page, "08-command-center.png", "/command-center", {
       waitForText: "Command Center",
       postWaitMs: 2500,
+    });
+
+    // 9. Console
+    await capture(page, "09-console.png", "/console", {
+      waitForText: "Operator Console",
+      postWaitMs: 2500,
+      fullPage: false,
+    });
+
+    // 10. Dashboard
+    await capture(page, "10-dashboard.png", "/dashboard", {
+      waitForText: "Operational Overview",
+      postWaitMs: 2500,
+      fullPage: false,
     });
     
     console.log(`\nAll Praxis screenshots saved to ${OUT_DIR}`);

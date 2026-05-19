@@ -33,7 +33,7 @@ export function HumanFeedbackPanel({
   };
 
   return (
-    <div className="legacy-card rounded-[1.5rem] p-5 sm:p-6 hover:scale-105 transition-transform duration-500">
+    <div className="praxis-v2-panel-enhanced p-5 sm:p-6 transition-transform duration-500 hover:scale-[1.01]">
       <div className="flex items-center gap-2 border-b border-zinc-800/70 pb-4">
         <ChatText className="h-4 w-4 text-violet-300" />
         <div className="mono-data text-[10px] uppercase tracking-[0.28em] text-zinc-500">Human Feedback</div>
@@ -91,7 +91,7 @@ export function HumanFeedbackPanel({
                 verdict === "approve"
                   ? "bg-emerald-500/15 text-emerald-200 border border-emerald-500/20"
                   : "text-zinc-500 hover:text-zinc-300 border border-transparent"
-              } flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500`}
+              } flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition duration-500 hover:scale-[1.01]`}
             >
               <ThumbsUp className="h-3.5 w-3.5" />
               Approve
@@ -99,7 +99,7 @@ export function HumanFeedbackPanel({
             <button
               type="button"
               onClick={() => setVerdict("reject")}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition duration-500 hover:scale-[1.01] ${
                 verdict === "reject"
                   ? "bg-rose-500/15 text-rose-200 border border-rose-500/20"
                   : "text-zinc-500 hover:text-zinc-300 border border-transparent"
@@ -111,7 +111,7 @@ export function HumanFeedbackPanel({
             <button
               type="button"
               onClick={() => setVerdict("question")}
-              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition hover:scale-105 transition-transform duration-500 ${
+              className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition duration-500 hover:scale-[1.01] ${
                 verdict === "question"
                   ? "bg-violet-500/15 text-violet-200 border border-violet-500/20"
                   : "text-zinc-500 hover:text-zinc-300 border border-transparent"
@@ -139,7 +139,7 @@ export function HumanFeedbackPanel({
                 type="button"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="mt-2 inline-flex items-center gap-2 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-violet-400 disabled:opacity-60 hover:scale-105 transition-transform duration-500"
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition duration-500 hover:scale-[1.01] hover:bg-violet-400 disabled:opacity-60"
               >
                 <PaperPlaneRight className="h-4 w-4" />
                 {isSubmitting ? "Submitting..." : "Submit Feedback"}

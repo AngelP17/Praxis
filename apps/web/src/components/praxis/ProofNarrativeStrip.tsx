@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "@phosphor-icons/react";
 import { formatCurrency, formatPercent, type PraxisProof } from "@/lib/praxis-client";
@@ -60,9 +61,8 @@ export function ProofNarrativeStrip({
 
       <div className="relative grid grid-flow-dense grid-cols-1 divide-y divide-[var(--praxis-line)] md:grid-cols-[1fr_auto_1fr_auto_1fr] md:divide-x md:divide-y-0">
         {acts.map((act, i) => (
-          <>
+          <Fragment key={act.tag}>
             <motion.div
-              key={act.tag}
               className="flex flex-col gap-1.5 px-6 py-4"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -91,7 +91,7 @@ export function ProofNarrativeStrip({
                 <ArrowRight className="h-3.5 w-3.5 text-[var(--praxis-mute)]" />
               </div>
             )}
-          </>
+          </Fragment>
         ))}
       </div>
     </div>

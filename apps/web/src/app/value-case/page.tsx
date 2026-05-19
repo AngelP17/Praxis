@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowSquareOut, CurrencyDollar, TrendDown, ChartBar, Export } from "@phosphor-icons/react";
+import { CurrencyDollar, TrendDown, ChartBar, Export } from "@phosphor-icons/react";
 
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
+import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 
 function fmtUsd(n: number) {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
@@ -93,102 +92,131 @@ export default function ValueCasePage() {
   }
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Value Case" />
-      <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
+    <WorkbenchShell
+      packName={activeScenario.label}
+      topbar={
+        <TopbarTitle
+          title="Value Case"
+          subtitle={`Operational value model · ${activeScenario.site} · ${activeScenario.category}`}
+          right={
+            <>
+              <Pill tone="argon">{activeScenario.category}</Pill>
+              <Pill>{activeScenario.site}</Pill>
+            </>
+          }
+        />
+      }
+    >
+      <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
+          <div className="grid grid-cols-1 grid-flow-dense gap-[14px] md:grid-cols-2 lg:grid-cols-4">
+            <MetricCard
+              label="Annual value"
+              value={fmtUsd(activeScenario.estimatedValueUsd)}
+              detail={`${activeScenario.icon} ${activeScenario.label}`}
+              tone="var(--praxis-argon)"
+            />
+            <MetricCard
+              label="MTTR reduction"
+              value={`−${activeScenario.mttrReductionPct}%`}
+              detail="time to restore"
+              tone="var(--praxis-argon)"
+            />
+            <MetricCard
+              label="Recurrence reduction"
+              value={`−${activeScenario.recurrenceReductionPct}%`}
+              detail="repeat incident suppression"
+              tone="var(--praxis-plasma)"
+            />
+            <MetricCard
+              label="Confidence"
+              value={activeScenario.confidenceScore.toFixed(2)}
+              detail={activeScenario.site}
+              tone="var(--praxis-plasma)"
+            />
+          </div>
 
-          {/* Header */}
-          <section className="praxis-v2-panel-enhanced p-8 sm:p-10 py-20 sm:py-24">
-            <div className="flex flex-wrap items-center justify-between gap-6">
-              <div className="flex-1">
-                <div className="praxis-v2-eyebrow-enhanced">Value Case</div>
-                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
-                  Estimated Operational Value
-                </h1>
-                <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
-                  Evidence-based ROI model derived from real decision data, MTTR reduction, and recurrence suppression. Switch scenarios to compare.
-                </p>
-              </div>
-              <div className="flex flex-wrap items-center gap-3">
-                <ScenarioPicker activeId={activeScenario.id} onChange={setActiveScenario} />
-                <button
-                  onClick={handleExport}
-                  disabled={exporting}
-                  className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-600/50 bg-zinc-800/60 px-4 py-2 text-sm text-zinc-300 hover:border-zinc-500 transition-all duration-300 hover:scale-105 disabled:opacity-60"
-                >
-                  <Export size={14} />
-                  {exporting ? "Exporting…" : "Export XLSX"}
-                </button>
-              </div>
-            </div>
-          </section>
-
-          {/* Hero number */}
           <div className="grid grid-cols-12 gap-5 grid-flow-dense">
-            <div className="col-span-12 lg:col-span-5 xl:col-span-4">
-              <div className="praxis-v2-panel-enhanced h-full p-8">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
-                    <CurrencyDollar size={20} />
-                  </div>
-                  <div>
-                    <div className="praxis-v2-eyebrow-enhanced">Annual value · {activeScenario.icon} {activeScenario.label}</div>
-                  </div>
+            <section className="col-span-12 xl:col-span-8 praxis-v2-panel-enhanced p-6 py-20 sm:p-8 sm:py-20">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <div className="praxis-v2-eyebrow-enhanced">Scenario focus</div>
+                  <h2 className="mt-3 font-display text-[28px] font-semibold tracking-[-0.02em] text-zinc-50">
+                    Estimated Operational Value
+                  </h2>
+                  <p className="mt-3 max-w-2xl text-sm leading-7 text-zinc-400">
+                    Evidence-based ROI from real decision data, MTTR reduction, recurrence suppression, and impacted system context.
+                  </p>
                 </div>
-                <div className="mt-6" style={{ fontFamily: "var(--font-outfit, sans-serif)" }}>
-                  <div className="text-5xl font-semibold tracking-tight text-zinc-50" style={{ lineHeight: 1 }}>
+                <div className="flex flex-wrap items-center gap-3">
+                  <ScenarioPicker activeId={activeScenario.id} onChange={setActiveScenario} />
+                  <button
+                    onClick={handleExport}
+                    disabled={exporting}
+                    className="inline-flex min-h-10 items-center gap-2 rounded-full border border-zinc-600/50 bg-zinc-800/60 px-4 py-2 text-sm text-zinc-300 transition duration-300 hover:scale-[1.01] hover:border-zinc-500 disabled:opacity-60"
+                  >
+                    <Export size={14} />
+                    {exporting ? "Exporting…" : "Export XLSX"}
+                  </button>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 grid-flow-dense gap-5 lg:grid-cols-[0.92fr_1.08fr]">
+                <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
+                      <CurrencyDollar size={20} />
+                    </div>
+                    <div className="praxis-v2-eyebrow-enhanced">Primary value driver</div>
+                  </div>
+                  <div className="mt-5 text-5xl font-semibold tracking-tight text-zinc-50" style={{ lineHeight: 1 }}>
                     {fmtUsd(activeScenario.estimatedValueUsd)}
                   </div>
                   <div className="mt-2 font-mono text-sm text-zinc-500">estimated annual value · {activeScenario.site}</div>
+
+                  <div className="mt-6 space-y-3">
+                    <Metric icon={<TrendDown size={15} />} label="MTTR reduction" value={`−${activeScenario.mttrReductionPct}%`} color="text-emerald-400" />
+                    <Metric icon={<ChartBar size={15} />} label="Recurrence reduction" value={`−${activeScenario.recurrenceReductionPct}%`} color="text-violet-400" />
+                    <Metric icon={<CurrencyDollar size={15} />} label="Confidence" value={activeScenario.confidenceScore.toFixed(2)} color="text-amber-400" />
+                  </div>
                 </div>
 
-                <div className="mt-8 space-y-4">
-                  <Metric icon={<TrendDown size={15} />} label="MTTR reduction" value={`−${activeScenario.mttrReductionPct}%`} color="text-emerald-400" />
-                  <Metric icon={<ChartBar size={15} />} label="Recurrence reduction" value={`−${activeScenario.recurrenceReductionPct}%`} color="text-violet-400" />
-                  <Metric icon={<CurrencyDollar size={15} />} label="Confidence" value={activeScenario.confidenceScore.toFixed(2)} color="text-amber-400" />
-                </div>
-
-                <div className="mt-8">
-                  <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-600 mb-3">Impacted systems</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {activeScenario.impactedSystems.map((sys) => (
-                      <span key={sys} className="rounded-full border border-zinc-700/60 bg-zinc-800/50 px-2 py-1 font-mono text-[10px] text-zinc-400">
-                        {sys}
-                      </span>
+                <div className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
+                  <div className="praxis-v2-eyebrow-enhanced mb-5">Value breakdown</div>
+                  <div className="space-y-5">
+                    {breakdown.map((item) => (
+                      <div key={item.label}>
+                        <div className="mb-2 flex items-center justify-between">
+                          <span className="text-sm text-zinc-300">{item.label}</span>
+                          <span className="mono-data text-sm font-semibold text-zinc-100">{fmtUsd(item.value)}</span>
+                        </div>
+                        <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
+                          <div
+                            className={`h-full rounded-full ${item.color} opacity-80 transition-all duration-700`}
+                            style={{ width: `${item.pct}%` }}
+                          />
+                        </div>
+                        <div className="mt-1 font-mono text-[10px] text-zinc-600">{item.pct}% of total</div>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* Breakdown bars */}
-            <div className="col-span-12 lg:col-span-7 xl:col-span-8 flex flex-col gap-5">
-              <div className="praxis-v2-panel-enhanced p-6 sm:p-8">
-                <div className="praxis-v2-eyebrow-enhanced mb-6">Value breakdown</div>
-                <div className="space-y-5">
-                  {breakdown.map((item) => (
-                    <div key={item.label}>
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-sm text-zinc-300">{item.label}</span>
-                        <span className="mono-data text-sm font-semibold text-zinc-100">{fmtUsd(item.value)}</span>
-                      </div>
-                      <div className="h-2 overflow-hidden rounded-full bg-zinc-800">
-                        <div
-                          className={`h-full rounded-full ${item.color} opacity-80 transition-all duration-700`}
-                          style={{ width: `${item.pct}%` }}
-                        />
-                      </div>
-                      <div className="mt-1 font-mono text-[10px] text-zinc-600">{item.pct}% of total</div>
-                    </div>
-                  ))}
-                </div>
+            <aside className="col-span-12 xl:col-span-4 praxis-v2-panel-enhanced p-6">
+              <div className="praxis-v2-eyebrow-enhanced">Impacted systems</div>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {activeScenario.impactedSystems.map((sys) => (
+                  <span key={sys} className="rounded-full border border-zinc-700/60 bg-zinc-800/50 px-2 py-1 font-mono text-[10px] text-zinc-400">
+                    {sys}
+                  </span>
+                ))}
               </div>
 
-              {/* Assumptions table */}
-              <div className="praxis-v2-panel-enhanced p-6 sm:p-8">
+              <div className="mt-6 border-t border-zinc-800 pt-5">
                 <div className="praxis-v2-eyebrow-enhanced mb-4">Model assumptions</div>
-                <div className="grid grid-flow-dense grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 grid-flow-dense gap-2">
                   {assumptions.map((a) => (
                     <div key={a.label} className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-3">
                       <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{a.label}</div>
@@ -197,7 +225,7 @@ export default function ValueCasePage() {
                   ))}
                 </div>
               </div>
-            </div>
+            </aside>
           </div>
 
           {/* All scenarios comparison */}
@@ -245,7 +273,7 @@ export default function ValueCasePage() {
           </section>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
 
@@ -258,5 +286,25 @@ function Metric({ icon, label, value, color }: { icon: React.ReactNode; label: s
       </div>
       <span className={`mono-data text-sm font-semibold ${color}`}>{value}</span>
     </div>
+  );
+}
+
+function MetricCard({
+  label,
+  value,
+  detail,
+  tone,
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  tone: string;
+}) {
+  return (
+    <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-[18px] transition-transform duration-700 ease-out hover:scale-[1.02]">
+      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{label}</div>
+      <div className="mt-3 font-display text-[38px] font-medium leading-none tracking-[-0.025em] text-[var(--praxis-bone)]">{value}</div>
+      <div className="mt-3 font-mono text-[10px]" style={{ color: tone }}>{detail}</div>
+    </article>
   );
 }

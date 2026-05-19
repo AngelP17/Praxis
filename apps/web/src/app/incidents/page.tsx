@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import type { Incident } from "@/types";
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
+import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { DEMO_INCIDENTS } from "@/lib/demo-scenario";
 import {
   Shield,
@@ -63,36 +62,48 @@ export default function IncidentsPage() {
 
   if (status === "loading") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Incidents" />
-        <div className="flex-1 p-4 sm:p-6 lg:p-8">
+      <WorkbenchShell topbar={<TopbarTitle title="Incident Browser" subtitle="Loading…" />}>
+        <div className="p-4 sm:p-6 lg:p-8">
           <LoadingSkeleton />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
+  const investigatingCount = incidents.filter((incident) => incident.status === "Investigating").length;
+  const mitigatingCount = incidents.filter((incident) => incident.status === "Mitigating").length;
+
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Incidents" />
-      <div className="flex-1 overflow-auto">
+    <WorkbenchShell
+      topbar={
+        <TopbarTitle
+          title="Incident Browser"
+          subtitle={`Cluster posture · ${incidents.length} total · ${investigatingCount} investigating · ${mitigatingCount} mitigating`}
+          right={
+            <>
+              <Pill tone="plasma">{incidents.length} incidents</Pill>
+              <Pill tone="argon">{statuses.length} states</Pill>
+            </>
+          }
+        />
+      }
+    >
+      <div className="overflow-auto">
         <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="mono-data text-[10px] uppercase tracking-[0.18em] text-zinc-500">Incident Browser</div>
-            <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
-              <h1 className="font-display text-[clamp(1.75rem,3vw,2.5rem)] font-medium leading-tight tracking-tight text-white">
-                Incident Clusters
-              </h1>
-              <div className="mono-data text-[11px] text-zinc-500">{incidents.length} total</div>
-            </div>
+          <div className="mb-6 praxis-v2-panel-enhanced p-5 sm:p-6">
+            <div className="praxis-v2-eyebrow-enhanced">Incident clusters</div>
+            <h1 className="mt-3 font-display text-[clamp(1.75rem,3vw,2.5rem)] font-medium leading-tight tracking-tight text-white">
+              Investigations, mitigations, and closure lanes in one view
+            </h1>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">
+              Browse grouped incidents with deterministic root-cause context and linked operational ticket pressure.
+            </p>
             {errorMessage ? (
               <div className="mt-4 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{errorMessage}</div>
             ) : null}
           </div>
 
-          {/* Search */}
-          <div className="mb-6">
+          <div className="mb-6 praxis-v2-panel-enhanced p-4 sm:p-5">
             <label className="relative block w-full max-w-md">
               <MagnifyingGlass className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={14} />
               <input
@@ -104,20 +115,19 @@ export default function IncidentsPage() {
             </label>
           </div>
 
-          {/* Status Filters */}
           {statuses.length > 0 && (
             <div className="mb-6 flex flex-wrap items-center gap-2">
               {filtered.length === incidents.length ? (
                 <button
                   onClick={() => setFiltered(incidents)}
-                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-violet-500/30 bg-violet-500/10 text-violet-200 hover:scale-105 transition-transform duration-500"
+                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-violet-500/30 bg-violet-500/10 text-violet-200 hover:scale-[1.01] duration-500"
                 >
                   All
                 </button>
               ) : (
                 <button
                   onClick={() => setFiltered(incidents)}
-                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-zinc-700 bg-zinc-900/70 text-zinc-400 hover:border-zinc-600 hover:scale-105 transition-transform duration-500"
+                  className="rounded-full border px-3 py-1.5 text-[11px] transition border-zinc-700 bg-zinc-900/70 text-zinc-400 hover:border-zinc-600 hover:scale-[1.01] duration-500"
                 >
                   All
                 </button>
@@ -126,7 +136,7 @@ export default function IncidentsPage() {
                 <button
                   key={s}
                   onClick={() => setFiltered(incidents.filter((i) => i.status === s))}
-                  className="rounded-full border border-zinc-700 bg-zinc-900/70 px-3 py-1.5 text-[11px] text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-300 hover:scale-105 transition-transform duration-500"
+                  className="rounded-full border border-zinc-700 bg-zinc-900/70 px-3 py-1.5 text-[11px] text-zinc-400 transition hover:border-zinc-600 hover:text-zinc-300 hover:scale-[1.01] duration-500"
                 >
                   {s}
                 </button>
@@ -134,7 +144,6 @@ export default function IncidentsPage() {
             </div>
           )}
 
-          {/* Dense List */}
           <div className="space-y-2">
             {filtered.length === 0 ? (
               <EmptyState title="No incidents found" message={search ? "Try adjusting your search." : "No incidents in the system."} />
@@ -143,7 +152,7 @@ export default function IncidentsPage() {
                 <Link
                   key={incident.id}
                   href={`/incidents/${incident.id}`}
-                  className="group flex flex-col gap-3 rounded-xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-105 transition-transform duration-500 sm:flex-row sm:items-center sm:justify-between"
+                  className="group flex flex-col gap-3 rounded-xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-[1.01] duration-500 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3">
@@ -181,6 +190,6 @@ export default function IncidentsPage() {
           </div>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
