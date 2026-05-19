@@ -72,26 +72,89 @@ class OntologyCompiler:
 
     def _infer_links(self, candidates: list[dict], context: dict) -> list[dict]:
         links = []
-        sites = [c for c in candidates if "site" in c["key"].lower() or "plant" in c["key"].lower()]
-        assets = [
-            c
-            for c in candidates
-            if "asset" in c["key"].lower()
-            or "printer" in c["key"].lower()
-            or "device" in c["key"].lower()
-        ]
+        objects_by_type = {}
+        for c in candidates:
+            key = c["key"].lower()
+            val = c["value"].lower().replace(" ", "-")
+            obj_type = None
+            field_classifiers = {
+                "site": "Site", "plant": "Site", "location": "Site",
+                "asset": "Asset", "device": "Asset", "machine": "Asset", "printer": "Asset",
+                "vendor": "Vendor",
+                "department": "BusinessProcess",
+                "process": "BusinessProcess",
+                "workflow": "BusinessProcess",
+                "stakeholder": "Stakeholder", "owner": "Stakeholder",
+                "control": "Control", "policy": "Control",
+                "runbook": "Runbook"
+            }
+            for pattern, t in field_classifiers.items():
+                if pattern in key:
+                    obj_type = t
+                    break
+            if obj_type:
+                objects_by_type.setdefault(obj_type, []).append(val)
 
-        for site in sites:
-            for asset in assets:
-                links.append(
-                    {
-                        "source": f"site-{site['value'].lower().replace(' ', '-')}",
-                        "target": f"asset-{asset['value'].lower().replace(' ', '-')}",
-                        "type": "owns",
-                    }
-                )
+        # 1. Site -> Asset (owns)
+        for s in objects_by_type.get("Site", []):
+            for a in objects_by_type.get("Asset", []):
+                links.append({"source": f"site-{s}", "target": f"asset-{a}", "type": "owns"})
 
-        return links
+        # 2. BusinessProcess -> Asset (depends_on)
+        for p in objects_by_type.get("BusinessProcess", []):
+            for a in objects_by_type.get("Asset", []):
+                links.append({
+                    "source": f"businessprocess-{p}",
+                    "target": f"asset-{a}",
+                    "type": "depends_on"
+                })
+
+        # 3. Asset -> Vendor (maintained_by)
+        for a in objects_by_type.get("Asset", []):
+            for v in objects_by_type.get("Vendor", []):
+                links.append({
+                    "source": f"asset-{a}",
+                    "target": f"vendor-{v}",
+                    "type": "maintained_by"
+                })
+
+        # 4. Stakeholder -> BusinessProcess (manages)
+        for st in objects_by_type.get("Stakeholder", []):
+            for p in objects_by_type.get("BusinessProcess", []):
+                links.append({
+                    "source": f"stakeholder-{st}",
+                    "target": f"businessprocess-{p}",
+                    "type": "manages"
+                })
+
+        # 5. Asset -> Control (governed_by)
+        for a in objects_by_type.get("Asset", []):
+            for c_val in objects_by_type.get("Control", []):
+                links.append({
+                    "source": f"asset-{a}",
+                    "target": f"control-{c_val}",
+                    "type": "governed_by"
+                })
+
+        # 6. Runbook -> Asset (remediates)
+        for r in objects_by_type.get("Runbook", []):
+            for a in objects_by_type.get("Asset", []):
+                links.append({
+                    "source": f"runbook-{r}",
+                    "target": f"asset-{a}",
+                    "type": "remediates"
+                })
+
+        # De-duplicate links
+        seen_links = set()
+        deduped = []
+        for link_item in links:
+            k = (link_item["source"], link_item["target"], link_item["type"])
+            if k not in seen_links:
+                seen_links.add(k)
+                deduped.append(link_item)
+
+        return deduped
 
     def _infer_actions(self, objects: list[dict], links: list[dict], context: dict) -> list[dict]:
         return [

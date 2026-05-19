@@ -23,10 +23,14 @@ jobs:
         run: pytest tests/unit tests/integration -v
       - name: Run Ruff lint
         run: ruff check apps packages services
+      - name: Validate all solution packs
+        run: python scripts/validate_all_solution_packs.py
       - name: Run and benchmark all solution pack scenarios
         run: |
           python scripts/run_scenario.py --all --approve
           python scripts/run_scenario.py --benchmark
+      - name: Sync scenarios to frontend artifact
+        run: python scripts/generate_frontend_scenarios.py
 
   python-reasoning-tests:
     runs-on: ubuntu-latest

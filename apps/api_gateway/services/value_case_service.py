@@ -107,10 +107,15 @@ class ValueCaseService:
             return {k: v for k, v in record.items() if not k.startswith("_")}
 
         # Reconstruct from default pack (no persistent DB)
-        computed = _compute(DEFAULT_PACK)
+        pack_id = DEFAULT_PACK
+        for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+            if p in value_case_id:
+                pack_id = p
+                break
+        computed = _compute(pack_id)
         return {
             "value_case_id": value_case_id,
-            "solution_pack_id": DEFAULT_PACK,
+            "solution_pack_id": pack_id,
             "customer_context_json": {},
             "assumptions_json": computed["variables"],
             "formulas_json": {},

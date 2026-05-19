@@ -3,6 +3,9 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 
+_STORE: dict[str, dict] = {}
+
+
 class DeploymentPlanService:
     def __init__(self, db: Session):
         self.db = db
@@ -10,19 +13,30 @@ class DeploymentPlanService:
     def create_plan(self, payload: dict) -> dict:
         plan_id = f"dp_{uuid.uuid4().hex[:12]}"
         timeline_weeks = payload.get("timeline_weeks", 8)
-        return {
+        pack_id = payload.get("solution_pack_id", "manufacturing-printer-gpo")
+        plan = {
             "plan_id": plan_id,
-            "solution_pack_id": payload.get("solution_pack_id", ""),
+            "solution_pack_id": pack_id,
             "value_case_id": payload.get("value_case_id"),
             "phases": self._generate_phases(timeline_weeks),
             "timeline_weeks": timeline_weeks,
             "created_at": datetime.utcnow(),
         }
+        _STORE[plan_id] = plan
+        return plan
 
     def get_plan(self, plan_id: str) -> dict:
+        if plan_id in _STORE:
+            return _STORE[plan_id]
+        
+        pack_id = "manufacturing-printer-gpo"
+        for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+            if p in plan_id:
+                pack_id = p
+                break
         return {
             "plan_id": plan_id,
-            "solution_pack_id": "manufacturing-printer-gpo",
+            "solution_pack_id": pack_id,
             "value_case_id": None,
             "phases": self._generate_phases(8),
             "timeline_weeks": 8,
