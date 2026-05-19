@@ -346,3 +346,12 @@ def get_scenario_by_id(scenario_id: str) -> Scenario | None:
 
 
 _SCENARIO_BY_ID: dict[str, Scenario] = {s.id: s for s in SCENARIOS}
+_SCENARIO_BY_EXTERNAL_ID: dict[str, Scenario] = {
+    external_id: scenario
+    for scenario in SCENARIOS
+    for external_id in (scenario.id, scenario.ticket_id, scenario.incident_id)
+}
+
+
+def get_scenario_by_external_id(identifier: str) -> Scenario | None:
+    return _SCENARIO_BY_EXTERNAL_ID.get(identifier)

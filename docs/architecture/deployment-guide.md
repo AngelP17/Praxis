@@ -4,6 +4,10 @@ This guide documents the release paths that are actually supported by the curren
 
 It intentionally separates the verified demo deployment path from the harder full-stack production path so future sessions do not assume they are the same thing.
 
+## Flagship Claim
+
+Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a green PR-run Docker Compose production proof recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Docker Compose self-hosted backend path remains the recommended deployment target for real production use; post-merge `main` verification should still be observed separately.
+
 ## Current Release Modes
 
 ```mermaid
@@ -91,7 +95,17 @@ Generated artifacts:
 
 ## 4. Full-stack Self-hosted / Cloud Production
 
-The repo ships three concrete paths for running the full backend stack. All three use the same Dockerfiles and the same environment variable contract. Choose one based on your infrastructure preference.
+The repo ships three concrete paths for running the full backend stack. **Docker Compose (Path A) is the recommended and most concrete path.** Fly.io and Railway are documented as secondary references but have not been exercised end-to-end by CI. Docker Compose now has a dedicated production-proof job in `.github/workflows/ci.yml`, with the first observed green PR run captured in `docs/verification/2026-05-19-docker-compose-production-proof.md`.
+
+### Functional-enough production acceptance bar
+
+Before claiming a backend-backed deployment works:
+
+- [ ] Backend boots in production mode with real `SECRET_KEY`, `ENV=production`, `DEBUG=false`, and public `ALLOWED_ORIGINS`
+- [ ] `/health` endpoint returns `{"status":"healthy"}`
+- [ ] Frontend can reach the backend via `NEXT_PUBLIC_API_URL` without `NEXT_PUBLIC_DEMO_MODE`
+- [ ] At least one real backend-backed workflow completes: login, core route load, and one proof/decision or solution-pack flow
+- [ ] Known non-turnkey gaps are documented rather than hidden
 
 ### Environment variables required for every path
 
@@ -107,9 +121,9 @@ The API gateway enforces at boot: if `ENV=production` and `SECRET_KEY` is a plac
 
 ---
 
-### Path A — VPS / any server with Docker Compose
+### Path A — VPS / any server with Docker Compose (recommended)
 
-Works on any machine that has Docker and Docker Compose v2 (DigitalOcean Droplet, Hetzner, EC2, Lightsail, etc.).
+This is the most concrete and least assumption-heavy backend path in the repo. It works on any machine that has Docker and Docker Compose v2 (DigitalOcean Droplet, Hetzner, EC2, Lightsail, etc.).
 
 ```bash
 # 1. Clone and enter the repo
@@ -245,7 +259,8 @@ See also: [Public Launch Checklist](../release/public-launch-checklist.md)
 - `ENV=development`, local secrets, all ports exposed for direct access
 
 `docker-compose.prod.yml` is the production override:
-- Enables `ENV=production`, passes real secrets, removes dev port bindings
+- Enables `ENV=production`, passes real secrets, attempts to remove dev port bindings
+- Note: `ports: []` in the override may not fully clear base-file ports in all Docker Compose versions — restrict access at the host firewall level and use a reverse proxy for public routing
 
 Do not use `docker-compose.yml` alone as a production manifest.
 

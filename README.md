@@ -7,6 +7,8 @@
 
 **Proof-carrying field deployment for enterprise operations.**
 
+Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a green PR-run Docker Compose production proof recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Docker Compose self-hosted backend path remains the recommended deployment target for real production use; post-merge `main` verification should still be observed separately.
+
 Praxis is the reference implementation of the **Praxis Proof Protocol** — the first open spec for cryptographically verifiable AI decision provenance. It turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
 
 > **Verify any Praxis proof in one command:**
@@ -39,10 +41,11 @@ The web app also ships a Next.js `app/api` bridge for frontend stability. In loc
 
 ## Release Modes
 
-Praxis currently has two honest release modes:
+Praxis currently has two verified release modes and one functional-enough backend path:
 
-- **Frontend-only public demo**: ready now. Deploy the Next.js app with `NEXT_PUBLIC_DEMO_MODE=1` and the flagship surfaces run on deterministic demo fallbacks.
-- **Full-stack public production**: not turnkey yet. The repo includes the backend services and reference infrastructure, but you still need real secrets, explicit public CORS origins, rotated demo credentials, and a chosen backend hosting target.
+- **Frontend-only public demo**: verified. Deploy the Next.js app with `NEXT_PUBLIC_DEMO_MODE=1` and the flagship surfaces run on deterministic demo fallbacks. This is the recommended public showcase path.
+- **Local FieldLab proof**: verified. Run `make praxis-proof` after `make praxis-fieldlab-up` to produce a deterministic, auditable proof artifact. This is the recommended technical credibility path.
+- **Docker Compose self-hosted**: functional, with a green PR-run CI proof. The repo ships `docker-compose.yml` + `docker-compose.prod.yml` for running the full backend stack. The API gateway enforces production safety at boot, and `.github/workflows/ci.yml` now includes a Compose production-proof job that passed on PR `#4`. See [Deployment Guide](docs/architecture/deployment-guide.md) for setup steps, and [Public Launch Checklist](docs/release/public-launch-checklist.md) for remaining hardening items.
 
 Before a real public production launch:
 
@@ -63,6 +66,8 @@ make praxis-fieldlab-up
 make praxis-proof
 make praxis-benchmark
 make praxis-floci-verify
+make praxis-canvas-verify
+make praxis-proof-hashes
 make praxis-fieldlab-down
 ```
 
@@ -100,7 +105,7 @@ The frontend fallback artifact at `apps/web/src/lib/generated/scenarios.generate
 | WMS Pick Timeout | com.praxis.warehouse.wms.pick_timeout_cascade | medium | True | $31,000 |
 | RFID Reader Dropout | com.praxis.iot.rfid.reader_dropout | medium | True | $18,500 |
 
-Run a single scenario with `make praxis-run-scenario SCENARIO=printer-offline` or all with `make praxis-run-all-scenarios`.
+Run a single scenario with `make praxis-run-scenario SCENARIO=printer-offline`, all with `make praxis-run-all-scenarios`, or benchmark all with `make praxis-scenario-benchmark`. Sync scenarios to the frontend artifact with `make praxis-sync-frontend-scenarios`.
 
 ---
 
@@ -113,6 +118,10 @@ Run a single scenario with `make praxis-run-scenario SCENARIO=printer-offline` o
 | Executive Readout | Solution Packs | Command Center |
 |-------------------|----------------|----------------|
 | ![Executive Readout](screenshots/praxis/04-executive-readout.png) | ![Solution Packs](screenshots/praxis/05-solution-packs.png) | ![Command Center](screenshots/praxis/08-command-center.png) |
+
+| Ontology | Value Case | Console | Dashboard |
+|----------|-----------|---------|-----------|
+| ![Ontology](screenshots/praxis/06-ontology.png) | ![Value Case](screenshots/praxis/07-value-case.png) | ![Console](screenshots/praxis/09-console.png) | ![Dashboard](screenshots/praxis/10-dashboard.png) |
 
 ---
 
@@ -168,6 +177,9 @@ make demo-seed
 
 # 4. Validate the end-to-end path
 make demo-validate
+
+# 5. Reset demo state when done
+make demo-reset
 
 # Or run the proof-first artifact path
 make praxis-fieldlab-up
@@ -294,23 +306,38 @@ Shows how a pilot expands into a bigger account, scoring adjacent use cases by s
 | Route | Purpose | Role signal |
 |-------|---------|-------------|
 | `/` | Landing page with live metrics | All |
+| `/login` | Demo authentication (operator/admin/viewer) | All |
 | `/dashboard` | System health bento overview | Operator |
 | `/command-center` | Primary operator work queue with decision explanations | Operator |
 | `/console` | Live pipeline console with Floci health and verifier controls | Operator |
+| `/board` | Task board for active work items | Operator |
+| `/incidents` | Incident list | Operator |
 | `/incidents/[id]` | Incident detail with timeline | Operator |
+| `/decision` | Decision summary | Operator |
 | `/decision-center` | Decision center with counterfactual deltas | Operator |
+| `/recommendations` | Active recommendation queue | Operator |
+| `/tickets/new` | New ticket creation | Operator |
+| `/tickets/[id]` | Ticket detail with comments and attachments | Operator |
 | `/field-workbench` | End-to-end customer workflow from discovery to readout | FDSE |
+| `/field-workbench/[runId]` | Specific FieldLab run | FDSE |
 | `/solution-packs` | Catalog of repeatable demo packs | GTM Engineer |
 | `/fieldlab` | Floci-backed local environment status and event flow | Platform/SE |
 | `/ontology` | Operational object graph, links, and actions | FDSE |
+| `/discovery` | Customer signal discovery and pack matching | FDSE/SE |
 | `/value-case` | ROI calculator and assumptions | GTM Engineer |
 | `/executive-readout` | CFO/COO-ready summary | GTM/SE |
+| `/executive-readout/[runId]` | Specific run readout | GTM/SE |
 | `/proof/[proofId]` | Cinematic proof detail, verifier flow, and diff workflow | Solutions Engineer |
+| `/proof/diff` | Proof comparison and forensic diff | Solutions Engineer |
+| `/expansion-map` | Adjacent use case expansion scoring | GTM Engineer |
+| `/event-ingestion` | Raw event ingestion and normalization view | Platform |
 | `/platform` | SRE control plane — SLOs, topology, chaos | Platform |
 | `/assets` | Infrastructure asset inventory | Operator |
 | `/audit` | Audit trail viewer and export | Operator |
 | `/replay/[id]` | Point-in-time replay with forensics | Operator |
 | `/reports` | Executive and operational reporting | Operator |
+| `/readout/[runId]/print` | Print-optimized executive readout | GTM/SE |
+| `/why-praxis` | Product positioning and value proposition | All |
 | `/admin` | Role-gated admin console | Admin |
 
 ---
@@ -321,15 +348,19 @@ Shows how a pilot expands into a bigger account, scoring adjacent use cases by s
 
 - Python 3.11+
 - Node.js 22+
-- pnpm
+- pnpm 10.29.3 (pinned in root `package.json`)
 - PostgreSQL 15+ (or SQLite for local dev)
 - Docker (for FieldLab/Floci)
 
 ### Install
 
 ```bash
-make install
+make install                # Full setup: Python venv + editable packages + frontend deps
+# or
+pnpm install                # Frontend-only, from repo root
 ```
+
+`make install` is the default setup path for any task that touches Python services, proof flows, validation, or demo seeding. Use root `pnpm install` only when you intentionally need Node dependencies without the Python environment.
 
 ### Run tests
 
@@ -365,6 +396,8 @@ make praxis-fieldlab-down   # Stop Floci
 make praxis-demo            # Run the flagship demo
 make praxis-validate-pack   # Validate a solution pack
 make praxis-readout RUN_ID=xyz  # Generate executive readout
+make praxis-run-scenario SCENARIO=printer-offline  # Run a single scenario
+make praxis-run-all-scenarios   # Run all registered scenarios
 ```
 
 ---
@@ -395,26 +428,23 @@ Open `http://localhost:3000`. Login credentials: `operator` / `operator` (agent 
 
 ### Option 3 — Self-hosted / cloud backend
 
-The repo ships ready-to-use configs for three paths:
+The Docker Compose self-hosted path is the recommended backend deployment target. Fly.io and Railway configs also exist as secondary references. All paths require the production hardening steps in [`docs/release/public-launch-checklist.md`](docs/release/public-launch-checklist.md).
 
-| Path | Config file | Best for |
+| Path | Config file | Status |
 |---|---|---|
-| VPS / any Docker host | [`docker-compose.prod.yml`](docker-compose.prod.yml) | DigitalOcean, Hetzner, EC2 |
-| Fly.io | [`fly.toml`](fly.toml) | Managed containers, global edge |
-| Railway | [`railway.toml`](railway.toml) | Instant deploys, built-in Postgres |
+| **VPS / Docker Compose** (recommended) | [`docker-compose.prod.yml`](docker-compose.prod.yml) | Functional, green PR-run CI proof |
+| Fly.io | [`fly.toml`](fly.toml) | Secondary reference |
+| Railway | [`railway.toml`](railway.toml) | Secondary reference |
 
-Quick start for each path (Fly.io example):
+Quick start for the recommended Docker Compose path:
 
 ```bash
-fly apps create praxis-api
-fly postgres create --name praxis-db && fly postgres attach --app praxis-api praxis-db
-fly secrets set ENV=production DEBUG=false \
-  SECRET_KEY="$(openssl rand -base64 32)" \
-  ALLOWED_ORIGINS="https://your-frontend.vercel.app"
-fly deploy
+cp .env.example .env   # edit: set SECRET_KEY, POSTGRES_PASSWORD, ALLOWED_ORIGINS
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+curl http://localhost:8000/health
 ```
 
-Then set `NEXT_PUBLIC_API_URL=https://praxis-api.fly.dev` in your frontend deployment and remove `NEXT_PUBLIC_DEMO_MODE`.
+Then set `NEXT_PUBLIC_API_URL=http://your-server:8000` in your frontend deployment and remove `NEXT_PUBLIC_DEMO_MODE`.
 
 Full instructions for all three paths: [docs/architecture/deployment-guide.md](docs/architecture/deployment-guide.md)
 
@@ -459,22 +489,28 @@ praxis/
 
 ## Quality Gates
 
+> Commands below derive from the `Makefile`, root `package.json`, and `apps/web/package.json`. If anything here conflicts with those files, the executable is correct. See `AGENTS.md` for the authoritative agent-entry guide.
+
 | Gate | Command | Notes |
 |------|---------|-------|
 | Python lint | `make lint` | Runs Ruff over `apps`, `packages`, and `services` |
+| Python format | `make format` | Runs Ruff formatter over `apps`, `packages`, and `services` |
 | Python tests | `make test` | Runs unit and integration tests configured in the Makefile |
 | Praxis algorithm/integration tests | `make praxis-test` | Runs `tests/praxis` and `tests/integration` |
 | TypeScript check | `pnpm web:typecheck` | Next.js/React type safety |
 | Next.js build | `pnpm web:build` | Production web build |
-| GPT-taste lint | `pnpm web:lint:gpt-taste:ci` | Praxis design-quality gate |
+| GPT-taste lint | `pnpm web:lint:gpt-taste:ci` | Praxis design-quality gate (`--max-warnings=0`) |
 | Smoke tests | `pnpm web:test:smoke` | Web smoke coverage |
 | Demo validation | `make demo-validate` | Requires demo services and seeded data |
 | Proof generation and verification | `make praxis-proof` | Emits and verifies `artifacts/latest/praxis_proof.json` |
 | Benchmark suite | `make praxis-benchmark` | Validates all current solution packs |
+| Scenario benchmark | `make praxis-scenario-benchmark` | Benchmarks all registered deterministic scenarios |
 | Floci runtime check | `make praxis-floci-verify` | Requires `make praxis-fieldlab-up` |
 | Canvas integrity | `make praxis-canvas-verify` | Checks Praxis canvas/source references |
 | Proof hash integrity | `make praxis-proof-hashes` | Checks active proof code for fake hashes |
-| Full Praxis validation | `make praxis-validate-all` | Requires Floci running |
+| Full Praxis validation | `make praxis-validate-all` | Chains lint + test + benchmark + floci + canvas + hashes; requires Floci running |
+
+For doc-only work, prefer targeted `rg` checks and only add `make praxis-canvas-verify` or `make praxis-proof-hashes` when the edited docs affect canvas/proof guidance directly.
 
 ### Benchmarks
 

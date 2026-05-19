@@ -1,4 +1,5 @@
 from contextlib import asynccontextmanager
+from datetime import UTC, datetime, timedelta
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -35,9 +36,6 @@ class EvaluateResponse(BaseModel):
 
 pipeline = AstraeaPipeline()
 provenance_engine = ProvenanceEngine()
-counterfactual_engine = CounterfactualReplayEngine()
-causal_builder = CausalIncidentGraphBuilder()
-integrity_engine = DecisionIntegrityEngine()
 calibration_engine = FeedbackCalibrationEngine()
 
 # In-memory decision store for standalone mode
@@ -47,6 +45,51 @@ _decision_store: dict[str, dict] = {}
 def _compute_replay_hash(payload: dict) -> str:
     canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
     return f"sha256:{hashlib.sha256(canonical.encode()).hexdigest()[:32]}"
+
+
+def _build_demo_incident_graph(decision_id: str):
+    reference_time = datetime.now(UTC)
+    builder = CausalIncidentGraphBuilder(decision_id, reference_time=reference_time)
+    signal_ts = reference_time - timedelta(minutes=3)
+    ticket_ts = reference_time - timedelta(minutes=5)
+    runbook_ts = reference_time - timedelta(days=2)
+    asset_ts = reference_time - timedelta(hours=1)
+
+    builder.add_signal(
+        node_id="vib-001",
+        source_id="press-line-3.plc",
+        source_reliability=0.95,
+        timestamp=signal_ts,
+        confidence=0.91,
+        severity="high",
+        payload={"metric": "vibration", "threshold": 8.0, "value": 12.4},
+    )
+    builder.add_ticket(
+        node_id="ticket-001",
+        source_id="operator-42",
+        source_reliability=0.8,
+        timestamp=ticket_ts,
+        confidence=0.82,
+        severity="high",
+        payload={"summary": "Shipping labels not printing"},
+    )
+    builder.add_runbook(
+        node_id="runbook-001",
+        source_id="bearing-replacement-runbook",
+        timestamp=runbook_ts,
+        payload={"step": "Route to mechanical team"},
+    )
+    builder.add_asset(
+        node_id="asset-001",
+        source_id="press-line-3",
+        timestamp=asset_ts,
+        payload={"line": "line-3", "machine": "press-3"},
+    )
+    builder.link_corroborates("ticket-001", "vib-001")
+    builder.link_causal("vib-001", "asset-001")
+    builder.link_causal("asset-001", "runbook-001")
+    builder.set_root_cause("vib-001")
+    return builder
 
 
 @asynccontextmanager
@@ -161,54 +204,19 @@ async def get_decision(decision_id: str):
 @app.post("/api/decisions/{decision_id}/replay")
 async def replay_decision(decision_id: str):
     decision = await get_decision(decision_id)
-
-    # Build counterfactual scenarios
-    original = decision.get("priority_score", 50.0)
-    counterfactuals = [
-        {
-            "scenario": "remove_vibration_telemetry",
-            "priority_delta": round(original - 24.0, 2),
-            "confidence_delta": -0.18,
-            "review_flag": True,
-        },
-        {
-            "scenario": "remove_operator_ticket",
-            "priority_delta": round(original - 12.0, 2),
-            "confidence_delta": -0.09,
-            "review_flag": False,
-        },
-        {
-            "scenario": "add_contradictory_evidence",
-            "priority_delta": round(original - 8.0, 2),
-            "confidence_delta": -0.22,
-            "review_flag": True,
-        },
-    ]
-
-    # Build causal graph
-    causal_graph = causal_builder.build_graph(
-        root_cause=decision.get("explanation", {}).get("why_flagged", "unknown"),
-        evidence_nodes=[
-            {"id": "vib-001", "type": "sensor", "reliability": 0.95},
-            {"id": "op-001", "type": "ticket", "reliability": 0.80},
-        ],
-    )
-
-    # Compute integrity score
-    integrity = integrity_engine.compute_score(
-        replayability=0.95,
-        coverage=0.88,
-        stability=0.85,
-        review_state="pending",
-    )
+    causal_builder = _build_demo_incident_graph(decision_id)
+    incident_graph = causal_builder.build()
+    counterfactuals = CounterfactualReplayEngine(incident_graph).run().to_dict()
+    causal_graph = causal_builder.replay().to_dict()
+    integrity = DecisionIntegrityEngine(incident_graph).compute(decision_id).to_dict()
 
     return {
         "decision_id": decision_id,
         "original_decision": decision,
         "counterfactuals": counterfactuals,
         "causal_graph": causal_graph,
-        "integrity": integrity.to_dict() if hasattr(integrity, "to_dict") else integrity,
-        "replayed_at": __import__("datetime").datetime.utcnow().isoformat(),
+        "integrity": integrity,
+        "replayed_at": datetime.now(UTC).isoformat(),
         "status": "replayed",
     }
 
