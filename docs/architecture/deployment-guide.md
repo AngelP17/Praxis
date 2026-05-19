@@ -6,7 +6,7 @@ It intentionally separates the verified demo deployment path from the harder ful
 
 ## Flagship Claim
 
-Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`) and the local FieldLab proof (`make praxis-proof`). The Docker Compose self-hosted backend path is the recommended deployment target for real production use, and `.github/workflows/ci.yml` now includes a production-proof job for it; until that job has a green GitHub run on the active branch, treat the path as configured rather than historically CI-verified.
+Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a green PR-run Docker Compose production proof recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Docker Compose self-hosted backend path remains the recommended deployment target for real production use; post-merge `main` verification should still be observed separately.
 
 ## Current Release Modes
 
@@ -95,7 +95,7 @@ Generated artifacts:
 
 ## 4. Full-stack Self-hosted / Cloud Production
 
-The repo ships three concrete paths for running the full backend stack. **Docker Compose (Path A) is the recommended and most concrete path.** Fly.io and Railway are documented as secondary references but have not been exercised end-to-end by CI. Docker Compose now has a dedicated production-proof job in `.github/workflows/ci.yml`.
+The repo ships three concrete paths for running the full backend stack. **Docker Compose (Path A) is the recommended and most concrete path.** Fly.io and Railway are documented as secondary references but have not been exercised end-to-end by CI. Docker Compose now has a dedicated production-proof job in `.github/workflows/ci.yml`, with the first observed green PR run captured in `docs/verification/2026-05-19-docker-compose-production-proof.md`.
 
 ### Functional-enough production acceptance bar
 

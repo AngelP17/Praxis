@@ -93,7 +93,7 @@ If a command in any doc conflicts with the Makefile or a workflow file, the exec
 
 - Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path.
 - The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`) and the local FieldLab proof (`make praxis-proof`).
-- The Docker Compose self-hosted path (`docker-compose.yml` + `docker-compose.prod.yml`) is the recommended backend deployment target. CI now includes a Docker Compose production-proof job in `.github/workflows/ci.yml`; until that job has a green GitHub run on the active branch, do not overstate the path as historically CI-verified.
+- The Docker Compose self-hosted path (`docker-compose.yml` + `docker-compose.prod.yml`) is the recommended backend deployment target. CI now includes a Docker Compose production-proof job in `.github/workflows/ci.yml`, and the first observed green PR run is recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. Treat post-merge `main` verification as a separate check until that run exists.
 - Do not describe Praxis as fully public-production-ready unless you verify both the frontend and backend release path in the current checkout.
 - The root `vercel.json` is intentionally frontend-only. Do not reintroduce implicit multi-service Vercel deploy assumptions unless the user explicitly asks for that work.
 - For real public production, always inspect:

@@ -4,6 +4,10 @@
 - Timezone: America/Los_Angeles
 - Goal: verify one live backend-backed production-mode path using `docker-compose.yml` plus `docker-compose.prod.yml`
 - Working tree context: repo contained in-progress documentation and containerization changes before this proof run
+- GitHub follow-up:
+  - PR: [#4](https://github.com/AngelP17/Praxis/pull/4)
+  - First CI run: `26118162350` on commit `a6b9125` failed in `docker-compose-production-proof` because the workflow readiness probe sent over-escaped JSON to `/api/auth/login`, causing repeated `422 Unprocessable Entity` responses.
+  - Second CI run: `26118408989` on commit `8debcea` passed, including `docker-compose-production-proof`.
 
 ## Commands Run
 
@@ -58,6 +62,7 @@ docker logs --tail 120 praxis-decision-service
 | Numeric decision replay via web proxy | Pass |
 | Published ports inspection | Pass after Compose override fix |
 | `INC-*` replay via web proxy | Pass after scenario-registry fallback exposure |
+| GitHub Actions `docker-compose-production-proof` | Pass on rerun `26118408989` |
 
 ## What This Proof Verifies
 
@@ -114,7 +119,8 @@ docker logs --tail 120 praxis-decision-service
    - Operational implication: host-side `/health` checks for backend services are no longer valid after the override fix; use `docker exec`, container health state, or an internal reverse proxy path instead.
 
 2. The new CI job is configured locally in `.github/workflows/ci.yml`, but this proof note does not include a completed GitHub Actions run for that job.
-   - Operational implication: the path is now CI-wired, but you should still inspect the first green GitHub run before describing it as historically CI-verified.
+   - Resolved: PR `#4` rerun `26118408989` completed successfully after fixing the readiness-probe JSON quoting bug in the workflow.
+   - Residual caveat: the observed green run is on the PR branch before merge to `main`, not yet a post-merge `main` run.
 
 ## Honest Claim After This Run
 
@@ -126,9 +132,9 @@ Praxis is now verified as:
 
 Praxis is **not yet** verified here as:
 
-- a GitHub-observed green CI run for the new Docker Compose production-proof job
+- a post-merge `main` run of the new Docker Compose production-proof job
 
 ## Recommended Follow-up
 
-1. Watch the first GitHub Actions run of `.github/workflows/ci.yml` with the new Docker Compose production-proof job and preserve the result in `docs/verification/` if it passes.
+1. After merge, confirm the same `docker-compose-production-proof` job stays green on the next `main` push.
 2. If the scenario-registry replay fallback for `INC-4821` should become persisted database state instead of an exposed canonical replay bundle, add that as a separate backend-seeding task.

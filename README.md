@@ -7,7 +7,7 @@
 
 **Proof-carrying field deployment for enterprise operations.**
 
-Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`) and the local FieldLab proof (`make praxis-proof`). The Docker Compose self-hosted backend path is the recommended deployment target for real production use, and CI now includes a production-proof job for it in `.github/workflows/ci.yml`; until that job has a green GitHub run on the active branch, treat the path as configured rather than historically CI-verified.
+Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a green PR-run Docker Compose production proof recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Docker Compose self-hosted backend path remains the recommended deployment target for real production use; post-merge `main` verification should still be observed separately.
 
 Praxis is the reference implementation of the **Praxis Proof Protocol** — the first open spec for cryptographically verifiable AI decision provenance. It turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
 
@@ -45,7 +45,7 @@ Praxis currently has two verified release modes and one functional-enough backen
 
 - **Frontend-only public demo**: verified. Deploy the Next.js app with `NEXT_PUBLIC_DEMO_MODE=1` and the flagship surfaces run on deterministic demo fallbacks. This is the recommended public showcase path.
 - **Local FieldLab proof**: verified. Run `make praxis-proof` after `make praxis-fieldlab-up` to produce a deterministic, auditable proof artifact. This is the recommended technical credibility path.
-- **Docker Compose self-hosted**: functional, with CI proof job configured. The repo ships `docker-compose.yml` + `docker-compose.prod.yml` for running the full backend stack. The API gateway enforces production safety at boot, and `.github/workflows/ci.yml` now includes a Compose production-proof job. See [Deployment Guide](docs/architecture/deployment-guide.md) for setup steps, and [Public Launch Checklist](docs/release/public-launch-checklist.md) for remaining hardening items.
+- **Docker Compose self-hosted**: functional, with a green PR-run CI proof. The repo ships `docker-compose.yml` + `docker-compose.prod.yml` for running the full backend stack. The API gateway enforces production safety at boot, and `.github/workflows/ci.yml` now includes a Compose production-proof job that passed on PR `#4`. See [Deployment Guide](docs/architecture/deployment-guide.md) for setup steps, and [Public Launch Checklist](docs/release/public-launch-checklist.md) for remaining hardening items.
 
 Before a real public production launch:
 
@@ -432,7 +432,7 @@ The Docker Compose self-hosted path is the recommended backend deployment target
 
 | Path | Config file | Status |
 |---|---|---|
-| **VPS / Docker Compose** (recommended) | [`docker-compose.prod.yml`](docker-compose.prod.yml) | Functional, CI proof job configured |
+| **VPS / Docker Compose** (recommended) | [`docker-compose.prod.yml`](docker-compose.prod.yml) | Functional, green PR-run CI proof |
 | Fly.io | [`fly.toml`](fly.toml) | Secondary reference |
 | Railway | [`railway.toml`](railway.toml) | Secondary reference |
 
