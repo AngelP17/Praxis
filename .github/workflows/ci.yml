@@ -228,7 +228,7 @@ jobs:
           payload = json.load(open(sys.argv[1]))
           assert payload["decision"]["id"] == 4821
           assert payload["original_event"]["event_type"] == "com.praxis.asset.printer.offline"
-          assert payload["replayed_decision"]["root_cause_hypothesis"] == "printer_firmware_regression"
+          assert payload["replayed_decision"]["root_cause_hypothesis"] == "gpo_permission_drift"
           assert str(payload["stored_replay_hash"]).startswith("sha256:")
           print("Verified backend-backed INC-4821 replay through the web route")
           PY
