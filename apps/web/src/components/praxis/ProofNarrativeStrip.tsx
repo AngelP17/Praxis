@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { ArrowRight } from "@phosphor-icons/react";
 import { formatCurrency, formatPercent, type PraxisProof } from "@/lib/praxis-client";
 
@@ -25,7 +25,7 @@ function buildActs(proof: PraxisProof, packName: string): Act[] {
     {
       tag: "Setup",
       headline: `${proof.evidence.raw_events} signals · ${proof.evidence.sources.length} systems`,
-      context: `${packName} — messy field data ingested and archived`,
+      context: `${packName}, messy field data ingested and archived`,
       accent: "var(--praxis-argon)",
     },
     {
@@ -36,7 +36,7 @@ function buildActs(proof: PraxisProof, packName: string): Act[] {
     },
     {
       tag: "Resolution",
-      headline: `${formatCurrency(proof.value_case.estimated_annual_value)}/yr — ${bkt.label}`,
+      headline: `${formatCurrency(proof.value_case.estimated_annual_value)}/yr, ${bkt.label}`,
       context: proof.decision.requires_human_review
         ? "Human approval required before production mutation"
         : "Auto-approved · audit artifact written",

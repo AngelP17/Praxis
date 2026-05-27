@@ -7,7 +7,7 @@ import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
 import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
-import { fetchJsonWithTimeout } from "@/lib/client-api";
+import { fetchJsonWithTimeout } from "@/lib/api";
 
 type Asset = {
   id: number;

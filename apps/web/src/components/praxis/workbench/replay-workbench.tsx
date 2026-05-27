@@ -118,10 +118,10 @@ export function PraxisReplayWorkbench({
               </div>
 
               <div className="grid grid-cols-2 grid-flow-dense gap-3">
-                <ReplayStat label="Latest Priority" value={latest?.priority_score?.toString() ?? "—"} tone="plasma" />
+                <ReplayStat label="Latest Priority" value={latest?.priority_score?.toString() ?? "n/a"} tone="plasma" />
                 <ReplayStat
                   label="Confidence"
-                  value={latest?.confidence_score != null ? (latest.confidence_score > 1 ? latest.confidence_score / 100 : latest.confidence_score).toFixed(2) : "—"}
+                  value={latest?.confidence_score != null ? (latest.confidence_score > 1 ? latest.confidence_score / 100 : latest.confidence_score).toFixed(2) : "n/a"}
                   tone="argon"
                 />
                 <ReplayStat label="Determinism" value={payload.determinism ? "True" : "Pending"} />
@@ -141,10 +141,10 @@ export function PraxisReplayWorkbench({
               <ReplayStat label="Review Mode" value={mode === "live" ? "Live" : "Demo"} tone={mode === "live" ? "argon" : "plasma"} />
             </div>
             <div className="col-span-12 md:col-span-6 xl:col-span-3">
-              <ReplayStat label="Asset" value={payload.original_event?.asset_id || "—"} />
+              <ReplayStat label="Asset" value={payload.original_event?.asset_id || "n/a"} />
             </div>
             <div className="col-span-12 md:col-span-6 xl:col-span-3">
-              <ReplayStat label="Site" value={payload.original_event?.site || "—"} />
+              <ReplayStat label="Site" value={payload.original_event?.site || "n/a"} />
             </div>
             <div className="col-span-12 md:col-span-6 xl:col-span-3">
               <ReplayStat label="Replay Status" value={payload.determinism ? "Matched" : "Review"} />

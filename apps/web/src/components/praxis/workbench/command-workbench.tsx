@@ -242,10 +242,10 @@ export function PraxisCommandWorkbench(props: {
               {selectedTicket?.requester ?? "machine telemetry + operator ticket"}
             </div>
             <div className="mt-6 grid grid-flow-dense grid-cols-2 gap-3 md:grid-cols-4">
-              <FieldMetric label="Priority" value={selectedTicket ? `P${selectedTicket.score}` : "—"} tone="var(--praxis-plasma)" />
+              <FieldMetric label="Priority" value={selectedTicket ? `P${selectedTicket.score}` : "n/a"} tone="var(--praxis-plasma)" />
               <FieldMetric label="Confidence" value={confidence.toFixed(2)} tone="var(--praxis-argon)" />
-              <FieldMetric label="Status" value={selectedTicket?.status ?? "—"} />
-              <FieldMetric label="Category" value={selectedTicket?.category ?? "—"} />
+              <FieldMetric label="Status" value={selectedTicket?.status ?? "n/a"} />
+              <FieldMetric label="Category" value={selectedTicket?.category ?? "n/a"} />
             </div>
           </article>
 

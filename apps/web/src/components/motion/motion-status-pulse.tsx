@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { motion, useMotionValue, animate } from "framer-motion";
+import { motion, useMotionValue, animate } from "motion/react";
 
 type PulsePoint = { id: string; label: string; intensity: number };
 

@@ -507,6 +507,21 @@ class DecisionService:
             )
 
         self.db.commit()
+        try:
+            from apps.api_gateway.services.sse_broadcaster import decision_broadcaster
+            decision_broadcaster.broadcast({
+                "id": decision_id,
+                "event_id": event_id,
+                "priority_score": decision_result.priority_score,
+                "root_cause_hypothesis": decision_result.root_cause_hypothesis,
+                "confidence_score": decision_result.confidence_score,
+                "risk_level": decision_result.risk_level,
+                "requires_human_review": decision_result.requires_human_review,
+                "replay_hash": replay_hash,
+                "decision_ts": decision_ts,
+            })
+        except Exception:
+            pass
         return {
             "id": decision_id,
             "event_id": event_id,
@@ -649,6 +664,7 @@ class DecisionService:
             "stored_replay_hash": stored_hash,
             "replayed_hash": replayed_hash,
             "determinism": stored_hash == replayed_hash,
+            "deterministic": stored_hash == replayed_hash,
             "feedback": [dict(r) for r in feedback_rows],
             "replayed_at": datetime.now(timezone.utc).isoformat(),
         }

@@ -1,15 +1,46 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Any
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+import json
 
 from apps.api_gateway.deps import get_db
-from apps.api_gateway.schemas.decision import DecisionResponse
+from apps.api_gateway.schemas.decision import (
+    DecisionResponse,
+    DecisionReplayResponse,
+    DecisionFeedbackResponse,
+    DecisionFeedbackRequest,
+)
 from apps.api_gateway.services.decision_service import DecisionService
 
 router = APIRouter()
 
 
-@router.post("/evaluate")
+async def decision_generator():
+    from apps.api_gateway.services.sse_broadcaster import decision_broadcaster
+    q = decision_broadcaster.subscribe()
+    try:
+        while True:
+            data = await q.get()
+            yield {
+                "event": "decision_evaluated",
+                "data": json.dumps(data)
+            }
+    except asyncio.CancelledError:
+        pass
+    finally:
+        decision_broadcaster.unsubscribe(q)
+
+
+@router.get("/stream")
+async def stream_decisions():
+    """Stream live evaluated decisions via SSE."""
+    return EventSourceResponse(decision_generator())
+
+
+
+@router.post("/evaluate", response_model=DecisionResponse)
 def evaluate_decision(payload: dict[str, Any], db: Session = Depends(get_db)):
     service = DecisionService(db)
     return service.evaluate_event(payload)
@@ -30,7 +61,7 @@ def recompute_decision(ticket_id: str, db: Session = Depends(get_db)):
     return service.recompute_decision(ticket_id)
 
 
-@router.get("/event/{event_id}")
+@router.get("/event/{event_id}", response_model=DecisionResponse)
 def get_decision_for_event(event_id: str, db: Session = Depends(get_db)):
     service = DecisionService(db)
     decision = service.get_latest_decision_for_event(event_id)
@@ -39,7 +70,7 @@ def get_decision_for_event(event_id: str, db: Session = Depends(get_db)):
     return decision
 
 
-@router.get("/{decision_id}")
+@router.get("/{decision_id}", response_model=DecisionResponse)
 def get_decision_by_id(decision_id: int, db: Session = Depends(get_db)):
     service = DecisionService(db)
     decision = service.get_decision_by_id(decision_id)
@@ -48,12 +79,12 @@ def get_decision_by_id(decision_id: int, db: Session = Depends(get_db)):
     return decision
 
 
-@router.get("/{decision_id}/detail")
+@router.get("/{decision_id}/detail", response_model=DecisionResponse)
 def get_decision_detail(decision_id: int, db: Session = Depends(get_db)):
     return get_decision_by_id(decision_id, db)
 
 
-@router.post("/{decision_id}/replay")
+@router.post("/{decision_id}/replay", response_model=DecisionReplayResponse)
 def replay_decision(decision_id: int, db: Session = Depends(get_db)):
     service = DecisionService(db)
     replay = service.replay_decision(decision_id)
@@ -62,26 +93,28 @@ def replay_decision(decision_id: int, db: Session = Depends(get_db)):
     return replay
 
 
-@router.post("/{decision_id}/approve")
+@router.post("/{decision_id}/approve", response_model=DecisionFeedbackResponse)
 def approve_decision(
-    decision_id: int, payload: dict[str, Any] | None = None, db: Session = Depends(get_db)
+    decision_id: int, payload: DecisionFeedbackRequest | None = None, db: Session = Depends(get_db)
 ):
     service = DecisionService(db)
-    note = payload.get("note", "") if payload else ""
+    note = payload.note if payload else ""
     return service.record_feedback(decision_id, "approve", note)
 
 
-@router.post("/{decision_id}/reject")
+@router.post("/{decision_id}/reject", response_model=DecisionFeedbackResponse)
 def reject_decision(
-    decision_id: int, payload: dict[str, Any] | None = None, db: Session = Depends(get_db)
+    decision_id: int, payload: DecisionFeedbackRequest | None = None, db: Session = Depends(get_db)
 ):
     service = DecisionService(db)
-    note = payload.get("note", "") if payload else ""
+    note = payload.note if payload else ""
     return service.record_feedback(decision_id, "reject", note)
 
 
-@router.post("/{decision_id}/override")
-def override_decision(decision_id: int, payload: dict[str, Any], db: Session = Depends(get_db)):
+@router.post("/{decision_id}/override", response_model=DecisionFeedbackResponse)
+def override_decision(
+    decision_id: int, payload: DecisionFeedbackRequest, db: Session = Depends(get_db)
+):
     service = DecisionService(db)
-    note = payload.get("note", "")
+    note = payload.note
     return service.record_feedback(decision_id, "override", note)

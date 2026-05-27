@@ -60,7 +60,7 @@ export function ScenarioPicker({ activeId, onChange }: Props) {
         <div className="absolute right-0 top-full z-50 mt-2 w-[420px] rounded-2xl border border-zinc-700/70 bg-zinc-900/95 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
             <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-500">
-              Scenario · {scenarios.length} incidents · press 1–{scenarios.length}
+              Scenario · {scenarios.length} incidents · press 1-{scenarios.length}
             </div>
             <button
               onClick={() => setOpen(false)}
@@ -97,7 +97,7 @@ export function ScenarioPicker({ activeId, onChange }: Props) {
           </div>
           <div className="border-t border-zinc-800 px-4 py-2">
             <div className="font-mono text-[10px] text-zinc-600">
-              press <kbd className="rounded border border-zinc-700 px-1">1</kbd>–<kbd className="rounded border border-zinc-700 px-1">{scenarios.length}</kbd> to switch · <kbd className="rounded border border-zinc-700 px-1">esc</kbd> to close
+              press <kbd className="rounded border border-zinc-700 px-1">1</kbd>-<kbd className="rounded border border-zinc-700 px-1">{scenarios.length}</kbd> to switch · <kbd className="rounded border border-zinc-700 px-1">esc</kbd> to close
             </div>
           </div>
         </div>

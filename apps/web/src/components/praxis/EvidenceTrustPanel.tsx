@@ -1,7 +1,7 @@
 "use client";
 
 import { TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
-import { getPackById } from "@/lib/praxis-api";
+import { getPackById } from "@/lib/api";
 import { PraxisMark } from "./PraxisMark";
 
 interface EvidenceTrustPanelProps {

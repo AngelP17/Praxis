@@ -54,7 +54,7 @@ export function FlociHealth() {
           setHealth(await res.json());
         }
       } catch {
-        // Floci not running — silently handle
+        // Floci not running, silently handle
       }
     };
     poll();

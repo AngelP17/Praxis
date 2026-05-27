@@ -21,6 +21,7 @@ export async function proxyBackend(
   init?: RequestInit,
   demoFallback?: () => Response,
 ) {
+  const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
   try {
     const response = await fetch(buildBackendUrl(pathname), {
       ...init,
@@ -30,7 +31,7 @@ export async function proxyBackend(
       },
     });
 
-    if (!response.ok && demoFallback) {
+    if (!response.ok && isDemoMode && demoFallback) {
       return demoFallback();
     }
 
@@ -40,7 +41,9 @@ export async function proxyBackend(
       headers: response.headers,
     });
   } catch {
-    if (demoFallback) return demoFallback();
+    if ((isDemoMode || !process.env.API_INTERNAL_URL) && demoFallback) {
+      return demoFallback();
+    }
     return new Response(JSON.stringify({ error: "Backend unavailable" }), {
       status: 502,
       headers: { "Content-Type": "application/json" },

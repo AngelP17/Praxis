@@ -1,7 +1,7 @@
 "use client";
 
 import { Warning, Clock, User, Hash, Lightning } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import type { Ticket } from "@/types";
 
 export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {

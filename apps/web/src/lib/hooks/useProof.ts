@@ -25,7 +25,7 @@ export function useProof(packId: string) {
     setVerification(null);
 
     if (IS_DEMO_MODE) {
-      // On Vercel, show static demo data — API Gateway deploys separately
+      // On Vercel, show static demo data, API Gateway deploys separately
       const demoProof = getDemoProof(packId);
       setProof(demoProof);
       setVerification({ valid: true, proof_hash: demoProof.proof_hash, status: "verified", errors: [] });

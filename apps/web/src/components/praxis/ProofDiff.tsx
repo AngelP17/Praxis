@@ -166,7 +166,7 @@ export function ProofDiff() {
         <div className="mt-6 border border-[var(--praxis-mint)] bg-[rgba(62,255,168,0.04)] p-4 text-center">
           <Check className="mx-auto h-6 w-6 text-[var(--praxis-mint)]" />
           <p className="mt-2 font-mono text-[10px] uppercase text-[var(--praxis-mint)]">
-            Proofs are identical — deterministic replay confirmed
+            Proofs are identical, deterministic replay confirmed
           </p>
         </div>
       )}

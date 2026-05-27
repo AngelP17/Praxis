@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Sparkle, ArrowClockwise } from "@phosphor-icons/react";
 
-import { postJsonWithTimeout } from "@/lib/client-api";
+import { postJsonWithTimeout } from "@/lib/api";
 import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
@@ -115,7 +115,7 @@ export default function RecommendationsPage() {
           : { reason: `Rejected via Recommendations · ${row.ticket_id}` }
       );
     } catch {
-      // keep optimistic update — API unavailable in demo
+      // keep optimistic update, API unavailable in demo
     }
 
     if (mode === "accept") {

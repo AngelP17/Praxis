@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { DEMO_EVIDENCE } from "@/lib/demo-scenario";
-import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
+import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
 
 type PlatformSummary = {
   status: string;

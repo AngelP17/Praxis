@@ -114,27 +114,24 @@ export function ProofProtocolHero({
   );
 
   return (
-    <section ref={rootRef} className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] py-20 md:py-24 text-[var(--praxis-bone)]">
+    <section ref={rootRef} className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] py-24 md:py-32 text-[var(--praxis-bone)]">
       {/* ambient glow orbs */}
-      <div className="ppp-glow pointer-events-none absolute left-1/2 top-[18%] -z-10 h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(139,92,255,0.28),transparent_60%)] blur-[1px]" />
-      <div className="ppp-glow pointer-events-none absolute right-[10%] top-[32%] -z-10 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,rgba(62,255,168,0.14),transparent_60%)] blur-[1px]" />
+      <div className="ppp-glow pointer-events-none absolute left-[45%] top-[12%] -z-10 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(139,92,255,0.22),transparent_60%)] blur-[1px]" />
+      <div className="ppp-glow pointer-events-none absolute right-[5%] top-[25%] -z-10 h-[450px] w-[450px] rounded-full bg-[radial-gradient(circle,rgba(62,255,168,0.12),transparent_60%)] blur-[1px]" />
       {/* grid overlay */}
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.06] [background-image:linear-gradient(rgba(241,237,223,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.5)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_30%,black_20%,transparent_100%)]" />
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background-image:linear-gradient(rgba(241,237,223,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.5)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_30%,black_20%,transparent_100%)]" />
 
       {/* top metadata strip */}
-      <div className="relative z-20 border-b px-5 py-2" style={{ borderColor: "var(--praxis-line)" }}>
+      <div className="relative z-20 border-b px-5 py-2.5" style={{ borderColor: "var(--praxis-line)" }}>
         <div className="mx-auto flex max-w-7xl items-center justify-between font-mono text-[9px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
           <span>run_id &middot; <span style={{ color: "var(--praxis-bone)" }}>{runId}</span></span>
-          <span className="hidden md:block">praxis proof protocol &middot; <span style={{ color: "var(--praxis-plasma)" }}>v0.1</span></span>
-          <span className="hidden md:flex items-center gap-2">
-            <span className="h-1 w-1 rounded-full" style={{ background: "var(--praxis-argon)" }} />
-            floci &middot; ready
-          </span>
+          <span className="hidden md:block">praxis proof protocol</span>
+          <span className="hidden md:block">floci &middot; ready</span>
         </div>
       </div>
 
       {/* nav */}
-      <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 pt-8 pb-4">
+      <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 pt-6 pb-4">
         <Link
           href="/"
           className="flex items-center gap-3 rounded-full border px-4 py-2 text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-[1.02]"
@@ -161,77 +158,111 @@ export function ProofProtocolHero({
               boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
             }}
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-[var(--praxis-mint)] shadow-[0_0_6px_rgba(62,255,168,0.6)]" />
-            CI green &middot; {runId.substring(0, 20)}
+            {runId.substring(0, 20)}
           </div>
         </div>
       </nav>
 
-      {/* hero */}
-      <div className="relative mx-auto flex min-h-[88dvh] max-w-7xl flex-col items-center justify-center px-5 pt-12 pb-20 text-center">
-        <div
-          className="ppp-hero-copy mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
-          style={{
-            borderColor: "rgba(139,92,255,0.28)",
-            background: "rgba(139,92,255,0.06)",
-            color: "var(--praxis-violet)",
-            backdropFilter: "blur(28px) saturate(180%)",
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
-          }}
-        >
-          <span className="h-1 w-1 rounded-full bg-[var(--praxis-violet)] shadow-[0_0_6px_rgba(139,92,255,0.8)]" />
-          Praxis Proof Protocol v0.1
+      {/* asymmetric split hero */}
+      <div className="relative mx-auto grid min-h-[76dvh] max-w-7xl grid-cols-1 grid-flow-dense gap-12 px-5 pt-10 pb-16 lg:grid-cols-12 lg:items-center">
+        {/* Left column: copywriting and actions */}
+        <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left">
+          <div
+            className="ppp-hero-copy mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
+            style={{
+              borderColor: "rgba(139,92,255,0.28)",
+              background: "rgba(139,92,255,0.06)",
+              color: "var(--praxis-plasma)",
+              backdropFilter: "blur(28px) saturate(180%)",
+              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
+            }}
+          >
+            Praxis Proof Protocol
+          </div>
+
+          <h1 className="ppp-hero-copy font-display text-[clamp(2.8rem,5.5vw,5.5rem)] font-semibold leading-[0.94] tracking-[-0.02em] text-[var(--praxis-bone)]">
+            Every decision ships <br className="hidden lg:block" />
+            with a <span className="relative inline-flex h-[0.72em] min-w-[2.6em] translate-y-[0.04em] items-center justify-center rounded-full bg-[linear-gradient(110deg,var(--praxis-plasma),var(--praxis-argon))] px-[0.3em] align-middle text-[0.42em] font-semibold text-[var(--praxis-obsidian)] shadow-[0_0_40px_rgba(139,92,255,0.4)]">proof</span> operators <br className="hidden lg:block" />
+            can replay.
+          </h1>
+
+          <p className="ppp-hero-copy mt-6 max-w-xl text-base leading-7 text-[var(--praxis-mute)]">
+            Ontology-backed decisions with deterministic proof objects and governed human actions.
+          </p>
+
+          <div className="ppp-hero-copy mt-8 flex flex-col items-center gap-4 sm:flex-row">
+            <button
+              onClick={onRunPipeline}
+              className="group inline-flex items-center gap-3 rounded-full bg-[var(--praxis-bone)] px-8 py-3.5 font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--praxis-obsidian)] shadow-[0_0_30px_rgba(241,237,223,0.1)] transition-all duration-700 hover:scale-105 hover:shadow-[0_0_50px_rgba(241,237,223,0.18)]"
+            >
+              Run live pipeline
+              <ArrowRight className="h-4 w-4 transition-transform duration-700 group-hover:translate-x-1" />
+            </button>
+            <Link
+              href="/console"
+              className="inline-flex items-center gap-3 rounded-full border border-[rgba(241,237,223,0.24)] px-8 py-3.5 font-mono text-xs uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-all duration-700 hover:scale-105 hover:border-[rgba(241,237,223,0.5)]"
+            >
+              Open console
+            </Link>
+          </div>
+
+          {/* stats strip below layout */}
+          <div className="ppp-hero-copy mt-12 flex flex-wrap items-center justify-center gap-8 md:gap-10 lg:justify-start">
+            {stats.map((stat) => (
+              <div key={stat.label} className="ppp-stat text-center lg:text-left">
+                <div className="font-display text-2xl font-semibold tracking-tight md:text-3xl">{stat.value}</div>
+                <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--praxis-muted)]">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <h1 className="ppp-hero-copy max-w-[1100px] font-display text-[clamp(3.6rem,8vw,8rem)] font-semibold leading-[0.92] tracking-[-0.02em]">
-          Every decision ships{" "}
-          <br className="hidden md:block" />
-          with a{" "}
-          <span className="relative inline-flex h-[0.72em] min-w-[2.6em] translate-y-[0.04em] items-center justify-center rounded-full bg-[linear-gradient(110deg,var(--praxis-violet),var(--praxis-mint))] px-[0.3em] align-middle text-[0.42em] font-semibold text-[var(--praxis-bg)] shadow-[0_0_60px_rgba(113,91,255,0.4),0_0_120px_rgba(62,255,168,0.15)]">
-            proof
-          </span>{" "}
-          operators
-          <br className="hidden md:block" />
-          can replay.
-        </h1>
+        {/* Right column: premium proof preview with background video loop */}
+        <div className="ppp-hero-copy relative hidden lg:flex lg:col-span-5 flex-col border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.88)] backdrop-blur-md p-6 shadow-2xl" style={{ minHeight: "330px" }}>
+          {/* Loop Operator background video */}
+          <div className="absolute inset-0 -z-10 overflow-hidden opacity-[0.14] transition-opacity duration-700">
+            <video
+              src="/praxis-assets/field-operator-loop.mp4"
+              poster="/praxis-assets/operator-poster.png"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="h-full w-full object-cover"
+            />
+          </div>
 
-        <p className="ppp-hero-copy mt-7 max-w-2xl text-lg leading-8 text-[rgba(241,237,223,0.6)] md:text-xl">
-          Praxis turns messy customer signals into ontology-backed decisions, governed human actions, deterministic proof objects, and executive value cases — all cryptographically verifiable.
-        </p>
+          <div className="flex items-center justify-between border-b border-[var(--praxis-line)] pb-3">
+            <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--praxis-muted)]">Verified Proof State</span>
+            <span className="h-2 w-2 rounded-full bg-[var(--praxis-argon)] animate-pulse" style={{ boxShadow: "0 0 8px var(--praxis-argon)" }} />
+          </div>
 
-        <div className="ppp-hero-copy mt-10 flex flex-col items-center gap-4 sm:flex-row">
-          <button
-            onClick={onRunPipeline}
-            className="group inline-flex items-center gap-3 rounded-full bg-[var(--praxis-bone)] px-8 py-4 font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--praxis-bg)] shadow-[0_0_40px_rgba(241,237,223,0.12)] transition-all duration-700 hover:scale-105 hover:shadow-[0_0_60px_rgba(241,237,223,0.2)]"
-          >
-            Run live pipeline
-            <ArrowRight className="h-4 w-4 transition-transform duration-700 group-hover:translate-x-1" />
-          </button>
-          <Link
-            href="/console"
-            className="inline-flex items-center gap-3 rounded-full border border-[rgba(241,237,223,0.3)] px-8 py-4 font-mono text-xs uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-all duration-700 hover:scale-105 hover:border-[rgba(241,237,223,0.6)]"
-          >
-            Open console
-          </Link>
-        </div>
-
-        {/* stats strip */}
-        <div className="ppp-hero-copy mt-16 flex flex-wrap items-center justify-center gap-8 md:gap-12">
-          {stats.map((stat) => (
-            <div key={stat.label} className="ppp-stat text-center">
-              <div className="font-display text-3xl font-semibold tracking-tight md:text-4xl">{stat.value}</div>
-              <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--praxis-muted)]">{stat.label}</div>
+          <div className="mt-5 space-y-3.5 font-mono text-[10.5px] leading-relaxed">
+            <div className="flex justify-between">
+              <span className="text-[var(--praxis-muted)]">RUN ID:</span>
+              <span className="text-[var(--praxis-bone)]">{runId}</span>
             </div>
-          ))}
-        </div>
+            <div className="flex justify-between">
+              <span className="text-[var(--praxis-muted)]">PROOF HASH:</span>
+              <span className="text-[var(--praxis-argon)] font-semibold">{fullProofHash.substring(0, 20)}...</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-[var(--praxis-muted)]">ATTESTATION:</span>
+              <span className="text-[var(--praxis-plasma)] font-semibold">ED25519 VERIFIED</span>
+            </div>
+            <div className="flex justify-between border-b border-[var(--praxis-line)] pb-3">
+              <span className="text-[var(--praxis-muted)]">SUBSTRATE:</span>
+              <span className="text-[var(--praxis-argon)]">floci local sandbox</span>
+            </div>
+          </div>
 
-        {/* bottom metadata strip */}
-        <div className="ppp-hero-copy mt-12 flex flex-wrap items-center justify-center gap-4 font-mono text-[9px] uppercase tracking-[0.14em]" style={{ color: "var(--praxis-faint)" }}>
-          <span>proof_hash &middot; <span style={{ color: "var(--praxis-amber)" }}>{fullProofHash.substring(0, 24)}</span></span>
-          <span style={{ color: "var(--praxis-line)" }}>·</span>
-          <span>replay <span style={{ color: "var(--praxis-argon)" }}>deterministic</span></span>
-          <span style={{ color: "var(--praxis-line)" }}>·</span>
-          <span>signature <span style={{ color: "var(--praxis-argon)" }}>ed25519 verified</span></span>
+          <div className="mt-5 rounded border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.65)] p-3.5 font-mono text-[9.5px]">
+            <span className="text-[var(--praxis-argon)]">$</span> <span className="text-[var(--praxis-muted)]">uvx praxis-verify artifacts/latest/praxis_proof.json</span>
+            <div className="mt-2 flex items-center gap-1.5 text-[var(--praxis-argon)]">
+              <CheckCircle className="h-3.5 w-3.5 shrink-0" />
+              <span>MERKLE ROOT INTACT &middot; 6 CHECKS PASSED</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -261,7 +292,7 @@ export function ProofProtocolHero({
         <article className="ppp-bento-card group relative overflow-hidden bg-[rgba(10,10,20,0.94)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-5 md:p-8">
           <PraxisMark size={28} />
           <h2 className="mt-8 font-display text-3xl font-semibold leading-none tracking-normal md:text-4xl">Floci runtime ready</h2>
-          <p className="mt-4 text-sm leading-7 text-[var(--praxis-muted)]">SQS, S3, DynamoDB and EventBridge — the full proof pipeline from local FieldLab substrate.</p>
+          <p className="mt-4 text-sm leading-7 text-[var(--praxis-muted)]">SQS, S3, DynamoDB and EventBridge, the full proof pipeline from local FieldLab substrate.</p>
         </article>
 
         <article className="ppp-bento-card group overflow-hidden bg-[rgba(28,26,46,0.94)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-12 md:p-8">
@@ -313,16 +344,10 @@ export function ProofProtocolHero({
       <div className="overflow-hidden border-y border-[var(--praxis-line)] py-8">
         <div className="praxis-marquee flex w-max gap-16 font-mono text-xs uppercase tracking-[0.14em] text-[var(--praxis-muted)]">
           {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "Ed25519 signing", "deterministic proof"].map((item) => (
-            <span key={item} className="flex items-center gap-3">
-              <span className="h-1 w-1 rounded-full bg-[var(--praxis-violet)]" />
-              {item}
-            </span>
+            <span key={item}>{item}</span>
           ))}
           {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "Ed25519 signing", "deterministic proof"].map((item) => (
-            <span key={`${item}-dup`} className="flex items-center gap-3">
-              <span className="h-1 w-1 rounded-full bg-[var(--praxis-violet)]" />
-              {item}
-            </span>
+            <span key={`${item}-dup`}>{item}</span>
           ))}
         </div>
       </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CaretRight, Warning, Clock } from "@phosphor-icons/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 import type { Ticket } from "@/types";
 
 function priorityColor(priority: string) {

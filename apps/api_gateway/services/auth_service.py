@@ -2,16 +2,19 @@ from __future__ import annotations
 
 import hashlib
 import json
+import secrets
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
+import bcrypt
 from jose import JWTError, jwt
 
 from apps.api_gateway.config import settings
 
 ALGORITHM = "HS256"
-ACCESS_TOKEN_MINUTES = 60 * 8
+ACCESS_TOKEN_MINUTES = 30
+REFRESH_TOKEN_DAYS = 7
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 VALID_ROLES = {"admin", "agent", "viewer"}
 USERS_FILE_LOCATIONS = [
@@ -24,6 +27,12 @@ USERS_FILE_LOCATIONS = [
 
 
 class AuthService:
+    _revoked_tokens: set[str] = set()
+    _refresh_tokens: dict[str, dict[str, Any]] = {}
+    
+    def __init__(self):
+        pass
+
     def login(self, username: str, password: str) -> dict[str, Any] | None:
         user = self._get_user(username)
         if user is None:
@@ -36,16 +45,83 @@ class AuthService:
             "role": user["role"],
             "display_name": user["display_name"],
         }
+        access_token = self._create_token(public_user, token_type="access")
+        refresh_token = self._create_token(public_user, token_type="refresh")
+        
+        self._refresh_tokens[refresh_token] = {
+            "username": username,
+            "created_at": datetime.now(timezone.utc),
+        }
+        
         return {
-            "access_token": self._create_token(public_user),
+            "access_token": access_token,
+            "refresh_token": refresh_token,
             "token_type": "bearer",
+            "expires_in": ACCESS_TOKEN_MINUTES * 60,
             "user": public_user,
         }
+    
+    def refresh_token(self, refresh_token: str) -> dict[str, Any] | None:
+        if refresh_token not in self._refresh_tokens:
+            return None
+        
+        try:
+            payload = jwt.decode(refresh_token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        except JWTError:
+            return None
+        
+        if payload.get("type") != "refresh":
+            return None
+        
+        username = payload.get("sub")
+        if not username:
+            return None
+        
+        user = self._get_user(username)
+        if user is None:
+            return None
+        
+        del self._refresh_tokens[refresh_token]
+        self._revoked_tokens.add(refresh_token)
+        
+        public_user = {
+            "username": user["username"],
+            "role": user["role"],
+            "display_name": user["display_name"],
+        }
+        
+        new_access_token = self._create_token(public_user, token_type="access")
+        new_refresh_token = self._create_token(public_user, token_type="refresh")
+        
+        self._refresh_tokens[new_refresh_token] = {
+            "username": username,
+            "created_at": datetime.now(timezone.utc),
+        }
+        
+        return {
+            "access_token": new_access_token,
+            "refresh_token": new_refresh_token,
+            "token_type": "bearer",
+            "expires_in": ACCESS_TOKEN_MINUTES * 60,
+            "user": public_user,
+        }
+    
+    def revoke_token(self, token: str) -> None:
+        self._revoked_tokens.add(token)
+        if token in self._refresh_tokens:
+            del self._refresh_tokens[token]
+    
+    def is_token_revoked(self, token: str) -> bool:
+        return token in self._revoked_tokens
 
     def current_user(self, token: str) -> dict[str, Any] | None:
+        if self.is_token_revoked(token):
+            return None
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         except JWTError:
+            return None
+        if payload.get("type") != "access":
             return None
         username = payload.get("sub")
         if not username:
@@ -132,13 +208,18 @@ class AuthService:
             return
         raise LookupError("User not found")
 
-    def _create_token(self, user: dict[str, Any]) -> str:
-        expires_at = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_MINUTES)
+    def _create_token(self, user: dict[str, Any], token_type: str = "access") -> str:
+        if token_type == "refresh":
+            expires_at = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_DAYS)
+        else:
+            expires_at = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_MINUTES)
         payload = {
             "sub": user["username"],
             "role": user["role"],
             "display_name": user["display_name"],
+            "type": token_type,
             "exp": expires_at,
+            "jti": secrets.token_hex(16),
         }
         return jwt.encode(payload, settings.SECRET_KEY, algorithm=ALGORITHM)
 
@@ -179,7 +260,12 @@ class AuthService:
         return PROJECT_ROOT / "users.json"
 
     def _hash_password(self, password: str) -> str:
-        return hashlib.sha256(password.encode()).hexdigest()
+        return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
     def _verify_password(self, password: str, password_hash: str) -> bool:
-        return self._hash_password(password) == password_hash
+        if not password_hash.startswith("$2b$"):
+            legacy_hash = hashlib.sha256(password.encode()).hexdigest()
+            if legacy_hash == password_hash:
+                return True
+            return False
+        return bcrypt.checkpw(password.encode(), password_hash.encode())

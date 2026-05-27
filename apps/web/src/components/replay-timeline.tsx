@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Clock, ArrowCounterClockwise, CheckCircle, XCircle, UserCircle } from "@phosphor-icons/react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
 
 export type ReplayEvent = {
   id: string;

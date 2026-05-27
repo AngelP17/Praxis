@@ -2,19 +2,19 @@
   "users": [
     {
       "username": "admin",
-      "password_hash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "password_hash": "$2b$12$BCqFRodNrM9ZPASZA6T1sOLWT2a7.suO.hdEIY1SbfBdttJtzcQvy",
       "role": "admin",
       "display_name": "Administrator"
     },
     {
       "username": "operator",
-      "password_hash": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+      "password_hash": "$2b$12$MpSg5QRJKuTB17NOQVz/LOseKqPNVJiivMSJdMxPuzZrFRZV.wnPW",
       "role": "agent",
       "display_name": "Demo Operator"
     },
     {
       "username": "viewer",
-      "password_hash": "d35ca5051b82ffc326a3b0b6574a9a3161dee16b9478a199ee39cd803ce5b799",
+      "password_hash": "$2b$12$d56uQlEV68N7A8MLrlvCju.wK8gRJsbORkgRR7p.vHyKAdFjbi0XC",
       "role": "viewer",
       "display_name": "Read-Only Viewer"
     }

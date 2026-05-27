@@ -1,7 +1,7 @@
 "use client";
 
 import { FileText, CheckCircle, ArrowRight, GitBranch, Rocket } from "@phosphor-icons/react";
-import { getPackById } from "@/lib/praxis-api";
+import { getPackById } from "@/lib/api";
 import { PraxisMark } from "./PraxisMark";
 
 interface ExecutiveReadoutProps {

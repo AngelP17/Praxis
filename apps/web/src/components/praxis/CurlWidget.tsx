@@ -90,8 +90,8 @@ export function CurlWidget({
             ? "Checking replay determinism"
             : determinismResult !== null
             ? determinismResult
-              ? `Determinism Verified — ${resolvedProofHash.slice(0, 22)}…`
-              : "Determinism Failed — Hashes Diverge"
+              ? `Determinism Verified: ${resolvedProofHash.slice(0, 22)}…`
+              : "Determinism Failed: Hashes Diverge"
             : "Check Replay Determinism"}
         </button>
       )}

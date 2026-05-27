@@ -1,7 +1,7 @@
 "use client";
 
 import { Download, FileText, ShieldCheck } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export type AuditItem = {
   id: string;

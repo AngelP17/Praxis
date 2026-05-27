@@ -81,7 +81,7 @@ function Sidebar({ active }: { active: string }) {
 export function HiFiOverviewPanel() {
   return (
     <div className="relative h-full w-full" style={{ background: OBSIDIAN, color: BONE }}>
-      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="01 / 09 Overview" />
+      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="Overview" />
       <Sidebar active="Overview" />
 
       <div className="absolute bottom-0 left-[176px] right-0 top-[42px] grid grid-cols-12 grid-flow-dense gap-[10px] p-5">
@@ -205,7 +205,7 @@ export function HiFiOverviewPanel() {
 export function HiFiDecisionPanel() {
   return (
     <div className="relative h-full w-full" style={{ background: OBSIDIAN, color: BONE }}>
-      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="05 / 09 Decision" />
+      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="Decision" />
       <Sidebar active="Decision" />
 
       <div className="absolute bottom-0 left-[176px] right-0 top-[42px] grid grid-cols-12 grid-flow-dense gap-[10px] p-5">
@@ -333,7 +333,7 @@ export function HiFiReadoutPanel() {
         style={{ borderColor: line, color: mute, background: bg }}
       >
         <span style={{ color: bone }}>praxis &middot; field workbench</span>
-        <span>09 / 09 Executive Readout</span>
+        <span>Executive Readout</span>
         <div className="flex items-center gap-3">
           <span>run_id &middot; <span style={{ color: bone }}>pxs_GA-PRINT-GPO-042</span></span>
           {/* dark / paper toggle */}
@@ -479,7 +479,7 @@ export function HiFiProofObjectPanel() {
 
   return (
     <div className="relative h-full w-full overflow-hidden" style={{ background: OBSIDIAN, color: BONE }}>
-      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="07 / 09 Proof Object" />
+      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="Proof Object" />
       <Sidebar active="Proof Object" />
       <div className="absolute bottom-0 left-[176px] right-0 top-[42px] grid grid-flow-dense grid-cols-12 gap-[10px] overflow-auto p-5">
         <div className="col-span-7 flex flex-col border" style={{ borderColor: LINE, background: SURFACE }}>
@@ -566,7 +566,7 @@ export function HiFiFieldLabPanel() {
 
   return (
     <div className="relative h-full w-full overflow-hidden" style={{ background: OBSIDIAN, color: BONE }}>
-      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="08 / 09 FieldLab" />
+      <ScreenChrome runId="pxs_GA-PRINT-GPO-042" screenLabel="FieldLab" />
       <Sidebar active="FieldLab" />
       <div className="absolute bottom-0 left-[176px] right-0 top-[42px] grid grid-flow-dense grid-cols-12 gap-[10px] p-5">
         <div className="col-span-3 flex flex-col gap-2">
