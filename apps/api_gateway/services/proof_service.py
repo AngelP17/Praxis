@@ -29,13 +29,15 @@ class ProofService:
             )
         )
 
-    def verify_proof(self, proof: dict[str, Any]) -> dict[str, Any]:
-        result = PraxisProofVerifier().verify(proof)
+    def verify_proof(self, proof: dict[str, Any], level: str = "L0") -> dict[str, Any]:
+        result = PraxisProofVerifier(level=level).verify(proof)
         return {
             "valid": result.valid,
             "status": result.status,
             "errors": result.errors,
             "proof_hash": result.proof_hash,
+            "level": result.level,
+            "conformance": result.conformance,
         }
 
     def get_pack_proof(self, pack_id: str) -> dict[str, Any]:

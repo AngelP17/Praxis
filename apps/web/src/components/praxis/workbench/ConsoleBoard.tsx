@@ -40,7 +40,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
   const topbarRight = (
     <>
       <FlociHealth />
-      <PrimaryAction href={`/proof/${runId}`}>View signed proof</PrimaryAction>
+      <PrimaryAction href={`/proof/${runId}`}>View proof object</PrimaryAction>
     </>
   );
 

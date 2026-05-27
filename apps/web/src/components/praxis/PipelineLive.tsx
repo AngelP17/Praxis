@@ -37,7 +37,7 @@ const STAGE_ICONS: Record<string, any> = {
   "dynamo.put": Database,
   "events.emit": Envelope,
   "proof.hash": BracketsCurly,
-  "proof.sign": PraxisMark,
+  "proof.verify": PraxisMark,
 };
 
 function StageDot({ active }: { active: boolean }) {

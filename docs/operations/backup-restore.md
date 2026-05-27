@@ -32,7 +32,7 @@ Do **NOT** store secret keys or certificates in database backups. Secure the fol
 - Private Ed25519 signing keys.
 - TLS/SSL certificates for the gateway API.
 
-Ensure these secrets are backed up securely within a centralized Vault or AWS KMS and are never exposed on standard disks.
+Ensure these secrets are backed up in your organization-managed secret store and are never exposed on standard disks. Praxis does not currently include a built-in Vault or AWS KMS integration.
 
 ---
 

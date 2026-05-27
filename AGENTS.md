@@ -122,6 +122,7 @@ If a command in any doc conflicts with the Makefile or a workflow file, the exec
 - Generate and verify proof object: `make praxis-proof`
 - Open proof summary in browser: `make praxis-proof-open`
 - Run solution-pack benchmarks: `make praxis-benchmark`
+- Sync frontend proof artifacts from canonical builder output: `make praxis-sync-frontend-proofs`
 - Praxis algorithm tests: `make praxis-test`
 - Verify Floci runtime: `make praxis-floci-verify`
 - Verify Praxis canvas/design references: `make praxis-canvas-verify`
@@ -212,6 +213,7 @@ New algorithms live in `packages/astraea-core/astraea/praxis/`:
 - Generated screenshots in `screenshots/` and `docs/demo/screenshots/` unless the task is screenshot refresh.
 - Generated verification artifacts under `artifacts/latest/`, including `praxis_proof.json` and `proof-summary.md`, unless the task is proof regeneration.
 - Generated frontend artifacts: `apps/web/src/lib/generated/scenarios.generated.json` unless the task explicitly regenerates via `make praxis-sync-frontend-scenarios`.
+- Generated frontend proof artifacts: `apps/web/src/lib/generated/proofs.generated.json` unless the task explicitly regenerates via `make praxis-sync-frontend-proofs`.
 - Local databases: `*.db`, including `praxis.db`, `test_praxis.db`, and `test_aether_sentinel.db`.
 - Canvas export zips and uploads under `praxis-canvas/praxis/` unless the task explicitly asks to regenerate or package the design canvas.
 - User-created untracked experiments unless the task explicitly asks to promote them.
@@ -241,6 +243,7 @@ When a verification command is blocked, report:
 
 - GitHub Actions use Python `3.12`, Node `22`, and pnpm `10.29.3`.
 - `.github/workflows/ci.yml` runs Python unit/integration tests, selected Astraea reasoning tests, TypeScript check, Next build, production pnpm audit, gpt-taste QA, and TruffleHog.
+- `.github/workflows/ci.yml` includes `tests/praxis` as a required Python gate and runs `pip-audit`.
 - `apps/web/package.json` `lint:gpt-taste:ci` runs with `--max-warnings=0` — any warning fails the script. A separate `lint:gpt-taste:json` variant is kept for tooling that needs JSON output.
 - `.github/workflows/ci.yml` `gpt-taste-qa` invokes `pnpm lint:gpt-taste:ci` and is a hard gate — `continue-on-error` is removed. Any GPT-taste warning fails CI.
 - `.github/workflows/fieldlab-proof.yml` starts Floci, validates the manufacturing solution pack, emits and verifies a proof, checks determinism, runs benchmarks, and attempts Sigstore signing. Sigstore signing is `continue-on-error: true`.

@@ -145,7 +145,7 @@ def test_l2_fails_closed_on_missing_attestation(base_proof):
     verifier = PraxisProofVerifier(level="L2")
     result = verifier.verify(tampered)
     assert result.valid is False
-    assert any("missing attestation block" in err for err in result.errors)
+    assert any("unsupported_attestation_verification" in err for err in result.errors)
 
 
 def test_l2_fails_closed_on_invalid_inclusion_proof(base_proof):
@@ -165,12 +165,7 @@ def test_l2_fails_closed_on_invalid_inclusion_proof(base_proof):
     verifier = PraxisProofVerifier(level="L2")
     result = verifier.verify(tampered)
     assert result.valid is False
-    assert any(
-        "invalid Sigstore bundle" in err
-        or "missing attestation block" in err
-        or "signature verification failed" in err
-        for err in result.errors
-    )
+    assert any("unsupported_attestation_verification" in err for err in result.errors)
 
 
 def test_generate_same_proof_twice_has_same_hash(base_proof):

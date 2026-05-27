@@ -1,0 +1,33 @@
+name: Release Proof Artifact
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  build-verifier-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build praxis verifier wheel
+        run: |
+          python -m pip install --upgrade pip build
+          python -m build packages/cli/praxis_verify
+      - name: Upload verifier wheel
+        uses: actions/upload-artifact@v4
+        with:
+          name: praxis-verifier-wheel
+          path: packages/cli/praxis_verify/dist/*
+      - name: Attest verifier wheel
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: packages/cli/praxis_verify/dist/*

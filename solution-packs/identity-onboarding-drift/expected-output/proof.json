@@ -1,94 +1,109 @@
 {
   "action": {
-    "action_log_hash": "sha256:d8c6fa64d7c0e81c19bcf8f8319f3900cb65f12decfdf9d94b0d0c6488d011f3",
+    "action_log_hash": "sha256:b31dd1547d5021a02dbe6e6766a29abd11df5c6c4d66bcbf4b33de3ba247885d",
     "actor": "operator",
-    "mode": "HUMAN_APPROVAL",
-    "recommended_action": "approve_remediation",
-    "risk": "medium",
-    "rollback": "Revert group membership changes to original AD state",
-    "run_id": "fieldlab_run_identity-onboarding-drift",
+    "mode": "human_approval",
+    "recommended_action": "acknowledge_incident",
+    "risk": "low",
+    "rollback": "No runtime mutation",
+    "run_id": "fieldlab_run_identity_onboarding_drift",
     "status": "approved"
   },
-  "customer_context_hash": "sha256:abc0e9b273bcd7ffaedd80ef3bf5cff47c1a802667b045e4c037218c78c34a75",
+  "customer_context_hash": "sha256:d35087bf4a22d4683d2d05c1f629a1abe9cae0e02cd9c99555571f796baacb48",
   "decision": {
-    "confidence": 0.85,
+    "confidence": 0.8,
     "next_best_questions": [
-      {
-        "acquisition_feasibility": 0.9,
-        "business_impact_weight": 0.7,
-        "expected_confidence_gain": 0.15,
-        "field": "employee_onboarding_delay",
-        "question": "What is the value for employee_onboarding_delay?",
-        "reason": "Expected confidence gain: 0.15"
-      },
-      {
-        "acquisition_feasibility": 0.8,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.1,
-        "field": "support_hours",
-        "question": "What is the value for support_hours?",
-        "reason": "Expected confidence gain: 0.1"
-      }
+      "What is the value for average_triage_latency_minutes?",
+      "What is the value for employee_onboarding_delay?",
+      "What is the value for onboarding_downtime_hours?",
+      "What is the value for support_hours?"
     ],
-    "priority_score": 0.85,
-    "requires_human_review": true,
-    "root_cause_hypothesis": "ad_onboarding_drift",
+    "priority_score": 0.5891,
+    "requires_human_review": false,
+    "root_cause_hypothesis": "fragmented_access_onboarding_ownership_causing_new_hires_be_blocked_erp_printer_networks",
     "signals": {
-      "actionability": 0.95,
-      "business_process_criticality": 0.8,
-      "customer_visible_impact": 0.75,
-      "recurrence_risk": 0.85,
-      "severity_score": 0.8,
-      "sla_exposure": 0.78
+      "actionability": 0.52,
+      "business_process_criticality": 0.5,
+      "customer_visible_impact": 0.45,
+      "recurrence_risk": 0.57,
+      "severity_score": 0.8313,
+      "sla_exposure": 0.42
     }
   },
   "evidence": {
-    "corroboration_score": 0.9,
-    "evidence_trust": 0.87,
-    "freshness_score": 0.92,
+    "corroboration_score": 0.7,
+    "evidence_trust": 0.8,
+    "freshness_score": 0.91,
     "raw_events": 8,
-    "source_coverage": 1.0,
+    "source_coverage": 0.71,
     "sources": [
       "active_directory",
       "identity_provider",
       "msp_ticketing",
+      "operator_note",
       "praxis"
     ]
   },
   "expansion": [
     {
-      "expansion_score": 0.82,
+      "expansion_score": 0.8225,
+      "factors": {
+        "executive_visibility": 0.75,
+        "implementation_reuse": 0.75,
+        "measurable_value": 0.85,
+        "shared_data_model": 0.9,
+        "stakeholder_overlap": 0.85,
+        "urgency": 0.7
+      },
+      "id": "automated-provisioning",
+      "name": "Automated Provisioning"
+    },
+    {
+      "expansion_score": 0.76,
       "factors": {
         "executive_visibility": 0.8,
-        "implementation_reuse": 0.9,
-        "measurable_value": 0.85,
+        "implementation_reuse": 0.7,
+        "measurable_value": 0.75,
         "shared_data_model": 0.8,
-        "stakeholder_overlap": 0.85,
-        "urgency": 0.75
+        "stakeholder_overlap": 0.8,
+        "urgency": 0.65
       },
-      "id": "iam-governance",
-      "name": "IAM Governance Portfolio"
+      "id": "privilege-access-governance",
+      "name": "Privileged Access Governance"
+    },
+    {
+      "expansion_score": 0.7525,
+      "factors": {
+        "executive_visibility": 0.7,
+        "implementation_reuse": 0.8,
+        "measurable_value": 0.7,
+        "shared_data_model": 0.85,
+        "stakeholder_overlap": 0.75,
+        "urgency": 0.6
+      },
+      "id": "drift-detection-remediation",
+      "name": "Drift Detection & Remediation"
     }
   ],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
-    "actions_available": 7,
-    "links_created": 35,
-    "mapping_confidence": 0.88,
-    "objects_created": 8
+    "actions_available": 6,
+    "links_created": 4,
+    "mapping_confidence": 0.5402,
+    "objects_created": 5
   },
-  "proof_hash": "sha256:d5c36453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed30a",
+  "proof_hash": "sha256:9ca391b704d2abf0d382f842f252c7ed45c0888ab3e7f1957527625a62273d84",
   "proof_id": "proof_praxis_identity_onboarding_drift_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:e6d36453cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed20a",
+    "replay_hash": "sha256:fd11fe1dbfaf343ebfbf90092b604f3305400fea39e58ab05cec3b2ec6502a42",
     "verified_at": "2026-05-12T00:00:00Z"
   },
-  "run_id": "fieldlab_run_identity-onboarding-drift",
+  "run_id": "fieldlab_run_identity_onboarding_drift",
   "solution_pack": "identity-onboarding-drift",
   "value_case": {
     "bucket": "demo and scope",
-    "confidence": 0.85,
+    "confidence": 0.6631,
     "estimated_annual_value": 64800.0,
     "primary_value_driver": "Align GPO memberships, resolve Active Directory onboarding drift, and clear user onboarding queues automatically",
     "roi_calculations": {

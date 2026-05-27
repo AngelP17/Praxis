@@ -47,7 +47,7 @@ function getDimensions(packId: string): Dimension[] {
       { label: "corroboration", score: 0.90, trend: "up", description: "Replica and PGPool align" },
       { label: "completeness", score: 0.92, trend: "stable", description: "All pooling options loaded" },
       { label: "consistency", score: 0.92, trend: "stable", description: "Confirmed lock contention" },
-      { label: "auditability", score: 0.92, trend: "up", description: "Decisions cryptographically signed" },
+      { label: "auditability", score: 0.92, trend: "up", description: "Proof hash and replay retained" },
     ],
   };
   return packs[packId] || packs["manufacturing-printer-gpo"];

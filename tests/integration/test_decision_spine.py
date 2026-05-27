@@ -6,6 +6,15 @@ import pytest
 from fastapi.testclient import TestClient
 
 from apps.api_gateway.main import app
+from infrastructure.db.base import Base
+from infrastructure.db.session import _import_models, engine
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_db():
+    _import_models()
+    Base.metadata.create_all(bind=engine)
+    yield
 
 
 @pytest.fixture
@@ -101,7 +110,7 @@ class TestDecisionSpine:
 
         asyncio.run(outbox_worker.process_pending_messages())
 
-        # Verify the outbox message is processed and set to 'published'
+        # Verify the local development outbox path records simulation explicitly.
         with SessionLocal() as db:
             from sqlalchemy import select
             msg = db.execute(
@@ -112,8 +121,9 @@ class TestDecisionSpine:
             ).scalar_one_or_none()
 
             assert msg is not None
-            assert msg.status == "published"
-            assert msg.published_at is not None
+            assert msg.status == "simulated"
+            assert msg.published_at is None
+            assert msg.idempotency_key == f"praxis.decision.feedback_recorded:{decision_id}:approve"
 
     def test_decision_replay_is_deterministic(self, client, auth_headers):
         """Replaying a decision should produce the same hash."""
@@ -187,6 +197,12 @@ class TestAuthFlow:
         assert "access_token" in data
         assert "refresh_token" in data
         assert data["refresh_token"] != refresh_token
+
+        reuse_response = client.post(
+            "/api/auth/refresh",
+            json={"refresh_token": refresh_token},
+        )
+        assert reuse_response.status_code == 401
 
     def test_revoked_token_rejected(self, client):
         """Revoked tokens should be rejected."""

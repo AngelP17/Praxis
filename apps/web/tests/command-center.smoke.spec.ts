@@ -18,9 +18,9 @@ test("command center loads operational shell without dead error wall", async ({ 
 
   await expect(page.getByText("Signal Queue").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.getByText("Praxis Decision").first()).toBeVisible();
-  await expect(page.getByText("INC-4821").first()).toBeVisible();
-  await expect(page.getByText("Press Line 3 vibration cascade").first()).toBeVisible();
-  await expect(page.getByText("Route to mechanical team and schedule bearing replacement.").first()).toBeVisible();
+  await expect(page.getByText("INC-4785").first()).toBeVisible();
+  await expect(page.getByText("PostgreSQL database replication lag alert").first()).toBeVisible();
+  await expect(page.getByText("Re-route write queries, tune connection pools").first()).toBeVisible();
   await expect(page.getByText("Replay hash chain").first()).toBeVisible();
   await expect(page.getByText("Live data did not load")).toHaveCount(0);
   await expect(page.getByText("0 visible")).toHaveCount(0);

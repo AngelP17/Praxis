@@ -8,13 +8,13 @@ This document contains a structured, timed technical script to guide you through
 
 > "Traditional enterprise AI systems are built on sand. They ingest messy operational data, run it through complex, probabilistic model layers or agent state loops, and execute high-impact interventions. But if an automated action triggers a production outage, it is virtually impossible to audit exactly why it occurred, prove that the decision logic was reproducible, or guarantee that historical event logs were not tampered with retroactively.
 >
-> **Praxis is a proof-carrying operational decision platform** designed to bridge this trust gap. It converts fragmented, unstructured enterprise signals into deterministic, cryptographically signed, and replay-verified decision objects."
+> **Praxis is a proof-carrying operational decision platform** designed to bridge this trust gap. It converts fragmented, unstructured enterprise signals into deterministic, schema-validated, and replay-verified decision objects."
 
 ---
 
 ## 0:45 to 1:45 | 2. Architecture and Pipeline (The Chain of Trust)
 
-> "Rather than relying on un-auditable AI agents, Praxis implements a strict, structured pipeline of trust that moves from messy telemetry to a signed proof object:
+> "Rather than relying on un-auditable AI agents, Praxis implements a strict, structured pipeline of trust that moves from messy telemetry to a proof object:
 >
 > 1. **Messy Signals**: Unstructured events are ingested and normalized into immutable CloudEvents.
 > 2. **Ontology Compiling**: Messy telemetry is compiled into a structured graph of operational nodes, links, and actions.
@@ -49,10 +49,10 @@ This document contains a structured, timed technical script to guide you through
 > make praxis-proof
 > ```
 >
-> This command compiles the local FieldLab events, runs the decision scoring engine, executes the ROI calculations, and exports the final signed proof to `artifacts/latest/praxis_proof.json` and a human-readable SRE summary to `artifacts/latest/proof-summary.md`. Let's verify that this proof is fully schema-compliant:
+> This command compiles the local FieldLab events, runs the decision scoring engine, executes the ROI calculations, and exports the final L0 proof to `artifacts/latest/praxis_proof.json` and a human-readable SRE summary to `artifacts/latest/proof-summary.md`. Let's verify that this proof is fully schema-compliant:
 >
 > ```bash
-> .venv/bin/python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json
+> .venv/bin/python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json --level L0
 > ```
 >
 > The L0 verification passes successfully, confirming that the canonical hash matches and the JSON Schema is fully conformed to."
@@ -70,7 +70,7 @@ This document contains a structured, timed technical script to guide you through
 > This suite tests 13 critical attack vectors:
 > - **Post-hash Tampering**: Modifying raw event counts, ontology mappings, decision priority scores, action statuses, or value calculations after the hash is computed immediately invalidates the proof.
 > - **Signature Forgery**: Forging or copying operator signatures to unauthorized proofs causes L1 verification to fail closed.
-> - **Attestation Tampering**: Removing or modifying Sigstore transparency log inclusion bundles causes L2 verification to fail closed.
+> - **Attestation Tampering**: Any L2 request fails closed with `unsupported_attestation_verification` until real transparency-log inclusion verification exists.
 >
 > As we can see, all 13 adversarial attacks fail closed perfectly, proving the cryptographic defense of our system."
 

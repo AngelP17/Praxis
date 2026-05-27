@@ -10,7 +10,7 @@ _April 2026_
 
 Operational AI systems increasingly influence or automate decisions that affect physical infrastructure, compliance workflows, and revenue-critical business processes. Yet these systems typically lack auditable provenance: there is no standardized, cryptographically verifiable record of what evidence was considered, what decision was reached, what action was taken, and whether the same inputs would produce the same output.
 
-Praxis introduces the Praxis Proof Protocol (PPP) — the first open specification for AI decision provenance. A PPP proof object binds raw field evidence, compiled ontology, decision output, human action attestation, and replay verification into a deterministic, hash-chained JSON artifact. Proofs are independently verifiable by any conforming implementation, can be Ed25519-signed for non-repudiation, and can be countersigned in a public transparency log for long-term auditability.
+Praxis introduces the Praxis Proof Protocol (PPP), a specification for AI decision provenance. A PPP proof object binds raw field evidence, compiled ontology, decision output, human action, and replay verification into a deterministic, hash-chained JSON artifact. L0 proofs are independently verifiable by any conforming implementation; L1 supports Ed25519 signatures when present; L2 transparency-log attestation is specified but unsupported in the current runtime and fails closed.
 
 The reference implementation demonstrates the protocol end-to-end: a local FieldLab (Floci) runtime ingests customer-specific operational signals, compiles an ontology, scores decisions, gates human action, and emits a signed, verifiable proof. The entire pipeline is deterministic and enforced by CI gates on every commit.
 
@@ -124,7 +124,7 @@ uvx praxis-verify ./praxis_proof.json
 
 ## 7. Related Work
 
-- **Sigstore:** Provides keyless signing and transparency log infrastructure used by PPP for optional L2 attestation.
+- **Sigstore:** Provides keyless signing and transparency log infrastructure that PPP is designed to support at L2. The current runtime fails closed for L2 until inclusion verification is implemented.
 - **ML Provenance Graphs:** Capture data lineage but not decision-level hash integrity.
 - **Constitutional AI (Anthropic):** Provides safety guarantees at the model level; PPP provides provenance at the decision artifact level.
 - **Verifiable Credentials (W3C):** A related but distinct approach focused on identity claims rather than decision artifacts.
@@ -134,8 +134,8 @@ uvx praxis-verify ./praxis_proof.json
 
 - **Proof covers decision output, not model internals:** PPP verifies that a decision was made on specific evidence, not that the scoring model was optimal.
 - **Human-in-the-loop dependency:** The protocol assumes a human operator reviews and approves actions. Fully autonomous decision provenance is a separate challenge.
-- **Single-party trust model (L0/L1):** Without transparency log attestation (L2), verification requires trusting the signer's public key. L2 addresses this through public transparency logs.
-- **Key management:** Private key compromise before rotation would allow forged signatures. Sigstore's keyless approach partially mitigates this.
+- **Single-party trust model (L0/L1):** Without implemented transparency log attestation, verification requires trusting the signer's public key. L2 is the planned path for public transparency logs.
+- **Key management:** Private key compromise before rotation would allow forged signatures. Production identity and key-management integration is not part of the current runtime.
 
 ## 9. Future Work
 
@@ -147,7 +147,7 @@ uvx praxis-verify ./praxis_proof.json
 
 ## 10. Conclusion
 
-The Praxis Proof Protocol is the first open specification for cryptographically verifiable AI decision provenance. It combines deterministic replay, Ed25519 signatures, and transparency log attestation into a single, practical protocol for operational AI systems.
+The Praxis Proof Protocol is an open specification for verifiable AI decision provenance. The current implementation combines deterministic replay, schema validation, canonical hashing, and optional Ed25519 L1 signatures, while L2 transparency-log attestation remains specified but unsupported.
 
 The reference implementation — a local FieldLab runtime, a deterministic proof builder, a third-party CLI verifier, and a CI gate that enforces determinism on every commit — demonstrates the protocol end-to-end.
 

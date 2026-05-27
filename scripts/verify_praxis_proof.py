@@ -16,6 +16,7 @@ from astraea.praxis import PraxisProofVerifier
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify a Praxis proof object")
     parser.add_argument("proof_path", help="Path to praxis_proof.json")
+    parser.add_argument("--level", choices=("L0", "L1", "L2"), default="L0")
     args = parser.parse_args()
 
     proof_path = Path(args.proof_path)
@@ -24,7 +25,7 @@ def main() -> int:
         return 1
 
     proof = json.loads(proof_path.read_text())
-    result = PraxisProofVerifier().verify(proof)
+    result = PraxisProofVerifier(level=args.level).verify(proof)
 
     print("Praxis Proof Verification")
     print()
@@ -37,6 +38,8 @@ def main() -> int:
     print(f"Value case: ${proof.get('value_case', {}).get('estimated_annual_value'):,} annualized")
     print(f"Human action: {proof.get('action', {}).get('status')}")
     print(f"Proof hash: {result.proof_hash}")
+    print(f"Conformance requested: {result.level}")
+    print(f"Conformance result: {result.conformance}")
     print()
     print(f"Status: {result.status}")
     if result.errors:

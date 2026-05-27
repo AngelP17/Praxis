@@ -15,6 +15,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from jsonschema import Draft202012Validator
+
 try:
     from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
     from cryptography.exceptions import InvalidSignature
@@ -33,8 +35,20 @@ class VerificationResult:
     errors: list[str]
 
 
+def normalize_numbers(payload: Any) -> Any:
+    if isinstance(payload, dict):
+        return {key: normalize_numbers(value) for key, value in payload.items()}
+    if isinstance(payload, list):
+        return [normalize_numbers(value) for value in payload]
+    if isinstance(payload, float) and payload.is_integer():
+        return int(payload)
+    return payload
+
+
 def canonical_json(payload: Any) -> str:
-    return json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+    return json.dumps(
+        normalize_numbers(payload), sort_keys=True, separators=(",", ":"), ensure_ascii=True
+    )
 
 
 def sha256_hex(data: str) -> str:
@@ -55,28 +69,25 @@ def compute_proof_hash(proof: dict[str, Any]) -> str:
     return sha256_digest(normalized)
 
 
-REQUIRED_TOP_LEVEL = {
-    "proof_id",
-    "run_id",
-    "solution_pack",
-    "customer_context_hash",
-    "evidence",
-    "ontology",
-    "decision",
-    "action",
-    "value_case",
-    "replay",
-    "proof_hash",
-    "generated_at",
-}
+def load_schema() -> dict[str, Any]:
+    packaged = Path(__file__).with_name("proof-object.schema.json")
+    if packaged.is_file():
+        return json.loads(packaged.read_text(encoding="utf-8"))
+    for parent in Path(__file__).resolve().parents:
+        candidate = parent / "docs" / "spec" / "proof-object.schema.json"
+        if candidate.is_file():
+            return json.loads(candidate.read_text(encoding="utf-8"))
+    raise FileNotFoundError("proof-object.schema.json not found")
 
 
-def verify_proof(proof: dict[str, Any]) -> VerificationResult:
+def verify_proof(proof: dict[str, Any], level: str = "L0") -> VerificationResult:
+    if level not in {"L0", "L1", "L2"}:
+        raise ValueError("level must be one of L0, L1, L2")
     errors: list[str] = []
 
-    missing = sorted(REQUIRED_TOP_LEVEL - set(proof))
-    if missing:
-        errors.append(f"missing fields: {', '.join(missing)}")
+    validator = Draft202012Validator(load_schema())
+    for error in sorted(validator.iter_errors(proof), key=lambda item: list(item.absolute_path)):
+        errors.append(f"schema validation error: {error.message}")
 
     evidence = proof.get("evidence", {})
     if evidence.get("raw_events", 0) <= 0:
@@ -103,8 +114,12 @@ def verify_proof(proof: dict[str, Any]) -> VerificationResult:
         errors.append(f"proof_hash mismatch: expected {computed_hash}")
 
     signature_verified = None
-    sig = proof.get("signature") if HAS_CRYPTOGRAPHY else None
-    if sig:
+    sig = proof.get("signature")
+    if level in {"L1", "L2"} and not sig:
+        errors.append(f"{level} verification failed: missing signature")
+    elif level in {"L1", "L2"} and not HAS_CRYPTOGRAPHY:
+        errors.append("cryptography package not installed; cannot verify ed25519 signature")
+    elif level in {"L1", "L2"} and sig:
         try:
             public_key = Ed25519PublicKey.from_public_bytes(bytes.fromhex(sig["public_key_hex"]))
             public_key.verify(
@@ -115,17 +130,14 @@ def verify_proof(proof: dict[str, Any]) -> VerificationResult:
             signature_verified = False
             errors.append("ed25519 signature verification failed")
 
-    if sig and not HAS_CRYPTOGRAPHY:
-        errors.append("cryptography package not installed; cannot verify ed25519 signature")
+    if level == "L2":
+        errors.append(
+            "unsupported_attestation_verification: L2 Sigstore/Rekor inclusion "
+            "verification is not implemented"
+        )
 
     valid = not errors
-    conformance = (
-        "L2"
-        if proof.get("attestation") and signature_verified
-        else "L1"
-        if signature_verified
-        else "L0"
-    )
+    conformance = level
     if not valid:
         conformance = "INVALID"
 
@@ -141,6 +153,7 @@ def verify_proof(proof: dict[str, Any]) -> VerificationResult:
 def main() -> int:
     parser = argparse.ArgumentParser(description="Verify a Praxis proof object (PPP v0.1)")
     parser.add_argument("proof_path", help="Path to praxis_proof.json")
+    parser.add_argument("--level", choices=("L0", "L1", "L2"), default="L0")
     parser.add_argument(
         "--quiet", "-q", action="store_true", help="Suppress output, exit code only"
     )
@@ -159,7 +172,7 @@ def main() -> int:
             print(f"Error: invalid JSON: {e}", file=sys.stderr)
         return 1
 
-    result = verify_proof(proof)
+    result = verify_proof(proof, level=args.level)
 
     if not args.quiet:
         print("Praxis Proof Verification")

@@ -5,7 +5,7 @@ export default defineConfig({
   timeout: 45_000,
   expect: { timeout: 10_000 },
   webServer: {
-    command: "pnpm dev",
+    command: "NEXT_PUBLIC_DEMO_MODE=1 pnpm dev",
     url: "http://localhost:3000",
     reuseExistingServer: true,
     timeout: 60_000,

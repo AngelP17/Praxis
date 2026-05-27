@@ -69,7 +69,7 @@ export interface PraxisProof {
     priority_score: number;
     confidence: number;
     requires_human_review: boolean;
-    next_best_questions: Array<string | Record<string, unknown>>;
+    next_best_questions: string[];
   };
   action: Record<string, unknown> & {
     recommended_action: string;
@@ -137,6 +137,8 @@ export interface ProofVerificationResponse {
   status: string;
   errors: string[];
   proof_hash: string;
+  level: "L0" | "L1" | "L2";
+  conformance: "L0" | "L1" | "L2" | "INVALID";
 }
 
 export interface ActionCaptureResponse {
@@ -192,7 +194,7 @@ export const praxisClient = {
     return (await api.get<PraxisProof>(`/proofs/${packId}`)).data;
   },
   verifyProof: async (proof: PraxisProof) => {
-    if (IS_DEMO_MODE) return { valid: true, proof_hash: proof.proof_hash || "", status: "verified", errors: [] } as ProofVerificationResponse;
+    if (IS_DEMO_MODE) return { valid: true, proof_hash: proof.proof_hash || "", status: "PROOF VALID", errors: [], level: "L0", conformance: "L0" } as ProofVerificationResponse;
     return (await api.post<ProofVerificationResponse>("/proofs/verify", proof)).data;
   },
 };

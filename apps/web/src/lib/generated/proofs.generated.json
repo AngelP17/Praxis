@@ -1,0 +1,465 @@
+{
+  "database-failover-lag": {
+    "action": {
+      "action_log_hash": "sha256:1e0ad2e27415723775e48c82296dc860ba371b0d292a3462b7e5ef7c62862055",
+      "actor": "operator",
+      "mode": "human_approval",
+      "recommended_action": "approve_remediation",
+      "risk": "medium",
+      "rollback": "Requires rollback plan",
+      "run_id": "fieldlab_run_database_failover_lag",
+      "status": "approved"
+    },
+    "customer_context_hash": "sha256:5a5a597430bc8bdc9e79dd63d86d2734d17513e625bd2e666336320719bd123f",
+    "decision": {
+      "confidence": 0.83,
+      "next_best_questions": [
+        "What is the value for average_query_latency_ms?",
+        "What is the value for checkout_timeout_count?",
+        "What is the value for database_downtime_minutes?",
+        "What is the value for engineer_triage_hours?"
+      ],
+      "priority_score": 0.7719,
+      "requires_human_review": true,
+      "root_cause_hypothesis": "postgresql_replication_lag_connection_exhaustion_patroni_auto_failover_active_but_pool_tuning",
+      "signals": {
+        "actionability": 0.88,
+        "business_process_criticality": 0.75,
+        "customer_visible_impact": 0.75,
+        "recurrence_risk": 0.79,
+        "severity_score": 0.9042,
+        "sla_exposure": 0.82
+      }
+    },
+    "evidence": {
+      "corroboration_score": 0.85,
+      "evidence_trust": 0.83,
+      "freshness_score": 0.91,
+      "raw_events": 12,
+      "source_coverage": 1.0,
+      "sources": [
+        "Patroni",
+        "checkout_microservice",
+        "helpdesk",
+        "monitoring_alerts",
+        "operator_note",
+        "pgpool_load_balancer",
+        "postgres-replica",
+        "praxis"
+      ]
+    },
+    "expansion": [
+      {
+        "expansion_score": 0.82,
+        "factors": {
+          "executive_visibility": 0.7,
+          "implementation_reuse": 0.8,
+          "measurable_value": 0.85,
+          "shared_data_model": 0.9,
+          "stakeholder_overlap": 0.8,
+          "urgency": 0.75
+        },
+        "id": "replication-monitoring",
+        "name": "Replication Lag Monitoring"
+      },
+      {
+        "expansion_score": 0.7425,
+        "factors": {
+          "executive_visibility": 0.85,
+          "implementation_reuse": 0.6,
+          "measurable_value": 0.8,
+          "shared_data_model": 0.75,
+          "stakeholder_overlap": 0.75,
+          "urgency": 0.7
+        },
+        "id": "cross-region-failover-drill",
+        "name": "Cross-Region Failover Drill"
+      },
+      {
+        "expansion_score": 0.7275,
+        "factors": {
+          "executive_visibility": 0.65,
+          "implementation_reuse": 0.75,
+          "measurable_value": 0.75,
+          "shared_data_model": 0.8,
+          "stakeholder_overlap": 0.7,
+          "urgency": 0.6
+        },
+        "id": "read-replica-auto-scaling",
+        "name": "Read Replica Auto-Scaling"
+      }
+    ],
+    "generated_at": "2026-05-12T00:00:00Z",
+    "ontology": {
+      "actions_available": 6,
+      "links_created": 15,
+      "mapping_confidence": 0.5828,
+      "objects_created": 8
+    },
+    "proof_hash": "sha256:fa0aec54692cd572a618d76171cb32efe2a9893c8e5be72a6b438233d70e38a6",
+    "proof_id": "proof_praxis_database_failover_lag_001",
+    "replay": {
+      "deterministic": true,
+      "replay_hash": "sha256:fdfde2f7906f2c8afe9da20c7adaf5bb8fc3ff62a8d5f17e9dc68483af5a09fc",
+      "verified_at": "2026-05-12T00:00:00Z"
+    },
+    "run_id": "fieldlab_run_database_failover_lag",
+    "solution_pack": "database-failover-lag",
+    "value_case": {
+      "bucket": "demo and scope",
+      "confidence": 0.7451,
+      "estimated_annual_value": 108281.67,
+      "primary_value_driver": "Keep transactional systems available during failovers, optimize connection pools, and provide audit-ready proof of platform health",
+      "roi_calculations": {
+        "annual_value": 108281.67,
+        "downtime_cost_saved": 108000.0,
+        "labor_cost_saved": 281.67
+      }
+    }
+  },
+  "identity-onboarding-drift": {
+    "action": {
+      "action_log_hash": "sha256:b31dd1547d5021a02dbe6e6766a29abd11df5c6c4d66bcbf4b33de3ba247885d",
+      "actor": "operator",
+      "mode": "human_approval",
+      "recommended_action": "acknowledge_incident",
+      "risk": "low",
+      "rollback": "No runtime mutation",
+      "run_id": "fieldlab_run_identity_onboarding_drift",
+      "status": "approved"
+    },
+    "customer_context_hash": "sha256:d35087bf4a22d4683d2d05c1f629a1abe9cae0e02cd9c99555571f796baacb48",
+    "decision": {
+      "confidence": 0.8,
+      "next_best_questions": [
+        "What is the value for average_triage_latency_minutes?",
+        "What is the value for employee_onboarding_delay?",
+        "What is the value for onboarding_downtime_hours?",
+        "What is the value for support_hours?"
+      ],
+      "priority_score": 0.5891,
+      "requires_human_review": false,
+      "root_cause_hypothesis": "fragmented_access_onboarding_ownership_causing_new_hires_be_blocked_erp_printer_networks",
+      "signals": {
+        "actionability": 0.52,
+        "business_process_criticality": 0.5,
+        "customer_visible_impact": 0.45,
+        "recurrence_risk": 0.57,
+        "severity_score": 0.8313,
+        "sla_exposure": 0.42
+      }
+    },
+    "evidence": {
+      "corroboration_score": 0.7,
+      "evidence_trust": 0.8,
+      "freshness_score": 0.91,
+      "raw_events": 8,
+      "source_coverage": 0.71,
+      "sources": [
+        "active_directory",
+        "identity_provider",
+        "msp_ticketing",
+        "operator_note",
+        "praxis"
+      ]
+    },
+    "expansion": [
+      {
+        "expansion_score": 0.8225,
+        "factors": {
+          "executive_visibility": 0.75,
+          "implementation_reuse": 0.75,
+          "measurable_value": 0.85,
+          "shared_data_model": 0.9,
+          "stakeholder_overlap": 0.85,
+          "urgency": 0.7
+        },
+        "id": "automated-provisioning",
+        "name": "Automated Provisioning"
+      },
+      {
+        "expansion_score": 0.76,
+        "factors": {
+          "executive_visibility": 0.8,
+          "implementation_reuse": 0.7,
+          "measurable_value": 0.75,
+          "shared_data_model": 0.8,
+          "stakeholder_overlap": 0.8,
+          "urgency": 0.65
+        },
+        "id": "privilege-access-governance",
+        "name": "Privileged Access Governance"
+      },
+      {
+        "expansion_score": 0.7525,
+        "factors": {
+          "executive_visibility": 0.7,
+          "implementation_reuse": 0.8,
+          "measurable_value": 0.7,
+          "shared_data_model": 0.85,
+          "stakeholder_overlap": 0.75,
+          "urgency": 0.6
+        },
+        "id": "drift-detection-remediation",
+        "name": "Drift Detection & Remediation"
+      }
+    ],
+    "generated_at": "2026-05-12T00:00:00Z",
+    "ontology": {
+      "actions_available": 6,
+      "links_created": 4,
+      "mapping_confidence": 0.5402,
+      "objects_created": 5
+    },
+    "proof_hash": "sha256:9ca391b704d2abf0d382f842f252c7ed45c0888ab3e7f1957527625a62273d84",
+    "proof_id": "proof_praxis_identity_onboarding_drift_001",
+    "replay": {
+      "deterministic": true,
+      "replay_hash": "sha256:fd11fe1dbfaf343ebfbf90092b604f3305400fea39e58ab05cec3b2ec6502a42",
+      "verified_at": "2026-05-12T00:00:00Z"
+    },
+    "run_id": "fieldlab_run_identity_onboarding_drift",
+    "solution_pack": "identity-onboarding-drift",
+    "value_case": {
+      "bucket": "demo and scope",
+      "confidence": 0.6631,
+      "estimated_annual_value": 64800.0,
+      "primary_value_driver": "Align GPO memberships, resolve Active Directory onboarding drift, and clear user onboarding queues automatically",
+      "roi_calculations": {
+        "annual_value": 64800.0,
+        "monthly_delay_cost_avoided": 4800.0,
+        "monthly_labor_cost_saved": 600.0
+      }
+    }
+  },
+  "manufacturing-printer-gpo": {
+    "action": {
+      "action_log_hash": "sha256:13ec71f2296ac659825f0a5808d6931c9547de48c64846176d7840ac7110d8c6",
+      "actor": "operator",
+      "mode": "human_approval",
+      "recommended_action": "approve_remediation",
+      "risk": "medium",
+      "rollback": "Requires rollback plan",
+      "run_id": "fieldlab_run_manufacturing_printer_gpo",
+      "status": "approved"
+    },
+    "customer_context_hash": "sha256:abd0f9b374bcd8ffaedd80ef3bf5cff48c1a902667b045e4c037218c78c34a79",
+    "decision": {
+      "confidence": 0.829,
+      "next_best_questions": [
+        "What is the value for delayed_shipments?",
+        "What is the value for support_hours?",
+        "What is the value for vendor_escalations?"
+      ],
+      "priority_score": 0.7708,
+      "requires_human_review": true,
+      "root_cause_hypothesis": "printer_deployment_policy_drift",
+      "signals": {
+        "actionability": 0.88,
+        "business_process_criticality": 0.8,
+        "customer_visible_impact": 0.8,
+        "recurrence_risk": 0.79,
+        "severity_score": 0.8083,
+        "sla_exposure": 0.82
+      }
+    },
+    "evidence": {
+      "corroboration_score": 0.8,
+      "evidence_trust": 0.829,
+      "freshness_score": 0.91,
+      "raw_events": 12,
+      "source_coverage": 1.0,
+      "sources": [
+        "active_directory",
+        "erp_shipping",
+        "msp_ticketing",
+        "network_monitor",
+        "operator_note",
+        "praxis",
+        "print_server"
+      ]
+    },
+    "expansion": [
+      {
+        "expansion_score": 0.725,
+        "factors": {
+          "executive_visibility": 0.6,
+          "implementation_reuse": 0.8,
+          "measurable_value": 0.65,
+          "shared_data_model": 0.9,
+          "stakeholder_overlap": 0.7,
+          "urgency": 0.5
+        },
+        "id": "asset-inventory-accuracy",
+        "name": "Asset Inventory Accuracy"
+      },
+      {
+        "expansion_score": 0.6975,
+        "factors": {
+          "executive_visibility": 0.55,
+          "implementation_reuse": 0.75,
+          "measurable_value": 0.7,
+          "shared_data_model": 0.8,
+          "stakeholder_overlap": 0.65,
+          "urgency": 0.6
+        },
+        "id": "ticket-routing",
+        "name": "Intelligent Ticket Routing"
+      },
+      {
+        "expansion_score": 0.675,
+        "factors": {
+          "executive_visibility": 0.5,
+          "implementation_reuse": 0.85,
+          "measurable_value": 0.55,
+          "shared_data_model": 0.85,
+          "stakeholder_overlap": 0.65,
+          "urgency": 0.45
+        },
+        "id": "endpoint-configuration-drift",
+        "name": "Endpoint Configuration Drift"
+      }
+    ],
+    "generated_at": "2026-05-12T00:00:00Z",
+    "ontology": {
+      "actions_available": 6,
+      "links_created": 4,
+      "mapping_confidence": 0.5333,
+      "objects_created": 5
+    },
+    "proof_hash": "sha256:db06e81f40129e921fd0e04476f29ea37759befeb1ad22f64678f1f4f5d5bbe3",
+    "proof_id": "proof_praxis_manufacturing_printer_gpo_001",
+    "replay": {
+      "deterministic": true,
+      "replay_hash": "sha256:9f9c277a895f6cbaac3d97b900d32c78c655deb2b051078c5ace4b215ce0367d",
+      "verified_at": "2026-05-12T00:00:00Z"
+    },
+    "run_id": "fieldlab_run_manufacturing_printer_gpo",
+    "solution_pack": "manufacturing-printer-gpo",
+    "value_case": {
+      "bucket": "demo and scope",
+      "confidence": 0.7601,
+      "estimated_annual_value": 38481.6,
+      "primary_value_driver": "Reduce repeated printer incidents and provide audit-ready ownership workflow",
+      "roi_calculations": {
+        "annual_value": 24801.6,
+        "monthly_delay_cost_avoided": 1750.0,
+        "monthly_labor_cost_saved": 316.8
+      }
+    }
+  },
+  "network-edge-failover": {
+    "action": {
+      "action_log_hash": "sha256:21388df5707a8176e8e13e1f8a52325a66070d11202980df4d6e4b30d3a28b7b",
+      "actor": "operator",
+      "mode": "human_approval",
+      "recommended_action": "acknowledge_incident",
+      "risk": "low",
+      "rollback": "No runtime mutation",
+      "run_id": "fieldlab_run_network_edge_failover",
+      "status": "approved"
+    },
+    "customer_context_hash": "sha256:3639282e0e26ced69207d9dd7ae21c3293a4143e1df2ae40d204994c787888cd",
+    "decision": {
+      "confidence": 0.7667,
+      "next_best_questions": [
+        "How many production minutes were lost or delayed?",
+        "What is the value for delayed_shipments?",
+        "What is the value for support_hours?",
+        "What is the value for vendor_escalations?"
+      ],
+      "priority_score": 0.5849,
+      "requires_human_review": false,
+      "root_cause_hypothesis": "edge_primary_isp_outage_causing_complete_shipping_erp_offline_status_due_misconfigured",
+      "signals": {
+        "actionability": 0.52,
+        "business_process_criticality": 0.5,
+        "customer_visible_impact": 0.45,
+        "recurrence_risk": 0.57,
+        "severity_score": 0.8313,
+        "sla_exposure": 0.42
+      }
+    },
+    "evidence": {
+      "corroboration_score": 0.65,
+      "evidence_trust": 0.7667,
+      "freshness_score": 0.91,
+      "raw_events": 8,
+      "source_coverage": 0.57,
+      "sources": [
+        "msp_ticketing",
+        "network_monitor",
+        "operator_note",
+        "praxis"
+      ]
+    },
+    "expansion": [
+      {
+        "expansion_score": 0.7575,
+        "factors": {
+          "executive_visibility": 0.7,
+          "implementation_reuse": 0.7,
+          "measurable_value": 0.8,
+          "shared_data_model": 0.85,
+          "stakeholder_overlap": 0.75,
+          "urgency": 0.6
+        },
+        "id": "sd-wan-orchestration",
+        "name": "SD-WAN Orchestration"
+      },
+      {
+        "expansion_score": 0.7425,
+        "factors": {
+          "executive_visibility": 0.65,
+          "implementation_reuse": 0.65,
+          "measurable_value": 0.75,
+          "shared_data_model": 0.8,
+          "stakeholder_overlap": 0.8,
+          "urgency": 0.7
+        },
+        "id": "out-of-band-management",
+        "name": "Out-of-Band Management"
+      },
+      {
+        "expansion_score": 0.6875,
+        "factors": {
+          "executive_visibility": 0.6,
+          "implementation_reuse": 0.8,
+          "measurable_value": 0.65,
+          "shared_data_model": 0.75,
+          "stakeholder_overlap": 0.7,
+          "urgency": 0.5
+        },
+        "id": "carrier-redundancy-audit",
+        "name": "Carrier Redundancy Audit"
+      }
+    ],
+    "generated_at": "2026-05-12T00:00:00Z",
+    "ontology": {
+      "actions_available": 6,
+      "links_created": 8,
+      "mapping_confidence": 0.5848,
+      "objects_created": 6
+    },
+    "proof_hash": "sha256:171f57be71634ae37c1674cac9f5072410a4b27f8d6f0eaf43c23df27d2acda4",
+    "proof_id": "proof_praxis_network_edge_failover_001",
+    "replay": {
+      "deterministic": true,
+      "replay_hash": "sha256:5d80132da2b438c2ebc750882597f1f065e4721d143e03851021c158e4f9c25a",
+      "verified_at": "2026-05-12T00:00:00Z"
+    },
+    "run_id": "fieldlab_run_network_edge_failover",
+    "solution_pack": "network-edge-failover",
+    "value_case": {
+      "bucket": "discovery required",
+      "confidence": 0.6131,
+      "estimated_annual_value": 47100.0,
+      "primary_value_driver": "Restore Starlink routing, verify ERP network visibility, and provide audit-ready proof of network availability",
+      "roi_calculations": {
+        "annual_value": 47100.0,
+        "monthly_delay_cost_avoided": 3600.0,
+        "monthly_labor_cost_saved": 325.0
+      }
+    }
+  }
+}

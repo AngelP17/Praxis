@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { Ticket, Incident } from "@/types";
 import { DEMO_TICKETS, DEMO_INCIDENTS, DEMO_METRICS } from "@/lib/demo-scenario";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 export type SystemStatus = "healthy" | "degraded" | "critical" | "unknown";
 
@@ -91,9 +92,9 @@ export function useDashboardData() {
       const liveIncidents = incidents.status === "fulfilled" && Array.isArray(incidents.value) ? incidents.value : [];
       const liveTickets = tickets.status === "fulfilled" && Array.isArray(tickets.value) ? tickets.value : [];
 
-      const fallbackTickets = liveTickets.length === 0 ? DEMO_TICKETS : liveTickets;
-      const fallbackIncidents = liveIncidents.length === 0 ? DEMO_INCIDENTS : liveIncidents;
-      const fallbackMetrics = liveMetrics || DEMO_METRICS;
+      const fallbackTickets = IS_DEMO_MODE && liveTickets.length === 0 ? DEMO_TICKETS : liveTickets;
+      const fallbackIncidents = IS_DEMO_MODE && liveIncidents.length === 0 ? DEMO_INCIDENTS : liveIncidents;
+      const fallbackMetrics = liveMetrics || (IS_DEMO_MODE ? DEMO_METRICS : { sla_breach_risk: 0 });
 
       const openTickets = fallbackTickets.filter((t) => !["Resolved", "Closed"].includes(t.status));
       const criticalTickets = openTickets.filter((t) => t.priority_raw === "Critical");
@@ -125,11 +126,22 @@ export function useDashboardData() {
         metrics: dashboardMetrics,
         recentTickets: openTickets.slice(0, 10),
         activeIncidents: fallbackIncidents.filter((i) => i.status !== "Closed" && i.status !== "Resolved").slice(0, 6),
-        status: "ready",
-        errorMessage: null,
+        status: errorMessages.length > 0 && !IS_DEMO_MODE ? "error" : "ready",
+        errorMessage: errorMessages.length > 0 && !IS_DEMO_MODE ? errorMessages.join("; ") : null,
         lastUpdated: Date.now(),
       });
     } catch (error) {
+      if (!IS_DEMO_MODE) {
+        setState({
+          metrics: null,
+          recentTickets: [],
+          activeIncidents: [],
+          status: "error",
+          errorMessage: error instanceof Error ? error.message : "Live dashboard data unavailable.",
+          lastUpdated: Date.now(),
+        });
+        return;
+      }
       const openTickets = DEMO_TICKETS.filter((t) => !["Resolved", "Closed"].includes(t.status));
       setState({
         metrics: {

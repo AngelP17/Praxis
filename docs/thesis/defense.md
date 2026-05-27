@@ -112,13 +112,12 @@ graph TD
     ROI --> Assembler
     
     Assembler --> Hasher[proof_hash.py]
-    Hasher --> Signer[Ed25519 Cryptographic Signer]
-    Signer --> ProofJSON[praxis_proof.json]
+    Hasher --> ProofJSON[praxis_proof.json]
     
     ProofJSON --> Verifier[PraxisProofVerifier]
     Verifier --> L0[JSON Schema & Replay Check]
     Verifier --> L1[Ed25519 Signature Check]
-    Verifier --> L2[Sigstore Rekor Log Check]
+    Verifier --> L2[Unsupported Attestation Fail-Closed]
 ```
 
 ---
@@ -146,7 +145,7 @@ Verification is tiered into three explicit levels:
 | :--- | :--- | :--- |
 | **L0** | **Deterministic Proof** | - Validates against the JSON Schema.<br>- Verifies presence of all required top-level elements.<br>- Confirms `replay.deterministic` is `True`.<br>- Recomputes the canonical `proof_hash` and asserts equality. |
 | **L1** | **Signed Proof** | - Enforces all **L0** checks.<br>- Requires a non-empty `signature` block.<br>- Verifies the Ed25519 signature against the computed proof hash and the provided public key. |
-| **L2** | **Attested Proof** | - Enforces all **L1** checks.<br>- Requires a non-empty `attestation` block.<br>- Verifies the Sigstore/Rekor transparency log bundle, validating inclusion proof and log index. Fails closed if the bundle is invalid or missing. |
+| **L2** | **Attested Proof** | - Enforces all **L1** checks.<br>- Returns an explicit `unsupported_attestation_verification` failure until real Sigstore/Rekor inclusion verification is implemented. |
 
 ---
 
@@ -178,22 +177,22 @@ Praxis is designed to resist the following adversarial attack vectors:
 
 ### A3. Human Action Forgery
 *   **Threat**: An attacker changes the action status from `rejected` to `approved` to force the outbox publisher to execute a writeback action.
-*   **Mitigation**: The `action` block is part of the signed proof. Under L1, signature verification fails if any field in the action block is altered.
+*   **Mitigation**: The `action` block is part of the canonical proof hash. Under L0 any action-field alteration causes a hash mismatch; under L1 signature verification also fails.
 
 ### A4. Cryptographic Signature Forgery
 *   **Threat**: An attacker signs a fake proof using a generated key pair, pretending to be an authorized operator.
-*   **Mitigation**: The L1 verifier matches the `public_key_hex` against the database of authorized developer/operator certificates and keys.
+*   **Mitigation**: The L1 verifier validates the Ed25519 signature against the public key embedded in the proof signature envelope. A production signer identity registry is future work.
 
-### A5. Sigstore Attestation Tampering
+### A5. L2 Attestation Tampering
 *   **Threat**: An attacker copies an attestation block from a valid proof and appends it to a tampered proof.
-*   **Mitigation**: The L2 verifier validates that the Rekor transparency log inclusion proof matches the unique signature and canonical hash of the current proof.
+*   **Mitigation**: L2 currently fails closed with `unsupported_attestation_verification`; a shaped attestation object cannot pass as verified inclusion.
 
 ---
 
 ## 8. Verification Strategy
 Verification is automated and enforced at multiple layers:
 1.  **Local Test Suite**: Adversarial testing (`test_protocol_adversarial.py`) and schema conformance (`test_proof_schema_conformance.py`) run on every change.
-2.  **Continuous Integration (CI)**: GitHub Actions run `pnpm typecheck`, `make lint`, `make test`, and `make praxis-validate-all` on every Pull Request.
+2.  **Continuous Integration (CI)**: GitHub Actions run Python unit/integration/Praxis protocol tests, Ruff, TypeScript checks, Next build, gpt-taste QA, secret scanning, and Docker Compose production proof.
 3.  **Local SRE Emulation**: SRE validation scripts verify active Floci AWS environments to check ingestion integrity.
 4.  **CLI Tooling**: The `verify_praxis_proof.py` script provides a portable binary/CLI path to verify proofs out of band in production or staging.
 
@@ -203,15 +202,15 @@ Verification is automated and enforced at multiple layers:
 For real-world deployment, Praxis adheres to strict production and security standards:
 
 - **Deployment**: Blessed deploy target is Docker Compose (`docker-compose.yml` + `docker-compose.prod.yml`) utilizing Postgres for persistence and secure environment settings.
-- **Secret Management**: Signing private keys are managed outside the application using AWS KMS or HashiCorp Vault. The gateway reads only the public key identifier (`signer_kid`).
-- **Telemetry & Health**: Telemetry is collected using standard OpenTelemetry and Prometheus endpoints, monitoring API availability, proof verification success rate, and replay drift.
+- **Secret Management**: `SECRET_KEY` and database credentials are environment-provided. Production signing-key registry/KMS integration is not implemented yet.
+- **Telemetry & Health**: Prometheus-format HTTP metrics and `/health` are implemented. OpenTelemetry and proof/outbox gauges are planned.
 
 ---
 
 ## 10. Limitations (Honest Disclosure)
 - **Demo Sandbox Mode**: The public demo mode (`NEXT_PUBLIC_DEMO_MODE=1`) is entirely frontend-contained and runs with mock parameters to enable interactive UI reviews.
 - **Docker Dependency for Verification**: Running full Floci SRE tests (`make praxis-validate-all`) requires a local Docker daemon. Without Docker, these SRE tests fail closed.
-- **Sigstore Integration Status**: The L2 Sigstore transparency log inclusion check is experimental and operates in a fail-closed configuration unless a valid attestation bundle is generated.
+- **Sigstore Integration Status**: L2 Sigstore transparency log inclusion verification is not implemented. The verifier fails closed for L2.
 
 ---
 

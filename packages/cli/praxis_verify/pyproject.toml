@@ -5,7 +5,11 @@ description = "Third-party verifier for Praxis proof objects (PPP v0.1)"
 requires-python = ">=3.11"
 dependencies = [
     "cryptography>=42.0.0",
+    "jsonschema>=4.20.0",
 ]
+
+[tool.hatch.build.targets.wheel.force-include]
+"praxis_verify/proof-object.schema.json" = "praxis_verify/proof-object.schema.json"
 
 [project.scripts]
 praxis-verify = "praxis_verify.cli:main"

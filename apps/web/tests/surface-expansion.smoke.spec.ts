@@ -19,7 +19,7 @@ test("expanded platform surfaces render core content", async ({ page }) => {
   await expect(page.getByText("Observability and SRE Control Plane")).toBeVisible({ timeout: 30_000 });
 
   await page.goto("/decision-center", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Praxis Decisioning and Human Overrides")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Praxis Operational Decisions and Replay Proof")).toBeVisible({ timeout: 30_000 });
 
   await page.goto("/assets", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Infrastructure Inventory and Criticality Map")).toBeVisible({ timeout: 30_000 });
@@ -40,7 +40,7 @@ test("expanded platform surfaces render core content", async ({ page }) => {
 test("nav-linked workbench surfaces render without dead error walls", async ({ page }) => {
   const surfaces = [
     { path: "/console", expected: "Operator Console" },
-    { path: "/fieldlab", expected: "Live FieldLab proof system" },
+    { path: "/fieldlab", expected: "Operational Overview" },
     { path: "/solution-packs", expected: "Solution Packs" },
     { path: "/proof/diff", expected: "Proof Diff" },
     { path: "/tickets/new", expected: "New Ticket" },
@@ -56,8 +56,8 @@ test("nav-linked workbench surfaces render without dead error walls", async ({ p
 
 test("specialized praxis sub-surfaces render dedicated content", async ({ page }) => {
   const surfaces = [
-    { path: "/ontology", expected: "Operational objects, inferred links, and available actions" },
-    { path: "/value-case", expected: "Estimated annual value, confidence, and evidence assumptions" },
+    { path: "/ontology", expected: "Operational objects, inferred links, and blast-radius relationships" },
+    { path: "/value-case", expected: "Estimated Operational Value" },
     { path: "/discovery", expected: "Candidate objects, inferred links, and next questions" },
     { path: "/expansion-map", expected: "Adjacent use cases and expansion potential" },
   ];

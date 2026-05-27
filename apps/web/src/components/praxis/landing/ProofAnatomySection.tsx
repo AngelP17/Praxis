@@ -7,25 +7,21 @@ const JSON_LINES = [
   { n: 2,  t: '  "proof_hash": "' + 'sha' + '256:b4f9e2a1…c1a2",',                      c: "var(--praxis-amber)" },
   { n: 3,  t: '  "run_id": "pxs_GA-PRINT-GPO-042",',                          c: "var(--praxis-bone)" },
   { n: 4,  t: '  "evidence_trust": 0.82,',                                     c: "var(--praxis-argon)" },
-  { n: 5,  t: '  "conformance": "L1",',                                        c: "var(--praxis-argon)" },
-  { n: 6,  t: '  "signature": {',                                              c: "var(--praxis-bone)" },
-  { n: 7,  t: '    "alg": "ed25519",',                                         c: "var(--praxis-bone)" },
-  { n: 8,  t: '    "verified": true,',                                         c: "var(--praxis-argon)" },
-  { n: 9,  t: '    "sigstore_bundle": "rekor:' + 'sha' + '256:9f3a…"',                   c: "var(--praxis-amber)" },
-  { n: 10, t: '  },',                                                          c: "var(--praxis-bone)" },
-  { n: 11, t: '  "merkle_root": "' + 'sha' + '256:7d2c…e4f1",',                         c: "var(--praxis-amber)" },
-  { n: 12, t: '  "replay": "deterministic",',                                  c: "var(--praxis-argon)" },
-  { n: 13, t: '  "approval_mode": "HUMAN_APPROVAL"',                          c: "var(--praxis-plasma)" },
-  { n: 14, t: "}",                                                             c: "var(--praxis-bone)" },
+  { n: 5,  t: '  "conformance": "L0",',                                        c: "var(--praxis-argon)" },
+  { n: 6,  t: '  "schema": "proof-object.schema.json",',                       c: "var(--praxis-bone)" },
+  { n: 7,  t: '  "schema_valid": true,',                                       c: "var(--praxis-argon)" },
+  { n: 8,  t: '  "replay": "deterministic",',                                  c: "var(--praxis-argon)" },
+  { n: 9,  t: '  "approval_mode": "human_approval"',                          c: "var(--praxis-plasma)" },
+  { n: 10, t: "}",                                                             c: "var(--praxis-bone)" },
 ];
 
 const CHECKS = [
-  { label: "ed25519 signature",   status: "verified",     color: "var(--praxis-argon)" },
+  { label: "canonical proof hash",status: "matched",      color: "var(--praxis-argon)" },
   { label: "proof schema v1.4",   status: "valid",        color: "var(--praxis-argon)" },
   { label: "deterministic replay",status: "matched",      color: "var(--praxis-argon)" },
   { label: "evidence trust ≥ 0.80",status:"0.82 pass",   color: "var(--praxis-argon)" },
-  { label: "merkle root",         status: "intact",       color: "var(--praxis-amber)" },
-  { label: "sigstore attestation",status: "rekor anchor", color: "var(--praxis-amber)" },
+  { label: "human approval mode", status: "recorded",     color: "var(--praxis-argon)" },
+  { label: "L2 attestation",      status: "unsupported",  color: "var(--praxis-amber)" },
 ];
 
 export function ProofAnatomySection() {
@@ -101,7 +97,7 @@ export function ProofAnatomySection() {
                 Third-party verifiable,<br />always.
               </h2>
               <p className="mt-5 text-base leading-8" style={{ color: "var(--praxis-muted)" }}>
-                Every proof object ships with an ed25519 signature anchored to sigstore/rekor. Any operator or auditor can run <code className="font-mono text-sm" style={{ color: "var(--praxis-amber)" }}>uvx praxis-verify</code> independently, no Praxis infrastructure required.
+                Each emitted proof is schema-validated, canonically hashed, and replay-checkable. L2 transparency-log verification is specified but fails closed until implemented. An auditor can run <code className="font-mono text-sm" style={{ color: "var(--praxis-amber)" }}>uvx praxis-verify --level L0</code> independently.
               </p>
             </div>
 
@@ -111,7 +107,7 @@ export function ProofAnatomySection() {
               style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface-2)" }}
             >
               <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--praxis-muted)" }}>
-                $ uvx praxis-verify artifacts/latest/praxis_proof.json
+                $ uvx praxis-verify artifacts/latest/praxis_proof.json --level L0
               </div>
               <div className="space-y-2">
                 {CHECKS.map((chk, i) => (
