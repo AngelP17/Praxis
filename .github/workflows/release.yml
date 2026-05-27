@@ -28,6 +28,6 @@ jobs:
           name: praxis-verifier-wheel
           path: packages/cli/praxis_verify/dist/*
       - name: Attest verifier wheel
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: packages/cli/praxis_verify/dist/*
