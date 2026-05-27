@@ -34,6 +34,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
       DATABASE_URL: postgresql://praxis:${POSTGRES_PASSWORD}@postgres:5432/praxis
+      OUTBOX_DISPATCH_MODE: ${OUTBOX_DISPATCH_MODE:-eventbridge}
     ports: !override []
 
   decision-service:

@@ -64,12 +64,12 @@ function OutcomesSection() {
 // ── Trust / provenance block ─────────────────────────────────────────────────
 function TrustSection() {
   const cards = [
-    { title: "SOC 2 Type II",       body: "Audit controls mapped to every proof step.",           accent: "var(--praxis-argon)", colSpan: "md:col-span-8" },
+    { title: "Schema contract",      body: "Draft 2020-12 validation gates every emitted proof.", accent: "var(--praxis-argon)", colSpan: "md:col-span-8" },
     { title: "Air-gapped mode",     body: "Run the full pipeline with zero egress.",              accent: "var(--praxis-bone)", colSpan: "md:col-span-4" },
-    { title: "Sigstore / Rekor",    body: "Ed25519 signatures anchored to public transparency log.", accent: "var(--praxis-amber)", colSpan: "md:col-span-4" },
+    { title: "L2 roadmap",           body: "Transparency-log verification is specified and fails closed until implemented.", accent: "var(--praxis-amber)", colSpan: "md:col-span-4" },
     { title: "Deterministic",       body: "Same inputs always produce the same proof hash.",      accent: "var(--praxis-argon)", colSpan: "md:col-span-8" },
     { title: "Replayable",          body: "Any auditor can re-run the proof from archived events.", accent: "var(--praxis-plasma)", colSpan: "md:col-span-6" },
-    { title: "Open spec",           body: "Proof schema published under Apache 2 license.",       accent: "var(--praxis-bone)", colSpan: "md:col-span-6" },
+    { title: "Open spec",           body: "Proof schema is published with this MIT-licensed repository.", accent: "var(--praxis-bone)", colSpan: "md:col-span-6" },
   ];
 
   return (

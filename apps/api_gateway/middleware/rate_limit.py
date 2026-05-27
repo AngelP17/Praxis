@@ -1,19 +1,21 @@
 import time
 from collections import defaultdict
 from fastapi import Request, Response
+from jose import JWTError, jwt
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from apps.api_gateway.config import settings
 from apps.api_gateway.logging_config import get_logger
+from apps.api_gateway.services.auth_service import ALGORITHM
 
 logger = get_logger("rate_limiter")
 
 
 class RateLimitMiddleware(BaseHTTPMiddleware):
-    """Simple in-memory rate limiter: requests per minute per client IP.
+    """Simple in-memory rate limiter for mutating requests.
 
-    Only rate-limits mutating requests (POST, PUT, PATCH, DELETE).
-    GET, HEAD, and OPTIONS requests pass through without counting.
+    Authenticated requests are keyed by JWT subject first. Anonymous or invalid
+    requests fall back to client IP so public mutation endpoints remain bounded.
     """
 
     MUTATING_METHODS = {"POST", "PUT", "PATCH", "DELETE"}
@@ -28,15 +30,17 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         client_ip = request.client.host if request.client else "unknown"
+        identity_key = self._identity_key(request) or f"ip:{client_ip}"
         now = time.time()
         window_start = now - 60
 
-        self._requests[client_ip] = [ts for ts in self._requests[client_ip] if ts > window_start]
+        self._requests[identity_key] = [ts for ts in self._requests[identity_key] if ts > window_start]
 
-        if len(self._requests[client_ip]) >= self.max_requests:
+        if len(self._requests[identity_key]) >= self.max_requests:
             logger.warning(
                 "rate_limit_exceeded",
                 client_ip=client_ip,
+                identity_key=identity_key,
                 path=request.url.path,
                 limit=self.max_requests,
             )
@@ -47,5 +51,19 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 headers={"Retry-After": "60"},
             )
 
-        self._requests[client_ip].append(now)
+        self._requests[identity_key].append(now)
         return await call_next(request)
+
+    def _identity_key(self, request: Request) -> str | None:
+        header = request.headers.get("authorization", "")
+        scheme, _, token = header.partition(" ")
+        if scheme.lower() != "bearer" or not token:
+            return None
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
+        except JWTError:
+            return None
+        username = payload.get("sub")
+        if not username:
+            return None
+        return f"user:{username}"

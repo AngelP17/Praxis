@@ -19,6 +19,7 @@ from .intervention_planner import InterventionPlanner
 from .ontology_compiler import OntologyCompiler
 from .praxis_decision_engine import PraxisDecisionEngine
 from .proof_hash import proof_hash, sha256_digest
+from .proof_schema import validate_proof_schema
 from .roi_calculator import RoiCalculator
 from .signing import load_signing_key, sign_proof
 from .use_case_score import UseCaseScorer
@@ -153,6 +154,7 @@ class PraxisProofBuilder:
             if key:
                 proof = sign_proof(proof, key)
 
+        validate_proof_schema(proof)
         return proof
 
     def load_pack_context(self, inputs: ProofInputs) -> tuple[dict[str, Any], dict[str, Any]]:

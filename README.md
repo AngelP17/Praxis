@@ -32,7 +32,7 @@ Praxis is the reference implementation of the **Praxis Proof Protocol** — the 
 The full Floci-backed FieldLab path is verified on every push via `.github/workflows/fieldlab-proof.yml`:
 
 ```
-Floci start -> health check -> demo run -> proof emit -> verify -> determinism re-run -> sigstore sign
+Floci start -> health check -> demo run -> proof emit -> L0 verify -> determinism re-run -> optional best-effort signing workflow
 ```
 
 [View latest CI run](https://github.com/AngelP17/praxis/actions/workflows/fieldlab-proof.yml)

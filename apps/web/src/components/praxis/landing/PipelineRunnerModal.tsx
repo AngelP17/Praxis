@@ -26,10 +26,10 @@ const MODAL_EVENTS = [
   { stage: "ontology", msg: "ontology graph: 9 objects, 14 links" },
   { stage: "decision", msg: "priority_score 0.74 · confidence 0.81" },
   { stage: "decision", msg: "next-best questions: 3 VOI items queued" },
-  { stage: "action",   msg: "HUMAN_APPROVAL mode · notifying ops-director" },
+  { stage: "action",   msg: "human_approval mode · notifying ops-director" },
   { stage: "action",   msg: "approval received · action_id written" },
-  { stage: "proof",    msg: "merkle_root computed · sha256:7d2c…e4f1" },
-  { stage: "proof",    msg: "ed25519 signed · rekor attestation anchored" },
+  { stage: "proof",    msg: "canonical hash computed · sha256:b4f9…c1a2" },
+  { stage: "proof",    msg: "Draft 2020-12 schema validated · L0 verified" },
 ];
 
 export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-printer-gpo" }: PipelineRunnerModalProps) {
@@ -185,13 +185,13 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
                   Proof sealed
                 </div>
                 <div className="mt-2 font-mono text-[10px]" style={{ color: "var(--praxis-muted)" }}>
-                  sha256:b4f9&hellip;c1a2 &middot; ed25519 verified
+                  sha256:b4f9&hellip;c1a2 &middot; L0 verified
                 </div>
                 <div className="mt-2 font-mono text-[10px]" style={{ color: "var(--praxis-amber)" }}>
-                  rekor attestation anchored
+                  L2 attestation verification not implemented
                 </div>
                 <code className="mt-4 block overflow-x-auto rounded border px-3 py-2 font-mono text-[10px]" style={{ borderColor: "var(--praxis-line)", color: "var(--praxis-muted)", background: "var(--praxis-obsidian)" }}>
-                  uvx praxis-verify artifacts/latest/praxis_proof.json
+                  uvx praxis-verify artifacts/latest/praxis_proof.json --level L0
                 </code>
               </div>
             )}

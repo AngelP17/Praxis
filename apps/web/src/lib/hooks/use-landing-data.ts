@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { DEMO_INCIDENTS, DEMO_METRICS, DEMO_TICKETS } from "@/lib/demo-scenario";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 export type SystemMetrics = {
   total_open: number;
@@ -125,22 +126,37 @@ export function useLandingData() {
       if (tickets.status === "rejected") errorMessages.push(`Tickets: ${tickets.reason.message}`);
 
       setState({
-        metrics: liveMetrics ?? demoMetrics,
-        recentIncidents: (liveIncidents.length > 0 ? liveIncidents : demoIncidents).slice(0, 6),
-        liveSignals: (liveTickets.length > 0 ? liveTickets : demoSignals).slice(0, 8),
-        status: "ready",
-        errorMessage: errorMessages.length > 0 ? "Simulated operations feed active while live APIs reconnect." : null,
+        metrics: liveMetrics ?? (IS_DEMO_MODE ? demoMetrics : null),
+        recentIncidents: (liveIncidents.length > 0 ? liveIncidents : IS_DEMO_MODE ? demoIncidents : []).slice(0, 6),
+        liveSignals: (liveTickets.length > 0 ? liveTickets : IS_DEMO_MODE ? demoSignals : []).slice(0, 8),
+        status: errorMessages.length > 0 && !IS_DEMO_MODE ? "error" : "ready",
+        errorMessage: errorMessages.length > 0
+          ? IS_DEMO_MODE
+            ? "Deterministic demo feed active while live APIs reconnect."
+            : errorMessages.join("; ")
+          : null,
         lastUpdated: Date.now(),
       });
     } catch (error) {
-      setState({
-        metrics: demoMetrics,
-        recentIncidents: demoIncidents,
-        liveSignals: demoSignals,
-        status: "ready",
-        errorMessage: "Simulated operations feed active while live APIs reconnect.",
-        lastUpdated: Date.now(),
-      });
+      setState(
+        IS_DEMO_MODE
+          ? {
+              metrics: demoMetrics,
+              recentIncidents: demoIncidents,
+              liveSignals: demoSignals,
+              status: "ready",
+              errorMessage: "Deterministic demo feed active while live APIs reconnect.",
+              lastUpdated: Date.now(),
+            }
+          : {
+              metrics: null,
+              recentIncidents: [],
+              liveSignals: [],
+              status: "error",
+              errorMessage: error instanceof Error ? error.message : "Live operations feed unavailable.",
+              lastUpdated: Date.now(),
+            },
+      );
     }
   }, []);
 

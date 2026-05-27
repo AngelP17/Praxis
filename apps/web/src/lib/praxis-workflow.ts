@@ -92,7 +92,7 @@ const liveProofSummaries: Record<string, WorkflowSummary> = {
     timeline: [
       { label: "Events ingested", status: "completed", detail: "12 raw field events", timestamp: "2026-05-12T00:00:00Z" },
       { label: "Decision generated", status: "completed", detail: "priority 0.7708", timestamp: "2026-05-12T00:00:00Z" },
-      { label: "Action captured", status: "completed", detail: "HUMAN_APPROVAL", timestamp: "2026-05-12T00:00:00Z" },
+      { label: "Action captured", status: "completed", detail: "human_approval", timestamp: "2026-05-12T00:00:00Z" },
       { label: "Proof verified", status: "completed", detail: "sha256 proof hash valid", timestamp: "2026-05-12T00:00:00Z" },
     ],
     ontology: [

@@ -7,9 +7,9 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
 
-  # Enable version updates for Python dependencies in gateway
+  # Enable version updates for Python dependencies at the monorepo root
   - package-ecosystem: "pip"
-    directory: "/apps/api_gateway"
+    directory: "/"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
@@ -17,6 +17,13 @@ updates:
   # Enable version updates for Astraea Core package
   - package-ecosystem: "pip"
     directory: "/packages/astraea-core"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Enable version updates for pipelines package
+  - package-ecosystem: "pip"
+    directory: "/packages/pipelines"
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5

@@ -157,15 +157,15 @@ export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; 
           </article>
 
           <article className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
-            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Proof object &middot; signed</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Proof object &middot; L0</div>
             <div className="mt-3 grid grid-flow-dense grid-cols-2 gap-2 font-mono text-[10px] text-[var(--praxis-mute)]">
               <div>proof_hash <span className="text-[var(--praxis-bone)]">{proofShort}&hellip;</span></div>
               <div>replay <span style={{ color: "var(--praxis-argon)" }}>{proof.replay.deterministic ? "deterministic" : "verified"}</span></div>
-              <div>signature <span style={{ color: "var(--praxis-argon)" }}>ed25519</span></div>
+              <div>schema <span style={{ color: "var(--praxis-argon)" }}>valid</span></div>
               <div>sources <span className="text-[var(--praxis-bone)]">{proof.evidence.sources.length}</span></div>
             </div>
             <Link href={`/proof/${runId_}#live-proof`} className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--praxis-bone)] transition-transform hover:translate-x-1">
-              Inspect signed proof &rarr;
+              Inspect proof object &rarr;
             </Link>
           </article>
         </div>

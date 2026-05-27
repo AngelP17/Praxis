@@ -17,7 +17,7 @@ test.beforeEach(async ({ page }) => {
 test("all shipped routes render without dead error walls", async ({ page }) => {
   const routes = [
     { path: "/", expected: "Praxis" },
-    { path: "/dashboard", expected: "Operational Overview" },
+    { path: "/dashboard", expected: "Portfolio Dashboard" },
     { path: "/command-center", expected: "Signal Queue" },
     { path: "/incidents", expected: "Incidents" },
     { path: "/incidents/IR-2026-041", expected: "Timeline Reconstruction" },
@@ -29,7 +29,7 @@ test("all shipped routes render without dead error walls", async ({ page }) => {
     { path: "/audit", expected: "Compliance and Forensic Event Ledger" },
     { path: "/board", expected: "Board" },
     { path: "/admin", expected: "Admin" },
-    { path: "/decision-center", expected: "Praxis Decisioning" },
+    { path: "/decision-center", expected: "Praxis Operational Decisions and Replay Proof" },
   ];
 
   for (const route of routes) {
@@ -52,9 +52,9 @@ test("command center CTAs are real or disabled with reason", async ({ page }) =>
   const editBtn = page.getByText("Edit & re-rank").first();
   await expect(editBtn).toBeVisible();
 
-  // Send to mechanical should be visible
-  const sendBtn = page.getByText("Send to mechanical").first();
-  await expect(sendBtn).toBeVisible();
+  // Escalation action should be visible
+  const escalateBtn = page.getByText("Escalate to responsible team").first();
+  await expect(escalateBtn).toBeVisible();
 
   // Check that no visible button has empty onClick / href="#"
   const badButtons = await page.locator('button:not([type="submit"]):not([disabled])').evaluateAll((buttons) => {
@@ -68,7 +68,7 @@ test("command center CTAs are real or disabled with reason", async ({ page }) =>
   // We allow buttons that are part of the signal queue (they have onClick in React)
   // This test mainly guards against placeholder CTAs with no handler
   const placeholders = badButtons.filter((text) =>
-    ["Approve workflow", "Edit & re-rank", "Send to mechanical"].includes(text)
+    ["Approve workflow", "Edit & re-rank", "Escalate to responsible team"].includes(text)
   );
   expect(placeholders).toEqual([]);
 });

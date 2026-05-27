@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Incident, Ticket } from "@/types";
 import { DEMO_INCIDENTS, DEMO_METRICS, DEMO_TICKETS } from "@/lib/demo-scenario";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 export type QueueMetrics = {
   total_open: number;
@@ -206,7 +207,7 @@ export function useCommandFeed() {
         const openSignals = liveTickets.filter((ticket) => !isClosedStatus(ticket.status));
         
         // Only swap with demo data if demo mode is explicitly requested
-        if (process.env.NEXT_PUBLIC_DEMO_MODE === "1" && openSignals.length === 0 && DEMO_TICKETS.length > 0) {
+        if (IS_DEMO_MODE && openSignals.length === 0 && DEMO_TICKETS.length > 0) {
           const syncedAt = Date.now();
           syncStart.current = syncedAt;
           setFeed({
@@ -268,7 +269,7 @@ export function useCommandFeed() {
           setLastSyncSeconds(0);
           return;
         }
-        if (DEMO_TICKETS.length > 0) {
+        if (IS_DEMO_MODE && DEMO_TICKETS.length > 0) {
           const syncedAt = Date.now();
           syncStart.current = syncedAt;
           setFeed({

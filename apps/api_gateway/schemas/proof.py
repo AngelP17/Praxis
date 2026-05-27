@@ -31,3 +31,5 @@ class ProofVerificationResponse(BaseModel):
     status: str
     errors: list[str]
     proof_hash: str
+    level: str
+    conformance: str

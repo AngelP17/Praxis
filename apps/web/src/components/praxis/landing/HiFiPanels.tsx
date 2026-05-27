@@ -288,7 +288,7 @@ export function HiFiDecisionPanel() {
             Initiate GPO swap-out for plant-3 fleet, 14-day SLA.
           </div>
           <div className="mt-4 grid grid-cols-2 grid-flow-dense gap-2 font-mono text-[10px]" style={{ color: MUTE }}>
-            <div>mode <span style={{ color: BONE }}>HUMAN_APPROVAL</span></div>
+            <div>mode <span style={{ color: BONE }}>human_approval</span></div>
             <div>actor <span style={{ color: BONE }}>ops-director</span></div>
             <div>writeback <span style={{ color: BONE }}>blocked</span></div>
             <div>audit_hash <span style={{ color: ARGON }}>9f3a&hellip;</span></div>
@@ -404,7 +404,7 @@ export function HiFiReadoutPanel() {
               <div className="mt-3 space-y-2 font-mono text-[10px]" style={{ color: mute }}>
                 <div>proof_hash <span style={{ color: bone }}>b4f9&hellip;c1a2</span></div>
                 <div>replay <span style={{ color: argon }}>deterministic</span></div>
-                <div>signature <span style={{ color: argon }}>ed25519 verified</span></div>
+                <div>schema <span style={{ color: argon }}>L0 verified</span></div>
                 <div>sources <span style={{ color: bone }}>tickets &middot; ddb &middot; sqs &middot; events</span></div>
               </div>
             </div>
@@ -435,30 +435,26 @@ const PROOF_JSON_LINES = [
   { n: 2,  t: '  "proof_hash": "sha256:b4f9e2a1…c1a2",', c: "var(--praxis-amber)" },
   { n: 3,  t: '  "run_id": "pxs_GA-PRINT-GPO-042",', c: "var(--praxis-bone)" },
   { n: 4,  t: '  "solution_pack": "manufacturing-printer-gpo",', c: "var(--praxis-bone)" },
-  { n: 5,  t: '  "conformance": "L1",', c: "var(--praxis-argon)" },
+  { n: 5,  t: '  "conformance": "L0",', c: "var(--praxis-argon)" },
   { n: 6,  t: '  "evidence_trust": 0.82,', c: "var(--praxis-argon)" },
   { n: 7,  t: '  "events_processed": 12,', c: "var(--praxis-bone)" },
-  { n: 8,  t: '  "signature": {', c: "var(--praxis-bone)" },
-  { n: 9,  t: '    "alg": "ed25519",', c: "var(--praxis-bone)" },
-  { n: 10, t: '    "verified": true,', c: "var(--praxis-argon)" },
-  { n: 11, t: '    "sigstore_bundle": "rekor:sha256:9f3a…"', c: "var(--praxis-amber)" },
-  { n: 12, t: '  },', c: "var(--praxis-bone)" },
-  { n: 13, t: '  "merkle_root": "sha256:7d2c…e4f1",', c: "var(--praxis-amber)" },
+  { n: 8,  t: '  "schema_valid": true,', c: "var(--praxis-argon)" },
+  { n: 9,  t: '  "l2_attestation": "unsupported",', c: "var(--praxis-amber)" },
   { n: 14, t: '  "replay": "deterministic",', c: "var(--praxis-argon)" },
   { n: 15, t: '  "estimated_value_usd": 38400,', c: "var(--praxis-bone)" },
   { n: 16, t: '  "priority_score": 0.74,', c: "var(--praxis-bone)" },
   { n: 17, t: '  "decision": "Initiate GPO swap-out, plant-3",', c: "var(--praxis-bone)" },
-  { n: 18, t: '  "approval_mode": "HUMAN_APPROVAL"', c: "var(--praxis-plasma)" },
+  { n: 18, t: '  "approval_mode": "human_approval"', c: "var(--praxis-plasma)" },
   { n: 19, t: "}", c: "var(--praxis-bone)" },
 ];
 
 const VERIFY_CHECKS = [
-  { label: "ed25519 signature", status: "verified", color: "var(--praxis-argon)" },
+  { label: "canonical hash", status: "matched", color: "var(--praxis-argon)" },
   { label: "proof schema v1.4", status: "valid", color: "var(--praxis-argon)" },
   { label: "deterministic replay", status: "matched", color: "var(--praxis-argon)" },
   { label: "evidence trust ≥ 0.80", status: "0.82 pass", color: "var(--praxis-argon)" },
-  { label: "merkle root integrity", status: "intact", color: "var(--praxis-amber)" },
-  { label: "sigstore attestation", status: "rekor anchor", color: "var(--praxis-amber)" },
+  { label: "approval boundary", status: "recorded", color: "var(--praxis-argon)" },
+  { label: "L2 attestation", status: "unsupported", color: "var(--praxis-amber)" },
 ];
 
 export function HiFiProofObjectPanel() {
@@ -514,19 +510,19 @@ export function HiFiProofObjectPanel() {
             )}
           </div>
           <div className="border p-4" style={{ borderColor: LINE, background: SURFACE }}>
-            <div className="font-mono text-[9px] uppercase tracking-[0.2em]" style={{ color: MUTE }}>Merkle tree</div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.2em]" style={{ color: MUTE }}>Canonical content</div>
             <div className="mt-3 space-y-2 font-mono text-[9px]">
               <div className="flex items-center gap-2"><span style={{ color: "var(--praxis-amber)" }}>ROOT</span><span style={{ color: MUTE }}>sha256:7d2c&hellip;e4f1</span></div>
               <div className="ml-4 flex items-center gap-2"><span style={{ color: PLASMA }}>L</span><span style={{ color: MUTE }}>events &rarr; ontology &rarr; decision</span></div>
               <div className="ml-4 flex items-center gap-2"><span style={{ color: PLASMA }}>R</span><span style={{ color: MUTE }}>evidence &rarr; action &rarr; value_case</span></div>
-              <div className="ml-8 flex items-center gap-2"><span style={{ color: "var(--praxis-amber)" }}>sigstore</span><span style={{ color: MUTE }}>rekor:9f3a&hellip;</span></div>
+              <div className="ml-8 flex items-center gap-2"><span style={{ color: "var(--praxis-amber)" }}>L2</span><span style={{ color: MUTE }}>unsupported &middot; fails closed</span></div>
             </div>
           </div>
           <div className="border p-4" style={{ borderColor: "var(--praxis-amber)", background: "rgba(232,184,111,0.06)" }}>
-            <div className="font-mono text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--praxis-amber)" }}>Attestation</div>
+            <div className="font-mono text-[9px] uppercase tracking-[0.2em]" style={{ color: "var(--praxis-amber)" }}>Verification level</div>
             <div className="mt-2 space-y-1 font-mono text-[10px]" style={{ color: MUTE }}>
-              <div>alg <span style={{ color: BONE }}>ed25519</span></div>
-              <div>anchor <span style={{ color: "var(--praxis-amber)" }}>rekor &middot; sha256:9f3a&hellip;</span></div>
+              <div>level <span style={{ color: BONE }}>L0</span></div>
+              <div>L2 <span style={{ color: "var(--praxis-amber)" }}>not implemented</span></div>
               <div>timestamp <span style={{ color: BONE }}>2026-05-15T14:22:07Z</span></div>
             </div>
           </div>
@@ -550,9 +546,9 @@ const FIELDLAB_EVENTS = [
   { t: "14:22:03", stage: "ontology", msg: "PLC_Unit linked → Printer_Fleet_SKU",             color: "var(--praxis-plasma)" },
   { t: "14:22:04", stage: "ontology", msg: "vendor_contract mapped → GPO_Clause_4.2",        color: "var(--praxis-plasma)" },
   { t: "14:22:05", stage: "decision", msg: "priority_score 0.74 \xb7 confidence 0.81",            color: "var(--praxis-bone)" },
-  { t: "14:22:06", stage: "action",   msg: "HUMAN_APPROVAL required \xb7 notifying ops-director", color: "var(--praxis-amber)" },
-  { t: "14:22:07", stage: "proof",    msg: "merkle_root sealed \xb7 ed25519 signed",              color: "var(--praxis-amber)" },
-  { t: "14:22:08", stage: "proof",    msg: "rekor attestation anchored",                           color: "var(--praxis-amber)" },
+  { t: "14:22:06", stage: "action",   msg: "human_approval required \xb7 notifying ops-director", color: "var(--praxis-amber)" },
+  { t: "14:22:07", stage: "proof",    msg: "canonical hash sealed \xb7 schema valid",              color: "var(--praxis-amber)" },
+  { t: "14:22:08", stage: "proof",    msg: "L0 verification passed",                               color: "var(--praxis-amber)" },
 ];
 
 export function HiFiFieldLabPanel() {

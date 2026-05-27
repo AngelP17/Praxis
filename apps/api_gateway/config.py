@@ -41,6 +41,7 @@ class Settings(BaseSettings):
 
     # Floci configuration
     FLOCI_ENDPOINT: str = "http://localhost:4566"
+    OUTBOX_DISPATCH_MODE: str | None = None
     AWS_REGION: str = "us-east-1"
     AWS_ACCESS_KEY_ID: str = "test"
     AWS_SECRET_ACCESS_KEY: str = "test"

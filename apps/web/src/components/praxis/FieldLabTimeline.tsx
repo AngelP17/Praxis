@@ -22,7 +22,7 @@ function proofToSteps(proof: PraxisProof) {
     { label: "Value case", status: "completed" as StepStatus, detail: `$${(proof.value_case.estimated_annual_value / 1000).toFixed(1)}K/yr`, timestamp: proof.generated_at },
     { label: "Replay verified", status: "completed" as StepStatus, detail: proof.replay.deterministic ? "deterministic" : "verified", timestamp: proof.replay.verified_at },
     { label: "Proof hash", status: "completed" as StepStatus, detail: proof.proof_hash.slice(7, 19) + "…", timestamp: proof.generated_at },
-    { label: "Signed artifact", status: "completed" as StepStatus, detail: "ed25519 signed", timestamp: proof.generated_at },
+    { label: "Schema validated", status: "completed" as StepStatus, detail: "L0 proof verified", timestamp: proof.generated_at },
   ];
 }
 

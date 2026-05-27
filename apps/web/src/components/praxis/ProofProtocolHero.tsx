@@ -43,7 +43,7 @@ const stats = [
   { value: "12", label: "signals ingested" },
   { value: "77%", label: "priority score" },
   { value: "$38.5K", label: "annual value" },
-  { value: "L1", label: "conformance" },
+  { value: "L0", label: "conformance" },
 ];
 
 export function ProofProtocolHero({
@@ -247,8 +247,8 @@ export function ProofProtocolHero({
               <span className="text-[var(--praxis-argon)] font-semibold">{fullProofHash.substring(0, 20)}...</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-[var(--praxis-muted)]">ATTESTATION:</span>
-              <span className="text-[var(--praxis-plasma)] font-semibold">ED25519 VERIFIED</span>
+              <span className="text-[var(--praxis-muted)]">CONFORMANCE:</span>
+              <span className="text-[var(--praxis-plasma)] font-semibold">L0 VERIFIED</span>
             </div>
             <div className="flex justify-between border-b border-[var(--praxis-line)] pb-3">
               <span className="text-[var(--praxis-muted)]">SUBSTRATE:</span>
@@ -257,10 +257,10 @@ export function ProofProtocolHero({
           </div>
 
           <div className="mt-5 rounded border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.65)] p-3.5 font-mono text-[9.5px]">
-            <span className="text-[var(--praxis-argon)]">$</span> <span className="text-[var(--praxis-muted)]">uvx praxis-verify artifacts/latest/praxis_proof.json</span>
+            <span className="text-[var(--praxis-argon)]">$</span> <span className="text-[var(--praxis-muted)]">uvx praxis-verify artifacts/latest/praxis_proof.json --level L0</span>
             <div className="mt-2 flex items-center gap-1.5 text-[var(--praxis-argon)]">
               <CheckCircle className="h-3.5 w-3.5 shrink-0" />
-              <span>MERKLE ROOT INTACT &middot; 6 CHECKS PASSED</span>
+              <span>SCHEMA VALID &middot; CANONICAL HASH MATCHED</span>
             </div>
           </div>
         </div>
@@ -343,10 +343,10 @@ export function ProofProtocolHero({
       {/* marquee */}
       <div className="overflow-hidden border-y border-[var(--praxis-line)] py-8">
         <div className="praxis-marquee flex w-max gap-16 font-mono text-xs uppercase tracking-[0.14em] text-[var(--praxis-muted)]">
-          {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "Ed25519 signing", "deterministic proof"].map((item) => (
+          {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "schema validation", "deterministic proof"].map((item) => (
             <span key={item}>{item}</span>
           ))}
-          {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "Ed25519 signing", "deterministic proof"].map((item) => (
+          {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "schema validation", "deterministic proof"].map((item) => (
             <span key={`${item}-dup`}>{item}</span>
           ))}
         </div>

@@ -14,6 +14,7 @@ import infrastructure.db.models.asset  # noqa: F401,E402
 import infrastructure.db.models.asset_edge  # noqa: F401,E402
 import infrastructure.db.models.assignee  # noqa: F401,E402
 import infrastructure.db.models.audit_record  # noqa: F401,E402
+import infrastructure.db.models.auth_token  # noqa: F401,E402
 import infrastructure.db.models.category  # noqa: F401,E402
 import infrastructure.db.models.customer_context  # noqa: F401,E402
 import infrastructure.db.models.decision_record  # noqa: F401,E402

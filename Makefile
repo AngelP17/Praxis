@@ -1,4 +1,4 @@
-.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo praxis-install praxis-fieldlab-up praxis-fieldlab-down praxis-demo praxis-validate-pack praxis-readout praxis-proof praxis-proof-open praxis-benchmark praxis-test praxis-floci-verify praxis-canvas-verify praxis-proof-hashes praxis-seed-graph praxis-printer-slice praxis-validate-all praxis-run-scenario praxis-run-all-scenarios praxis-scenario-benchmark praxis-sync-frontend-scenarios praxis-flagship-proof
+.PHONY: install test demo demo-api demo-platform demo-decision demo-web demo-seed demo-validate demo-reset dev-api dev-platform dev-decision dev-web lint format clean clean-demo praxis-install praxis-fieldlab-up praxis-fieldlab-down praxis-demo praxis-validate-pack praxis-readout praxis-proof praxis-proof-open praxis-benchmark praxis-test praxis-floci-verify praxis-canvas-verify praxis-proof-hashes praxis-seed-graph praxis-printer-slice praxis-validate-all praxis-run-scenario praxis-run-all-scenarios praxis-scenario-benchmark praxis-sync-frontend-scenarios praxis-sync-frontend-proofs praxis-flagship-proof
 
 install:
 	python3 -m venv .venv
@@ -153,6 +153,9 @@ praxis-scenario-benchmark:
 praxis-sync-frontend-scenarios:
 	.venv/bin/python scripts/generate_frontend_scenarios.py
 
+praxis-sync-frontend-proofs:
+	.venv/bin/python scripts/generate_frontend_proofs.py
+
 praxis-flagship-proof:
 	.venv/bin/python scripts/validate_all_solution_packs.py
 	.venv/bin/python scripts/run_scenario.py --all --approve
@@ -161,4 +164,4 @@ praxis-flagship-proof:
 	.venv/bin/python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json
 	.venv/bin/python scripts/render_proof_summary.py artifacts/latest/praxis_proof.json
 	.venv/bin/python scripts/generate_frontend_scenarios.py
-
+	.venv/bin/python scripts/generate_frontend_proofs.py

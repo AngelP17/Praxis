@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-import json
-from pathlib import Path
 from typing import Any
 
 from .proof_hash import proof_hash
+from .proof_schema import schema_errors
 
 try:
     from cryptography.exceptions import InvalidSignature as CryptoInvalidSignature
@@ -24,49 +23,25 @@ class ProofVerificationResult:
     status: str
     errors: list[str]
     proof_hash: str
+    level: str
+    conformance: str
 
 
 class PraxisProofVerifier:
     """Validate structure and deterministic hash integrity for proof objects."""
 
-    REQUIRED_TOP_LEVEL = {
-        "proof_id",
-        "run_id",
-        "solution_pack",
-        "customer_context_hash",
-        "evidence",
-        "ontology",
-        "decision",
-        "action",
-        "value_case",
-        "replay",
-        "proof_hash",
-    }
-
     def __init__(self, level: str = "L0"):
         if level not in ("L0", "L1", "L2"):
-            raise ValueError(f"Invalid verification level: {level}. Must be one of L0, L1, L2.")
+            raise ValueError(
+                f"Invalid verification level: {level}. Must be one of L0, L1, L2."
+            )
         self.level = level
 
     def verify(self, proof: dict[str, Any]) -> ProofVerificationResult:
         errors: list[str] = []
 
-        # 1. L0 Schema Validation (using jsonschema)
-        try:
-            from jsonschema import validate, ValidationError
-            schema_path = self._find_schema_path()
-            with open(schema_path) as f:
-                schema = json.load(f)
-            validate(instance=proof, schema=schema)
-        except ImportError:
-            # Fallback if jsonschema is not installed (e.g. in minimal environments)
-            missing = sorted(self.REQUIRED_TOP_LEVEL - set(proof))
-            if missing:
-                errors.append(f"missing fields: {', '.join(missing)}")
-        except ValidationError as e:
-            errors.append(f"schema validation error: {e.message}")
-        except Exception as e:
-            errors.append(f"schema load/validation failed: {str(e)}")
+        # JSON Schema is part of L0, not an optional enhancement.
+        errors.extend(schema_errors(proof))
 
         # 2. Extract sections for deep semantic validation
         evidence = proof.get("evidence", {})
@@ -112,35 +87,12 @@ class PraxisProofVerifier:
                     )
                 except (CryptoInvalidSignature, ValueError, KeyError, TypeError):
                     errors.append("ed25519 signature verification failed")
-        else:
-            # L0 signature check (optional, verify only if present and possible)
-            if sig:
-                if HAS_CRYPTOGRAPHY:
-                    try:
-                        public_key = Ed25519PublicKey.from_public_bytes(
-                            bytes.fromhex(sig.get("public_key_hex", ""))
-                        )
-                        public_key.verify(
-                            bytes.fromhex(sig.get("signature_hex", "")),
-                            computed_hash.encode("utf-8"),
-                        )
-                    except (CryptoInvalidSignature, ValueError, KeyError, TypeError):
-                        errors.append("ed25519 signature verification failed")
-                else:
-                    errors.append("cryptography not available; cannot verify signature")
-
-        # L2 Attestation validation (Sigstore bundle check)
+        # L2 is specified but unsupported until cryptographic bundle verification exists.
         if self.level == "L2":
-            attestation = proof.get("attestation")
-            if not attestation:
-                errors.append("L2 verification failed: missing attestation block (experimental fails closed)")
-            else:
-                log = attestation.get("log")
-                entry_id = attestation.get("entry_id")
-                log_index = attestation.get("log_index")
-                inclusion_proof = attestation.get("inclusion_proof")
-                if not (log and entry_id and log_index is not None and inclusion_proof):
-                    errors.append("L2 verification failed: invalid Sigstore bundle or experimental failure")
+            errors.append(
+                "unsupported_attestation_verification: L2 Sigstore/Rekor inclusion "
+                "verification is not implemented"
+            )
 
         valid = not errors
         return ProofVerificationResult(
@@ -148,21 +100,6 @@ class PraxisProofVerifier:
             status="PROOF VALID" if valid else "PROOF INVALID",
             errors=errors,
             proof_hash=computed_hash,
+            level=self.level,
+            conformance=self.level if valid else "INVALID",
         )
-
-    def _find_schema_path(self) -> Path:
-        # Try relative to __file__
-        cur = Path(__file__).resolve()
-        for parent in cur.parents:
-            potential = parent / "docs" / "spec" / "proof-object.schema.json"
-            if potential.is_file():
-                return potential
-        # fallback to current workspace or search up
-        potential = Path.cwd() / "docs" / "spec" / "proof-object.schema.json"
-        if potential.is_file():
-            return potential
-        # fallback 4 directories up
-        potential = Path(__file__).resolve().parent.parent.parent.parent / "docs" / "spec" / "proof-object.schema.json"
-        if potential.is_file():
-            return potential
-        raise FileNotFoundError("Could not locate proof-object.schema.json")

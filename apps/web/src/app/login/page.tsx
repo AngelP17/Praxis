@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeSlash, ShieldChevron, SignIn, WarningCircle } from "@phosphor-icons/react";
 
 import { ACCESS_TOKEN_KEY, USER_STORAGE_KEY } from "@/lib/auth";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { useToast } from "@/components/notifications";
 
 function resolveApi(path: string) {
@@ -52,11 +53,11 @@ export default function LoginPage() {
       toast.success("Session established");
       router.push("/command-center");
     } catch (submitError) {
-      // Offline fallback: if API is unavailable, allow local operator login.
+      // Deterministic local credentials exist only for explicit demo mode.
       const isApiUnavailable = submitError instanceof Error && 
         (submitError.message.includes("404") || submitError.message.includes("Failed to fetch") || submitError.message.includes("NetworkError"));
       
-      if (isApiUnavailable && (username === "admin" || username === "operator" || username === "viewer")) {
+      if (IS_DEMO_MODE && isApiUnavailable && (username === "admin" || username === "operator" || username === "viewer")) {
         const role = username === "admin" ? "admin" : username === "viewer" ? "viewer" : "agent";
         localStorage.setItem(ACCESS_TOKEN_KEY, "demo-token");
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify({

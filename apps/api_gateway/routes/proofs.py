@@ -1,6 +1,6 @@
-from typing import Any
+from typing import Any, Literal
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from apps.api_gateway.deps import get_db
 from apps.api_gateway.schemas.proof import (
@@ -29,6 +29,10 @@ def get_pack_proof(pack_id: str, db=Depends(get_db)):
 
 
 @router.post("/verify", response_model=ProofVerificationResponse)
-def verify_proof(proof: dict[str, Any], db=Depends(get_db)):
+def verify_proof(
+    proof: dict[str, Any],
+    level: Literal["L0", "L1", "L2"] = Query(default="L0"),
+    db=Depends(get_db),
+):
     svc = ProofService(db)
-    return svc.verify_proof(proof)
+    return svc.verify_proof(proof, level=level)

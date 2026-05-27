@@ -30,7 +30,7 @@ def test_generated_proof_validates_against_schema(schema, base_proof):
 
 
 def test_expected_solution_pack_proofs_validate_against_schema(schema):
-    """All registered solution pack proofs must validate against the JSON Schema."""
+    """All committed solution pack proof fixtures must validate against the schema."""
     packs = [
         "manufacturing-printer-gpo",
         "network-edge-failover",
@@ -38,12 +38,8 @@ def test_expected_solution_pack_proofs_validate_against_schema(schema):
         "database-failover-lag",
     ]
     for pack in packs:
-        pack_dir = ROOT / "solution-packs" / pack
-        events_path = pack_dir / "sample-events.jsonl"
-        if not events_path.is_file():
-            continue
-        events = [json.loads(line) for line in events_path.read_text().splitlines() if line.strip()]
-        proof = PraxisProofBuilder().build(ProofInputs(solution_pack=pack, events=events))
+        proof_path = ROOT / "solution-packs" / pack / "expected-output" / "proof.json"
+        proof = json.loads(proof_path.read_text())
         validate(instance=proof, schema=schema)
 
 

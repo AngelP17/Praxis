@@ -6,6 +6,7 @@ from .intervention_planner import InterventionPlanner
 from .ontology_compiler import OntologyCompiler
 from .praxis_decision_engine import PraxisDecisionEngine
 from .proof_object import PraxisProofBuilder, ProofInputs
+from .proof_schema import ProofSchemaValidationError, validate_proof_schema
 from .proof_verifier import PraxisProofVerifier, ProofVerificationResult
 from .roi_calculator import RoiCalculator
 from .signing import SigningKey, generate_signing_key, load_signing_key, sign_proof
@@ -23,6 +24,7 @@ __all__ = [
     "PraxisProofBuilder",
     "PraxisProofVerifier",
     "ProofInputs",
+    "ProofSchemaValidationError",
     "ProofVerificationResult",
     "RoiCalculator",
     "SigningKey",
@@ -31,4 +33,5 @@ __all__ = [
     "generate_signing_key",
     "load_signing_key",
     "sign_proof",
+    "validate_proof_schema",
 ]

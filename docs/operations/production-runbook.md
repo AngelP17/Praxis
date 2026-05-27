@@ -10,7 +10,7 @@ A production Praxis stack consists of four Docker containers:
 1.  `web`: Next.js frontend application serving the operator workspace (listening on port `3000`).
 2.  `api-gateway`: FastAPI application proxying calls, validating auth, and evaluating decisions (listening on port `8000`).
 3.  `db`: PostgreSQL relational database for persistent event logs, decision states, and outbox tables (listening on port `5432`).
-4.  `outbox-worker`: Background worker processing transactionally-queued decisions and publishing actions to external systems.
+4.  Transactional outbox relay: the API gateway runs the relay in-process for local/development. Production dispatch is controlled by `OUTBOX_DISPATCH_MODE`.
 
 ---
 
@@ -26,7 +26,7 @@ ENV=production
 NEXT_PUBLIC_DEMO_MODE=0
 
 # Security and Keying
-SECRET_KEY=highly_secure_random_string_kms_generated
+SECRET_KEY=strong_random_string_from_your_secret_store
 PPP_SIGNING_KEY_PATH=/etc/praxis/keys/ppp_private_key.pem
 
 # Persistence
@@ -62,13 +62,17 @@ docker compose logs -f --tail=100
 ### Trigger Outbox Manual Re-evaluation
 If a network partition causes transactionally queued outbox messages to stall, you can manually trigger redelivery:
 ```bash
-docker exec -it praxis-api-gateway-1 .venv/bin/python scripts/reprocess_stalled_outbox.py
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec api-gateway python - <<'PY'
+from apps.api_gateway.services.outbox_relay import outbox_worker
+import asyncio
+asyncio.run(outbox_worker.process_pending_messages())
+PY
 ```
 
 ### Perform Cold Database Migration
 To seed baseline operational ontologies and scenarios:
 ```bash
-docker exec -it praxis-api-gateway-1 .venv/bin/python scripts/seed_database.py
+docker compose -f docker-compose.yml -f docker-compose.prod.yml exec api-gateway python scripts/dev_seed.py
 ```
 
 ---

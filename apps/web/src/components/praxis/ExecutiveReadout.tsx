@@ -37,7 +37,7 @@ export function ExecutiveReadout({ packId = "manufacturing-printer-gpo" }: Execu
     {
       title: "Recommended Action",
       icon: Rocket,
-      content: `${pack.recommendedAction.replace(/_/g, " ")} via human approval gate. Mode: HUMAN_APPROVAL. Actor: operator. Safe for FieldLab simulation before production deployment.`,
+      content: `${pack.recommendedAction.replace(/_/g, " ")} via human approval gate. Mode: human_approval. Actor: operator. Safe for FieldLab simulation before production deployment.`,
     },
     {
       title: "Expected Value",

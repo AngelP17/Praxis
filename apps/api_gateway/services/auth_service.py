@@ -11,6 +11,8 @@ import bcrypt
 from jose import JWTError, jwt
 
 from apps.api_gateway.config import settings
+from infrastructure.db.models.auth_token import AuthToken
+from infrastructure.db.session import SessionLocal
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_MINUTES = 30
@@ -27,9 +29,6 @@ USERS_FILE_LOCATIONS = [
 
 
 class AuthService:
-    _revoked_tokens: set[str] = set()
-    _refresh_tokens: dict[str, dict[str, Any]] = {}
-    
     def __init__(self):
         pass
 
@@ -47,11 +46,8 @@ class AuthService:
         }
         access_token = self._create_token(public_user, token_type="access")
         refresh_token = self._create_token(public_user, token_type="refresh")
-        
-        self._refresh_tokens[refresh_token] = {
-            "username": username,
-            "created_at": datetime.now(timezone.utc),
-        }
+        self._store_token(access_token, "access", username)
+        self._store_token(refresh_token, "refresh", username)
         
         return {
             "access_token": access_token,
@@ -62,15 +58,15 @@ class AuthService:
         }
     
     def refresh_token(self, refresh_token: str) -> dict[str, Any] | None:
-        if refresh_token not in self._refresh_tokens:
-            return None
-        
         try:
             payload = jwt.decode(refresh_token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         except JWTError:
             return None
         
         if payload.get("type") != "refresh":
+            return None
+        existing_token = self._active_token_record(refresh_token, "refresh")
+        if existing_token is None:
             return None
         
         username = payload.get("sub")
@@ -81,9 +77,6 @@ class AuthService:
         if user is None:
             return None
         
-        del self._refresh_tokens[refresh_token]
-        self._revoked_tokens.add(refresh_token)
-        
         public_user = {
             "username": user["username"],
             "role": user["role"],
@@ -92,11 +85,7 @@ class AuthService:
         
         new_access_token = self._create_token(public_user, token_type="access")
         new_refresh_token = self._create_token(public_user, token_type="refresh")
-        
-        self._refresh_tokens[new_refresh_token] = {
-            "username": username,
-            "created_at": datetime.now(timezone.utc),
-        }
+        self._rotate_refresh_token(refresh_token, new_refresh_token, new_access_token, username)
         
         return {
             "access_token": new_access_token,
@@ -107,12 +96,20 @@ class AuthService:
         }
     
     def revoke_token(self, token: str) -> None:
-        self._revoked_tokens.add(token)
-        if token in self._refresh_tokens:
-            del self._refresh_tokens[token]
+        digest = self._token_digest(token)
+        with SessionLocal() as db:
+            record = db.query(AuthToken).filter(AuthToken.token_hash == digest).one_or_none()
+            if record is not None:
+                record.revoked_at = datetime.now(timezone.utc)
+                db.commit()
     
     def is_token_revoked(self, token: str) -> bool:
-        return token in self._revoked_tokens
+        digest = self._token_digest(token)
+        with SessionLocal() as db:
+            record = db.query(AuthToken).filter(AuthToken.token_hash == digest).one_or_none()
+            if record is None:
+                return False
+            return record.revoked_at is not None
 
     def current_user(self, token: str) -> dict[str, Any] | None:
         if self.is_token_revoked(token):
@@ -122,6 +119,8 @@ class AuthService:
         except JWTError:
             return None
         if payload.get("type") != "access":
+            return None
+        if self._active_token_record(token, "access") is None:
             return None
         username = payload.get("sub")
         if not username:
@@ -222,6 +221,82 @@ class AuthService:
             "jti": secrets.token_hex(16),
         }
         return jwt.encode(payload, settings.SECRET_KEY, algorithm=ALGORITHM)
+
+    def _token_digest(self, token: str) -> str:
+        return hashlib.sha256(token.encode()).hexdigest()
+
+    def _token_expiry(self, token: str) -> datetime:
+        payload = jwt.get_unverified_claims(token)
+        exp = payload.get("exp")
+        if isinstance(exp, (int, float)):
+            return datetime.fromtimestamp(exp, tz=timezone.utc)
+        if isinstance(exp, datetime):
+            return exp if exp.tzinfo else exp.replace(tzinfo=timezone.utc)
+        raise ValueError("Token expiry missing")
+
+    def _store_token(self, token: str, token_type: str, username: str) -> None:
+        record = AuthToken(
+            token_hash=self._token_digest(token),
+            token_type=token_type,
+            username=username,
+            expires_at=self._token_expiry(token),
+        )
+        with SessionLocal() as db:
+            db.merge(record)
+            db.commit()
+
+    def _active_token_record(self, token: str, token_type: str) -> AuthToken | None:
+        now = datetime.now(timezone.utc)
+        with SessionLocal() as db:
+            record = (
+                db.query(AuthToken)
+                .filter(AuthToken.token_hash == self._token_digest(token))
+                .filter(AuthToken.token_type == token_type)
+                .one_or_none()
+            )
+            if record is None or record.revoked_at is not None:
+                return None
+            expires_at = record.expires_at
+            if expires_at.tzinfo is None:
+                expires_at = expires_at.replace(tzinfo=timezone.utc)
+            if expires_at <= now:
+                record.revoked_at = now
+                db.commit()
+                return None
+            return record
+
+    def _rotate_refresh_token(
+        self,
+        old_refresh_token: str,
+        new_refresh_token: str,
+        new_access_token: str,
+        username: str,
+    ) -> None:
+        now = datetime.now(timezone.utc)
+        old_digest = self._token_digest(old_refresh_token)
+        new_digest = self._token_digest(new_refresh_token)
+        with SessionLocal() as db:
+            old_record = db.query(AuthToken).filter(AuthToken.token_hash == old_digest).one_or_none()
+            if old_record is not None:
+                old_record.revoked_at = now
+                old_record.replaced_by_hash = new_digest
+            db.add(
+                AuthToken(
+                    token_hash=new_digest,
+                    token_type="refresh",
+                    username=username,
+                    expires_at=self._token_expiry(new_refresh_token),
+                )
+            )
+            db.add(
+                AuthToken(
+                    token_hash=self._token_digest(new_access_token),
+                    token_type="access",
+                    username=username,
+                    expires_at=self._token_expiry(new_access_token),
+                )
+            )
+            db.commit()
 
     def _get_user(self, username: str) -> dict[str, Any] | None:
         for user in self._load_users():

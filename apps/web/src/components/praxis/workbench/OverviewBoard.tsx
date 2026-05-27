@@ -222,7 +222,7 @@ export function OverviewBoard({
         <MetricCard label="Events ingested" value={String(eventsTotal)} delta="proof-verified event count" deltaColor="var(--praxis-argon)" />
         <MetricCard label="Ontology objects" value={String(ontologyObjects)} delta={`${proof.ontology.links_created} links`} deltaColor="var(--praxis-argon)" />
         <MetricCard label="Annual value" value={annualValue} delta={`conf ${proof.value_case.confidence.toFixed(2)}`} deltaColor="var(--praxis-plasma)" />
-        <MetricCard label="Proof hash" value={proofShort} delta="deterministic &middot; signed" deltaColor="var(--praxis-argon)" />
+        <MetricCard label="Proof hash" value={proofShort} delta="deterministic &middot; L0" deltaColor="var(--praxis-argon)" />
       </div>
     </WorkbenchShell>
   );

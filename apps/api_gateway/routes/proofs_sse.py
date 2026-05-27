@@ -3,7 +3,7 @@
 Provides:
     GET /api/proofs/{pack_id}/stream
     Emits server-sent events for each stage of proof generation:
-    s3.write -> sqs.send -> dynamo.put -> events.emit -> proof.hash -> proof.sign
+    s3.write -> sqs.send -> dynamo.put -> events.emit -> proof.hash -> proof.verify
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ STAGES = [
     "dynamo.put",
     "events.emit",
     "proof.hash",
-    "proof.sign",
+    "proof.verify",
 ]
 
 STAGE_LABELS: dict[str, str] = {
@@ -39,7 +39,7 @@ STAGE_LABELS: dict[str, str] = {
     "dynamo.put": "Writing state to DynamoDB",
     "events.emit": "Emitting workflow events via EventBridge",
     "proof.hash": "Computing deterministic proof hash",
-    "proof.sign": "Signing proof with Ed25519",
+    "proof.verify": "Verifying L0 proof contract",
 }
 
 
@@ -95,14 +95,14 @@ async def generate_proof_events(pack_id: str):
                 "run_id": run_id,
                 "solution_pack": pack_id,
                 "proof_hash": proof.get("proof_hash", ""),
-                "conformance": "L1",
+                "conformance": "L0",
                 "events_processed": evidence.get("raw_events", 0),
                 "ontology_objects": ontology.get("objects_created", 0),
                 "priority_score": decision.get("priority_score", 0.0),
                 "evidence_trust": evidence.get("evidence_trust", 0.0),
                 "estimated_value": value_case.get("estimated_annual_value", 0),
                 "download_url": f"/api/proofs/{pack_id}",
-                "verify_command": f"curl -s http://localhost:8000/api/proofs/{pack_id} | python -m astraea.praxis.proof_verifier -",
+                "verify_command": "python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json --level L0",
             }
         ),
     }

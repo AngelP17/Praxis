@@ -702,6 +702,7 @@ class DecisionService:
         self.db.add(
             OutboxMessage(
                 topic="praxis.decision.feedback_recorded",
+                idempotency_key=f"praxis.decision.feedback_recorded:{decision_id}:{feedback_type}",
                 payload={
                     "decision_id": decision_id,
                     "feedback_type": feedback_type,

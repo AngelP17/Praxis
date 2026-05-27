@@ -1,96 +1,118 @@
 {
   "action": {
-    "action_log_hash": "sha256:d8b2d18721c5f87b8979e3e7fde922c2e0220269fb9df3fc5163b07e51c78a0c",
+    "action_log_hash": "sha256:1e0ad2e27415723775e48c82296dc860ba371b0d292a3462b7e5ef7c62862055",
     "actor": "operator",
-    "mode": "HUMAN_APPROVAL",
-    "recommended_action": "verify_failover_status",
-    "risk": "low",
-    "rollback": "Patroni fallback node rollback available",
-    "run_id": "fieldlab_run_database-failover-lag",
+    "mode": "human_approval",
+    "recommended_action": "approve_remediation",
+    "risk": "medium",
+    "rollback": "Requires rollback plan",
+    "run_id": "fieldlab_run_database_failover_lag",
     "status": "approved"
   },
-  "customer_context_hash": "sha256:a6b29f0374bcd8ffaedd80ef3bf5cff48c1a902667b045e4c037218c78c34a99",
+  "customer_context_hash": "sha256:5a5a597430bc8bdc9e79dd63d86d2734d17513e625bd2e666336320719bd123f",
   "decision": {
-    "confidence": 0.959,
+    "confidence": 0.83,
     "next_best_questions": [
-      {
-        "acquisition_feasibility": 0.8,
-        "business_impact_weight": 0.8,
-        "expected_confidence_gain": 0.12,
-        "field": "checkout_timeout_count",
-        "question": "What is the checkout_timeout_count?",
-        "reason": "Expected confidence gain: 0.12"
-      }
+      "What is the value for average_query_latency_ms?",
+      "What is the value for checkout_timeout_count?",
+      "What is the value for database_downtime_minutes?",
+      "What is the value for engineer_triage_hours?"
     ],
-    "priority_score": 0.9525,
+    "priority_score": 0.7719,
     "requires_human_review": true,
-    "root_cause_hypothesis": "postgresql_replication_lag_exhaustion",
+    "root_cause_hypothesis": "postgresql_replication_lag_connection_exhaustion_patroni_auto_failover_active_but_pool_tuning",
     "signals": {
-      "actionability": 0.92,
-      "business_process_criticality": 0.98,
-      "customer_visible_impact": 0.95,
-      "recurrence_risk": 0.89,
-      "severity_score": 0.9416,
-      "sla_exposure": 0.95
+      "actionability": 0.88,
+      "business_process_criticality": 0.75,
+      "customer_visible_impact": 0.75,
+      "recurrence_risk": 0.79,
+      "severity_score": 0.9042,
+      "sla_exposure": 0.82
     }
   },
   "evidence": {
-    "corroboration_score": 0.95,
-    "evidence_trust": 0.959,
-    "freshness_score": 0.98,
+    "corroboration_score": 0.85,
+    "evidence_trust": 0.83,
+    "freshness_score": 0.91,
     "raw_events": 12,
     "source_coverage": 1.0,
     "sources": [
-      "postgres-replica",
-      "pgpool_load_balancer",
-      "monitoring_alerts",
       "Patroni",
-      "helpdesk",
-      "praxis",
       "checkout_microservice",
-      "operator_note"
+      "helpdesk",
+      "monitoring_alerts",
+      "operator_note",
+      "pgpool_load_balancer",
+      "postgres-replica",
+      "praxis"
     ]
   },
   "expansion": [
     {
-      "expansion_score": 0.88,
+      "expansion_score": 0.82,
       "factors": {
-        "executive_visibility": 0.9,
-        "implementation_reuse": 0.85,
-        "measurable_value": 0.92,
-        "shared_data_model": 0.95,
+        "executive_visibility": 0.7,
+        "implementation_reuse": 0.8,
+        "measurable_value": 0.85,
+        "shared_data_model": 0.9,
         "stakeholder_overlap": 0.8,
-        "urgency": 0.85
+        "urgency": 0.75
       },
-      "id": "connection-pool-isolation",
-      "name": "Database Connection Pool Isolation"
+      "id": "replication-monitoring",
+      "name": "Replication Lag Monitoring"
+    },
+    {
+      "expansion_score": 0.7425,
+      "factors": {
+        "executive_visibility": 0.85,
+        "implementation_reuse": 0.6,
+        "measurable_value": 0.8,
+        "shared_data_model": 0.75,
+        "stakeholder_overlap": 0.75,
+        "urgency": 0.7
+      },
+      "id": "cross-region-failover-drill",
+      "name": "Cross-Region Failover Drill"
+    },
+    {
+      "expansion_score": 0.7275,
+      "factors": {
+        "executive_visibility": 0.65,
+        "implementation_reuse": 0.75,
+        "measurable_value": 0.75,
+        "shared_data_model": 0.8,
+        "stakeholder_overlap": 0.7,
+        "urgency": 0.6
+      },
+      "id": "read-replica-auto-scaling",
+      "name": "Read Replica Auto-Scaling"
     }
   ],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
-    "actions_available": 8,
-    "links_created": 196,
-    "mapping_confidence": 0.94,
-    "objects_created": 9
+    "actions_available": 6,
+    "links_created": 15,
+    "mapping_confidence": 0.5828,
+    "objects_created": 8
   },
-  "proof_hash": "sha256:7f0c2a2cb71a9e4c077eb1bde1fae0cb9f9a8d0a528c21c740a0181fc0ece3fb",
+  "proof_hash": "sha256:fa0aec54692cd572a618d76171cb32efe2a9893c8e5be72a6b438233d70e38a6",
   "proof_id": "proof_praxis_database_failover_lag_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:4a0f3d53cdf4158538ff13991f3ba3a567027f4d7b1a67628fde7f1b8ffed4bf",
+    "replay_hash": "sha256:fdfde2f7906f2c8afe9da20c7adaf5bb8fc3ff62a8d5f17e9dc68483af5a09fc",
     "verified_at": "2026-05-12T00:00:00Z"
   },
-  "run_id": "fieldlab_run_database-failover-lag",
+  "run_id": "fieldlab_run_database_failover_lag",
   "solution_pack": "database-failover-lag",
   "value_case": {
     "bucket": "demo and scope",
-    "confidence": 0.959,
+    "confidence": 0.7451,
     "estimated_annual_value": 108281.67,
     "primary_value_driver": "Keep transactional systems available during failovers, optimize connection pools, and provide audit-ready proof of platform health",
     "roi_calculations": {
       "annual_value": 108281.67,
-      "monthly_delay_cost_avoided": 9000.0,
-      "monthly_labor_cost_saved": 23.47
+      "downtime_cost_saved": 108000.0,
+      "labor_cost_saved": 281.67
     }
   }
 }
