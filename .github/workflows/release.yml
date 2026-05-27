@@ -23,7 +23,7 @@ jobs:
           python -m pip install --upgrade pip build
           python -m build packages/cli/praxis_verify
       - name: Upload verifier wheel
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: praxis-verifier-wheel
           path: packages/cli/praxis_verify/dist/*
