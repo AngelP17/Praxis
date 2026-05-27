@@ -1,50 +1,22 @@
 {
   "action": {
-    "action_log_hash": "sha256:d561840b15f42755b3972b3f23c8da25f33afe20474ca9010fb1a47564197964",
+    "action_log_hash": "sha256:1e0ad2e27415723775e48c82296dc860ba371b0d292a3462b7e5ef7c62862055",
     "actor": "operator",
-    "mode": "HUMAN_APPROVAL",
+    "mode": "human_approval",
     "recommended_action": "approve_remediation",
     "risk": "medium",
     "rollback": "Requires rollback plan",
-    "run_id": "fieldlab_run_database-failover-lag",
+    "run_id": "fieldlab_run_database_failover_lag",
     "status": "approved"
   },
   "customer_context_hash": "sha256:5a5a597430bc8bdc9e79dd63d86d2734d17513e625bd2e666336320719bd123f",
   "decision": {
     "confidence": 0.83,
     "next_best_questions": [
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "average_query_latency_ms",
-        "question": "What is the value for average_query_latency_ms?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "checkout_timeout_count",
-        "question": "What is the value for checkout_timeout_count?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "database_downtime_minutes",
-        "question": "What is the value for database_downtime_minutes?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "engineer_triage_hours",
-        "question": "What is the value for engineer_triage_hours?",
-        "reason": "Expected confidence gain: 0.17"
-      }
+      "What is the value for average_query_latency_ms?",
+      "What is the value for checkout_timeout_count?",
+      "What is the value for database_downtime_minutes?",
+      "What is the value for engineer_triage_hours?"
     ],
     "priority_score": 0.7719,
     "requires_human_review": true,
@@ -75,22 +47,62 @@
       "praxis"
     ]
   },
-  "expansion": [],
+  "expansion": [
+    {
+      "expansion_score": 0.82,
+      "factors": {
+        "executive_visibility": 0.7,
+        "implementation_reuse": 0.8,
+        "measurable_value": 0.85,
+        "shared_data_model": 0.9,
+        "stakeholder_overlap": 0.8,
+        "urgency": 0.75
+      },
+      "id": "replication-monitoring",
+      "name": "Replication Lag Monitoring"
+    },
+    {
+      "expansion_score": 0.7425,
+      "factors": {
+        "executive_visibility": 0.85,
+        "implementation_reuse": 0.6,
+        "measurable_value": 0.8,
+        "shared_data_model": 0.75,
+        "stakeholder_overlap": 0.75,
+        "urgency": 0.7
+      },
+      "id": "cross-region-failover-drill",
+      "name": "Cross-Region Failover Drill"
+    },
+    {
+      "expansion_score": 0.7275,
+      "factors": {
+        "executive_visibility": 0.65,
+        "implementation_reuse": 0.75,
+        "measurable_value": 0.75,
+        "shared_data_model": 0.8,
+        "stakeholder_overlap": 0.7,
+        "urgency": 0.6
+      },
+      "id": "read-replica-auto-scaling",
+      "name": "Read Replica Auto-Scaling"
+    }
+  ],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
     "actions_available": 6,
-    "links_created": 144,
+    "links_created": 15,
     "mapping_confidence": 0.5828,
     "objects_created": 8
   },
-  "proof_hash": "sha256:3563ff7eabb76cd5301aea5fbd45ec0bed25f6b2ace19f7380e99455749d1fa2",
+  "proof_hash": "sha256:fa0aec54692cd572a618d76171cb32efe2a9893c8e5be72a6b438233d70e38a6",
   "proof_id": "proof_praxis_database_failover_lag_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:af54bbd2ffd417ad5b8d847e2fadf6f7ece9f1845862fa93a1dd3c1fa51cffb0",
+    "replay_hash": "sha256:fdfde2f7906f2c8afe9da20c7adaf5bb8fc3ff62a8d5f17e9dc68483af5a09fc",
     "verified_at": "2026-05-12T00:00:00Z"
   },
-  "run_id": "fieldlab_run_database-failover-lag",
+  "run_id": "fieldlab_run_database_failover_lag",
   "solution_pack": "database-failover-lag",
   "value_case": {
     "bucket": "demo and scope",

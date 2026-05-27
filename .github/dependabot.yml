@@ -1,0 +1,29 @@
+version: 2
+updates:
+  # Enable version updates for npm (pnpm monorepo dependencies)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+
+  # Enable version updates for Python dependencies in gateway
+  - package-ecosystem: "pip"
+    directory: "/apps/api_gateway"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Enable version updates for Astraea Core package
+  - package-ecosystem: "pip"
+    directory: "/packages/astraea-core"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+
+  # Enable version updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5

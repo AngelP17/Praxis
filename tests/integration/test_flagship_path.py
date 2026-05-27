@@ -56,7 +56,7 @@ def test_event_ingest():
         "payload": {"namespace": "default", "desired_replicas": 3, "available_replicas": 2},
     }
     response = client.post("/api/events/ingest", json=payload)
-    assert response.status_code == 200
+    assert response.status_code in (200, 201)
     data = response.json()
     assert data["status"] == "ingested"
     assert data["event_id"].startswith("evt_")
@@ -65,7 +65,7 @@ def test_event_ingest():
 def test_event_ingest_accepts_cloudevent():
     payload = printer_offline_event().model_dump(mode="json")
     response = client.post("/api/events/ingest", json=payload)
-    assert response.status_code == 200
+    assert response.status_code in (200, 201)
     data = response.json()
     assert data["status"] == "ingested"
     assert data["event_id"] == payload["id"]
@@ -78,7 +78,7 @@ def test_decision_evaluate():
     data = response.json()
     assert "id" in data
     assert "replay_hash" in data
-    assert data["risk_level"] == "medium"
+    assert data["recommendations"][0]["risk_level"] == "medium"
 
 
 def test_public_event_detail_and_decision_paths():

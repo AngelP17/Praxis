@@ -50,7 +50,8 @@ class PraxisProofBuilder:
         signing_key_path: str | None = None,
     ) -> dict[str, Any]:
         generated_at = inputs.generated_at or DEFAULT_VERIFIED_AT
-        run_id = inputs.run_id or f"fieldlab_run_{inputs.solution_pack}"
+        run_id = inputs.run_id or f"fieldlab_run_{inputs.solution_pack.replace('-', '_')}"
+        run_id = run_id.replace("-", "_")
         scenario_context, roi_model = self.load_pack_context(inputs)
         extractor = EventFeatureExtractor()
         features = extractor.extract(inputs.events, scenario_context)
@@ -66,9 +67,9 @@ class PraxisProofBuilder:
         )
         action_log = {
             "recommended_action": action_plan["action_type"],
-            "mode": action_plan["mode"],
+            "mode": str(action_plan["mode"]).lower(),
             "actor": inputs.action_actor,
-            "status": inputs.action_status,
+            "status": str(inputs.action_status).lower(),
             "run_id": run_id,
             "risk": action_plan["risk"],
             "rollback": action_plan["rollback"],
@@ -116,7 +117,10 @@ class PraxisProofBuilder:
                 "priority_score": decision.priority_score,
                 "confidence": decision.confidence,
                 "requires_human_review": decision.requires_human_review,
-                "next_best_questions": decision.next_best_questions,
+                "next_best_questions": [
+                    (q.get("question") if isinstance(q, dict) else getattr(q, "question", str(q)))
+                    for q in (decision.next_best_questions or [])
+                ],
                 "signals": {
                     key: features[key]
                     for key in [

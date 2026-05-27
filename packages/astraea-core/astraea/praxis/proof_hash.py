@@ -31,7 +31,9 @@ def sha256_digest(payload: Any) -> str:
 
 
 def proof_hash(proof: dict[str, Any]) -> str:
-    """Hash a proof object excluding its own mutable proof_hash field."""
+    """Hash a proof object excluding its proof_hash, signature, and attestation fields."""
     normalized = dict(proof)
     normalized.pop("proof_hash", None)
+    normalized.pop("signature", None)
+    normalized.pop("attestation", None)
     return sha256_digest(normalized)
