@@ -1,50 +1,22 @@
 {
   "action": {
-    "action_log_hash": "sha256:de99a5d003ef0a3f331d8c66b607389b9c7d03ab7a58ea832a5177173fe15aa4",
+    "action_log_hash": "sha256:b31dd1547d5021a02dbe6e6766a29abd11df5c6c4d66bcbf4b33de3ba247885d",
     "actor": "operator",
-    "mode": "HUMAN_APPROVAL",
+    "mode": "human_approval",
     "recommended_action": "acknowledge_incident",
     "risk": "low",
     "rollback": "No runtime mutation",
-    "run_id": "fieldlab_run_identity-onboarding-drift",
+    "run_id": "fieldlab_run_identity_onboarding_drift",
     "status": "approved"
   },
   "customer_context_hash": "sha256:d35087bf4a22d4683d2d05c1f629a1abe9cae0e02cd9c99555571f796baacb48",
   "decision": {
     "confidence": 0.8,
     "next_best_questions": [
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "average_triage_latency_minutes",
-        "question": "What is the value for average_triage_latency_minutes?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "employee_onboarding_delay",
-        "question": "What is the value for employee_onboarding_delay?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "onboarding_downtime_hours",
-        "question": "What is the value for onboarding_downtime_hours?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "support_hours",
-        "question": "What is the value for support_hours?",
-        "reason": "Expected confidence gain: 0.17"
-      }
+      "What is the value for average_triage_latency_minutes?",
+      "What is the value for employee_onboarding_delay?",
+      "What is the value for onboarding_downtime_hours?",
+      "What is the value for support_hours?"
     ],
     "priority_score": 0.5891,
     "requires_human_review": false,
@@ -72,22 +44,62 @@
       "praxis"
     ]
   },
-  "expansion": [],
+  "expansion": [
+    {
+      "expansion_score": 0.8225,
+      "factors": {
+        "executive_visibility": 0.75,
+        "implementation_reuse": 0.75,
+        "measurable_value": 0.85,
+        "shared_data_model": 0.9,
+        "stakeholder_overlap": 0.85,
+        "urgency": 0.7
+      },
+      "id": "automated-provisioning",
+      "name": "Automated Provisioning"
+    },
+    {
+      "expansion_score": 0.76,
+      "factors": {
+        "executive_visibility": 0.8,
+        "implementation_reuse": 0.7,
+        "measurable_value": 0.75,
+        "shared_data_model": 0.8,
+        "stakeholder_overlap": 0.8,
+        "urgency": 0.65
+      },
+      "id": "privilege-access-governance",
+      "name": "Privileged Access Governance"
+    },
+    {
+      "expansion_score": 0.7525,
+      "factors": {
+        "executive_visibility": 0.7,
+        "implementation_reuse": 0.8,
+        "measurable_value": 0.7,
+        "shared_data_model": 0.85,
+        "stakeholder_overlap": 0.75,
+        "urgency": 0.6
+      },
+      "id": "drift-detection-remediation",
+      "name": "Drift Detection & Remediation"
+    }
+  ],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
     "actions_available": 6,
-    "links_created": 64,
-    "mapping_confidence": 0.5802,
+    "links_created": 4,
+    "mapping_confidence": 0.5402,
     "objects_created": 5
   },
-  "proof_hash": "sha256:2aa7156895b8a673ba5920bf91b7f3753cc1294432fafc051a44b41d159b0642",
+  "proof_hash": "sha256:9ca391b704d2abf0d382f842f252c7ed45c0888ab3e7f1957527625a62273d84",
   "proof_id": "proof_praxis_identity_onboarding_drift_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:55986055fa34da001a4b671d6045094fbcb2d2af471348f8b162cf2ad7f83aa9",
+    "replay_hash": "sha256:fd11fe1dbfaf343ebfbf90092b604f3305400fea39e58ab05cec3b2ec6502a42",
     "verified_at": "2026-05-12T00:00:00Z"
   },
-  "run_id": "fieldlab_run_identity-onboarding-drift",
+  "run_id": "fieldlab_run_identity_onboarding_drift",
   "solution_pack": "identity-onboarding-drift",
   "value_case": {
     "bucket": "demo and scope",

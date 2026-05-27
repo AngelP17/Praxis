@@ -1,50 +1,22 @@
 {
   "action": {
-    "action_log_hash": "sha256:4ceca61d9ddf2c0413929720e4bfc0d0a68682bd695df3161f9b4587bb034feb",
+    "action_log_hash": "sha256:21388df5707a8176e8e13e1f8a52325a66070d11202980df4d6e4b30d3a28b7b",
     "actor": "operator",
-    "mode": "HUMAN_APPROVAL",
+    "mode": "human_approval",
     "recommended_action": "acknowledge_incident",
     "risk": "low",
     "rollback": "No runtime mutation",
-    "run_id": "fieldlab_run_network-edge-failover",
+    "run_id": "fieldlab_run_network_edge_failover",
     "status": "approved"
   },
   "customer_context_hash": "sha256:3639282e0e26ced69207d9dd7ae21c3293a4143e1df2ae40d204994c787888cd",
   "decision": {
     "confidence": 0.7667,
     "next_best_questions": [
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.95,
-        "expected_confidence_gain": 0.57,
-        "field": "downtime_minutes",
-        "question": "How many production minutes were lost or delayed?",
-        "reason": "Expected confidence gain: 0.57"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "delayed_shipments",
-        "question": "What is the value for delayed_shipments?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "support_hours",
-        "question": "What is the value for support_hours?",
-        "reason": "Expected confidence gain: 0.17"
-      },
-      {
-        "acquisition_feasibility": 0.7,
-        "business_impact_weight": 0.5,
-        "expected_confidence_gain": 0.17,
-        "field": "vendor_escalations",
-        "question": "What is the value for vendor_escalations?",
-        "reason": "Expected confidence gain: 0.17"
-      }
+      "How many production minutes were lost or delayed?",
+      "What is the value for delayed_shipments?",
+      "What is the value for support_hours?",
+      "What is the value for vendor_escalations?"
     ],
     "priority_score": 0.5849,
     "requires_human_review": false,
@@ -71,22 +43,62 @@
       "praxis"
     ]
   },
-  "expansion": [],
+  "expansion": [
+    {
+      "expansion_score": 0.7575,
+      "factors": {
+        "executive_visibility": 0.7,
+        "implementation_reuse": 0.7,
+        "measurable_value": 0.8,
+        "shared_data_model": 0.85,
+        "stakeholder_overlap": 0.75,
+        "urgency": 0.6
+      },
+      "id": "sd-wan-orchestration",
+      "name": "SD-WAN Orchestration"
+    },
+    {
+      "expansion_score": 0.7425,
+      "factors": {
+        "executive_visibility": 0.65,
+        "implementation_reuse": 0.65,
+        "measurable_value": 0.75,
+        "shared_data_model": 0.8,
+        "stakeholder_overlap": 0.8,
+        "urgency": 0.7
+      },
+      "id": "out-of-band-management",
+      "name": "Out-of-Band Management"
+    },
+    {
+      "expansion_score": 0.6875,
+      "factors": {
+        "executive_visibility": 0.6,
+        "implementation_reuse": 0.8,
+        "measurable_value": 0.65,
+        "shared_data_model": 0.75,
+        "stakeholder_overlap": 0.7,
+        "urgency": 0.5
+      },
+      "id": "carrier-redundancy-audit",
+      "name": "Carrier Redundancy Audit"
+    }
+  ],
   "generated_at": "2026-05-12T00:00:00Z",
   "ontology": {
     "actions_available": 6,
-    "links_created": 64,
+    "links_created": 8,
     "mapping_confidence": 0.5848,
     "objects_created": 6
   },
-  "proof_hash": "sha256:866cde4ad666c6b3b126d8c49cb71effe962694802f13a9c1cf26a1af8a7cdc7",
+  "proof_hash": "sha256:171f57be71634ae37c1674cac9f5072410a4b27f8d6f0eaf43c23df27d2acda4",
   "proof_id": "proof_praxis_network_edge_failover_001",
   "replay": {
     "deterministic": true,
-    "replay_hash": "sha256:b761cfb143334e69184d490263fa1a838ec94faaf13ccf7609442a2b3c103580",
+    "replay_hash": "sha256:5d80132da2b438c2ebc750882597f1f065e4721d143e03851021c158e4f9c25a",
     "verified_at": "2026-05-12T00:00:00Z"
   },
-  "run_id": "fieldlab_run_network-edge-failover",
+  "run_id": "fieldlab_run_network_edge_failover",
   "solution_pack": "network-edge-failover",
   "value_case": {
     "bucket": "discovery required",

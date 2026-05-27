@@ -1,7 +1,7 @@
 # Praxis Proof Summary
 
 - Solution pack: `manufacturing-printer-gpo`
-- Proof hash: `sha256:0369f17d1c7080fa74510c0bed40e2546ea101f2a8d73175a80b77d6f34bc599`
+- Proof hash: `sha256:db06e81f40129e921fd0e04476f29ea37759befeb1ad22f64678f1f4f5d5bbe3`
 - Events: 12
 - Evidence trust: 0.829
 - Ontology objects: 5

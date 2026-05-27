@@ -1,0 +1,13 @@
+# Global code owners
+*       @AngelP17
+
+# Frontend app
+/apps/web/       @AngelP17
+
+# Python services and packages
+/apps/api_gateway/   @AngelP17
+/packages/           @AngelP17
+/services/           @AngelP17
+
+# SPEC and spec schemas
+/docs/spec/          @AngelP17

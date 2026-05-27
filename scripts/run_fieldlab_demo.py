@@ -163,7 +163,7 @@ def main():
     print(f"   Action: {action['recommended_action'].replace('_', ' ')}")
     print(f"   Human review: {'Required' if decision['requires_human_review'] else 'Not required'}")
     for question in decision.get("next_best_questions", [])[:2]:
-        print(f"   VOI: {question['question']}")
+        print(f"   VOI: {question}")
     print()
 
     print("8. Capture Human Action")

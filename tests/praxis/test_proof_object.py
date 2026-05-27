@@ -21,7 +21,7 @@ def test_proof_object_contains_field_loop_sections():
     assert proof["decision"]["priority_score"] == 0.7708
     assert proof["decision"]["root_cause_hypothesis"] == "printer_deployment_policy_drift"
     assert proof["decision"]["requires_human_review"] is True
-    assert proof["action"]["mode"] == "HUMAN_APPROVAL"
+    assert proof["action"]["mode"] == "human_approval"
     assert proof["action"]["status"] == "approved"
     assert proof["value_case"]["estimated_annual_value"] == 38481.6
     assert proof["value_case"]["confidence"] == 0.7601
