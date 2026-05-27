@@ -9,6 +9,7 @@ from apps.api_gateway.schemas.proof import (
     ProofVerificationResponse,
 )
 from apps.api_gateway.services.proof_service import ProofService
+from apps.api_gateway.services.cache import cache_response
 
 
 router = APIRouter()
@@ -21,6 +22,7 @@ def create_proof(body: ProofCreateRequest, db=Depends(get_db)):
 
 
 @router.get("/{pack_id}", response_model=ProofResponse)
+@cache_response(ttl_seconds=300)
 def get_pack_proof(pack_id: str, db=Depends(get_db)):
     svc = ProofService(db)
     return svc.get_pack_proof(pack_id)

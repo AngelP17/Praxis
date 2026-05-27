@@ -12,7 +12,7 @@ import {
   XCircle,
 } from "@phosphor-icons/react";
 
-import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
+import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
 import { DEMO_EVENT_STREAM, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { deterministicHash } from "@/lib/deterministic-hash";
 import { getScenarioByTicketId } from "@/lib/scenarios";
@@ -154,7 +154,7 @@ function buildDemoReplay(event: EventDetail, decision: DecisionPayload): ReplayP
 }
 
 function fmtLabel(value?: string | null) {
-  if (!value) return "—";
+  if (!value) return "n/a";
   return value.replace(/[_-]+/g, " ");
 }
 

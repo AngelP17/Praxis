@@ -1,6 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import Any
+from sse_starlette.sse import EventSourceResponse
+import asyncio
+import json
 
 from apps.api_gateway.deps import get_db
 from apps.api_gateway.services.decision_service import DecisionService
@@ -9,7 +12,30 @@ from apps.api_gateway.services.event_service import EventService
 router = APIRouter()
 
 
-@router.post("/ingest")
+async def event_generator():
+    from apps.api_gateway.services.sse_broadcaster import event_broadcaster
+    q = event_broadcaster.subscribe()
+    try:
+        while True:
+            data = await q.get()
+            yield {
+                "event": "event_ingested",
+                "data": json.dumps(data)
+            }
+    except asyncio.CancelledError:
+        pass
+    finally:
+        event_broadcaster.unsubscribe(q)
+
+
+@router.get("/stream")
+async def stream_events():
+    """Stream live ingested events via SSE."""
+    return EventSourceResponse(event_generator())
+
+
+
+@router.post("/ingest", status_code=201)
 def ingest_event(payload: dict[str, Any], db: Session = Depends(get_db)):
     service = EventService(db)
     return service.ingest_event(payload)

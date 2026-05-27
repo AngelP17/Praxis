@@ -10,7 +10,7 @@ import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
-import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
+import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
 import { deterministicHash } from "@/lib/deterministic-hash";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
@@ -201,7 +201,7 @@ export default function EventIngestionPage() {
                 </h1>
                 <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
                   Submit operational events into the Praxis spine. Switch scenarios with the picker or press{" "}
-                  <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">1</kbd>–
+                  <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">1</kbd>-
                   <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">{scenarios.length}</kbd>.
                 </p>
               </div>
@@ -282,9 +282,9 @@ export default function EventIngestionPage() {
                   </div>
                   <div className="mt-4 grid grid-flow-dense grid-cols-2 gap-3 sm:grid-cols-4">
                     <StatCard label="Decision ID" value={String(lastResult.id)} />
-                    <StatCard label="Priority" value={typeof lastResult.priority_score === "number" ? lastResult.priority_score.toFixed(1) : "—"} />
-                    <StatCard label="Risk" value={lastResult.risk_level ?? "—"} />
-                    <StatCard label="Confidence" value={typeof lastResult.confidence_score === "number" ? lastResult.confidence_score.toFixed(2) : "—"} />
+                    <StatCard label="Priority" value={typeof lastResult.priority_score === "number" ? lastResult.priority_score.toFixed(1) : "n/a"} />
+                    <StatCard label="Risk" value={lastResult.risk_level ?? "n/a"} />
+                    <StatCard label="Confidence" value={typeof lastResult.confidence_score === "number" ? lastResult.confidence_score.toFixed(2) : "n/a"} />
                   </div>
                   <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3">
                     <div className="font-mono text-[10px] text-zinc-500">root cause · {lastResult.root_cause_hypothesis}</div>

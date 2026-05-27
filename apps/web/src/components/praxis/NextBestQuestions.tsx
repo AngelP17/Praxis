@@ -1,7 +1,7 @@
 "use client";
 
 import { Compass, ArrowRight, Target } from "@phosphor-icons/react";
-import { getPackById } from "@/lib/praxis-api";
+import { getPackById } from "@/lib/api";
 
 interface NextBestQuestionsProps {
   packId?: string;

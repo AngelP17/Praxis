@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ChartLine, Hash, ShieldCheck, Waveform } from "@phosphor-icons/react/dist/ssr";
 
 import { getDemoIncident, DEMO_TICKETS } from "@/lib/demo-scenario";
-import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/client-api";
+import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";

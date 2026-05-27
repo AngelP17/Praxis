@@ -21,7 +21,7 @@ async function handleReplay(packId: string) {
     try {
       const body = await proxied.json();
       if (body.equal === true) return NextResponse.json(body);
-    } catch { /* parse failed — fall through */ }
+    } catch { /* parse failed, fall through */ }
     return demoReplayResponse(packId);
   }
 

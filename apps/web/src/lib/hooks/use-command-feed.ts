@@ -204,7 +204,9 @@ export function useCommandFeed() {
         if (ticketsR.status === "rejected") throw ticketsR.reason;
         const liveTickets = Array.isArray(ticketsR.value) ? ticketsR.value : [];
         const openSignals = liveTickets.filter((ticket) => !isClosedStatus(ticket.status));
-        if (openSignals.length === 0 && DEMO_TICKETS.length > 0) {
+        
+        // Only swap with demo data if demo mode is explicitly requested
+        if (process.env.NEXT_PUBLIC_DEMO_MODE === "1" && openSignals.length === 0 && DEMO_TICKETS.length > 0) {
           const syncedAt = Date.now();
           syncStart.current = syncedAt;
           setFeed({
@@ -300,6 +302,32 @@ export function useCommandFeed() {
   useEffect(() => {
     mountedRef.current = true;
     void hydrate();
+
+    // Connect to live events and decisions SSE stream
+    const eventsSourceUrl = resolveApiPath("/api/events/stream");
+    const decisionsSourceUrl = resolveApiPath("/api/decisions/stream");
+
+    let eventsSource: EventSource | null = null;
+    let decisionsSource: EventSource | null = null;
+
+    try {
+      eventsSource = new EventSource(eventsSourceUrl);
+      eventsSource.addEventListener("event_ingested", () => {
+        void hydrate();
+      });
+    } catch (e) {
+      console.warn("Failed to subscribe to live events SSE stream:", e);
+    }
+
+    try {
+      decisionsSource = new EventSource(decisionsSourceUrl);
+      decisionsSource.addEventListener("decision_evaluated", () => {
+        void hydrate();
+      });
+    } catch (e) {
+      console.warn("Failed to subscribe to live decisions SSE stream:", e);
+    }
+
     let active = true;
     let timer: number | undefined;
     const tick = () => {
@@ -315,6 +343,8 @@ export function useCommandFeed() {
       if (timer !== undefined) {
         window.clearTimeout(timer);
       }
+      if (eventsSource) eventsSource.close();
+      if (decisionsSource) decisionsSource.close();
     };
   }, [hydrate]);
 

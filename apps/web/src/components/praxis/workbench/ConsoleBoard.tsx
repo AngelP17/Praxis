@@ -129,8 +129,8 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
                 <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-mute)]">{p.id}</div>
                 <div className="mt-2 font-display text-[16px] font-medium tracking-[-0.01em]">{p.name}</div>
                 <div className="mt-3 flex justify-between font-mono text-[10px] text-[var(--praxis-mute)]">
-                  <span>priority <span style={{ color: "var(--praxis-plasma)" }}>{p.priorityScore?.toFixed(2) ?? "—"}</span></span>
-                  <span>trust <span style={{ color: "var(--praxis-argon)" }}>{p.evidenceTrust?.toFixed(2) ?? "—"}</span></span>
+                  <span>priority <span style={{ color: "var(--praxis-plasma)" }}>{p.priorityScore?.toFixed(2) ?? "n/a"}</span></span>
+                  <span>trust <span style={{ color: "var(--praxis-argon)" }}>{p.evidenceTrust?.toFixed(2) ?? "n/a"}</span></span>
                 </div>
               </Link>
             ))}

@@ -11,6 +11,19 @@ import { PipelineRunnerModal } from "./PipelineRunnerModal";
 import { TweaksPanel } from "./TweaksPanel";
 
 // ── Outcomes section ────────────────────────────────────────────────────────
+function MiniSpark({ color }: { color: string }) {
+  return (
+    <svg width="42" height="14" className="inline-block ml-3.5 opacity-[0.76]" aria-hidden="true">
+      <polyline
+        fill="none"
+        stroke={color}
+        strokeWidth="1.6"
+        points="0,8 8,3 16,11 24,5 32,9 42,2"
+      />
+    </svg>
+  );
+}
+
 function OutcomesSection() {
   const metrics = [
     { value: "7 min", label: "Signal to readout" },
@@ -25,17 +38,20 @@ function OutcomesSection() {
         <div className="mb-14 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
           Outcomes
         </div>
-        <div className="grid grid-flow-dense gap-px border" style={{ borderColor: "var(--praxis-line)", gridTemplateColumns: "repeat(4,1fr)" }}>
+        <div className="grid grid-flow-dense gap-px border bg-[var(--praxis-line)] md:grid-cols-4" style={{ borderColor: "var(--praxis-line)" }}>
           {metrics.map((m) => (
-            <div key={m.label} className="border-r p-8 last:border-r-0" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
-              <div
-                className="font-display text-[clamp(2.4rem,4vw,4rem)] font-semibold leading-none tracking-tight"
-                style={{ color: m.accent ?? "var(--praxis-bone)" }}
-              >
-                {m.value}
-              </div>
-              <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--praxis-muted)" }}>
-                {m.label}
+            <div key={m.label} className="p-8 flex flex-col justify-between" style={{ background: "var(--praxis-obsidian)" }}>
+              <div>
+                <div
+                  className="font-display text-[clamp(2.4rem,4vw,4rem)] font-semibold leading-none tracking-tight flex items-baseline"
+                  style={{ color: m.accent ?? "var(--praxis-bone)" }}
+                >
+                  {m.value}
+                  <MiniSpark color={m.accent ?? "var(--praxis-muted)"} />
+                </div>
+                <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--praxis-muted)" }}>
+                  {m.label}
+                </div>
               </div>
             </div>
           ))}
@@ -48,12 +64,12 @@ function OutcomesSection() {
 // ── Trust / provenance block ─────────────────────────────────────────────────
 function TrustSection() {
   const cards = [
-    { title: "SOC 2 Type II",       body: "Audit controls mapped to every proof step.",           accent: "var(--praxis-argon)" },
-    { title: "Air-gapped mode",     body: "Run the full pipeline with zero egress.",              accent: "var(--praxis-bone)" },
-    { title: "Sigstore / Rekor",    body: "Ed25519 signatures anchored to public transparency log.", accent: "var(--praxis-amber)" },
-    { title: "Deterministic",       body: "Same inputs always produce the same proof hash.",      accent: "var(--praxis-argon)" },
-    { title: "Replayable",          body: "Any auditor can re-run the proof from archived events.", accent: "var(--praxis-plasma)" },
-    { title: "Open spec",           body: "Proof schema published under Apache 2 license.",       accent: "var(--praxis-bone)" },
+    { title: "SOC 2 Type II",       body: "Audit controls mapped to every proof step.",           accent: "var(--praxis-argon)", colSpan: "md:col-span-8" },
+    { title: "Air-gapped mode",     body: "Run the full pipeline with zero egress.",              accent: "var(--praxis-bone)", colSpan: "md:col-span-4" },
+    { title: "Sigstore / Rekor",    body: "Ed25519 signatures anchored to public transparency log.", accent: "var(--praxis-amber)", colSpan: "md:col-span-4" },
+    { title: "Deterministic",       body: "Same inputs always produce the same proof hash.",      accent: "var(--praxis-argon)", colSpan: "md:col-span-8" },
+    { title: "Replayable",          body: "Any auditor can re-run the proof from archived events.", accent: "var(--praxis-plasma)", colSpan: "md:col-span-6" },
+    { title: "Open spec",           body: "Proof schema published under Apache 2 license.",       accent: "var(--praxis-bone)", colSpan: "md:col-span-6" },
   ];
 
   return (
@@ -65,15 +81,16 @@ function TrustSection() {
         <h2 className="mb-16 font-display text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.96] tracking-[-0.02em]" style={{ color: "var(--praxis-bone)" }}>
           Trust built into<br />the protocol.
         </h2>
-        <div className="grid gap-px border" style={{ borderColor: "var(--praxis-line)", gridTemplateColumns: "repeat(3,1fr)" }}>
+        <div className="grid grid-flow-dense gap-px border bg-[var(--praxis-line)] md:grid-cols-12" style={{ borderColor: "var(--praxis-line)" }}>
           {cards.map((card) => (
             <div
               key={card.title}
-              className="border-r p-8 last:border-r-0 transition-all duration-700 hover:-translate-y-0.5"
-              style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}
+              className={`p-8 transition-all duration-700 hover:-translate-y-0.5 ${card.colSpan}`}
+              style={{ background: "var(--praxis-surface)" }}
             >
-              <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: card.accent }}>
-                verified
+              <div className="mb-3.5 flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full" style={{ background: card.accent }} />
+                <span className="font-mono text-[8.5px] uppercase tracking-[0.18em]" style={{ color: "var(--praxis-muted)" }}>provenance</span>
               </div>
               <div className="font-display text-xl font-semibold" style={{ color: "var(--praxis-bone)" }}>
                 {card.title}
@@ -82,6 +99,35 @@ function TrustSection() {
                 {card.body}
               </p>
             </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── Logo wall ────────────────────────────────────────────────────────────────
+function LogoWall() {
+  const logos = [
+    { name: "GitHub", slug: "github" },
+    { name: "Docker", slug: "docker" },
+    { name: "Kubernetes", slug: "kubernetes" },
+    { name: "Terraform", slug: "terraform" },
+    { name: "Grafana", slug: "grafana" },
+    { name: "Ansible", slug: "ansible" },
+  ];
+
+  return (
+    <section className="border-b py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
+      <div className="mx-auto max-w-7xl px-5">
+        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+          {logos.map((logo) => (
+            <img
+              key={logo.slug}
+              src={`https://cdn.simpleicons.org/${logo.slug}/86819F`}
+              alt={logo.name}
+              className="h-8 w-8 opacity-60 transition-opacity duration-500 hover:opacity-100 md:h-10 md:w-10"
+            />
           ))}
         </div>
       </div>
@@ -111,9 +157,6 @@ function FieldLabTerminalSection() {
       <div className="mx-auto max-w-7xl px-5">
         <div className="grid grid-flow-dense gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="flex flex-col justify-center">
-            <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
-              Local proof workflow
-            </div>
             <h2 className="font-display text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.96] tracking-[-0.02em]" style={{ color: "var(--praxis-bone)" }}>
               Runs on your machine.<br />
               <span style={{ color: "var(--praxis-muted)" }}>No cloud required.</span>
@@ -151,9 +194,6 @@ function CTASection({ onRunPipeline }: { onRunPipeline: () => void }) {
   return (
     <section className="border-b py-32 text-center md:py-48" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
       <div className="mx-auto max-w-5xl px-5">
-        <div className="mb-8 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
-          run_id &middot; pxs_GA-PRINT-GPO-042 &middot; proof_hash &middot; sha256:b4f9&hellip;c1a2
-        </div>
         <h2
           className="font-display text-[clamp(2.5rem,6vw,5.5rem)] font-semibold leading-[0.94] tracking-[-0.025em]"
           style={{
@@ -183,9 +223,7 @@ function CTASection({ onRunPipeline }: { onRunPipeline: () => void }) {
             Open spec
           </a>
         </div>
-        <div className="mt-14 font-mono text-[9px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-faint)" }}>
-          Apache 2.0 &middot; sigstore anchored &middot; deterministic replay &middot; open spec
-        </div>
+
       </div>
     </section>
   );
@@ -213,6 +251,8 @@ export function PraxisLanding() {
       <FieldLabTerminalSection />
 
       <OutcomesSection />
+
+      <LogoWall />
 
       <TrustSection />
 

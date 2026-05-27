@@ -105,7 +105,7 @@ export function ReadoutBoard({ packId: propPackId, runId }: { packId?: string; r
             <div>
               <div className="mb-[10px] font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Recommended action &middot; human approval</div>
               <p className="text-[14.5px] leading-[1.6] text-[var(--praxis-bone)]">
-                {proof.action.recommended_action.replace(/_/g, " ")}. No production mutation — communication-only path through{" "}
+                {proof.action.recommended_action.replace(/_/g, " ")}. No production mutation, communication-only path through{" "}
                 <span className="font-mono" style={{ color: "var(--praxis-plasma)" }}>{buyer}</span> ticketing.
               </p>
               <div className="mb-[10px] mt-[22px] font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Next 30 days</div>

@@ -208,6 +208,18 @@ class EventService:
             },
         )
         self.db.commit()
+        try:
+            from apps.api_gateway.services.sse_broadcaster import event_broadcaster
+            event_broadcaster.broadcast({
+                "event_id": event_id,
+                "source": payload.get("source", "manual"),
+                "event_type": payload.get("event_type", "unknown"),
+                "severity": payload.get("severity", "low"),
+                "occurred_at": occurred_at.isoformat() if hasattr(occurred_at, "isoformat") else str(occurred_at),
+                "payload": payload.get("payload", {})
+            })
+        except Exception:
+            pass
         return {"event_id": event_id, "status": "ingested"}
 
     def _normalize_payload(self, payload: dict[str, object]) -> dict[str, object]:

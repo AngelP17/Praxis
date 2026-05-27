@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Brain, CheckCircle, ShieldWarning, Info } from "@phosphor-icons/react";
 
 export function DecisionExplanationPanel({

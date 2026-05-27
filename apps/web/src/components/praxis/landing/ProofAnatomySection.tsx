@@ -62,13 +62,7 @@ export function ProofAnatomySection() {
     >
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.04] [background-image:linear-gradient(rgba(241,237,223,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.5)_1px,transparent_1px)] [background-size:64px_64px]" />
 
-      <div className="mx-auto max-w-7xl px-5">
-        {/* eyebrow */}
-        <div className="mb-14 flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
-          <span className="h-px flex-1" style={{ background: "var(--praxis-line)" }} />
-          proof anatomy
-          <span className="h-px flex-1" style={{ background: "var(--praxis-line)" }} />
-        </div>
+      <div className="mx-auto max-w-7xl px-5 pt-8">
 
         <div className="grid grid-flow-dense gap-10 lg:grid-cols-2">
           {/* JSON viewer */}
@@ -107,7 +101,7 @@ export function ProofAnatomySection() {
                 Third-party verifiable,<br />always.
               </h2>
               <p className="mt-5 text-base leading-8" style={{ color: "var(--praxis-muted)" }}>
-                Every proof object ships with an ed25519 signature anchored to sigstore/rekor. Any operator or auditor can run <code className="font-mono text-sm" style={{ color: "var(--praxis-amber)" }}>uvx praxis-verify</code> independently — no Praxis infrastructure required.
+                Every proof object ships with an ed25519 signature anchored to sigstore/rekor. Any operator or auditor can run <code className="font-mono text-sm" style={{ color: "var(--praxis-amber)" }}>uvx praxis-verify</code> independently, no Praxis infrastructure required.
               </p>
             </div>
 

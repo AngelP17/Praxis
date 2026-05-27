@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView } from "motion/react";
 import type { ComponentType } from "react";
 
 type PriorityItem = {

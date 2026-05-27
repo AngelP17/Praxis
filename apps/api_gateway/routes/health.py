@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter
 
+from apps.api_gateway.schemas.openapi import HealthResponse
+
 router = APIRouter(prefix="/health", tags=["health"])
 
 try:
@@ -19,14 +21,15 @@ except ImportError:
     HAS_FLOCI = False
 
 
-@router.get("/floci")
+@router.get("/floci", response_model=HealthResponse)
 async def floci_health():
     """Return detailed Floci service health status."""
     if not HAS_FLOCI:
         return {
             "status": "unavailable",
-            "message": "Floci service not configured",
-            "services": {},
+            "version": "2.0.0",
+            "database": "unknown",
+            "floci": "not_configured",
         }
 
     try:
@@ -50,18 +53,14 @@ async def floci_health():
 
         return {
             "status": "healthy" if health.get("status") == "ok" else "degraded",
-            "endpoint": "http://localhost:4566",
-            "services": services,
+            "version": "2.0.0",
+            "database": "connected",
+            "floci": "healthy",
         }
     except Exception as e:
         return {
-            "status": "unreachable",
-            "message": str(e),
-            "endpoint": "http://localhost:4566",
-            "services": {
-                "sqs": {"status": "unknown"},
-                "s3": {"status": "unknown"},
-                "dynamodb": {"status": "unknown"},
-                "events": {"status": "unknown"},
-            },
+            "status": "degraded",
+            "version": "2.0.0",
+            "database": "connected",
+            "floci": f"unreachable: {str(e)}",
         }

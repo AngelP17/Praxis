@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   TreeStructure, Lightning, Globe, Users, Factory, HardDrives,
 } from "@phosphor-icons/react";

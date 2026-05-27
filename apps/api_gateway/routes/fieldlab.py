@@ -15,7 +15,7 @@ from apps.api_gateway.schemas.fieldlab import (
 router = APIRouter()
 
 
-@router.post("/runs", response_model=FieldLabRunResponse)
+@router.post("/runs", response_model=FieldLabRunResponse, status_code=201)
 def create_run(body: FieldLabRunCreate, db=Depends(get_db)):
     svc = FieldLabService(db)
     return svc.create_run(body.dict())

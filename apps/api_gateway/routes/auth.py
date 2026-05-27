@@ -19,7 +19,21 @@ class LoginRequest(BaseModel):
 
 class LoginResponse(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
+    expires_in: int
+    user: dict
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class RefreshResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"
+    expires_in: int
     user: dict
 
 
@@ -31,8 +45,19 @@ def login(body: LoginRequest):
     return payload
 
 
+@router.post("/refresh", response_model=RefreshResponse)
+def refresh(body: RefreshRequest):
+    payload = AuthService().refresh_token(body.refresh_token)
+    if payload is None:
+        raise HTTPException(status_code=401, detail="Invalid refresh token")
+    return payload
+
+
 @router.post("/logout")
-def logout():
+def logout(authorization: str | None = Header(default=None)):
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.replace("Bearer ", "", 1)
+        AuthService().revoke_token(token)
     return {"status": "success"}
 
 

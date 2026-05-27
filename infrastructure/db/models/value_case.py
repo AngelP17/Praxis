@@ -1,8 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Float, DateTime, JSON
-from sqlalchemy.ext.declarative import declarative_base
 
-Base = declarative_base()
+from infrastructure.db.base import Base
 
 
 class ValueCase(Base):

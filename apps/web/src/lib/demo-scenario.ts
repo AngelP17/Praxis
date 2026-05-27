@@ -42,7 +42,7 @@ export const DEMO_AUDIT: AuditEntry[] = [
 export const DEMO_TICKETS: Ticket[] = [
   {
     ticket_id: "INC-4821",
-    title: "Printer mapping GPO permission drift — labeling workflow blocked",
+    title: "Printer mapping GPO permission drift: labeling workflow blocked",
     status: "Open",
     priority_raw: "Critical",
     priority_score: 87,
@@ -60,7 +60,7 @@ export const DEMO_TICKETS: Ticket[] = [
   },
   {
     ticket_id: "INC-4814",
-    title: "Primary ISP link offline — Firewall-EDGE-01 backup failover failed",
+    title: "Primary ISP link offline: Firewall-EDGE-01 backup failover failed",
     status: "In Progress",
     priority_raw: "High",
     priority_score: 88,
@@ -78,7 +78,7 @@ export const DEMO_TICKETS: Ticket[] = [
   },
   {
     ticket_id: "INC-4799",
-    title: "Active Directory GPO onboarding drift — new user blocked from ERP",
+    title: "Active Directory GPO onboarding drift: new user blocked from ERP",
     status: "Waiting for Info",
     priority_raw: "High",
     priority_score: 85,
@@ -96,7 +96,7 @@ export const DEMO_TICKETS: Ticket[] = [
   },
   {
     ticket_id: "INC-4785",
-    title: "PostgreSQL database replication lag alert — connection pool saturated",
+    title: "PostgreSQL database replication lag alert: connection pool saturated",
     status: "Open",
     priority_raw: "High",
     priority_score: 92,

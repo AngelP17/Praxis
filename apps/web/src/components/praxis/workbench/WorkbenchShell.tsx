@@ -124,6 +124,37 @@ export function WorkbenchShell({
         </div>
         <main className="relative flex-1 overflow-y-auto">{children}</main>
       </div>
+
+      {/* Floating Mobile Bottom Dock Nav */}
+      <div className="fixed bottom-5 left-1/2 z-50 w-[92%] -translate-x-1/2 md:hidden">
+        <nav
+          className="ops-mobile-nav flex items-center justify-around border rounded-full px-2.5 py-2 shadow-2xl backdrop-blur-xl transition-all duration-300"
+          style={{
+            borderColor: "var(--praxis-line)",
+            background: "rgba(19,18,31,0.88)",
+            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 36px rgba(0,0,0,0.5)",
+          }}
+        >
+          {NAV.filter(([label]) => ["Overview", "Solution Packs", "Decisions", "Readout"].includes(label)).map(([label, href, match]) => {
+            const active = match.test(pathname);
+            return (
+              <Link
+                key={href}
+                href={`${href}${packSuffix}`}
+                className="flex flex-col items-center justify-center rounded-full px-3.5 py-1.5 transition-all duration-500"
+                style={{
+                  color: active ? "var(--praxis-argon)" : "var(--praxis-mute)",
+                  background: active ? "rgba(62,255,168,0.08)" : "transparent",
+                }}
+              >
+                <span className="font-mono text-[9px] uppercase tracking-[0.1em]" style={{ fontWeight: active ? 500 : 400 }}>
+                  {label === "Solution Packs" ? "Packs" : label}
+                </span>
+              </Link>
+            );
+          })}
+        </nav>
+      </div>
     </div>
   );
 }

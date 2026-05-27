@@ -48,7 +48,13 @@ def decide(
     sla_risk_score = 0.75 if impacted_critical_assets else 0.35
     recurrence_score = 0.25
     actionability_score = 0.8
-    uncertainty_penalty = 0.05 if float(normalized.get("confidence", 0.7)) >= 0.8 else 0.15
+    conf_val = normalized.get("confidence")
+    if conf_val is None:
+        conf_val = 0.75
+    else:
+        conf_val = float(conf_val)
+
+    uncertainty_penalty = 0.05 if conf_val >= 0.8 else 0.15
 
     scores = [
         severity_score,
@@ -83,7 +89,7 @@ def decide(
         uncertainty_penalty=uncertainty_penalty,
         priority_score=priority_score,
         root_cause_hypothesis=f"{asset_id}_operational_dependency_disruption",
-        confidence_score=float(normalized.get("confidence", 0.75)),
+        confidence_score=conf_val,
         risk_level=risk_level,
         requires_human_review=True,
         recommendation="Validate asset status, notify site owner, and queue remediation workflow.",

@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from apps.api_gateway.config import settings
 from apps.api_gateway.deps import init_db
@@ -9,6 +10,8 @@ from apps.api_gateway.logging_config import configure_logging, get_logger
 from apps.api_gateway.middleware.rate_limit import RateLimitMiddleware
 from apps.api_gateway.middleware.proof_rate_limit import ProofRateLimitMiddleware
 from apps.api_gateway.middleware.metrics import MetricsMiddleware
+from apps.api_gateway.middleware.request_id import RequestIDMiddleware
+from apps.api_gateway.middleware.prometheus import PrometheusMiddleware
 from apps.api_gateway.routes.attachments import router as attachments_router
 from apps.api_gateway.routes.assets import router as assets_router
 from apps.api_gateway.routes.auth import router as auth_router
@@ -51,16 +54,56 @@ async def lifespan(app: FastAPI):
         init_db()
         logger.info("database_initialized")
 
+    from apps.api_gateway.services.outbox_relay import outbox_worker
+    await outbox_worker.start()
+
     yield
+
+    await outbox_worker.stop()
 
 
 app = FastAPI(
     title="Praxis API",
-    description="Forward-deployed operational intelligence platform",
+    description="""
+## Forward-deployed operational intelligence platform
+
+Praxis turns messy enterprise signals into ontology-backed decisions with deterministic proof objects.
+
+### Key Features
+- **CloudEvents 1.0** ingestion with automatic decision scoring
+- **Deterministic replay** - same inputs always produce the same proof hash
+- **Human-in-the-loop** approval workflows
+- **FieldLab** local AWS emulation via Floci
+- **Solution packs** for repeatable operational patterns
+
+### Authentication
+All protected endpoints require a Bearer token obtained from `/api/auth/login`.
+
+### Rate Limiting
+- General: 600 requests/minute per IP
+- Proof endpoints: 30 requests/minute (or higher with API key)
+    """,
     version="2.0.0",
     lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_tags=[
+        {"name": "auth", "description": "Authentication and user management"},
+        {"name": "tickets", "description": "IT ticket lifecycle and CRUD operations"},
+        {"name": "incidents", "description": "Incident synthesis and management"},
+        {"name": "decisions", "description": "Decision evaluation, approval, and replay"},
+        {"name": "events", "description": "CloudEvents 1.0 ingestion"},
+        {"name": "proofs", "description": "Proof object generation and verification"},
+        {"name": "fieldlab", "description": "FieldLab run lifecycle"},
+        {"name": "solution-packs", "description": "Solution pack catalog and validation"},
+        {"name": "ontology", "description": "Ontology compilation and object graphs"},
+        {"name": "platform", "description": "Platform SRE resilience pilot"},
+        {"name": "health", "description": "Service health checks"},
+    ],
 )
 
+app.add_middleware(PrometheusMiddleware)
+app.add_middleware(RequestIDMiddleware)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(ProofRateLimitMiddleware)
 app.add_middleware(MetricsMiddleware)
@@ -108,6 +151,11 @@ app.include_router(scenarios_router, tags=["scenarios"])
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "praxis-api", "version": "2.0.0"}
+
+
+@app.get("/metrics")
+def get_prometheus_metrics():
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 @app.get("/")

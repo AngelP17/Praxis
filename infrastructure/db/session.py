@@ -71,181 +71,47 @@ def get_db_context() -> Generator[Session, None, None]:
 def init_db() -> None:
     _import_models()
 
-    from infrastructure.db.base import Base
+    import os
+    from alembic import command
+    from alembic.config import Config
 
-    Base.metadata.create_all(bind=engine)
-    if not is_sqlite:
-        _ensure_legacy_compatibility()
+    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    ini_path = os.path.join(base_dir, "infrastructure", "db", "migrations", "alembic.ini")
+
+    alembic_cfg = Config(ini_path)
+    with engine.begin() as connection:
+        alembic_cfg.attributes["connection"] = connection
+        command.upgrade(alembic_cfg, "head")
 
 
 def _import_models() -> None:
+    import infrastructure.db.models.action_log  # noqa: F401
     import infrastructure.db.models.action_run  # noqa: F401
-    import infrastructure.db.models.assignee  # noqa: F401
     import infrastructure.db.models.asset  # noqa: F401
     import infrastructure.db.models.asset_edge  # noqa: F401
+    import infrastructure.db.models.assignee  # noqa: F401
     import infrastructure.db.models.audit_record  # noqa: F401
     import infrastructure.db.models.category  # noqa: F401
+    import infrastructure.db.models.customer_context  # noqa: F401
     import infrastructure.db.models.decision_record  # noqa: F401
+    import infrastructure.db.models.deployment_plan  # noqa: F401
     import infrastructure.db.models.evidence_artifact  # noqa: F401
+    import infrastructure.db.models.fieldlab_run  # noqa: F401
     import infrastructure.db.models.human_feedback  # noqa: F401
     import infrastructure.db.models.incident  # noqa: F401
     import infrastructure.db.models.incident_event  # noqa: F401
     import infrastructure.db.models.incident_ticket_link  # noqa: F401
     import infrastructure.db.models.label  # noqa: F401
-    import infrastructure.db.models.operator_feedback  # noqa: F401
     import infrastructure.db.models.operational_event  # noqa: F401
+    import infrastructure.db.models.operational_object  # noqa: F401
+    import infrastructure.db.models.operator_feedback  # noqa: F401
     import infrastructure.db.models.outbox_message  # noqa: F401
     import infrastructure.db.models.platform_incident  # noqa: F401
     import infrastructure.db.models.recommendation  # noqa: F401
     import infrastructure.db.models.similar_case_link  # noqa: F401
+    import infrastructure.db.models.solution_pack  # noqa: F401
     import infrastructure.db.models.ticket  # noqa: F401
     import infrastructure.db.models.ticket_attachment  # noqa: F401
     import infrastructure.db.models.ticket_comment  # noqa: F401
     import infrastructure.db.models.ticket_event  # noqa: F401
-
-
-def _ensure_legacy_compatibility() -> None:
-    statements_by_column = {
-        "clean_summary": "ALTER TABLE tickets ADD COLUMN clean_summary TEXT",
-        "source_hash": "ALTER TABLE tickets ADD COLUMN source_hash VARCHAR(64)",
-        "site_id": "ALTER TABLE tickets ADD COLUMN site_id VARCHAR(100)",
-        "asset_id": "ALTER TABLE tickets ADD COLUMN asset_id INTEGER",
-        "category_id": "ALTER TABLE tickets ADD COLUMN category_id INTEGER REFERENCES categories(id)",
-        "resolved_at": "ALTER TABLE tickets ADD COLUMN resolved_at TIMESTAMP",
-        "source_system": "ALTER TABLE tickets ADD COLUMN source_system VARCHAR(50) DEFAULT 'legacy'",
-        "is_active": "ALTER TABLE tickets ADD COLUMN is_active BOOLEAN DEFAULT TRUE",
-    }
-
-    with engine.begin() as connection:
-        existing_columns = {
-            row[0]
-            for row in connection.execute(
-                text(
-                    """
-                    SELECT column_name
-                    FROM information_schema.columns
-                    WHERE table_schema = 'public' AND table_name = 'tickets'
-                    """
-                )
-            )
-        }
-        for column_name, statement in statements_by_column.items():
-            if column_name in existing_columns:
-                continue
-            connection.execute(text(statement))
-
-        compatibility_statements = [
-            """
-            CREATE TABLE IF NOT EXISTS ticket_labels (
-                ticket_id VARCHAR(20) REFERENCES tickets(ticket_id) ON DELETE CASCADE,
-                label_id INTEGER REFERENCES labels(id) ON DELETE CASCADE,
-                PRIMARY KEY (ticket_id, label_id)
-            )
-            """,
-            """
-            ALTER TABLE ticket_attachments
-            ADD COLUMN IF NOT EXISTS comment_id INTEGER REFERENCES ticket_comments(id) ON DELETE CASCADE
-            """,
-            """
-            ALTER TABLE ticket_attachments
-            ADD COLUMN IF NOT EXISTS uploaded_by VARCHAR(100)
-            """,
-            """
-            ALTER TABLE ticket_comments
-            ADD COLUMN IF NOT EXISTS author_display_name VARCHAR(100)
-            """,
-            """
-            ALTER TABLE ticket_comments
-            ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS asset_edges (
-                id SERIAL PRIMARY KEY,
-                from_asset_id INTEGER NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
-                to_asset_id INTEGER NOT NULL REFERENCES assets(id) ON DELETE CASCADE,
-                relationship VARCHAR(100) NOT NULL,
-                weight INTEGER DEFAULT 1,
-                metadata_json JSONB DEFAULT '{}'::jsonb
-            )
-            """,
-            """
-            CREATE INDEX IF NOT EXISTS ix_asset_edges_from_asset_id ON asset_edges(from_asset_id)
-            """,
-            """
-            CREATE INDEX IF NOT EXISTS ix_asset_edges_to_asset_id ON asset_edges(to_asset_id)
-            """,
-            """
-            CREATE INDEX IF NOT EXISTS ix_asset_edges_relationship ON asset_edges(relationship)
-            """,
-            """
-            CREATE TABLE IF NOT EXISTS outbox_messages (
-                id SERIAL PRIMARY KEY,
-                topic VARCHAR(200) NOT NULL,
-                payload JSONB NOT NULL,
-                status VARCHAR(30) NOT NULL DEFAULT 'pending',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                published_at TIMESTAMP NULL
-            )
-            """,
-            """
-            CREATE INDEX IF NOT EXISTS ix_outbox_messages_topic ON outbox_messages(topic)
-            """,
-            """
-            CREATE INDEX IF NOT EXISTS ix_outbox_messages_status ON outbox_messages(status)
-            """,
-        ]
-        for statement in compatibility_statements:
-            connection.execute(text(statement))
-
-        _ensure_decision_record_compatibility(connection)
-        _ensure_incident_compatibility(connection)
-
-
-def _ensure_decision_record_compatibility(connection) -> None:
-    dr_columns = {
-        row[0]
-        for row in connection.execute(
-            text(
-                """
-                SELECT column_name
-                FROM information_schema.columns
-                WHERE table_schema = 'public' AND table_name = 'decision_records'
-                """
-            )
-        )
-    }
-    dr_statements = {
-        "event_id": "ALTER TABLE decision_records ADD COLUMN IF NOT EXISTS event_id INTEGER REFERENCES operational_events(id) ON DELETE SET NULL",
-        "risk_level": "ALTER TABLE decision_records ADD COLUMN IF NOT EXISTS risk_level VARCHAR(20) DEFAULT 'low'",
-        "requires_human_review": "ALTER TABLE decision_records ADD COLUMN IF NOT EXISTS requires_human_review INTEGER DEFAULT 1",
-        "replay_hash": "ALTER TABLE decision_records ADD COLUMN IF NOT EXISTS replay_hash VARCHAR(64)",
-    }
-    for col, stmt in dr_statements.items():
-        if col not in dr_columns:
-            connection.execute(text(stmt))
-
-
-def _ensure_incident_compatibility(connection) -> None:
-    inc_columns = {
-        row[0]
-        for row in connection.execute(
-            text(
-                """
-                SELECT column_name
-                FROM information_schema.columns
-                WHERE table_schema = 'public' AND table_name = 'incidents'
-                """
-            )
-        )
-    }
-    inc_statements = {
-        "severity": "ALTER TABLE incidents ADD COLUMN IF NOT EXISTS severity VARCHAR(20) DEFAULT 'low'",
-        "risk_level": "ALTER TABLE incidents ADD COLUMN IF NOT EXISTS risk_level VARCHAR(20) DEFAULT 'low'",
-        "resolved_at": "ALTER TABLE incidents ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMP",
-        "summary": "ALTER TABLE incidents ADD COLUMN IF NOT EXISTS summary TEXT",
-        "created_by": "ALTER TABLE incidents ADD COLUMN IF NOT EXISTS created_by VARCHAR(50) DEFAULT 'system'",
-        "metadata_json": "ALTER TABLE incidents ADD COLUMN IF NOT EXISTS metadata_json JSONB DEFAULT '{}'::jsonb",
-    }
-    for col, stmt in inc_statements.items():
-        if col not in inc_columns:
-            connection.execute(text(stmt))
+    import infrastructure.db.models.value_case  # noqa: F401

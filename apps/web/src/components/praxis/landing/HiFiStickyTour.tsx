@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useEffect, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   HiFiOverviewPanel,
   HiFiDecisionPanel,
@@ -8,6 +10,8 @@ import {
   HiFiFieldLabPanel,
   HiFiReadoutPanel,
 } from "./HiFiPanels";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const PANELS = [
   { id: "overview",     label: "Overview",      desc: "Run status, evidence quality, value signal at a glance." },
@@ -29,30 +33,45 @@ function PanelRenderer({ id }: { id: string }) {
 }
 
 export function HiFiStickyTour() {
+  const sectionRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!trackRef.current) return;
-      const rect = trackRef.current.getBoundingClientRect();
-      const scrolled = -rect.top;
-      const totalHeight = rect.height - window.innerHeight;
-      const progress = Math.max(0, Math.min(1, scrolled / totalHeight));
-      const idx = Math.min(PANELS.length - 1, Math.floor(progress * PANELS.length));
-      setActiveIdx(idx);
-    };
+    if (!sectionRef.current || !trackRef.current) return;
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    const ctx = gsap.context(() => {
+      const panelEls = gsap.utils.toArray<HTMLElement>(".tour-panel-trigger");
+
+      panelEls.forEach((trigger, i) => {
+        ScrollTrigger.create({
+          trigger,
+          start: "top center",
+          end: "bottom center",
+          onEnter: () => setActiveIdx(i),
+          onEnterBack: () => setActiveIdx(i),
+        });
+      });
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
+
+  const scrollToPanel = (i: number) => {
+    if (!trackRef.current) return;
+    const panelEls = trackRef.current.querySelectorAll(".tour-panel-trigger");
+    const target = panelEls[i] as HTMLElement | undefined;
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
 
   return (
     <section
+      ref={sectionRef}
       className="relative py-20"
       style={{ background: "var(--praxis-obsidian)" }}
     >
-      {/* section header */}
       <div className="border-b py-20 text-center" style={{ borderColor: "var(--praxis-line)" }}>
         <div className="mx-auto max-w-7xl px-5">
           <div className="mb-6 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
@@ -65,84 +84,54 @@ export function HiFiStickyTour() {
             Every surface, proof-backed.
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8" style={{ color: "var(--praxis-muted)" }}>
-            Scroll through the five workbench screens — from operational overview to executive readout — each built on the same deterministic proof object.
+            Scroll through the five workbench screens, from operational overview to executive readout, each built on the same deterministic proof object.
           </p>
         </div>
       </div>
 
-      {/* sticky scroll track */}
-      <div
-        ref={trackRef}
-        style={{ height: `${PANELS.length * 100}vh` }}
-      >
-        <div className="sticky top-0 flex h-screen flex-col overflow-hidden">
-          {/* tracker pills */}
-          <div
-            className="flex items-center justify-center gap-3 border-b px-6 py-3"
-            style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}
+      <div className="sticky top-0 z-10 flex items-center justify-center gap-3 border-b px-6 py-3" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
+        {PANELS.map((panel, i) => (
+          <button
+            key={panel.id}
+            onClick={() => scrollToPanel(i)}
+            className="border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-500"
+            style={{
+              borderColor: i === activeIdx ? "var(--praxis-plasma)" : "var(--praxis-line)",
+              color: i === activeIdx ? "var(--praxis-bone)" : "var(--praxis-muted)",
+              background: i === activeIdx ? "rgba(139,92,255,0.1)" : "transparent",
+              backdropFilter: "blur(28px)",
+            }}
           >
-            {PANELS.map((panel, i) => (
-              <button
-                key={panel.id}
-                onClick={() => {
-                  if (!trackRef.current) return;
-                  const rect = trackRef.current.getBoundingClientRect();
-                  const totalHeight = rect.height - window.innerHeight;
-                  const targetProgress = (i / PANELS.length) + 0.01;
-                  const scrollY = window.scrollY + rect.top + targetProgress * totalHeight;
-                  window.scrollTo({ top: scrollY, behavior: "smooth" });
-                }}
-                className="border px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.12em] transition-all duration-500"
-                style={{
-                  borderColor: i === activeIdx ? "var(--praxis-plasma)" : "var(--praxis-line)",
-                  color: i === activeIdx ? "var(--praxis-bone)" : "var(--praxis-muted)",
-                  background: i === activeIdx ? "rgba(139,92,255,0.1)" : "transparent",
-                  backdropFilter: "blur(28px)",
-                }}
-              >
-                {panel.label}
-              </button>
-            ))}
-          </div>
+            {panel.label}
+          </button>
+        ))}
+      </div>
 
-          {/* panel display area — all panels stay mounted to preserve animations */}
-          <div className="relative flex-1 overflow-hidden">
-            {PANELS.map((panel, i) => (
-              <div
-                key={panel.id}
-                className="absolute inset-0 transition-all duration-700"
-                style={{
-                  opacity: i === activeIdx ? 1 : 0,
-                  transform: i === activeIdx ? "scale(1)" : i < activeIdx ? "scale(0.98)" : "scale(1.01)",
-                  pointerEvents: i === activeIdx ? "auto" : "none",
-                  zIndex: i === activeIdx ? 1 : 0,
-                }}
-              >
-                <PanelRenderer id={panel.id} />
-              </div>
-            ))}
-          </div>
-
-          {/* panel description strip */}
+      <div ref={trackRef} className="relative">
+        {PANELS.map((panel, i) => (
           <div
-            className="border-t px-6 py-3"
-            style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}
+            key={panel.id}
+            className="tour-panel-trigger min-h-[100dvh] border-b"
+            style={{ borderColor: "var(--praxis-line)" }}
           >
-            <div className="mx-auto flex max-w-7xl items-center justify-between">
-              <div className="flex items-center gap-3">
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--praxis-plasma)" }}>
-                  {String(activeIdx + 1).padStart(2, "0")} / {String(PANELS.length).padStart(2, "0")}
+            <div className="mx-auto max-w-7xl px-5 py-12">
+              <div className="mb-4 flex items-center gap-3">
+                <span
+                  className="font-mono text-[10px] uppercase tracking-[0.14em]"
+                  style={{ color: i === activeIdx ? "var(--praxis-plasma)" : "var(--praxis-muted)" }}
+                >
+                  {panel.label}
                 </span>
                 <span className="font-mono text-[10px]" style={{ color: "var(--praxis-muted)" }}>
-                  {PANELS[activeIdx]?.desc}
+                  {panel.desc}
                 </span>
               </div>
-              <span className="font-mono text-[9px] uppercase tracking-[0.14em]" style={{ color: "var(--praxis-faint)" }}>
-                scroll to advance
-              </span>
+              <div className="overflow-hidden border" style={{ borderColor: "var(--praxis-line)" }}>
+                <PanelRenderer id={panel.id} />
+              </div>
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </section>
   );

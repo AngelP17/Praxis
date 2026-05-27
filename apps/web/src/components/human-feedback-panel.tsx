@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ThumbsUp, ThumbsDown, ChatText, PaperPlaneRight } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 export type FeedbackItem = {
   id: string;

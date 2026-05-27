@@ -2,7 +2,7 @@
 
 import { AuthGate } from "@/components/auth-gate";
 import { NotificationProvider, ToastContainer, useNotifications } from "@/components/notifications";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { usePathname } from "next/navigation";
 
 function ToastViewport() {

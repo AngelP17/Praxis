@@ -8,6 +8,12 @@ install:
 test:
 	.venv/bin/pytest tests/unit tests/integration -v
 
+test-integration:
+	.venv/bin/pytest tests/integration -v --tb=short
+
+test-unit:
+	.venv/bin/pytest tests/unit -v
+
 demo: demo-api demo-platform demo-decision demo-web
 	@echo ""
 	@echo "Praxis demo is running:"
