@@ -56,7 +56,7 @@ def main() -> int:
         solution_pack=args.solution_pack,
         events=events,
         customer_context="",
-        run_id=f"fieldlab_determinism_{args.solution_pack}",
+        run_id=f"fieldlab_run_determinism_{args.solution_pack.replace('-', '_')}",
     )
 
     print(f"=== Praxis Determinism Gate ===")

@@ -71,6 +71,9 @@ def get_db_context() -> Generator[Session, None, None]:
 def init_db() -> None:
     _import_models()
 
+    from infrastructure.db.base import Base
+    Base.metadata.create_all(bind=engine)
+
     import os
     from alembic import command
     from alembic.config import Config
