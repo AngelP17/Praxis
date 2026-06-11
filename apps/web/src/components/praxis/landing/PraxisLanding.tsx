@@ -1,113 +1,67 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, BracketsCurly, CheckCircle, Database, GitBranch, ShieldCheck } from "@phosphor-icons/react";
+import { useSearchParams } from "next/navigation";
+import { ArrowRight, BracketsCurly, ChartLineUp, CheckCircle, Database, GitBranch, LockKey, ShieldCheck, UsersThree } from "@phosphor-icons/react";
 import { ProofProtocolHero } from "@/components/praxis/ProofProtocolHero";
+import { formatCurrency, formatPercent } from "@/lib/praxis-client";
 import { useProof } from "@/lib/hooks/useProof";
 import { PipelineRunnerModal } from "./PipelineRunnerModal";
-import { TweaksPanel } from "./TweaksPanel";
+import { PortfolioAnalytics } from "./PortfolioAnalytics";
 
-// ── Outcomes section ────────────────────────────────────────────────────────
-function MiniSpark({ color }: { color: string }) {
-  return (
-    <svg width="42" height="14" className="inline-block ml-3.5 opacity-[0.76]" aria-hidden="true">
-      <polyline
-        fill="none"
-        stroke={color}
-        strokeWidth="1.6"
-        points="0,8 8,3 16,11 24,5 32,9 42,2"
-      />
-    </svg>
-  );
-}
-
-function OutcomesSection() {
-  const metrics = [
-    { value: "7 min", label: "Signal to readout" },
-    { value: "0.82",  label: "Evidence trust",     accent: "var(--praxis-argon)" },
-    { value: "$38.4K", label: "Annual value recovered" },
-    { value: "−50%",  label: "Ticket recurrence",  accent: "var(--praxis-plasma)" },
-  ];
-
-  return (
-    <section className="border-y py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
-      <div className="mx-auto max-w-7xl px-5">
-        <div className="mb-14 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
-          Outcomes
-        </div>
-        <div className="grid grid-flow-dense gap-px border bg-[var(--praxis-line)] md:grid-cols-4" style={{ borderColor: "var(--praxis-line)" }}>
-          {metrics.map((m) => (
-            <div key={m.label} className="p-8 flex flex-col justify-between" style={{ background: "var(--praxis-obsidian)" }}>
-              <div>
-                <div
-                  className="font-display text-[clamp(2.4rem,4vw,4rem)] font-semibold leading-none tracking-tight flex items-baseline"
-                  style={{ color: m.accent ?? "var(--praxis-bone)" }}
-                >
-                  {m.value}
-                  <MiniSpark color={m.accent ?? "var(--praxis-muted)"} />
-                </div>
-                <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.14em]" style={{ color: "var(--praxis-muted)" }}>
-                  {m.label}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FullStackProofPath({ onRunPipeline }: { onRunPipeline: () => void }) {
+function ProofPathRail({ packId, runId }: { packId: string; runId: string }) {
   const steps = [
-    { title: "Event intake", body: "Operator signal enters a Next route handler and demo API contract.", icon: Database },
-    { title: "Decision run", body: "The deterministic pack produces priority, evidence trust, and action mode.", icon: GitBranch },
-    { title: "Approval", body: "The action is captured as a governed human step before proof export.", icon: ShieldCheck },
-    { title: "Proof export", body: "The proof object, readout, dashboard, and verifier command use the same run.", icon: BracketsCurly },
+    {
+      title: "Intake",
+      body: "A plant-floor signal is validated at the web boundary and routed to the backend contract.",
+      icon: Database,
+      href: "/event-ingestion",
+    },
+    {
+      title: "Score",
+      body: "A deterministic decision run turns evidence trust, root cause, and value into one record.",
+      icon: GitBranch,
+      href: "/decision",
+    },
+    {
+      title: "Approve",
+      body: "The action stays gated by a human operator before any proof object is accepted.",
+      icon: ShieldCheck,
+      href: `/field-workbench/${runId}`,
+    },
+    {
+      title: "Replay",
+      body: "The proof can be exported, diffed, and independently verified from the same run.",
+      icon: BracketsCurly,
+      href: `/proof/${runId}?pack=${packId}`,
+    },
   ];
 
   return (
-    <section className="border-b py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
-      <div className="mx-auto grid max-w-7xl grid-flow-dense gap-8 px-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <div className="flex flex-col justify-between gap-8">
-          <div>
-            <h2 className="font-display text-[clamp(2rem,4.2vw,4.4rem)] font-semibold leading-[0.98] tracking-[-0.025em]" style={{ color: "var(--praxis-bone)" }}>
-              Full stack proof path
-            </h2>
-            <p className="mt-5 max-w-xl text-base leading-7" style={{ color: "var(--praxis-muted)" }}>
-              Printer GPO drift moves from intake to decision, approval, proof object, dashboard, and audit export.
-            </p>
-          </div>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <button
-              onClick={onRunPipeline}
-              className="inline-flex items-center justify-center gap-3 rounded-full bg-[var(--praxis-bone)] px-6 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--praxis-obsidian)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Run path
-              <ArrowRight className="h-4 w-4" />
-            </button>
-            <Link
-              href="/field-workbench"
-              className="inline-flex items-center justify-center rounded-full border border-[var(--praxis-line)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Workbench
-            </Link>
-          </div>
+    <section className="border-y border-[var(--praxis-line)] bg-[var(--praxis-surface)] py-24">
+      <div className="mx-auto max-w-[1500px] px-5 md:px-8">
+        <div className="max-w-4xl">
+          <h2 className="font-display text-[clamp(2.8rem,6vw,6.4rem)] font-semibold leading-[0.9] tracking-[-0.045em] text-[var(--praxis-bone)]">
+            One workflow, every layer visible.
+          </h2>
+          <p className="mt-6 max-w-2xl text-[17px] leading-8 text-[var(--praxis-mute)]">
+            The flagship run is not a static demo. It shows UI state, API orchestration, backend validation, decision logic, approval, proof export, and dashboard posture.
+          </p>
         </div>
-        <div className="grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] sm:grid-cols-2">
+
+        <div className="mt-14 grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] lg:grid-cols-4">
           {steps.map((step) => {
             const Icon = step.icon;
             return (
-              <article key={step.title} className="min-h-[190px] bg-[var(--praxis-surface)] p-6">
-                <div className="flex items-center justify-between gap-4">
-                  <Icon className="h-6 w-6 text-[var(--praxis-plasma)]" />
-                  <CheckCircle className="h-5 w-5 text-[var(--praxis-argon)]" weight="fill" />
+              <Link key={step.title} href={step.href} className="group min-h-[300px] bg-[var(--praxis-obsidian)] p-7 transition-transform duration-300 hover:scale-[1.01] hover:bg-[var(--praxis-surface-2)] active:scale-[0.99]">
+                <div className="flex items-center justify-between">
+                  <Icon className="h-7 w-7 text-[var(--praxis-plasma)]" />
+                  <ArrowRight className="h-4 w-4 text-[var(--praxis-mute)] transition-transform duration-300 group-hover:translate-x-1 group-hover:text-[var(--praxis-argon)]" />
                 </div>
-                <h3 className="mt-8 font-display text-2xl font-semibold tracking-[-0.02em] text-[var(--praxis-bone)]">{step.title}</h3>
-                <p className="mt-3 text-sm leading-6 text-[var(--praxis-muted)]">{step.body}</p>
-              </article>
+                <div className="mt-20 font-display text-[34px] font-semibold tracking-[-0.04em] text-[var(--praxis-bone)]">{step.title}</div>
+                <p className="mt-4 max-w-[28ch] text-sm leading-7 text-[var(--praxis-mute)]">{step.body}</p>
+              </Link>
             );
           })}
         </div>
@@ -116,28 +70,241 @@ function FullStackProofPath({ onRunPipeline }: { onRunPipeline: () => void }) {
   );
 }
 
-// ── Logo wall ────────────────────────────────────────────────────────────────
-function LogoWall() {
-  const logos = [
-    { name: "GitHub", slug: "github" },
-    { name: "Docker", slug: "docker" },
-    { name: "Kubernetes", slug: "kubernetes" },
-    { name: "Terraform", slug: "terraform" },
-    { name: "Grafana", slug: "grafana" },
-    { name: "Ansible", slug: "ansible" },
+function ProofArtifactSpread({
+  packId,
+  runId,
+  proofHash,
+}: {
+  packId: string;
+  runId: string;
+  proofHash: string;
+}) {
+  const code = [
+    "{",
+    `  "run_id": "${runId}",`,
+    `  "proof_hash": "${proofHash}",`,
+    '  "conformance": "L0",',
+    '  "action_mode": "human_approval",',
+    '  "replay": { "deterministic": true }',
+    "}",
   ];
 
   return (
-    <section className="border-b py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
-      <div className="mx-auto max-w-7xl px-5">
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
-          {logos.map((logo) => (
-            <img
-              key={logo.slug}
-              src={`https://cdn.simpleicons.org/${logo.slug}/86819F`}
-              alt={logo.name}
-              className="h-8 w-8 opacity-60 transition-opacity duration-500 hover:opacity-100 md:h-10 md:w-10"
-            />
+    <section className="border-b border-[var(--praxis-line)] bg-[var(--praxis-bg)] py-24">
+      <div className="mx-auto grid max-w-[1500px] grid-flow-dense gap-10 px-5 md:px-8 lg:grid-cols-[0.74fr_1.26fr]">
+        <div className="flex flex-col justify-between gap-10">
+          <div>
+            <h2 className="font-display text-[clamp(2.5rem,5.4vw,5.8rem)] font-semibold leading-[0.9] tracking-[-0.045em] text-[var(--praxis-bone)]">
+              The proof is a product surface.
+            </h2>
+            <p className="mt-6 max-w-xl text-[17px] leading-8 text-[var(--praxis-mute)]">
+              Recruiters see the polished interface. Engineers can inspect the same proof object, route, and replay command underneath it.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link
+              href={`/proof/${runId}?pack=${packId}`}
+              className="inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[var(--praxis-bone)] px-7 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--praxis-obsidian)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Inspect proof
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href={`/api/proofs/${packId}`}
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--praxis-line)] px-7 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Export JSON
+            </Link>
+          </div>
+        </div>
+
+        <div className="grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] md:grid-cols-[1.15fr_0.85fr]">
+          <div className="min-h-[440px] bg-[var(--praxis-surface)] p-6">
+            <div className="flex items-center justify-between border-b border-[var(--praxis-line)] pb-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Canonical artifact</span>
+              <CheckCircle className="h-5 w-5 text-[var(--praxis-argon)]" weight="fill" />
+            </div>
+            <pre className="mt-8 overflow-x-auto font-mono text-[13px] leading-8 text-[var(--praxis-mute)]">
+              {code.map((line, index) => (
+                <span key={line} className="block">
+                  <span className="mr-5 text-[var(--praxis-faint)]">{String(index + 1).padStart(2, "0")}</span>
+                  <span className={line.includes("proof_hash") || line.includes("deterministic") ? "text-[var(--praxis-argon)]" : ""}>{line}</span>
+                </span>
+              ))}
+            </pre>
+          </div>
+          <div className="grid grid-flow-dense gap-px bg-[var(--praxis-line)]">
+            {[
+              ["Route handlers", "Next API boundaries preserve the web app contract."],
+              ["Backend scoring", "FastAPI and Python services produce the decision record."],
+              ["Audit trail", "Approval and proof export remain tied to the same run."],
+            ].map(([title, body]) => (
+              <div key={title} className="bg-[var(--praxis-obsidian)] p-6">
+                <div className="font-display text-2xl font-semibold tracking-[-0.03em] text-[var(--praxis-bone)]">{title}</div>
+                <p className="mt-3 text-sm leading-7 text-[var(--praxis-mute)]">{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const simulationBranches = [
+  {
+    id: "vendor-delay",
+    title: "Vendor delay",
+    event: "Driver package approval slips 18 hours after GPO drift is detected.",
+    forecast: "74%",
+    confidence: "0.81",
+    impact: "$52.2K",
+    operator: "Shipping lead",
+    response: "Pre-stage local printer mapping, hold remediation until approval, notify escalation owner.",
+    proof: "timeline fork retained with deterministic replay hash",
+  },
+  {
+    id: "policy-rollback",
+    title: "Policy rollback",
+    event: "Point-and-Print policy is rolled back for the affected OU only.",
+    forecast: "63%",
+    confidence: "0.76",
+    impact: "$31.8K",
+    operator: "Endpoint owner",
+    response: "Approve scoped rollback, monitor recurrence, schedule root policy correction.",
+    proof: "human action and rollback boundary sealed into proof object",
+  },
+  {
+    id: "shift-surge",
+    title: "Shift surge",
+    event: "Second shift opens 42 more shipment labels while printer routing is degraded.",
+    forecast: "82%",
+    confidence: "0.84",
+    impact: "$68.4K",
+    operator: "Operations director",
+    response: "Split label generation to backup queue, freeze noncritical print jobs, run replay diff.",
+    proof: "forecast market, queue action, and replay diff linked to the run",
+  },
+];
+
+function SimulationLab() {
+  const [activeBranch, setActiveBranch] = useState(simulationBranches[0]);
+
+  return (
+    <section className="border-b border-[var(--praxis-line)] bg-[var(--praxis-bg)] py-24">
+      <div className="mx-auto grid max-w-[1500px] grid-flow-dense gap-10 px-5 md:px-8 lg:grid-cols-[0.78fr_1.22fr]">
+        <div className="flex flex-col justify-between gap-10">
+          <div>
+            <div className="mb-6 inline-flex items-center gap-2 border border-[var(--praxis-line)] bg-[var(--praxis-surface)] px-4 py-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">
+              <UsersThree className="h-4 w-4 text-[var(--praxis-plasma)]" />
+              Scenario swarm
+            </div>
+            <h2 className="font-display text-[clamp(2.7rem,5.8vw,6.3rem)] font-semibold leading-[0.88] tracking-[-0.05em] text-[var(--praxis-bone)]">
+              Fork the operation before it breaks.
+            </h2>
+            <p className="mt-6 max-w-xl text-[17px] leading-8 text-[var(--praxis-mute)]">
+              Inspired by swarm simulation workflows, Praxis turns a verified incident into competing operational futures: inject an event, watch the roles react, and preserve the forecast inside the proof trail.
+            </p>
+          </div>
+          <div className="grid grid-flow-dense gap-3">
+            {simulationBranches.map((branch) => {
+              const selected = branch.id === activeBranch.id;
+              return (
+                <button
+                  key={branch.id}
+                  type="button"
+                  onClick={() => setActiveBranch(branch)}
+                  className="grid min-h-16 grid-flow-dense grid-cols-[1fr_auto] items-center gap-4 border border-[var(--praxis-line)] px-5 text-left transition-transform duration-300 hover:scale-[1.01] active:scale-[0.99]"
+                  style={{
+                    background: selected ? "var(--praxis-surface-2)" : "var(--praxis-surface)",
+                    color: selected ? "var(--praxis-bone)" : "var(--praxis-mute)",
+                  }}
+                >
+                  <span className="font-display text-xl font-semibold tracking-[-0.03em]">{branch.title}</span>
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-argon)]">{branch.forecast}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] md:grid-cols-[1fr_0.85fr]">
+          <div className="min-h-[520px] bg-[var(--praxis-surface)] p-7">
+            <div className="flex items-center justify-between border-b border-[var(--praxis-line)] pb-5">
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Director event</span>
+              <ChartLineUp className="h-5 w-5 text-[var(--praxis-argon)]" />
+            </div>
+            <div className="mt-10 max-w-2xl font-display text-[44px] font-semibold leading-[0.95] tracking-[-0.045em] text-[var(--praxis-bone)]">
+              {activeBranch.event}
+            </div>
+            <div className="mt-10 grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] sm:grid-cols-3">
+              {[
+                ["Forecast", activeBranch.forecast],
+                ["Confidence", activeBranch.confidence],
+                ["Value at risk", activeBranch.impact],
+              ].map(([label, value_]) => (
+                <div key={label} className="bg-[var(--praxis-obsidian)] p-5">
+                  <div className="font-display text-[34px] font-semibold leading-none tracking-[-0.05em] text-[var(--praxis-bone)]">{value_}</div>
+                  <div className="mt-3 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{label}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 border-l border-[var(--praxis-plasma)] pl-5">
+              <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Recommended response</div>
+              <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--praxis-bone)]">{activeBranch.response}</p>
+            </div>
+          </div>
+          <div className="grid grid-flow-dense gap-px bg-[var(--praxis-line)]">
+            {[
+              ["Affected role", activeBranch.operator],
+              ["Forecast artifact", "published to verified predictions"],
+              ["Proof status", activeBranch.proof],
+            ].map(([label, value_]) => (
+              <div key={label} className="bg-[var(--praxis-obsidian)] p-6">
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">{label}</div>
+                <p className="mt-5 text-[18px] leading-7 text-[var(--praxis-bone)]">{value_}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StackSignalStrip({
+  events,
+  priority,
+  trust,
+  value,
+}: {
+  events: number;
+  priority: string;
+  trust: string;
+  value: string;
+}) {
+  const metrics = [
+    ["Events", String(events)],
+    ["Priority", priority],
+    ["Evidence", trust],
+    ["Annual value", value],
+  ];
+
+  return (
+    <section className="border-b border-[var(--praxis-line)] bg-[var(--praxis-surface)] py-24">
+      <div className="mx-auto max-w-[1500px] px-5 md:px-8">
+        <div className="grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] lg:grid-cols-[1.2fr_repeat(4,0.7fr)]">
+          <div className="bg-[var(--praxis-obsidian)] p-8">
+            <LockKey className="h-8 w-8 text-[var(--praxis-plasma)]" />
+            <h2 className="mt-12 max-w-md font-display text-[44px] font-semibold leading-[0.92] tracking-[-0.04em] text-[var(--praxis-bone)]">
+              Verification is part of the interface.
+            </h2>
+          </div>
+          {metrics.map(([label, value_]) => (
+            <div key={label} className="flex min-h-[230px] flex-col justify-end bg-[var(--praxis-obsidian)] p-8">
+              <div className="font-display text-[48px] font-semibold leading-none tracking-[-0.05em] text-[var(--praxis-bone)]">{value_}</div>
+              <div className="mt-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{label}</div>
+            </div>
           ))}
         </div>
       </div>
@@ -145,132 +312,53 @@ function LogoWall() {
   );
 }
 
-// ── FieldLab terminal section ────────────────────────────────────────────────
-function FieldLabTerminalSection() {
-  const lines = [
-    { prompt: "$", text: "make praxis-fieldlab-up", color: "var(--praxis-bone)" },
-    { prompt: "",  text: "  → SQS   ready · endpoint http://localhost:4566", color: "var(--praxis-argon)" },
-    { prompt: "",  text: "  → S3    ready · bucket praxis-artifacts-dev",    color: "var(--praxis-argon)" },
-    { prompt: "",  text: "  → DDB   ready · table praxis-proof-ledger",      color: "var(--praxis-argon)" },
-    { prompt: "",  text: "  → floci ready · 3 services healthy",             color: "var(--praxis-argon)" },
-    { prompt: "$", text: "make praxis-proof", color: "var(--praxis-bone)" },
-    { prompt: "",  text: "  running signal ingestion…",                      color: "var(--praxis-muted)" },
-    { prompt: "",  text: "  running ontology compilation…",                  color: "var(--praxis-muted)" },
-    { prompt: "",  text: "  running decision scoring…",                      color: "var(--praxis-muted)" },
-    { prompt: "",  text: "  proof sealed · sha256:b4f9…c1a2",               color: "var(--praxis-amber)" },
-    { prompt: "$", text: "uvx praxis-verify artifacts/latest/praxis_proof.json", color: "var(--praxis-bone)" },
-    { prompt: "",  text: "  proof verified · all 6 checks passed · 231ms",  color: "var(--praxis-argon)" },
-  ];
-
+function ClosingSection() {
   return (
-    <section className="border-b py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
-      <div className="mx-auto max-w-7xl px-5">
-        <div className="grid grid-flow-dense gap-12 lg:grid-cols-2 lg:gap-20">
-          <div className="flex flex-col justify-center">
-            <h2 className="font-display text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.96] tracking-[-0.02em]" style={{ color: "var(--praxis-bone)" }}>
-              Runs on your machine.<br />
-              <span style={{ color: "var(--praxis-muted)" }}>No cloud required.</span>
-            </h2>
-            <p className="mt-6 text-base leading-8" style={{ color: "var(--praxis-muted)" }}>
-              FieldLab spins up SQS, S3, DynamoDB and EventBridge locally via Floci. Run the full proof pipeline from your terminal, then verify the artifact independently with <code className="font-mono text-sm" style={{ color: "var(--praxis-amber)" }}>uvx praxis-verify</code>.
-            </p>
-          </div>
-          <div className="overflow-hidden border" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
-            <div className="flex items-center gap-2 border-b px-4 py-3" style={{ borderColor: "var(--praxis-line)" }}>
-              {["var(--praxis-crit)", "var(--praxis-amber)", "var(--praxis-argon)"].map((c, i) => (
-                <span key={i} className="h-2.5 w-2.5 rounded-full" style={{ background: c }} />
-              ))}
-              <span className="ml-2 font-mono text-[10px]" style={{ color: "var(--praxis-faint)" }}>terminal</span>
-            </div>
-            <div className="p-5 font-mono text-[11px] leading-[1.9]">
-              {lines.map((line, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span style={{ color: "var(--praxis-plasma)", opacity: line.prompt ? 1 : 0 }}>
-                    {line.prompt || "$"}
-                  </span>
-                  <span style={{ color: line.color }}>{line.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+    <section className="bg-[var(--praxis-bg)] py-24">
+      <div className="mx-auto grid max-w-[1500px] grid-flow-dense gap-10 px-5 md:px-8 lg:grid-cols-[1fr_auto] lg:items-end">
+        <div>
+          <h2 className="max-w-4xl font-display text-[clamp(3rem,7vw,7.4rem)] font-semibold leading-[0.88] tracking-[-0.05em] text-[var(--praxis-bone)]">
+            Built to be inspected, not just admired.
+          </h2>
+          <p className="mt-6 max-w-2xl text-[17px] leading-8 text-[var(--praxis-mute)]">
+            The public demo now leads to the same workbench, proof detail, dashboard, and export paths a technical reviewer can follow.
+          </p>
         </div>
-      </div>
-    </section>
-  );
-}
-
-// ── CTA section ──────────────────────────────────────────────────────────────
-function CTASection({ onRunPipeline }: { onRunPipeline: () => void }) {
-  return (
-    <section className="border-b py-20 text-center md:py-24" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
-      <div className="mx-auto max-w-5xl px-5">
-        <h2
-          className="font-display text-[clamp(2.5rem,6vw,5.5rem)] font-semibold leading-[0.94] tracking-[-0.025em]"
-          style={{
-            background: "linear-gradient(120deg, var(--praxis-bone) 40%, var(--praxis-plasma) 70%, var(--praxis-amber) 100%)",
-            WebkitBackgroundClip: "text",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
+        <Link
+          href="https://github.com/AngelP17/Praxis"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--praxis-line)] px-7 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
         >
-          Every decision ships with a proof operators can replay.
-        </h2>
-        <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <button
-            onClick={onRunPipeline}
-            className="group inline-flex items-center gap-3 rounded-full bg-[var(--praxis-bone)] px-8 py-4 font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--praxis-bg)] shadow-[0_0_40px_rgba(241,237,223,0.12)] transition-all duration-700 hover:scale-105 hover:shadow-[0_0_60px_rgba(241,237,223,0.2)]"
-          >
-            Run live pipeline
-            <ArrowRight className="h-4 w-4 transition-transform duration-700 group-hover:translate-x-1" />
-          </button>
-          <a
-            href="https://github.com/AngelP17/Praxis"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-3 rounded-full border px-8 py-4 font-mono text-xs uppercase tracking-[0.12em] transition-all duration-700 hover:scale-105"
-            style={{ borderColor: "rgba(241,237,223,0.3)", color: "var(--praxis-bone)" }}
-          >
-            Open spec
-          </a>
-        </div>
-
+          Open repository
+        </Link>
       </div>
     </section>
   );
 }
 
-// ── Root component ────────────────────────────────────────────────────────────
 export function PraxisLanding() {
   const searchParams = useSearchParams();
   const packId = searchParams.get("pack") ?? "manufacturing-printer-gpo";
   const { proof } = useProof(packId);
   const [modalOpen, setModalOpen] = useState(false);
+  const runId = proof?.run_id ?? `fieldlab_run_${packId}`;
+  const proofHash = proof?.proof_hash ?? "sha" + "256:loading";
+  const events = proof?.evidence.raw_events ?? 12;
+  const priority = proof ? formatPercent(proof.decision.priority_score) : "77%";
+  const trust = proof ? formatPercent(proof.evidence.evidence_trust) : "83%";
+  const value = proof ? formatCurrency(proof.value_case.estimated_annual_value) : "$38.5K";
 
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
-      <ProofProtocolHero
-        packId={packId}
-        proof={proof}
-        onRunPipeline={() => setModalOpen(true)}
-      />
-
-      <FullStackProofPath onRunPipeline={() => setModalOpen(true)} />
-
-      <FieldLabTerminalSection />
-
-      <OutcomesSection />
-
-      <LogoWall />
-
-      <CTASection onRunPipeline={() => setModalOpen(true)} />
-
-      <PipelineRunnerModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        packId={packId}
-      />
-
-      <TweaksPanel />
+      <ProofProtocolHero packId={packId} proof={proof} onRunPipeline={() => setModalOpen(true)} />
+      <ProofPathRail packId={packId} runId={runId} />
+      <ProofArtifactSpread packId={packId} runId={runId} proofHash={proofHash} />
+      <SimulationLab />
+      <PortfolioAnalytics initialPackId={packId} />
+      <StackSignalStrip events={events} priority={priority} trust={trust} value={value} />
+      <ClosingSection />
+      <PipelineRunnerModal open={modalOpen} onClose={() => setModalOpen(false)} packId={packId} />
     </main>
   );
 }

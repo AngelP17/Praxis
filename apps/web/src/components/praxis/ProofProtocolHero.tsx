@@ -1,15 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
+import { ArrowRight, CheckCircle, GitBranch, ShieldCheck } from "@phosphor-icons/react";
+import { formatCurrency, formatPercent, type PraxisProof } from "@/lib/praxis-client";
 import { PraxisLogo } from "./PraxisLogo";
 
-const stats = [
-  { value: "12", label: "signals ingested" },
-  { value: "77%", label: "priority score" },
-  { value: "$38.5K", label: "annual value" },
-  { value: "L0", label: "conformance" },
-];
+const FALLBACK_HASH = "sha" + "256:loading";
 
 export function ProofProtocolHero({
   packId = "manufacturing-printer-gpo",
@@ -17,155 +13,116 @@ export function ProofProtocolHero({
   onRunPipeline,
 }: {
   packId?: string;
-  proof?: { run_id: string; proof_hash: string } | null;
+  proof?: PraxisProof | null;
   onRunPipeline?: () => void;
 }) {
   const runId = proof?.run_id ?? `fieldlab_run_${packId}`;
-  const fullProofHash = proof?.proof_hash ?? "sha" + "256:loading...";
+  const hash = proof?.proof_hash ?? FALLBACK_HASH;
+  const value = proof ? formatCurrency(proof.value_case.estimated_annual_value) : "$38.5K";
+  const priority = proof ? formatPercent(proof.decision.priority_score) : "77%";
+  const trust = proof ? formatPercent(proof.evidence.evidence_trust) : "83%";
 
   return (
-    <section className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] py-20 text-[var(--praxis-bone)]">
-      <div className="ppp-glow pointer-events-none absolute left-[45%] top-[12%] -z-10 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(139,92,255,0.22),transparent_60%)] blur-[1px]" />
-      <div className="ppp-glow pointer-events-none absolute right-[5%] top-[25%] -z-10 h-[450px] w-[450px] rounded-full bg-[radial-gradient(circle,rgba(62,255,168,0.12),transparent_60%)] blur-[1px]" />
-      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background-image:linear-gradient(rgba(241,237,223,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.5)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_30%,black_20%,transparent_100%)]" />
+    <section className="relative isolate min-h-[100dvh] overflow-hidden bg-[var(--praxis-bg)] py-20 text-[var(--praxis-bone)]">
+      <video
+        src="/praxis-assets/field-operator-loop.mp4"
+        poster="/praxis-assets/operator-poster.png"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 -z-20 h-full w-full object-cover opacity-[0.28]"
+      />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,var(--praxis-bg)_0%,rgba(10,10,20,0.92)_38%,rgba(10,10,20,0.62)_72%,rgba(10,10,20,0.88)_100%)]" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(0deg,var(--praxis-bg),transparent)]" />
+      <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.08] [background-image:linear-gradient(rgba(241,237,223,0.42)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.42)_1px,transparent_1px)] [background-size:84px_84px]" />
 
-      <div className="relative z-20 border-b px-5 py-2.5" style={{ borderColor: "var(--praxis-line)" }}>
-        <div className="mx-auto flex max-w-7xl items-center justify-between font-mono text-[9px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
-          <span>run_id &middot; <span style={{ color: "var(--praxis-bone)" }}>{runId}</span></span>
-          <span className="hidden md:block">praxis proof protocol</span>
-          <span className="hidden md:block">floci &middot; ready</span>
-        </div>
-      </div>
-
-      <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 pt-6 pb-4">
-        <Link
-          href="/"
-          className="flex items-center gap-3 rounded-full border px-4 py-2 text-[var(--praxis-bone)] transition-transform duration-700 hover:scale-[1.02]"
-          style={{
-            borderColor: "rgba(241,237,223,0.14)",
-            background: "rgba(19,18,31,0.72)",
-            backdropFilter: "blur(28px) saturate(180%)",
-            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 32px rgba(0,0,0,0.4)",
-          }}
-        >
-          <PraxisLogo className="h-7 w-7" />
-          <span className="font-display text-lg font-medium tracking-normal">praxis</span>
+      <nav className="mx-auto flex h-[72px] max-w-[1500px] items-center justify-between px-5 md:px-8">
+        <Link href="/" className="group inline-flex items-center gap-3 text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]">
+          <span className="grid h-10 w-10 place-items-center border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.74)] backdrop-blur-xl transition-transform duration-300 group-hover:scale-[1.04]">
+            <PraxisLogo className="h-6 w-6" />
+          </span>
+          <span className="font-display text-[18px] font-semibold tracking-[-0.02em]">praxis</span>
         </Link>
-        <div className="hidden items-center gap-6 md:flex">
-          <Link href="/console" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-transform duration-700 hover:scale-105 hover:text-[var(--praxis-bone)]">Console</Link>
-          <Link href="/dashboard" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-transform duration-700 hover:scale-105 hover:text-[var(--praxis-bone)]">Dashboard</Link>
-          <Link href="/proof/diff" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-muted)] transition-transform duration-700 hover:scale-105 hover:text-[var(--praxis-bone)]">Diff</Link>
-          <div
-            className="flex items-center gap-2 rounded-full border px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]"
-            style={{
-              borderColor: "rgba(241,237,223,0.10)",
-              background: "rgba(19,18,31,0.60)",
-              backdropFilter: "blur(28px) saturate(180%)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
-            }}
-          >
-            {runId.substring(0, 20)}
-          </div>
+        <div className="hidden items-center gap-7 md:flex">
+          <Link href="/field-workbench" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Workbench</Link>
+          <Link href="/dashboard" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Dashboard</Link>
+          <Link href="/proof/diff" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Diff</Link>
+          <Link href="https://github.com/AngelP17/Praxis" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Repository</Link>
         </div>
       </nav>
 
-      <div className="relative mx-auto grid min-h-[70dvh] max-w-7xl grid-cols-1 grid-flow-dense gap-10 px-5 pt-6 pb-12 lg:grid-cols-12 lg:items-center">
-        <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left">
-          <div
-            className="ppp-hero-copy mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
-            style={{
-              borderColor: "rgba(139,92,255,0.28)",
-              background: "rgba(139,92,255,0.06)",
-              color: "var(--praxis-plasma)",
-              backdropFilter: "blur(28px) saturate(180%)",
-              boxShadow: "inset 0 1px 0 rgba(255,255,255,0.07)",
-            }}
-          >
-            Praxis Proof Protocol
+      <div className="mx-auto grid min-h-[calc(100dvh-72px)] max-w-[1500px] grid-flow-dense grid-cols-1 gap-8 px-5 pb-8 pt-6 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:items-end">
+        <div className="max-w-5xl pb-8 lg:pb-16">
+          <div className="mb-7 max-w-[760px] border-l border-[var(--praxis-plasma)] pl-5">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">Forward-deployed operational intelligence</p>
           </div>
-
-          <h1 className="ppp-hero-copy font-display text-[clamp(2.8rem,5.5vw,5.5rem)] font-semibold leading-[0.94] tracking-[-0.02em] text-[var(--praxis-bone)]">
-            Every decision ships <br className="hidden lg:block" />
-            with a <span className="relative inline-flex h-[0.72em] min-w-[2.6em] translate-y-[0.04em] items-center justify-center rounded-full bg-[linear-gradient(110deg,var(--praxis-plasma),var(--praxis-argon))] px-[0.3em] align-middle text-[0.42em] font-semibold text-[var(--praxis-obsidian)] shadow-[0_0_40px_rgba(139,92,255,0.4)]">proof</span> operators <br className="hidden lg:block" />
-            can replay.
+          <h1 className="max-w-[960px] font-display text-[clamp(5rem,9vw,9.6rem)] font-semibold leading-[0.84] tracking-[-0.05em] text-[var(--praxis-bone)]">
+            Proof the full stack.
           </h1>
-
-          <p className="ppp-hero-copy mt-6 max-w-xl text-base leading-7 text-[var(--praxis-mute)]">
-            Ontology-backed decisions with deterministic proof objects and governed human actions.
+          <p className="mt-7 max-w-[620px] text-[17px] leading-8 text-[var(--praxis-mute)]">
+            Praxis turns messy plant signals into validated API records, human-approved actions, and replayable proof objects.
           </p>
-
-          <div className="ppp-hero-copy mt-8 flex flex-col items-center gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <button
               onClick={onRunPipeline}
-              className="group inline-flex items-center gap-3 rounded-full bg-[var(--praxis-bone)] px-8 py-3.5 font-mono text-xs font-medium uppercase tracking-[0.12em] text-[var(--praxis-obsidian)] shadow-[0_0_30px_rgba(241,237,223,0.1)] transition-all duration-700 hover:scale-105 hover:shadow-[0_0_50px_rgba(241,237,223,0.18)]"
+              className="group inline-flex min-h-12 items-center justify-center gap-3 rounded-full bg-[var(--praxis-bone)] px-7 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--praxis-obsidian)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Run live pipeline
-              <ArrowRight className="h-4 w-4 transition-transform duration-700 group-hover:translate-x-1" />
+              Run proof
+              <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
             <Link
-              href="/console"
-              className="inline-flex items-center gap-3 rounded-full border border-[rgba(241,237,223,0.24)] px-8 py-3.5 font-mono text-xs uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-all duration-700 hover:scale-105 hover:border-[rgba(241,237,223,0.5)]"
+              href="/field-workbench"
+              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.54)] px-7 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] backdrop-blur-xl transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Open console
+              Field workbench
             </Link>
           </div>
+        </div>
 
-          {/* stats strip below layout */}
-          <div className="ppp-hero-copy mt-12 flex flex-wrap items-center justify-center gap-8 md:gap-10 lg:justify-start">
-            {stats.map((stat) => (
-              <div key={stat.label} className="ppp-stat text-center lg:text-left">
-                <div className="font-display text-2xl font-semibold tracking-tight md:text-3xl">{stat.value}</div>
-                <div className="mt-1 font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--praxis-muted)]">{stat.label}</div>
+        <aside className="mb-8 overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.74)] backdrop-blur-xl lg:mb-16">
+          <div className="border-b border-[var(--praxis-line)] p-5">
+            <div className="flex items-center justify-between gap-4">
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Active proof</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-argon)]">L0 verified</span>
+            </div>
+            <div className="mt-5 break-all font-mono text-[13px] leading-6 text-[var(--praxis-bone)]">{hash}</div>
+          </div>
+          <div className="grid grid-flow-dense grid-cols-3 border-b border-[var(--praxis-line)]">
+            {[
+              ["Priority", priority],
+              ["Evidence", trust],
+              ["Value", value],
+            ].map(([label, metric]) => (
+              <div key={label} className="border-r border-[var(--praxis-line)] p-5 last:border-r-0">
+                <div className="font-display text-[32px] font-semibold leading-none tracking-[-0.04em]">{metric}</div>
+                <div className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{label}</div>
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="ppp-hero-copy relative hidden lg:flex lg:col-span-5 flex-col border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.88)] backdrop-blur-md p-6 shadow-2xl" style={{ minHeight: "330px" }}>
-          <div className="absolute inset-0 -z-10 overflow-hidden opacity-[0.14] transition-opacity duration-700">
-            <video
-              src="/praxis-assets/field-operator-loop.mp4"
-              poster="/praxis-assets/operator-poster.png"
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="h-full w-full object-cover"
-            />
+          <div className="grid grid-flow-dense gap-px bg-[var(--praxis-line)]">
+            {[
+              { label: "Event validated", detail: "Next route and FastAPI schema", icon: CheckCircle },
+              { label: "Decision scored", detail: "Astraea deterministic run", icon: GitBranch },
+              { label: "Action gated", detail: "Human approval retained", icon: ShieldCheck },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div key={item.label} className="grid grid-flow-dense grid-cols-[44px_1fr] items-center bg-[var(--praxis-surface)] p-4">
+                  <Icon className="h-5 w-5 text-[var(--praxis-argon)]" />
+                  <div>
+                    <div className="font-display text-[18px] font-semibold tracking-[-0.02em]">{item.label}</div>
+                    <div className="mt-1 font-mono text-[10px] text-[var(--praxis-mute)]">{item.detail}</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-          <div className="flex items-center justify-between border-b border-[var(--praxis-line)] pb-3">
-            <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-[var(--praxis-muted)]">Verified Proof State</span>
-            <span className="h-2 w-2 rounded-full bg-[var(--praxis-argon)] animate-pulse" style={{ boxShadow: "0 0 8px var(--praxis-argon)" }} />
+          <div className="flex items-center justify-between gap-4 p-5 font-mono text-[10px] text-[var(--praxis-mute)]">
+            <span className="truncate">{runId}</span>
+            <Link href={`/proof/${runId}`} className="shrink-0 uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-argon)]">Open proof</Link>
           </div>
-
-          <div className="mt-5 space-y-3.5 font-mono text-[10.5px] leading-relaxed">
-            <div className="flex justify-between">
-              <span className="text-[var(--praxis-muted)]">RUN ID:</span>
-              <span className="text-[var(--praxis-bone)]">{runId}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--praxis-muted)]">PROOF HASH:</span>
-              <span className="text-[var(--praxis-argon)] font-semibold">{fullProofHash.substring(0, 20)}...</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-[var(--praxis-muted)]">CONFORMANCE:</span>
-              <span className="text-[var(--praxis-plasma)] font-semibold">L0 VERIFIED</span>
-            </div>
-            <div className="flex justify-between border-b border-[var(--praxis-line)] pb-3">
-              <span className="text-[var(--praxis-muted)]">SUBSTRATE:</span>
-              <span className="text-[var(--praxis-argon)]">floci local sandbox</span>
-            </div>
-          </div>
-
-          <div className="mt-5 rounded border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.65)] p-3.5 font-mono text-[9.5px]">
-            <span className="text-[var(--praxis-argon)]">$</span> <span className="text-[var(--praxis-muted)]">uvx praxis-verify artifacts/latest/praxis_proof.json --level L0</span>
-            <div className="mt-2 flex items-center gap-1.5 text-[var(--praxis-argon)]">
-              <CheckCircle className="h-3.5 w-3.5 shrink-0" />
-              <span>SCHEMA VALID &middot; CANONICAL HASH MATCHED</span>
-            </div>
-          </div>
-        </div>
+        </aside>
       </div>
     </section>
   );
