@@ -5,10 +5,12 @@ import { getDemoRun, DEMO_PACK_IDS } from "@/lib/praxis-demo-data";
 export async function POST(request: Request) {
   if (!IS_VERCEL_RUNTIME) {
     const bodyClone = request.clone();
+    const body = await request.json().catch(() => ({}));
+    const packId = body?.solution_pack_id ?? "manufacturing-printer-gpo";
     return proxyBackend("/api/fieldlab/runs", {
       method: "POST",
       body: bodyClone.body,
-    } as RequestInit);
+    } as RequestInit, () => NextResponse.json(getDemoRun(packId)));
   }
 
   const body = await request.json().catch(() => ({}));

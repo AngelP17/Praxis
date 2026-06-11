@@ -31,7 +31,7 @@ export async function proxyBackend(
       },
     });
 
-    if (!response.ok && isDemoMode && demoFallback) {
+    if (!response.ok && (isDemoMode || !process.env.API_INTERNAL_URL) && demoFallback) {
       return demoFallback();
     }
 

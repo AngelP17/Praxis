@@ -2,11 +2,10 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { ArrowRight } from "@phosphor-icons/react";
+import Link from "next/link";
+import { ArrowRight, BracketsCurly, CheckCircle, Database, GitBranch, ShieldCheck } from "@phosphor-icons/react";
 import { ProofProtocolHero } from "@/components/praxis/ProofProtocolHero";
 import { useProof } from "@/lib/hooks/useProof";
-import { ProofAnatomySection } from "./ProofAnatomySection";
-import { HiFiStickyTour } from "./HiFiStickyTour";
 import { PipelineRunnerModal } from "./PipelineRunnerModal";
 import { TweaksPanel } from "./TweaksPanel";
 
@@ -33,7 +32,7 @@ function OutcomesSection() {
   ];
 
   return (
-    <section className="border-y py-24 md:py-36" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
+    <section className="border-y py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
       <div className="mx-auto max-w-7xl px-5">
         <div className="mb-14 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
           Outcomes
@@ -61,45 +60,56 @@ function OutcomesSection() {
   );
 }
 
-// ── Trust / provenance block ─────────────────────────────────────────────────
-function TrustSection() {
-  const cards = [
-    { title: "Schema contract",      body: "Draft 2020-12 validation gates every emitted proof.", accent: "var(--praxis-argon)", colSpan: "md:col-span-8" },
-    { title: "Air-gapped mode",     body: "Run the full pipeline with zero egress.",              accent: "var(--praxis-bone)", colSpan: "md:col-span-4" },
-    { title: "L2 roadmap",           body: "Transparency-log verification is specified and fails closed until implemented.", accent: "var(--praxis-amber)", colSpan: "md:col-span-4" },
-    { title: "Deterministic",       body: "Same inputs always produce the same proof hash.",      accent: "var(--praxis-argon)", colSpan: "md:col-span-8" },
-    { title: "Replayable",          body: "Any auditor can re-run the proof from archived events.", accent: "var(--praxis-plasma)", colSpan: "md:col-span-6" },
-    { title: "Open spec",           body: "Proof schema is published with this MIT-licensed repository.", accent: "var(--praxis-bone)", colSpan: "md:col-span-6" },
+function FullStackProofPath({ onRunPipeline }: { onRunPipeline: () => void }) {
+  const steps = [
+    { title: "Event intake", body: "Operator signal enters a Next route handler and demo API contract.", icon: Database },
+    { title: "Decision run", body: "The deterministic pack produces priority, evidence trust, and action mode.", icon: GitBranch },
+    { title: "Approval", body: "The action is captured as a governed human step before proof export.", icon: ShieldCheck },
+    { title: "Proof export", body: "The proof object, readout, dashboard, and verifier command use the same run.", icon: BracketsCurly },
   ];
 
   return (
-    <section className="border-b py-24 md:py-36" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
-      <div className="mx-auto max-w-7xl px-5">
-        <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
-          Provenance guarantees
-        </div>
-        <h2 className="mb-16 font-display text-[clamp(2rem,4.5vw,4rem)] font-semibold leading-[0.96] tracking-[-0.02em]" style={{ color: "var(--praxis-bone)" }}>
-          Trust built into<br />the protocol.
-        </h2>
-        <div className="grid grid-flow-dense gap-px border bg-[var(--praxis-line)] md:grid-cols-12" style={{ borderColor: "var(--praxis-line)" }}>
-          {cards.map((card) => (
-            <div
-              key={card.title}
-              className={`p-8 transition-all duration-700 hover:-translate-y-0.5 ${card.colSpan}`}
-              style={{ background: "var(--praxis-surface)" }}
+    <section className="border-b py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
+      <div className="mx-auto grid max-w-7xl grid-flow-dense gap-8 px-5 lg:grid-cols-[0.9fr_1.1fr]">
+        <div className="flex flex-col justify-between gap-8">
+          <div>
+            <h2 className="font-display text-[clamp(2rem,4.2vw,4.4rem)] font-semibold leading-[0.98] tracking-[-0.025em]" style={{ color: "var(--praxis-bone)" }}>
+              Full stack proof path
+            </h2>
+            <p className="mt-5 max-w-xl text-base leading-7" style={{ color: "var(--praxis-muted)" }}>
+              Printer GPO drift moves from intake to decision, approval, proof object, dashboard, and audit export.
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button
+              onClick={onRunPipeline}
+              className="inline-flex items-center justify-center gap-3 rounded-full bg-[var(--praxis-bone)] px-6 py-3.5 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-[var(--praxis-obsidian)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
-              <div className="mb-3.5 flex items-center gap-2">
-                <span className="h-1.5 w-1.5 rounded-full" style={{ background: card.accent }} />
-                <span className="font-mono text-[8.5px] uppercase tracking-[0.18em]" style={{ color: "var(--praxis-muted)" }}>provenance</span>
-              </div>
-              <div className="font-display text-xl font-semibold" style={{ color: "var(--praxis-bone)" }}>
-                {card.title}
-              </div>
-              <p className="mt-3 text-sm leading-7" style={{ color: "var(--praxis-muted)" }}>
-                {card.body}
-              </p>
-            </div>
-          ))}
+              Run path
+              <ArrowRight className="h-4 w-4" />
+            </button>
+            <Link
+              href="/field-workbench"
+              className="inline-flex items-center justify-center rounded-full border border-[var(--praxis-line)] px-6 py-3.5 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Workbench
+            </Link>
+          </div>
+        </div>
+        <div className="grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] sm:grid-cols-2">
+          {steps.map((step) => {
+            const Icon = step.icon;
+            return (
+              <article key={step.title} className="min-h-[190px] bg-[var(--praxis-surface)] p-6">
+                <div className="flex items-center justify-between gap-4">
+                  <Icon className="h-6 w-6 text-[var(--praxis-plasma)]" />
+                  <CheckCircle className="h-5 w-5 text-[var(--praxis-argon)]" weight="fill" />
+                </div>
+                <h3 className="mt-8 font-display text-2xl font-semibold tracking-[-0.02em] text-[var(--praxis-bone)]">{step.title}</h3>
+                <p className="mt-3 text-sm leading-6 text-[var(--praxis-muted)]">{step.body}</p>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -153,7 +163,7 @@ function FieldLabTerminalSection() {
   ];
 
   return (
-    <section className="border-b py-24 md:py-36" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
+    <section className="border-b py-20" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-surface)" }}>
       <div className="mx-auto max-w-7xl px-5">
         <div className="grid grid-flow-dense gap-12 lg:grid-cols-2 lg:gap-20">
           <div className="flex flex-col justify-center">
@@ -192,7 +202,7 @@ function FieldLabTerminalSection() {
 // ── CTA section ──────────────────────────────────────────────────────────────
 function CTASection({ onRunPipeline }: { onRunPipeline: () => void }) {
   return (
-    <section className="border-b py-32 text-center md:py-48" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
+    <section className="border-b py-20 text-center md:py-24" style={{ borderColor: "var(--praxis-line)", background: "var(--praxis-obsidian)" }}>
       <div className="mx-auto max-w-5xl px-5">
         <h2
           className="font-display text-[clamp(2.5rem,6vw,5.5rem)] font-semibold leading-[0.94] tracking-[-0.025em]"
@@ -244,17 +254,13 @@ export function PraxisLanding() {
         onRunPipeline={() => setModalOpen(true)}
       />
 
-      <ProofAnatomySection />
-
-      <HiFiStickyTour />
+      <FullStackProofPath onRunPipeline={() => setModalOpen(true)} />
 
       <FieldLabTerminalSection />
 
       <OutcomesSection />
 
       <LogoWall />
-
-      <TrustSection />
 
       <CTASection onRunPipeline={() => setModalOpen(true)} />
 

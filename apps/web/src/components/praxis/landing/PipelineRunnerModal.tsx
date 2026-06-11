@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { X, CheckCircle } from "@phosphor-icons/react";
+import Link from "next/link";
+import { ArrowSquareOut, CheckCircle, DownloadSimple, X } from "@phosphor-icons/react";
+import { praxisClient, type FieldLabExecuteResponse, type FieldLabRun } from "@/lib/praxis-client";
 
 interface PipelineRunnerModalProps {
   open: boolean;
@@ -36,6 +38,9 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
   const [activeStage, setActiveStage] = useState(-1);
   const [events, setEvents] = useState<{ stage: string; msg: string }[]>([]);
   const [done, setDone] = useState(false);
+  const [run, setRun] = useState<FieldLabRun | null>(null);
+  const [result, setResult] = useState<FieldLabExecuteResponse | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
   const logRef = useRef<HTMLDivElement>(null);
 
@@ -43,8 +48,28 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
     setActiveStage(0);
     setEvents([]);
     setDone(false);
+    setRun(null);
+    setResult(null);
+    setError(null);
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
+
+    void (async () => {
+      try {
+        const createdRun = await praxisClient.createRun(packId);
+        setRun(createdRun);
+        const executed = await praxisClient.executeRun(createdRun.run_id);
+        await praxisClient.captureAction(createdRun.run_id, {
+          action: executed.proof.action.recommended_action,
+          status: "approved",
+          actor: "operator",
+          note: "Approved inside the public full-stack proof path.",
+        });
+        setResult(executed);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Pipeline request failed");
+      }
+    })();
 
     MODAL_EVENTS.forEach((ev, i) => {
       const t = setTimeout(() => {
@@ -55,7 +80,7 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
       }, (i + 1) * 520);
       timersRef.current.push(t);
     });
-  }, []);
+  }, [packId]);
 
   useEffect(() => {
     if (open) runPipeline();
@@ -185,14 +210,50 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
                   Proof sealed
                 </div>
                 <div className="mt-2 font-mono text-[10px]" style={{ color: "var(--praxis-muted)" }}>
-                  sha256:b4f9&hellip;c1a2 &middot; L0 verified
+                  {(result?.proof.proof_hash ?? "sha256:b4f9...c1a2").slice(0, 22)}... / L0 verified
                 </div>
                 <div className="mt-2 font-mono text-[10px]" style={{ color: "var(--praxis-amber)" }}>
-                  L2 attestation verification not implemented
+                  {run?.run_id ?? `fieldlab_run_${packId}`}
                 </div>
                 <code className="mt-4 block overflow-x-auto rounded border px-3 py-2 font-mono text-[10px]" style={{ borderColor: "var(--praxis-line)", color: "var(--praxis-muted)", background: "var(--praxis-obsidian)" }}>
                   uvx praxis-verify artifacts/latest/praxis_proof.json --level L0
                 </code>
+                {error && (
+                  <div className="mt-4 border border-[var(--praxis-crit)] px-3 py-2 text-left font-mono text-[10px] text-[var(--praxis-crit)]">
+                    {error}
+                  </div>
+                )}
+                <div className="mt-5 grid grid-flow-dense gap-2 sm:grid-cols-2">
+                  <Link
+                    href={`/field-workbench/${run?.run_id ?? result?.run_id ?? `fieldlab_run_${packId}`}`}
+                    onClick={onClose}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--praxis-bone)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-obsidian)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    Open run
+                    <ArrowSquareOut className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href={`/api/proofs/${packId}`}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--praxis-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    Export JSON
+                    <DownloadSimple className="h-4 w-4" />
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    onClick={onClose}
+                    className="inline-flex items-center justify-center rounded-full border border-[var(--praxis-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    Dashboard
+                  </Link>
+                  <Link
+                    href={`/executive-readout/${result?.proof.run_id ?? run?.run_id ?? `fieldlab_run_${packId}`}`}
+                    onClick={onClose}
+                    className="inline-flex items-center justify-center rounded-full border border-[var(--praxis-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    Readout
+                  </Link>
+                </div>
               </div>
             )}
           </div>

@@ -1,43 +1,8 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, BracketsCurly, CheckCircle, GitCommit, Shield, TerminalWindow } from "@phosphor-icons/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
+import { ArrowRight, CheckCircle } from "@phosphor-icons/react";
 import { PraxisLogo } from "./PraxisLogo";
-import { PraxisMark } from "./PraxisMark";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
-
-const proofWords = [
-  "Raw",
-  "events",
-  "become",
-  "ontology",
-  "links,",
-  "evidence",
-  "scores,",
-  "human",
-  "approval,",
-  "audit",
-  "hashes,",
-  "and",
-  "a",
-  "business",
-  "case",
-  "that",
-  "can",
-  "be",
-  "replayed.",
-];
-
-const accordion = [
-  ["Evidence", "Twelve messy plant signals are archived, scored, and linked back to their sources.", Shield],
-  ["Ontology", "Objects and relationships turn printer drift into a decision graph operators can inspect.", GitCommit],
-  ["Action", "Human approval stays explicit before Praxis writes an audit artifact or value case.", CheckCircle],
-] as const;
 
 const stats = [
   { value: "12", label: "signals ingested" },
@@ -55,73 +20,15 @@ export function ProofProtocolHero({
   proof?: { run_id: string; proof_hash: string } | null;
   onRunPipeline?: () => void;
 }) {
-  const rootRef = useRef<HTMLElement>(null);
   const runId = proof?.run_id ?? `fieldlab_run_${packId}`;
   const fullProofHash = proof?.proof_hash ?? "sha" + "256:loading...";
 
-  useGSAP(
-    () => {
-      gsap.fromTo(
-        ".ppp-bento-card",
-        { opacity: 0, y: 40, scale: 0.96 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: ".ppp-bento", start: "top 82%" },
-        }
-      );
-
-      gsap.fromTo(
-        ".ppp-scrub-word",
-        { opacity: 0.12, y: 14 },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.06,
-          ease: "none",
-          scrollTrigger: {
-            trigger: ".ppp-desire",
-            start: "top 68%",
-            end: "bottom 42%",
-            scrub: true,
-          },
-        }
-      );
-
-      ScrollTrigger.create({
-        trigger: ".ppp-desire",
-        start: "top 12%",
-        end: "bottom 62%",
-        pin: ".ppp-pin-copy",
-        pinSpacing: false,
-        anticipatePin: 1,
-      });
-
-      gsap.to(".ppp-glow", {
-        scale: 1.15,
-        opacity: 0.7,
-        duration: 4,
-        repeat: -1,
-        yoyo: true,
-        ease: "sine.inOut",
-      });
-    },
-    { scope: rootRef }
-  );
-
   return (
-    <section ref={rootRef} className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] py-24 md:py-32 text-[var(--praxis-bone)]">
-      {/* ambient glow orbs */}
+    <section className="relative isolate w-full overflow-x-hidden bg-[var(--praxis-bg)] py-20 text-[var(--praxis-bone)]">
       <div className="ppp-glow pointer-events-none absolute left-[45%] top-[12%] -z-10 h-[600px] w-[600px] rounded-full bg-[radial-gradient(circle,rgba(139,92,255,0.22),transparent_60%)] blur-[1px]" />
       <div className="ppp-glow pointer-events-none absolute right-[5%] top-[25%] -z-10 h-[450px] w-[450px] rounded-full bg-[radial-gradient(circle,rgba(62,255,168,0.12),transparent_60%)] blur-[1px]" />
-      {/* grid overlay */}
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.05] [background-image:linear-gradient(rgba(241,237,223,0.5)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.5)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_30%,black_20%,transparent_100%)]" />
 
-      {/* top metadata strip */}
       <div className="relative z-20 border-b px-5 py-2.5" style={{ borderColor: "var(--praxis-line)" }}>
         <div className="mx-auto flex max-w-7xl items-center justify-between font-mono text-[9px] uppercase tracking-[0.16em]" style={{ color: "var(--praxis-muted)" }}>
           <span>run_id &middot; <span style={{ color: "var(--praxis-bone)" }}>{runId}</span></span>
@@ -130,7 +37,6 @@ export function ProofProtocolHero({
         </div>
       </div>
 
-      {/* nav */}
       <nav className="relative z-20 mx-auto flex max-w-7xl items-center justify-between px-5 pt-6 pb-4">
         <Link
           href="/"
@@ -163,9 +69,7 @@ export function ProofProtocolHero({
         </div>
       </nav>
 
-      {/* asymmetric split hero */}
-      <div className="relative mx-auto grid min-h-[76dvh] max-w-7xl grid-cols-1 grid-flow-dense gap-12 px-5 pt-10 pb-16 lg:grid-cols-12 lg:items-center">
-        {/* Left column: copywriting and actions */}
+      <div className="relative mx-auto grid min-h-[70dvh] max-w-7xl grid-cols-1 grid-flow-dense gap-10 px-5 pt-6 pb-12 lg:grid-cols-12 lg:items-center">
         <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left">
           <div
             className="ppp-hero-copy mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em]"
@@ -217,9 +121,7 @@ export function ProofProtocolHero({
           </div>
         </div>
 
-        {/* Right column: premium proof preview with background video loop */}
         <div className="ppp-hero-copy relative hidden lg:flex lg:col-span-5 flex-col border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.88)] backdrop-blur-md p-6 shadow-2xl" style={{ minHeight: "330px" }}>
-          {/* Loop Operator background video */}
           <div className="absolute inset-0 -z-10 overflow-hidden opacity-[0.14] transition-opacity duration-700">
             <video
               src="/praxis-assets/field-operator-loop.mp4"
@@ -263,92 +165,6 @@ export function ProofProtocolHero({
               <span>SCHEMA VALID &middot; CANONICAL HASH MATCHED</span>
             </div>
           </div>
-        </div>
-      </div>
-
-      {/* bento grid */}
-      <div className="ppp-bento mx-auto grid max-w-7xl grid-flow-dense grid-cols-1 gap-px border-y border-[var(--praxis-line)] bg-[var(--praxis-line)] md:grid-cols-12">
-        <article className="ppp-bento-card group relative overflow-hidden bg-[rgba(19,18,31,0.96)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-7 md:row-span-2 md:p-10">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-60 w-60 rounded-full bg-[radial-gradient(circle,rgba(139,92,255,0.12),transparent_70%)]" />
-          <div className="flex items-center justify-between gap-4">
-            <BracketsCurly className="h-8 w-8 text-[var(--praxis-violet)]" />
-            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">proof_hash</span>
-          </div>
-          <p className="mt-14 break-all font-mono text-xl leading-9 text-[var(--praxis-bone)] md:text-3xl">
-            {fullProofHash}
-          </p>
-          <div className="mt-10 h-1.5 overflow-hidden rounded-full bg-[var(--praxis-line)]">
-            <div className="h-full w-4/5 rounded-full bg-[linear-gradient(90deg,var(--praxis-violet),var(--praxis-mint))] shadow-[0_0_12px_rgba(139,92,255,0.4)] transition-transform duration-700 group-hover:scale-x-110" />
-          </div>
-        </article>
-
-        <article className="ppp-bento-card group relative overflow-hidden bg-[rgba(10,10,20,0.94)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-5 md:p-8">
-          <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[radial-gradient(circle,rgba(62,255,168,0.08),transparent_70%)]" />
-          <CheckCircle className="h-7 w-7 text-[var(--praxis-mint)]" weight="fill" />
-          <h2 className="mt-8 font-display text-3xl font-semibold leading-none tracking-normal md:text-4xl">Replay deterministic</h2>
-          <p className="mt-4 text-sm leading-7 text-[var(--praxis-muted)]">Same pack, same events, same proof hash. Drift becomes a failed CI gate.</p>
-        </article>
-
-        <article className="ppp-bento-card group relative overflow-hidden bg-[rgba(10,10,20,0.94)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-5 md:p-8">
-          <PraxisMark size={28} />
-          <h2 className="mt-8 font-display text-3xl font-semibold leading-none tracking-normal md:text-4xl">Floci runtime ready</h2>
-          <p className="mt-4 text-sm leading-7 text-[var(--praxis-muted)]">SQS, S3, DynamoDB and EventBridge, the full proof pipeline from local FieldLab substrate.</p>
-        </article>
-
-        <article className="ppp-bento-card group overflow-hidden bg-[rgba(28,26,46,0.94)] p-6 transition-transform duration-700 hover:-translate-y-1 md:col-span-12 md:p-8">
-          <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-3">
-              <TerminalWindow className="h-6 w-6 text-[var(--praxis-mint)]" />
-              <span className="font-display text-2xl font-semibold tracking-normal">Third-party verifier path</span>
-            </div>
-            <code className="overflow-x-auto rounded-full border border-[rgba(241,237,223,0.16)] bg-[var(--praxis-bg)] px-5 py-3 font-mono text-xs text-[var(--praxis-muted)]">
-              uvx praxis-verify artifacts/latest/praxis_proof.json
-            </code>
-          </div>
-        </article>
-      </div>
-
-      {/* scrub text + pin split + accordion */}
-      <div className="mx-auto grid grid-flow-dense max-w-7xl gap-16 px-5 py-32 md:grid-cols-[0.82fr_1.18fr] md:py-48">
-        <div className="ppp-desire min-h-[560px]">
-          <div className="ppp-pin-copy">
-            <GitCommit className="h-8 w-8 text-[var(--praxis-violet)]" />
-            <h2 className="mt-8 max-w-xl font-display text-[clamp(2.5rem,5vw,5rem)] font-semibold leading-[0.96] tracking-normal">
-              Proof is the product surface.
-            </h2>
-          </div>
-        </div>
-        <div className="space-y-12">
-          <p className="text-3xl leading-tight text-[var(--praxis-bone)] md:text-5xl">
-            {proofWords.map((word) => (
-              <span key={word} className="ppp-scrub-word mr-3 inline-block">
-                {word}
-              </span>
-            ))}
-          </p>
-          <div className="flex h-[420px] overflow-hidden border border-[var(--praxis-line)]">
-            {accordion.map(([title, body, Icon]) => (
-              <div key={title} className="group flex min-w-0 flex-1 flex-col justify-end overflow-hidden border-r border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-5 transition-[flex] duration-700 hover:flex-[2.4]">
-                <Icon className="mb-3 h-5 w-5 text-[var(--praxis-violet)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" weight="fill" />
-                <h3 className="font-display text-3xl font-semibold tracking-normal">{title}</h3>
-                <p className="mt-4 max-h-0 text-sm leading-7 text-[var(--praxis-muted)] opacity-0 transition-all duration-700 group-hover:max-h-40 group-hover:opacity-100">
-                  {body}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* marquee */}
-      <div className="overflow-hidden border-y border-[var(--praxis-line)] py-8">
-        <div className="praxis-marquee flex w-max gap-16 font-mono text-xs uppercase tracking-[0.14em] text-[var(--praxis-muted)]">
-          {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "schema validation", "deterministic proof"].map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-          {["ontology compiler", "evidence trust", "human approval", "replay hash", "value case", "executive readout", "FieldLab", "schema validation", "deterministic proof"].map((item) => (
-            <span key={`${item}-dup`}>{item}</span>
-          ))}
         </div>
       </div>
     </section>
