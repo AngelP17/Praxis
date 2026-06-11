@@ -11,10 +11,12 @@ export async function POST(
 
   if (!IS_VERCEL_RUNTIME) {
     const bodyClone = request.clone();
+    const body = await request.json().catch(() => ({}));
+    const status = body?.status ?? "approved";
     return proxyBackend(`/api/fieldlab/runs/${runId}/action`, {
       method: "POST",
       body: bodyClone.body,
-    } as RequestInit);
+    } as RequestInit, () => NextResponse.json(getDemoActionCapture(runId, packId, status)));
   }
 
   const body = await request.json().catch(() => ({}));

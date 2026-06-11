@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import Any
 from sse_starlette.sse import EventSourceResponse
 import asyncio
 import json
 
 from apps.api_gateway.deps import get_db
+from apps.api_gateway.schemas.event import OperationalEventIngest, OperationalEventBatch
 from apps.api_gateway.services.decision_service import DecisionService
 from apps.api_gateway.services.event_service import EventService
 
@@ -36,15 +36,15 @@ async def stream_events():
 
 
 @router.post("/ingest", status_code=201)
-def ingest_event(payload: dict[str, Any], db: Session = Depends(get_db)):
+def ingest_event(payload: OperationalEventIngest, db: Session = Depends(get_db)):
     service = EventService(db)
-    return service.ingest_event(payload)
+    return service.ingest_event(payload.model_dump(exclude_none=True))
 
 
 @router.post("/batch")
-def ingest_batch(payloads: list[dict[str, Any]], db: Session = Depends(get_db)):
+def ingest_batch(payload: OperationalEventBatch, db: Session = Depends(get_db)):
     service = EventService(db)
-    return {"events": [service.ingest_event(p) for p in payloads]}
+    return {"events": [service.ingest_event(e.model_dump(exclude_none=True)) for e in payload.events]}
 
 
 @router.get("/tickets/{ticket_id}")

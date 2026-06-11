@@ -7,6 +7,17 @@
 
 **Proof-carrying field deployment for enterprise operations.**
 
+🔗 **Live Demo:** https://praxis-web-eight.vercel.app
+
+### What each badge proves
+
+| Badge | What it verifies |
+|-------|------------------|
+| **CI** | TypeScript typecheck, Ruff lint, pytest unit/integration, Next.js build, GPT-taste design gate (0 warnings), Playwright smoke tests, CodeQL, Scorecard, secret scan |
+| **FieldLab Proof** | Full Floci-backed AWS emulation: SQS/S3/DynamoDB/EventBridge → ontology compile → decision engine → human approval → L0 proof verification → determinism re-run |
+| **Determinism Gate** | Bit-identical replay hashes across runs; any tampering changes the SHA-256 proof hash |
+| **PPP v0.1** | Conformance to the Praxis Proof Protocol spec for cryptographically verifiable AI decision provenance |
+
 Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a green PR-run Docker Compose production proof recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Docker Compose self-hosted backend path remains the recommended deployment target for real production use; post-merge `main` verification should still be observed separately.
 
 Praxis is the reference implementation of the **Praxis Proof Protocol** — the first open spec for cryptographically verifiable AI decision provenance. It turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
@@ -117,6 +128,24 @@ Run a single scenario with `make praxis-run-scenario SCENARIO=printer-offline`, 
 
 ---
 
+## Demo Video
+
+<!-- TODO: Replace with Loom/video link after recording -->
+**90-second fullstack walkthrough** — coming soon.
+
+Script beats:
+1. "This is Praxis, a manufacturing operations decision platform."
+2. "The frontend is built with Next.js and React."
+3. "This workflow starts with a printer outage scenario."
+4. "The event is submitted through the UI."
+5. "The backend validates and processes the event."
+6. "The decision engine generates a recommendation."
+7. "A human approves the action."
+8. "Praxis emits an audit-ready proof object."
+9. "The dashboard updates with measurable value and replay state."
+
+---
+
 ## Why Praxis Exists
 
 Enterprises do not fail because they lack dashboards.
@@ -148,10 +177,74 @@ Dashboards show state. **Praxis drives operational decisions.**
 
 | Target role | Praxis proof |
 |-------------|-------------|
+| **Full Stack Engineer** | Builds polished React/Next.js product, connects to real API routes, designs backend workflows, persists data, validates inputs, runs tests, documents architecture, deploys safely, explains business value → [Walkthrough](docs/for-hiring-managers/fullstack-engineer-walkthrough.md) |
 | **Solutions Engineer** | Can scope a customer use case, build a technical demo, explain architecture, handle security/compliance, and show business value |
 | **GTM Engineer** | Can package repeatable demo systems, solution templates, ROI calculators, customer narratives, and product feedback loops |
 | **Forward Deployed Engineer** | Can integrate messy customer data, model operational workflows, build adapters, deploy locally, and iterate with users |
 | **Platform Engineer** | Integrates Floci-backed local AWS services to simulate production event pipelines without cloud credentials |
+
+---
+
+## Full Stack Architecture Chain
+
+```
+User
+  ↓
+Next.js / React UI (apps/web/src/app/)
+  ↓
+Next.js API Route Handlers / Typed API Client (apps/web/src/app/api/, apps/web/src/lib/api.ts)
+  ↓
+FastAPI Gateway (apps/api_gateway/routes/)
+  ↓
+Decision Service + Platform Service (services/decision-service/, services/platform-service/)
+  ↓
+PostgreSQL / Event Store / Proof Objects (infrastructure/db/models/)
+  ↓
+Dashboard + Audit Export (apps/web/src/app/dashboard/, apps/web/src/app/audit/)
+
+CI/CD: GitHub Actions → Typecheck → Lint → Test → Build → Docker Compose Proof
+Deployment: Vercel frontend + Docker Compose backend path
+```
+
+---
+
+## Full Stack Engineer Signal
+
+Praxis demonstrates a complete full-stack product workflow:
+
+- **Frontend**: Next.js 16, React 19, Tailwind v4, GSAP, Zustand, Recharts — dashboard UI, scenario workbench, real-time proof surfaces
+- **Backend**: FastAPI API gateway, Python decision service (Astraea), platform service — typed APIs, validation, orchestration
+- **Data**: Operational events, decision records, proof objects, deterministic replay artifacts, audit log — persisted via SQLAlchemy/PostgreSQL (Docker Compose) or SQLite (local demo)
+- **DevOps**: Docker Compose (prod + local), GitHub Actions CI (typecheck, lint, unit, e2e, build, proof), Vercel frontend deploy
+- **Product**: Manufacturing operations workflow from raw incident signal → structured event → decision engine → human approval → audit-ready proof → executive value case
+
+---
+
+## Public Demo vs Full Stack Runtime
+
+The public Vercel deployment is optimized as a deterministic showcase (`NEXT_PUBLIC_DEMO_MODE=1`). The full-stack runtime is available locally through Docker Compose and includes the API gateway, decision service, platform service, and proof workflow.
+
+**Frontend-only demo (no backend required):**
+```bash
+# Deploy to Vercel with:
+NEXT_PUBLIC_DEMO_MODE=1
+```
+
+**Full stack locally:**
+```bash
+make install      # Python venv + Node deps
+make demo         # Starts API gateway, decision service, platform service, web
+make demo-seed    # Seeds flagship scenarios
+```
+
+**Self-hosted / cloud backend (recommended for production):**
+```bash
+cp .env.example .env   # Set SECRET_KEY, POSTGRES_PASSWORD, ALLOWED_ORIGINS
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+curl http://localhost:8000/health
+```
+
+Then set `NEXT_PUBLIC_API_URL=http://your-server:8000` in your frontend deployment and remove `NEXT_PUBLIC_DEMO_MODE`.
 
 ---
 

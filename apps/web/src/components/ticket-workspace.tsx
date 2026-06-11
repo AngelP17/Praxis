@@ -20,6 +20,7 @@ import { useToast } from "@/components/notifications";
 import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { authApi, catalogApi, ticketsApi } from "@/lib/api";
 import { canWriteTickets, isAdmin, readStoredUser, type AuthUser } from "@/lib/auth";
+import { validateTicketForm, validateComment, type TicketFormInput } from "@/lib/validation/ticket";
 import type {
   CatalogOptions,
   TicketAttachment,
@@ -217,25 +218,29 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
       return;
     }
 
-    if (!form.title.trim()) {
-      toast.error("Missing title", "Every ticket needs a title.");
+    const validation = validateTicketForm(form);
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0];
+      toast.error("Validation failed", firstError);
       return;
     }
+
+    const validatedData = validation.data as TicketFormInput;
 
     setIsSaving(true);
     try {
       const payload = {
-        title: form.title.trim(),
-        status: form.status,
-        priority: form.priority,
-        category_id: form.category_id ? Number(form.category_id) : null,
-        request_type: form.request_type.trim() || null,
-        staff_assigned: form.staff_assigned || null,
-        requester: form.requester.trim() || null,
-        description: form.description.trim() || null,
-        resolution_notes: form.resolution_notes.trim() || null,
-        site_id: form.site_id.trim() || null,
-        label_ids: form.label_ids,
+        title: validatedData.title.trim(),
+        status: validatedData.status,
+        priority: validatedData.priority,
+        category_id: validatedData.category_id ? Number(validatedData.category_id) : null,
+        request_type: validatedData.request_type?.trim() || null,
+        staff_assigned: validatedData.staff_assigned || null,
+        requester: validatedData.requester?.trim() || null,
+        description: validatedData.description.trim() || null,
+        resolution_notes: validatedData.resolution_notes?.trim() || null,
+        site_id: validatedData.site_id?.trim() || null,
+        label_ids: validatedData.label_ids ?? [],
       };
 
       const response = ticketId
@@ -289,14 +294,17 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
       toast.error("Read-only account", "Your role does not allow comment changes.");
       return;
     }
-    if (!commentBody.trim()) {
-      toast.error("Missing comment", "Write a comment before submitting it.");
+
+    const validation = validateComment({ body: commentBody });
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0];
+      toast.error("Validation failed", firstError);
       return;
     }
 
     setIsSubmittingComment(true);
     try {
-      const response = await ticketsApi.addComment(ticketId, commentBody.trim());
+      const response = await ticketsApi.addComment(ticketId, validation.data.body.trim());
       const comment = response.data as TicketComment;
       if (commentFiles.length) {
         await uploadFiles(ticketId, commentFiles, comment.id);
@@ -317,8 +325,16 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
     if (!ticketId || editingCommentId == null || !editingCommentBody.trim()) {
       return;
     }
+
+    const validation = validateComment({ body: editingCommentBody });
+    if (!validation.success) {
+      const firstError = Object.values(validation.errors)[0];
+      toast.error("Validation failed", firstError);
+      return;
+    }
+
     try {
-      await ticketsApi.updateComment(ticketId, editingCommentId, editingCommentBody.trim());
+      await ticketsApi.updateComment(ticketId, editingCommentId, validation.data.body.trim());
       setEditingCommentId(null);
       setEditingCommentBody("");
       await refreshDetail();

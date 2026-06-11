@@ -10,7 +10,11 @@ export async function POST(
   const packId = runId.replace(/^demo_/, "");
 
   if (!IS_VERCEL_RUNTIME) {
-    return proxyBackend(`/api/fieldlab/runs/${runId}/execute`, { method: "POST" });
+    return proxyBackend(
+      `/api/fieldlab/runs/${runId}/execute`,
+      { method: "POST" },
+      () => NextResponse.json(getDemoExecuteResponse(packId, runId)),
+    );
   }
 
   return NextResponse.json(getDemoExecuteResponse(packId, runId));
