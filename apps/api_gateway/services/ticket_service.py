@@ -434,7 +434,7 @@ class TicketService:
             self.db.execute(
                 text(
                     """
-                SELECT MAX(CAST(SUBSTRING(ticket_id FROM 4) AS BIGINT)) AS max_ticket_number
+                SELECT MAX(CAST(SUBSTR(ticket_id, 4) AS BIGINT)) AS max_ticket_number
                 FROM tickets
                 WHERE ticket_id LIKE 'IT-%'
                 """

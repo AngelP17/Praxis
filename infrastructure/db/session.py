@@ -118,4 +118,5 @@ def _import_models() -> None:
     import infrastructure.db.models.ticket_attachment  # noqa: F401
     import infrastructure.db.models.ticket_comment  # noqa: F401
     import infrastructure.db.models.ticket_event  # noqa: F401
+    import infrastructure.db.models.ticket_label  # noqa: F401
     import infrastructure.db.models.value_case  # noqa: F401
