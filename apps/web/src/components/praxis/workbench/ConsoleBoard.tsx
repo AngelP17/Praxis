@@ -101,8 +101,8 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
         <section className="py-20 lg:col-span-12">
           <div className="mb-3 flex items-baseline justify-between">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Floci substrate &middot; localhost services</div>
-            <Link href="/fieldlab" className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform hover:translate-x-1">
-              Open FieldLab &rarr;
+            <Link href={`/field-workbench?pack=${packId}`} className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform hover:translate-x-1">
+              Open FieldLab
             </Link>
           </div>
           <div className="grid grid-cols-2 grid-flow-dense gap-3 md:grid-cols-4">
@@ -120,7 +120,7 @@ export function ConsoleBoard({ packId: propPackId }: { packId?: string }) {
           <div className="mb-3 flex items-baseline justify-between">
             <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Active runs &middot; {packs.length}</div>
             <Link href="/solution-packs" className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform hover:translate-x-1">
-              All packs &rarr;
+              All packs
             </Link>
           </div>
           <div className="grid grid-cols-1 grid-flow-dense gap-3 md:grid-cols-3">

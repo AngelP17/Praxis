@@ -90,19 +90,18 @@ export default function LoginPage() {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_12%,rgba(139,92,255,0.16),transparent_24%),radial-gradient(circle_at_82%_18%,rgba(62,255,168,0.08),transparent_18%),linear-gradient(180deg,rgba(19,18,31,0.24),transparent_42%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(241,237,223,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.04)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(circle_at_top,black,transparent_78%)]" />
 
-      <div className="relative z-10 mx-auto grid w-full max-w-[1580px] items-stretch gap-5 lg:grid-cols-[52%_48%] grid-flow-dense">
-        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.94),rgba(10,10,20,0.9))] px-6 py-20 sm:px-7 md:py-24">
+      <div className="relative z-10 mx-auto grid w-full max-w-[1580px] grid-flow-dense items-stretch gap-5 lg:min-h-[calc(100dvh-64px)] lg:grid-cols-[52%_48%]">
+        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.94),rgba(10,10,20,0.9))] px-6 py-20 sm:px-7">
           <div className="inline-flex items-center gap-2 border border-[var(--praxis-plasma)] bg-[color-mix(in_srgb,var(--praxis-plasma)_12%,transparent)] px-3 py-1.5">
             <ShieldChevron size={14} className="text-[var(--praxis-plasma)]" />
             <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-[var(--praxis-bone)]">Praxis Access</span>
           </div>
 
-          <h1 className="mt-6 max-w-5xl font-display text-[clamp(2rem,3.5vw,3.8rem)] font-semibold leading-[1.04] tracking-tight text-[var(--praxis-bone)]">
+          <h1 className="mt-6 max-w-5xl font-display text-[clamp(2.35rem,4vw,4.8rem)] font-semibold leading-[0.96] tracking-[-0.04em] text-[var(--praxis-bone)]">
             Enter the forensic command room.
           </h1>
-          <p className="mt-4 max-w-2xl text-sm leading-7 text-[var(--praxis-muted)]">
-            Authenticate to review high-priority machine incidents, inspect deterministic Praxis decisions, and capture
-            audit-ready human feedback.
+          <p className="mt-5 max-w-2xl text-[15px] leading-7 text-[var(--praxis-muted)]">
+            Review priority incidents, deterministic decisions, and human approvals from one role-scoped demo session.
           </p>
 
           <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 grid-flow-dense">
@@ -121,7 +120,7 @@ export default function LoginPage() {
 
           <div className="mt-4 overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.68)] p-3.5">
             <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Session Preview</div>
-            <div className="mt-2 grid grid-cols-[1fr,1fr,1fr] gap-2 grid-flow-dense">
+            <div className="mt-2 grid grid-cols-1 gap-2 grid-flow-dense sm:grid-cols-3">
               <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.72)] px-2.5 py-2">
                 <div className="text-[10px] text-[var(--praxis-mute)]">Queue</div>
                 <div className="mt-1 font-mono text-xs text-[var(--praxis-bone)]">Session ready</div>
@@ -138,7 +137,7 @@ export default function LoginPage() {
           </div>
         </section>
 
-        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.94),rgba(10,10,20,0.88))] px-6 py-20 sm:px-7 md:py-24">
+        <section className="overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.94),rgba(10,10,20,0.88))] px-6 py-20 sm:px-7">
           <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Operator Authentication</div>
           <h2 className="mt-2 font-display text-2xl font-semibold text-[var(--praxis-bone)]">Sign In</h2>
           <p className="mt-2 text-sm leading-6 text-[var(--praxis-muted)]">
@@ -147,7 +146,7 @@ export default function LoginPage() {
 
           <form id="login-form" onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
-              <label htmlFor="username" className="mb-2 block text-sm font-medium text-zinc-200">
+              <label htmlFor="username" className="mb-2 block text-sm font-medium text-[var(--praxis-bone)]">
                 Username
               </label>
               <input
@@ -156,12 +155,12 @@ export default function LoginPage() {
                 value={username}
                 onChange={(event) => setUsername(event.target.value)}
                 autoComplete="username"
-                className="min-h-11 w-full border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.85)] px-3.5 text-sm text-[var(--praxis-bone)] outline-none transition focus:border-[var(--praxis-plasma)]"
+                  className="min-h-11 w-full border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.85)] px-3.5 text-sm text-[var(--praxis-bone)] outline-none transition focus:border-[var(--praxis-plasma)] focus:bg-[rgba(19,18,31,0.92)]"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="mb-2 block text-sm font-medium text-zinc-200">
+              <label htmlFor="password" className="mb-2 block text-sm font-medium text-[var(--praxis-bone)]">
                 Password
               </label>
               <div className="relative">
@@ -172,7 +171,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                   autoComplete="current-password"
-                  className="min-h-11 w-full border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.85)] px-3.5 pr-11 text-sm text-[var(--praxis-bone)] outline-none transition focus:border-[var(--praxis-plasma)]"
+                  className="min-h-11 w-full border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.85)] px-3.5 pr-11 text-sm text-[var(--praxis-bone)] outline-none transition focus:border-[var(--praxis-plasma)] focus:bg-[rgba(19,18,31,0.92)]"
                 />
                 <button
                   type="button"
@@ -222,17 +221,18 @@ export default function LoginPage() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={() => void quickLogin(role)}
-                  className="group border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.6)] px-3.5 py-3 text-left transition-transform duration-500 hover:scale-[1.02] hover:border-[var(--praxis-plasma)] disabled:opacity-50"
+                  className="group border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.6)] px-3.5 py-3 text-left transition-transform duration-300 hover:scale-[1.02] hover:border-[var(--praxis-plasma)] hover:bg-[rgba(19,18,31,0.88)] active:scale-[0.98] disabled:opacity-50"
                 >
                   <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--praxis-bone)]">{label}</div>
                   <div className="mt-1 text-[11px] leading-5 text-[var(--praxis-muted)]">{detail}</div>
+                  <div className="mt-3 font-mono text-[10px] text-[var(--praxis-argon)]">{role} / {role}</div>
                 </button>
               ))}
             </div>
           </div>
 
           <div className="mt-5 border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.6)] px-3.5 py-3 text-xs leading-6 text-[var(--praxis-muted)]">
-            Demo credentials: <span className="font-mono text-[11px] text-[var(--praxis-bone)]">operator / operator</span> — role logins keep working when the live auth service is unavailable.
+            Demo mode: <span className="font-mono text-[11px] text-[var(--praxis-bone)]">operator / operator</span>. Role logins keep working when the live auth service is unavailable.
           </div>
         </section>
       </div>

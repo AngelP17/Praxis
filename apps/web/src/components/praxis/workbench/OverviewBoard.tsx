@@ -144,7 +144,7 @@ export function OverviewBoard({
       {isDashboard ? (
         <>
           <GhostAction href="/solution-packs">Portfolio · {packs.length} packs</GhostAction>
-          <GhostAction href="/fieldlab">{sites} sites live</GhostAction>
+          <GhostAction href="/field-workbench">{sites} sites live</GhostAction>
         </>
       ) : (
         <>
