@@ -52,8 +52,8 @@ export function ProofProtocolHero({
         </div>
       </nav>
 
-      <div className="mx-auto grid min-h-[calc(100dvh-72px)] max-w-[1500px] grid-flow-dense grid-cols-1 gap-8 px-5 pb-8 pt-6 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:items-end">
-        <div className="max-w-5xl pb-8 lg:pb-16">
+      <div className="mx-auto grid min-h-[calc(100dvh-200px)] max-w-[1500px] grid-flow-dense grid-cols-1 gap-8 px-5 pb-8 pt-10 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:items-center">
+        <div className="max-w-5xl">
           <div className="mb-7 max-w-[760px] border-l border-[var(--praxis-plasma)] pl-5">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">Forward-deployed operational intelligence</p>
           </div>
@@ -80,7 +80,7 @@ export function ProofProtocolHero({
           </div>
         </div>
 
-        <aside className="mb-8 overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.74)] backdrop-blur-xl lg:mb-16">
+        <aside className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.74)] backdrop-blur-xl">
           <div className="border-b border-[var(--praxis-line)] p-5">
             <div className="flex items-center justify-between gap-4">
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Active proof</span>

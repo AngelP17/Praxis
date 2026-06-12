@@ -9,7 +9,7 @@ export function PackCatalog() {
   const topbarRight = (
     <>
       <Pill>{packs.length} packs</Pill>
-      <PrimaryAction href="/fieldlab?pack=manufacturing-printer-gpo">Run flagship pack</PrimaryAction>
+      <PrimaryAction href="/field-workbench?pack=manufacturing-printer-gpo">Run flagship pack</PrimaryAction>
     </>
   );
 
@@ -22,7 +22,7 @@ export function PackCatalog() {
           {packs.map((pack) => (
             <Link
               key={pack.id}
-              href={`/fieldlab?pack=${pack.id}`}
+              href={`/field-workbench?pack=${pack.id}`}
               className="mb-3 grid grid-cols-12 grid-flow-dense items-center gap-3 overflow-hidden border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] px-4 py-5 transition-transform duration-700 ease-out hover:translate-x-1 hover:scale-[1.01]"
             >
               <div className="col-span-12 md:col-span-5">

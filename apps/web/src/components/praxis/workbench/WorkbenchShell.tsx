@@ -99,7 +99,7 @@ export function WorkbenchShell({
         </div>
         <nav className="mt-4 flex flex-col overflow-y-auto px-3 pb-4">
           {NAV_GROUPS.map(([group, links]) => (
-            <div key={group}>
+            <div key={group} className="flex flex-col">
               <div className="px-1 pb-2 pt-4 font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--praxis-faint)]">
                 {group}
               </div>
@@ -109,7 +109,7 @@ export function WorkbenchShell({
                   <Link
                     key={href}
                     href={`${href}${packAware ? packSuffix : ""}`}
-                    className="group relative mb-1 overflow-hidden border px-4 py-[8px] text-[12px] transition-transform duration-700 hover:translate-x-1"
+                    className="group relative mb-1 block overflow-hidden border px-4 py-[8px] text-[12px] transition-transform duration-700 hover:translate-x-1"
                     style={{
                       borderColor: active ? "var(--praxis-plasma)" : "var(--praxis-line)",
                       color: active ? "var(--praxis-bone)" : "var(--praxis-mute)",

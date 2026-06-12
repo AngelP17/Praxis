@@ -328,12 +328,17 @@ export const useDemoSessionStore = create<DemoSessionState>()(
         };
         set({
           fieldlabRuns: [stampedRun, ...state.fieldlabRuns.filter((item) => item.run_id !== stampedRun.run_id)],
-          auditLog: [audit("fieldlab.run", stampedRun.run_id, `${packId} proof sealed in demo session.`), ...state.auditLog],
+          // Re-running the same pack supersedes its prior ledger entry instead of duplicating it.
+          auditLog: [
+            audit("fieldlab.run", stampedRun.run_id, `${packId} proof sealed in demo session.`),
+            ...state.auditLog.filter((entry) => !(entry.action === "fieldlab.run" && entry.target === stampedRun.run_id)),
+          ],
         });
         return stampedRun;
       },
       setChaosMode: (mode) => {
         const state = get();
+        if (state.chaosMode === mode) return;
         set({
           chaosMode: mode,
           auditLog: [audit("platform.chaos", mode, mode === "degraded" ? "Demo degraded mode applied." : "Demo platform reset."), ...state.auditLog],

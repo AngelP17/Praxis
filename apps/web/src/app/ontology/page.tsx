@@ -168,6 +168,21 @@ export default function OntologyPage() {
                     </div>
                   ) : (
                   <svg viewBox="0 0 100 100" className="h-full w-full" style={{ fontFamily: "monospace" }}>
+                    <defs>
+                      <pattern id="ontology-dot-grid" width="6" height="6" patternUnits="userSpaceOnUse">
+                        <circle cx="3" cy="3" r="0.18" fill="rgba(241,237,223,0.07)" />
+                      </pattern>
+                      <radialGradient id="ontology-vignette" cx="50%" cy="42%" r="68%">
+                        <stop offset="0%" stopColor="rgba(139,92,255,0.07)" />
+                        <stop offset="100%" stopColor="rgba(10,10,20,0)" />
+                      </radialGradient>
+                      <filter id="ontology-node-glow" x="-80%" y="-80%" width="260%" height="260%">
+                        <feGaussianBlur stdDeviation="1.1" />
+                      </filter>
+                    </defs>
+                    <rect x="0" y="0" width="100" height="100" fill="url(#ontology-dot-grid)" />
+                    <rect x="0" y="0" width="100" height="100" fill="url(#ontology-vignette)" />
+
                     {/* Edges */}
                     {edges.map((edge, idx) => {
                       const fromNode = nodes.find((n) => n.id === edge.from);
@@ -175,19 +190,35 @@ export default function OntologyPage() {
                       if (!fromNode || !toNode) return null;
                       const mx = (fromNode.x + toNode.x) / 2;
                       const my = (fromNode.y + toNode.y) / 2;
+                      // Bow each edge slightly perpendicular to its direction for an organic read.
+                      const dx = toNode.x - fromNode.x;
+                      const dy = toNode.y - fromNode.y;
+                      const len = Math.max(Math.hypot(dx, dy), 0.001);
+                      const bow = Math.min(len * 0.12, 4);
+                      const cx = mx - (dy / len) * bow;
+                      const cy = my + (dx / len) * bow;
                       const isHighlighted = selected === edge.from || selected === edge.to;
                       return (
                         <g key={`edge-${idx}`} opacity={isHighlighted ? 1 : EDGE_OPACITY[edge.strength]}>
-                          <line
-                            x1={fromNode.x}
-                            y1={fromNode.y}
-                            x2={toNode.x}
-                            y2={toNode.y}
+                          <path
+                            d={`M ${fromNode.x} ${fromNode.y} Q ${cx} ${cy} ${toNode.x} ${toNode.y}`}
+                            fill="none"
                             stroke="var(--praxis-plasma)"
-                            strokeWidth={isHighlighted ? "0.6" : "0.3"}
-                            strokeDasharray={edge.strength === "weak" ? "1 1" : undefined}
+                            strokeWidth={isHighlighted ? "0.55" : "0.28"}
+                            strokeLinecap="round"
+                            strokeDasharray={edge.strength === "weak" ? "1 1.2" : undefined}
                           />
-                          <text x={mx} y={my - 1} textAnchor="middle" fill="var(--praxis-mute)" fontSize="2.5">
+                          <text
+                            x={(mx + cx) / 2}
+                            y={(my + cy) / 2 - 0.8}
+                            textAnchor="middle"
+                            fill="var(--praxis-mute)"
+                            fontSize="2.2"
+                            stroke="var(--praxis-obsidian)"
+                            strokeWidth="0.7"
+                            paintOrder="stroke"
+                            letterSpacing="0.12"
+                          >
                             {edge.label}
                           </text>
                         </g>
@@ -207,12 +238,23 @@ export default function OntologyPage() {
                           style={{ cursor: "pointer" }}
                           opacity={search && !isFiltered ? 0.2 : 1}
                         >
+                          {/* soft halo */}
+                          <circle
+                            r={node.id === "asset" ? 7.5 : 5.8}
+                            fill={c.stroke}
+                            opacity={isSelected ? 0.28 : 0.14}
+                            filter="url(#ontology-node-glow)"
+                          />
+                          {/* outer ring */}
                           <circle
                             r={node.id === "asset" ? 6 : 4.5}
-                            fill={c.fill}
+                            fill="var(--praxis-obsidian)"
                             stroke={c.stroke}
-                            strokeWidth={isSelected ? "1.2" : "0.6"}
+                            strokeWidth={isSelected ? "0.9" : "0.5"}
                           />
+                          {/* inner disc */}
+                          <circle r={node.id === "asset" ? 3.6 : 2.6} fill={c.fill} stroke={c.stroke} strokeWidth="0.25" />
+                          <circle r="0.8" fill={c.stroke} />
                           {isSelected && (
                             <circle r={node.id === "asset" ? 8 : 6.5} fill="none" stroke={c.stroke} strokeWidth="0.4" opacity="0.4">
                               <animate attributeName="r" values={`${node.id === "asset" ? 7 : 5.5};${node.id === "asset" ? 9 : 7.5};${node.id === "asset" ? 7 : 5.5}`} dur="2s" repeatCount="indefinite" />
@@ -221,18 +263,25 @@ export default function OntologyPage() {
                           )}
                           <text
                             textAnchor="middle"
-                            dy={node.id === "asset" ? "9" : "7"}
+                            dy={node.id === "asset" ? "9.4" : "7.4"}
                             fill={c.text}
                             fontSize="2.8"
                             fontWeight={isSelected ? "bold" : "normal"}
+                            stroke="var(--praxis-obsidian)"
+                            strokeWidth="0.7"
+                            paintOrder="stroke"
                           >
                             {node.label.length > 14 ? node.label.slice(0, 12) + "…" : node.label}
                           </text>
                           <text
                             textAnchor="middle"
-                            dy={node.id === "asset" ? "12" : "10"}
-                            fill="var(--praxis-hairline)"
+                            dy={node.id === "asset" ? "12.2" : "10.2"}
+                            fill="var(--praxis-mute)"
                             fontSize="2"
+                            letterSpacing="0.14"
+                            stroke="var(--praxis-obsidian)"
+                            strokeWidth="0.5"
+                            paintOrder="stroke"
                           >
                             {node.type}
                           </text>

@@ -28,10 +28,9 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function performLogin(loginUsername: string, loginPassword: string) {
     if (isSubmitting) return;
-    if (!username.trim() || !password.trim()) {
+    if (!loginUsername.trim() || !loginPassword.trim()) {
       setError("Username and password are required.");
       return;
     }
@@ -41,7 +40,7 @@ export default function LoginPage() {
       const response = await fetch(resolveApi("/api/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: loginUsername, password: loginPassword }),
       });
       if (!response.ok) {
         const payload = await response.json().catch(() => ({}));
@@ -54,16 +53,16 @@ export default function LoginPage() {
       router.push("/command-center");
     } catch (submitError) {
       // Deterministic local credentials exist only for explicit demo mode.
-      const isApiUnavailable = submitError instanceof Error && 
+      const isApiUnavailable = submitError instanceof Error &&
         (submitError.message.includes("404") || submitError.message.includes("Failed to fetch") || submitError.message.includes("NetworkError"));
-      
-      if (IS_DEMO_MODE && isApiUnavailable && (username === "admin" || username === "operator" || username === "viewer")) {
-        const role = username === "admin" ? "admin" : username === "viewer" ? "viewer" : "agent";
+
+      if (IS_DEMO_MODE && isApiUnavailable && (loginUsername === "admin" || loginUsername === "operator" || loginUsername === "viewer")) {
+        const role = loginUsername === "admin" ? "admin" : loginUsername === "viewer" ? "viewer" : "agent";
         localStorage.setItem(ACCESS_TOKEN_KEY, "demo-token");
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify({
-          username,
+          username: loginUsername,
           role,
-          display_name: username.charAt(0).toUpperCase() + username.slice(1),
+          display_name: loginUsername.charAt(0).toUpperCase() + loginUsername.slice(1),
         }));
         toast.success("Session established");
         router.push("/command-center");
@@ -73,6 +72,17 @@ export default function LoginPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await performLogin(username, password);
+  }
+
+  async function quickLogin(role: "operator" | "admin" | "viewer") {
+    setUsername(role);
+    setPassword(role);
+    await performLogin(role, role);
   }
 
   return (
@@ -195,8 +205,34 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <div className="mt-6">
+            <div className="flex items-center gap-3">
+              <span className="h-px flex-1 bg-[var(--praxis-line)]" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-faint)]">or enter a demo role</span>
+              <span className="h-px flex-1 bg-[var(--praxis-line)]" />
+            </div>
+            <div className="mt-4 grid grid-cols-1 gap-2 grid-flow-dense sm:grid-cols-3">
+              {([
+                ["operator", "Operator", "Run scenarios, approve actions"],
+                ["admin", "Admin", "Manage users and config"],
+                ["viewer", "Viewer", "Read-only audit access"],
+              ] as const).map(([role, label, detail]) => (
+                <button
+                  key={role}
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={() => void quickLogin(role)}
+                  className="group border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.6)] px-3.5 py-3 text-left transition-transform duration-500 hover:scale-[1.02] hover:border-[var(--praxis-plasma)] disabled:opacity-50"
+                >
+                  <div className="font-mono text-[11px] uppercase tracking-[0.1em] text-[var(--praxis-bone)]">{label}</div>
+                  <div className="mt-1 text-[11px] leading-5 text-[var(--praxis-muted)]">{detail}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="mt-5 border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.6)] px-3.5 py-3 text-xs leading-6 text-[var(--praxis-muted)]">
-            Operator credentials continue to work when the live auth service is unavailable.
+            Demo credentials: <span className="font-mono text-[11px] text-[var(--praxis-bone)]">operator / operator</span> — role logins keep working when the live auth service is unavailable.
           </div>
         </section>
       </div>
