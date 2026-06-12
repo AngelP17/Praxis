@@ -139,6 +139,14 @@ praxis-printer-slice:
 praxis-validate-all: lint test praxis-benchmark praxis-floci-verify praxis-canvas-verify praxis-proof-hashes
 	@echo "All validation checks completed."
 
+# One-command frontend verification: typecheck, design lint, smoke suite, build.
+verify-web:
+	cd apps/web && pnpm typecheck
+	cd apps/web && pnpm lint:gpt-taste:ci
+	cd apps/web && pnpm test:smoke
+	cd apps/web && pnpm build
+	@echo "Web verification completed: typecheck, gpt-taste, smoke, build."
+
 # Deterministic scenario targets
 
 praxis-run-scenario:
