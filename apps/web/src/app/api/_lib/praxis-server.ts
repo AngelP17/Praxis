@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+
 import {
   DEMO_HEALTH,
   DEMO_PACKS,
@@ -23,10 +25,19 @@ export async function proxyBackend(
 ) {
   const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
   try {
+    // Forward the caller's bearer token so authenticated backend routes work
+    // through the proxy; explicit init headers still take precedence.
+    let authorization: string | null = null;
+    try {
+      authorization = (await headers()).get("authorization");
+    } catch {
+      authorization = null;
+    }
     const response = await fetch(buildBackendUrl(pathname), {
       ...init,
       cache: "no-store",
       headers: {
+        ...(authorization ? { authorization } : {}),
         ...(init?.headers ?? {}),
       },
     });

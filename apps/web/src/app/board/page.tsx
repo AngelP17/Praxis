@@ -189,19 +189,19 @@ export default function BoardPage() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
-                  <Link href="/tickets/new" className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition duration-500 hover:scale-[1.01] hover:bg-violet-400">
+                  <Link href="/tickets/new" className="inline-flex items-center gap-2 bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition duration-500 hover:scale-[1.01] hover:bg-violet-400">
                     <Plus size={16} />
                     New Ticket
                   </Link>
-                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition duration-500 hover:scale-[1.01] hover:border-violet-500/30 hover:bg-violet-500/10">
+                  <Link href="/command-center" className="inline-flex items-center gap-2 border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition duration-500 hover:scale-[1.01] hover:border-violet-500/30 hover:bg-violet-500/10">
                     <Scan size={16} />
                     Command Center
                   </Link>
-                  <Link href="/reports" className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition duration-500 hover:scale-[1.01] hover:bg-violet-400">
+                  <Link href="/reports" className="inline-flex items-center gap-2 bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition duration-500 hover:scale-[1.01] hover:bg-violet-400">
                     <Lightning size={16} />
                     Reports
                   </Link>
-                  <Link href="/admin" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition duration-500 hover:scale-[1.01] hover:border-violet-500/30 hover:bg-violet-500/10">
+                  <Link href="/admin" className="inline-flex items-center gap-2 border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition duration-500 hover:scale-[1.01] hover:border-violet-500/30 hover:bg-violet-500/10">
                     <Shield size={16} />
                     Admin
                   </Link>

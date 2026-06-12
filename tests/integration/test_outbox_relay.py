@@ -15,6 +15,7 @@ def setup_module():
 
 def test_outbox_eventbridge_without_bus_fails_closed(monkeypatch):
     monkeypatch.setattr(settings, "OUTBOX_DISPATCH_MODE", "eventbridge")
+    monkeypatch.setattr(settings, "FLOCI_ENDPOINT", "http://127.0.0.1:1")
 
     worker = OutboxRelayWorker(max_attempts=2)
     idempotency_key = f"test-outbox-eventbridge-without-bus:{uuid4()}"

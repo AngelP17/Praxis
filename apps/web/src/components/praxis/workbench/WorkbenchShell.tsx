@@ -6,16 +6,52 @@ import type { ReactNode } from "react";
 import { ArrowSquareOut, BracketsCurly, CirclesThreePlus } from "@phosphor-icons/react";
 import { PraxisMark } from "@/components/praxis/PraxisMark";
 
-const NAV: Array<[label: string, href: string, match: RegExp]> = [
-  ["Overview", "/field-workbench", /^\/field-workbench/],
-  ["Solution Packs", "/solution-packs", /^\/solution-packs/],
-  ["FieldLab", "/fieldlab", /^\/fieldlab/],
-  ["Ontology", "/ontology", /^\/ontology/],
-  ["Decisions", "/decision", /^\/decision/],
-  ["Discovery", "/discovery", /^\/discovery/],
-  ["Value Case", "/value-case", /^\/value-case/],
-  ["Expansion", "/expansion-map", /^\/expansion-map/],
-  ["Readout", "/executive-readout", /^\/executive-readout/],
+type NavLink = [label: string, href: string, match: RegExp, packAware?: boolean];
+
+const NAV_GROUPS: Array<[group: string, links: NavLink[]]> = [
+  [
+    "Workflow",
+    [
+      ["Overview", "/field-workbench", /^\/field-workbench/, true],
+      ["Solution Packs", "/solution-packs", /^\/solution-packs/, true],
+      ["Ontology", "/ontology", /^\/ontology/, true],
+      ["Decisions", "/decision", /^\/decision(?!-center)/, true],
+      ["Discovery", "/discovery", /^\/discovery/, true],
+      ["Value Case", "/value-case", /^\/value-case/, true],
+      ["Expansion", "/expansion-map", /^\/expansion-map/, true],
+      ["Readout", "/executive-readout", /^\/executive-readout/, true],
+    ],
+  ],
+  [
+    "Operations",
+    [
+      ["Dashboard", "/dashboard", /^\/dashboard/],
+      ["Command Center", "/command-center", /^\/command-center/],
+      ["Console", "/console", /^\/console/],
+      ["Platform", "/platform", /^\/platform/],
+      ["Incidents", "/incidents", /^\/incidents/],
+      ["Recommendations", "/recommendations", /^\/recommendations/],
+      ["Ingestion", "/event-ingestion", /^\/event-ingestion/],
+      ["Board", "/board", /^\/board/],
+      ["Tickets", "/tickets/new", /^\/tickets/],
+    ],
+  ],
+  [
+    "Governance",
+    [
+      ["Assets", "/assets", /^\/assets/],
+      ["Audit", "/audit", /^\/audit/],
+      ["Reports", "/reports", /^\/reports/],
+      ["Admin", "/admin", /^\/admin/],
+    ],
+  ],
+];
+
+const MOBILE_DOCK: NavLink[] = [
+  ["Overview", "/field-workbench", /^\/field-workbench/, true],
+  ["Packs", "/solution-packs", /^\/solution-packs/, true],
+  ["Decisions", "/decision", /^\/decision(?!-center)/, true],
+  ["Readout", "/executive-readout", /^\/executive-readout/, true],
 ];
 
 export function WorkbenchShell({
@@ -61,31 +97,38 @@ export function WorkbenchShell({
             </div>
           </div>
         </div>
-        <nav className="mt-5 flex flex-col px-3">
-          {NAV.map(([label, href, match]) => {
-            const active = match.test(pathname);
-            return (
-              <Link
-                key={href}
-                href={`${href}${packSuffix}`}
-                className="group relative mb-1 overflow-hidden border px-4 py-[12px] text-[12.5px] transition-transform duration-700 hover:translate-x-1"
-                style={{
-                  borderColor: active ? "var(--praxis-plasma)" : "var(--praxis-line)",
-                  color: active ? "var(--praxis-bone)" : "var(--praxis-mute)",
-                  background: active
-                    ? "linear-gradient(90deg, color-mix(in srgb, var(--praxis-plasma) 16%, transparent), rgba(19,18,31,0.74))"
-                    : "rgba(19,18,31,0.42)",
-                  fontWeight: active ? 500 : 400,
-                }}
-              >
-                <span className="absolute inset-y-0 left-0 w-[2px] bg-[var(--praxis-plasma)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" style={{ opacity: active ? 1 : undefined }} />
-                <span className="relative flex items-center justify-between gap-3">
-                  <span>{label}</span>
-                  <ArrowSquareOut className={`h-3.5 w-3.5 transition-transform duration-700 ${active ? "text-[var(--praxis-bone)]" : "text-[var(--praxis-muted)] group-hover:translate-x-0.5 group-hover:text-[var(--praxis-bone)]"}`} />
-                </span>
-              </Link>
-            );
-          })}
+        <nav className="mt-4 flex flex-col overflow-y-auto px-3 pb-4">
+          {NAV_GROUPS.map(([group, links]) => (
+            <div key={group}>
+              <div className="px-1 pb-2 pt-4 font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--praxis-faint)]">
+                {group}
+              </div>
+              {links.map(([label, href, match, packAware]) => {
+                const active = match.test(pathname);
+                return (
+                  <Link
+                    key={href}
+                    href={`${href}${packAware ? packSuffix : ""}`}
+                    className="group relative mb-1 overflow-hidden border px-4 py-[8px] text-[12px] transition-transform duration-700 hover:translate-x-1"
+                    style={{
+                      borderColor: active ? "var(--praxis-plasma)" : "var(--praxis-line)",
+                      color: active ? "var(--praxis-bone)" : "var(--praxis-mute)",
+                      background: active
+                        ? "linear-gradient(90deg, color-mix(in srgb, var(--praxis-plasma) 16%, transparent), rgba(19,18,31,0.74))"
+                        : "rgba(19,18,31,0.42)",
+                      fontWeight: active ? 500 : 400,
+                    }}
+                  >
+                    <span className="absolute inset-y-0 left-0 w-[2px] bg-[var(--praxis-plasma)] opacity-0 transition-opacity duration-700 group-hover:opacity-100" style={{ opacity: active ? 1 : undefined }} />
+                    <span className="relative flex items-center justify-between gap-3">
+                      <span>{label}</span>
+                      <ArrowSquareOut className={`h-3.5 w-3.5 transition-transform duration-700 ${active ? "text-[var(--praxis-bone)]" : "text-[var(--praxis-muted)] group-hover:translate-x-0.5 group-hover:text-[var(--praxis-bone)]"}`} />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
         <div className="mt-auto p-4 font-mono text-[10px] text-[var(--praxis-mute)]">
           <div className="border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.7)] p-4">
@@ -135,7 +178,7 @@ export function WorkbenchShell({
             boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 36px rgba(0,0,0,0.5)",
           }}
         >
-          {NAV.filter(([label]) => ["Overview", "Solution Packs", "Decisions", "Readout"].includes(label)).map(([label, href, match]) => {
+          {MOBILE_DOCK.map(([label, href, match]) => {
             const active = match.test(pathname);
             return (
               <Link
@@ -148,7 +191,7 @@ export function WorkbenchShell({
                 }}
               >
                 <span className="font-mono text-[9px] uppercase tracking-[0.1em]" style={{ fontWeight: active ? 500 : 400 }}>
-                  {label === "Solution Packs" ? "Packs" : label}
+                  {label}
                 </span>
               </Link>
             );

@@ -61,7 +61,7 @@ export function AuditBundlePanel({
             initial={{ opacity: 0, x: -6 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.02, type: "spring", stiffness: 400, damping: 30 }}
-            className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3"
+            className="flex items-center gap-3 border border-zinc-800 bg-zinc-950/40 px-4 py-3"
           >
             <FileText className="h-4 w-4 shrink-0 text-zinc-600" />
             <div className="min-w-0 flex-1">

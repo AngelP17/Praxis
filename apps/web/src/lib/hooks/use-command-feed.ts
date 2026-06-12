@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Incident, Ticket } from "@/types";
 import { DEMO_INCIDENTS, DEMO_METRICS, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
+import { deriveDemoMetrics, useDemoSessionStore } from "@/lib/demo/demo-session-store";
 
 export type QueueMetrics = {
   total_open: number;
@@ -184,6 +185,9 @@ async function fetchJsonWithTimeout<T>(path: string, timeoutMs = 5000): Promise<
 }
 
 export function useCommandFeed() {
+  const demoTickets = useDemoSessionStore((state) => state.tickets);
+  const demoIncidents = useDemoSessionStore((state) => state.incidents);
+  const demoMetrics = useMemo(() => deriveDemoMetrics(demoTickets, demoIncidents), [demoIncidents, demoTickets]);
   const [feed, setFeed] = useState<FeedState>(initialFeed);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
@@ -195,6 +199,22 @@ export function useCommandFeed() {
     async ({ notifyOnError = false }: { notifyOnError?: boolean } = {}) => {
       if (mountedRef.current) {
         setFeed((c) => ({ ...c, status: "loading", errorMessage: null, warnings: [] }));
+      }
+      if (IS_DEMO_MODE) {
+        const syncedAt = Date.now();
+        syncStart.current = syncedAt;
+        setFeed({
+          tickets: demoTickets,
+          incidents: demoIncidents,
+          metrics: demoMetrics,
+          status: "ready",
+          mode: "demo",
+          syncedAt,
+          errorMessage: null,
+          warnings: [],
+        });
+        setLastSyncSeconds(0);
+        return;
       }
       try {
         const [ticketsR, metricsR, incidentsR] = await Promise.allSettled([
@@ -297,12 +317,31 @@ export function useCommandFeed() {
         });
       }
     },
-    []
+    [demoIncidents, demoMetrics, demoTickets]
   );
 
   useEffect(() => {
     mountedRef.current = true;
     void hydrate();
+
+    if (IS_DEMO_MODE) {
+      let active = true;
+      let timer: number | undefined;
+      const tick = () => {
+        setLastSyncSeconds(Math.floor((Date.now() - syncStart.current) / 1000));
+        if (active) {
+          timer = window.setTimeout(tick, 1000);
+        }
+      };
+      timer = window.setTimeout(tick, 1000);
+      return () => {
+        active = false;
+        mountedRef.current = false;
+        if (timer !== undefined) {
+          window.clearTimeout(timer);
+        }
+      };
+    }
 
     // Connect to live events and decisions SSE stream
     const eventsSourceUrl = resolveApiPath("/api/events/stream");

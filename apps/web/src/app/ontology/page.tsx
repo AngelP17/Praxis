@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Graph, ArrowsOut, MagnifyingGlass } from "@phosphor-icons/react";
+import { ArrowsOut, MagnifyingGlass } from "@phosphor-icons/react";
 
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
+import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { useToast } from "@/components/notifications";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
@@ -28,10 +27,10 @@ type OntologyEdge = {
 };
 
 const CRIT_COLORS: Record<string, { fill: string; stroke: string; text: string }> = {
-  critical: { fill: "rgba(239,68,68,0.12)", stroke: "rgba(239,68,68,0.5)", text: "#fca5a5" },
-  high: { fill: "rgba(245,158,11,0.12)", stroke: "rgba(245,158,11,0.5)", text: "#fcd34d" },
-  medium: { fill: "rgba(139,92,255,0.12)", stroke: "rgba(139,92,255,0.5)", text: "#c4b5fd" },
-  low: { fill: "rgba(62,255,168,0.10)", stroke: "rgba(62,255,168,0.4)", text: "#6ee7b7" },
+  critical: { fill: "color-mix(in srgb, var(--praxis-crit) 16%, transparent)", stroke: "var(--praxis-crit)", text: "var(--praxis-crit)" },
+  high: { fill: "color-mix(in srgb, var(--praxis-plasma) 16%, transparent)", stroke: "var(--praxis-plasma)", text: "var(--praxis-plasma)" },
+  medium: { fill: "color-mix(in srgb, var(--praxis-plasma) 12%, transparent)", stroke: "var(--praxis-plasma)", text: "var(--praxis-bone)" },
+  low: { fill: "color-mix(in srgb, var(--praxis-argon) 12%, transparent)", stroke: "var(--praxis-argon)", text: "var(--praxis-argon)" },
 };
 
 const EDGE_OPACITY: Record<string, number> = {
@@ -97,21 +96,36 @@ export default function OntologyPage() {
 
   const selectedNode = nodes.find((n) => n.id === selected);
 
+  const topbarRight = (
+    <>
+      <Pill tone={ontologyStatus === "ready" ? "argon" : ontologyStatus === "error" ? "crit" : "plasma"}>{ontologyStatus}</Pill>
+      <Pill>{nodes.length} nodes</Pill>
+      <Pill>{edges.length} edges</Pill>
+    </>
+  );
+
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Ontology" />
-      <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
+    <WorkbenchShell
+      packName={activeScenario.label}
+      topbar={
+        <TopbarTitle
+          title="Ontology"
+          subtitle={`${activeScenario.site} · ${activeScenario.category}`}
+          right={topbarRight}
+        />
+      }
+    >
+      <div className="px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
 
-          {/* Header */}
-          <section className="praxis-v2-panel-enhanced p-8 sm:p-10 py-20 sm:py-24">
+          <section className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] px-6 py-20 sm:px-8">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex-1">
-                <div className="praxis-v2-eyebrow-enhanced">Operational Ontology</div>
-                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Operational Ontology</div>
+                <h1 className="mt-4 font-display font-semibold tracking-[-0.03em] text-[var(--praxis-bone)]" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
                   Dependency Graph
                 </h1>
-                <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
+                <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--praxis-mute)]">
                   Operational objects, inferred links, and blast-radius relationships compiled from signals and asset data. Click a node to inspect.
                 </p>
               </div>
@@ -122,14 +136,14 @@ export default function OntologyPage() {
           <div className="grid grid-cols-12 gap-5 grid-flow-dense">
             {/* Graph */}
             <div className="col-span-12 xl:col-span-8">
-              <div className="praxis-v2-panel-enhanced h-full min-h-[480px] p-6">
+              <div className="h-full min-h-[480px] border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
                 <div className="flex items-center justify-between gap-3 mb-4">
-                  <div className="praxis-v2-eyebrow-enhanced">
-                    {activeScenario.icon} {activeScenario.label} · {nodes.length} nodes · {edges.length} edges
+                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">
+                    {activeScenario.label} · {nodes.length} nodes · {edges.length} edges
                   </div>
                   <button
                     onClick={() => setSelected(null)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-zinc-700/60 bg-zinc-800/50 px-3 py-1.5 font-mono text-[10px] text-zinc-500 hover:text-zinc-300 transition-all duration-200"
+                    className="inline-flex items-center gap-1.5 border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-mute)] transition-transform duration-200 hover:scale-[1.01] hover:text-[var(--praxis-bone)]"
                   >
                     <ArrowsOut size={10} />
                     Reset
@@ -137,17 +151,17 @@ export default function OntologyPage() {
                 </div>
 
                 {/* SVG graph */}
-                <div className="relative h-[400px] overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950/50">
+                <div className="relative h-[400px] overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)]">
                   {ontologyStatus === "loading" ? (
-                    <div className="flex items-center justify-center h-full text-sm text-zinc-500">
+                    <div className="flex h-full items-center justify-center text-sm text-[var(--praxis-mute)]">
                       Loading ontology from backend…
                     </div>
                   ) : ontologyStatus === "error" ? (
-                    <div className="flex flex-col items-center justify-center h-full gap-2 text-sm text-zinc-500">
+                    <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-[var(--praxis-mute)]">
                       <span>Backend unavailable</span>
                       <button
                         onClick={() => void fetchOntology(activeScenario)}
-                        className="rounded-full border border-zinc-700/60 bg-zinc-800/50 px-3 py-1.5 font-mono text-[10px] text-zinc-400 hover:text-zinc-200 transition-all"
+                        className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-bone)] transition-transform hover:scale-[1.01]"
                       >
                         Retry
                       </button>
@@ -234,7 +248,7 @@ export default function OntologyPage() {
                     {Object.entries(CRIT_COLORS).map(([crit, colors]) => (
                       <div key={crit} className="flex items-center gap-1">
                         <div className="h-2 w-2 rounded-full" style={{ background: colors.stroke }} />
-                        <span className="font-mono text-[9px] uppercase text-zinc-600">{crit}</span>
+                        <span className="font-mono text-[9px] uppercase text-[var(--praxis-mute)]">{crit}</span>
                       </div>
                     ))}
                   </div>
@@ -246,22 +260,22 @@ export default function OntologyPage() {
             {/* Sidebar */}
             <div className="col-span-12 xl:col-span-4 flex flex-col gap-5">
               {/* Search */}
-              <div className="praxis-v2-panel-enhanced p-5">
+              <div className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
                 <div className="relative">
-                  <MagnifyingGlass size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
+                  <MagnifyingGlass size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--praxis-mute)]" />
                   <input
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search nodes…"
-                    className="w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-8 pr-3 text-sm text-zinc-100 outline-none transition focus:border-violet-400/45"
+                    className="w-full border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] py-2 pl-8 pr-3 text-sm text-[var(--praxis-bone)] outline-none transition focus:border-[var(--praxis-plasma)]"
                   />
                 </div>
               </div>
 
               {/* Selected node detail */}
               {selectedNode ? (
-                <div className="praxis-v2-panel-enhanced p-5">
-                  <div className="praxis-v2-eyebrow-enhanced mb-4">Node detail</div>
+                <div className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
+                  <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Node detail</div>
                   <div className="space-y-3">
                     {[
                       { label: "Name", value: selectedNode.label },
@@ -273,23 +287,23 @@ export default function OntologyPage() {
                         value: `${edges.filter((e) => e.from === selectedNode.id || e.to === selectedNode.id).length} edges`,
                       },
                     ].map((row) => (
-                      <div key={row.label} className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-2.5">
-                        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{row.label}</div>
-                        <div className="mt-1 text-sm font-medium text-zinc-100">{row.value}</div>
+                      <div key={row.label} className="border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-3 py-2.5">
+                        <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{row.label}</div>
+                        <div className="mt-1 text-sm font-medium text-[var(--praxis-bone)]">{row.value}</div>
                       </div>
                     ))}
                   </div>
                   <div className="mt-4">
-                    <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600 mb-2">Connected edges</div>
+                    <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">Connected edges</div>
                     <div className="space-y-1">
                       {edges.filter((e) => e.from === selectedNode.id || e.to === selectedNode.id).map((e, i) => {
                         const other = nodes.find((n) => n.id === (e.from === selectedNode.id ? e.to : e.from));
                         return (
-                          <div key={i} className="flex items-center gap-2 rounded-lg border border-zinc-800 bg-zinc-900/40 px-2.5 py-1.5">
-                            <span className="font-mono text-[10px] text-violet-400">{e.label}</span>
-                            <span className="font-mono text-[10px] text-zinc-500">→</span>
-                            <span className="font-mono text-[10px] text-zinc-300">{other?.label ?? "?"}</span>
-                            <span className={`ml-auto font-mono text-[9px] text-zinc-600`}>{e.strength}</span>
+                          <div key={i} className="flex items-center gap-2 border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-2.5 py-1.5">
+                            <span className="font-mono text-[10px] text-[var(--praxis-plasma)]">{e.label}</span>
+                            <span className="font-mono text-[10px] text-[var(--praxis-mute)]">→</span>
+                            <span className="font-mono text-[10px] text-[var(--praxis-bone)]">{other?.label ?? "?"}</span>
+                            <span className="ml-auto font-mono text-[9px] text-[var(--praxis-mute)]">{e.strength}</span>
                           </div>
                         );
                       })}
@@ -297,8 +311,8 @@ export default function OntologyPage() {
                   </div>
                 </div>
               ) : (
-                <div className="praxis-v2-panel-enhanced p-5">
-                  <div className="praxis-v2-eyebrow-enhanced mb-4">Node list</div>
+                <div className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
+                  <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Node list</div>
                   <div className="space-y-2">
                     {filteredNodes.map((node) => {
                       const c = CRIT_COLORS[node.criticality];
@@ -306,13 +320,13 @@ export default function OntologyPage() {
                         <button
                           key={node.id}
                           onClick={() => handleNodeClick(node.id)}
-                          className="w-full rounded-xl border border-zinc-700/60 bg-zinc-800/40 px-3 py-2.5 text-left transition-all duration-200 hover:border-zinc-600 hover:bg-zinc-800/60"
+                          className="w-full border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-3 py-2.5 text-left transition-transform duration-200 hover:scale-[1.01] hover:border-[var(--praxis-plasma)]"
                         >
                           <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full flex-shrink-0" style={{ background: c.stroke }} />
-                            <span className="text-sm font-medium text-zinc-100">{node.label}</span>
+                            <div className="h-2 w-2 flex-shrink-0" style={{ background: c.stroke }} />
+                            <span className="text-sm font-medium text-[var(--praxis-bone)]">{node.label}</span>
                           </div>
-                          <div className="mt-0.5 font-mono text-[10px] text-zinc-600">{node.type} · {node.criticality}</div>
+                          <div className="mt-0.5 font-mono text-[10px] text-[var(--praxis-mute)]">{node.type} · {node.criticality}</div>
                         </button>
                       );
                     })}
@@ -321,8 +335,8 @@ export default function OntologyPage() {
               )}
 
               {/* Stats */}
-              <div className="praxis-v2-panel-enhanced p-5">
-                <div className="praxis-v2-eyebrow-enhanced mb-3">Graph stats</div>
+              <div className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-5">
+                <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Graph stats</div>
                 <div className="grid grid-flow-dense grid-cols-2 gap-2">
                   {[
                     { label: "Nodes", value: nodes.length },
@@ -330,9 +344,9 @@ export default function OntologyPage() {
                     { label: "Critical", value: nodes.filter((n) => n.criticality === "critical").length },
                     { label: "High", value: nodes.filter((n) => n.criticality === "high").length },
                   ].map((stat) => (
-                    <div key={stat.label} className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-3">
-                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{stat.label}</div>
-                      <div className="mono-data mt-1 text-base font-semibold text-zinc-100">{stat.value}</div>
+                    <div key={stat.label} className="border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-3 py-3">
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{stat.label}</div>
+                      <div className="mt-1 font-mono text-base font-semibold text-[var(--praxis-bone)]">{stat.value}</div>
                     </div>
                   ))}
                 </div>
@@ -341,6 +355,6 @@ export default function OntologyPage() {
           </div>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }

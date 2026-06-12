@@ -4,8 +4,7 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Pulse, UploadSimple, Lightning, Check } from "@phosphor-icons/react";
 
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
+import { TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { EmptyState } from "@/components/empty-state";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
@@ -176,18 +175,16 @@ export default function EventIngestionPage() {
 
   if (pageStatus === "loading") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Ingestion" />
+      <WorkbenchShell topbar={<TopbarTitle title="Ingestion" subtitle="raw events / normalization / decisions" />}>
         <div className="flex-1 p-8">
           <LoadingSkeleton />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Ingestion" />
+    <WorkbenchShell topbar={<TopbarTitle title="Ingestion" subtitle="raw events / normalization / decisions" />}>
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
 
@@ -196,7 +193,7 @@ export default function EventIngestionPage() {
             <div className="flex flex-wrap items-start justify-between gap-6">
               <div className="flex-1">
                 <div className="praxis-v2-eyebrow-enhanced">Event Ingestion</div>
-                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
+                <h1 className="mt-4 font-display font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
                   Real-time Signal Intake
                 </h1>
                 <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
@@ -221,7 +218,7 @@ export default function EventIngestionPage() {
                       <span className="text-base font-semibold text-zinc-100">{activeScenario.label}</span>
                     </div>
                   </div>
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/70 bg-zinc-900/70 text-violet-300">
+                  <div className="inline-flex h-10 w-10 items-center justify-center border border-zinc-700/70 bg-zinc-900/70 text-violet-300">
                     <UploadSimple size={16} />
                   </div>
                 </div>
@@ -237,7 +234,7 @@ export default function EventIngestionPage() {
                 </div>
 
                 {/* Payload preview */}
-                <div className="mt-4 rounded-xl border border-zinc-800 bg-zinc-950/60 p-3">
+                <div className="mt-4 border border-zinc-800 bg-zinc-950/60 p-3">
                   <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-zinc-600 mb-2">Payload preview</div>
                   <pre className="font-mono text-[11px] text-zinc-400 overflow-auto max-h-28 leading-relaxed whitespace-pre-wrap">
                     {JSON.stringify(activeScenario.payload, null, 2)}
@@ -286,7 +283,7 @@ export default function EventIngestionPage() {
                     <StatCard label="Risk" value={lastResult.risk_level ?? "n/a"} />
                     <StatCard label="Confidence" value={typeof lastResult.confidence_score === "number" ? lastResult.confidence_score.toFixed(2) : "n/a"} />
                   </div>
-                  <div className="mt-3 rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3">
+                  <div className="mt-3 border border-zinc-800 bg-zinc-950/50 px-4 py-3">
                     <div className="font-mono text-[10px] text-zinc-500">root cause · {lastResult.root_cause_hypothesis}</div>
                     <div className="mt-1 font-mono text-[10px] text-zinc-600 break-all">{lastResult.replay_hash}</div>
                   </div>
@@ -310,7 +307,7 @@ export default function EventIngestionPage() {
                     events.slice(0, 20).map((row) => (
                       <div
                         key={row.event_id}
-                        className="rounded-xl border border-zinc-800/80 bg-zinc-900/60 px-3 py-2.5 transition-all duration-300 hover:border-zinc-700"
+                        className="border border-zinc-800/80 bg-zinc-900/60 px-3 py-2.5 transition-all duration-300 hover:border-zinc-700"
                       >
                         <div className="flex items-center justify-between gap-2">
                           <span className="mono-data text-xs text-zinc-100">{row.event_id}</span>
@@ -345,7 +342,7 @@ export default function EventIngestionPage() {
                 <button
                   key={scenario.id}
                   onClick={() => applyScenario(scenario)}
-                  className={`rounded-xl border px-3 py-3 text-left transition-all duration-300 hover:scale-105 ${
+                  className={`border px-3 py-3 text-left transition-all duration-300 hover:scale-105 ${
                     scenario.id === activeScenario.id
                       ? "border-violet-500/45 bg-violet-500/12 text-violet-100"
                       : "border-zinc-700/60 bg-zinc-800/50 text-zinc-400 hover:border-zinc-600 hover:text-zinc-200"
@@ -361,7 +358,7 @@ export default function EventIngestionPage() {
           </section>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
 
@@ -382,7 +379,7 @@ function Field({
       <input
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 px-3 text-sm text-zinc-100 outline-none transition focus:border-violet-400/45 ${mono ? "font-mono text-xs" : ""}`}
+        className={`min-h-10 w-full border border-zinc-700/70 bg-zinc-950/80 px-3 text-sm text-zinc-100 outline-none transition focus:border-violet-400/45 ${mono ? "font-mono text-xs" : ""}`}
       />
     </label>
   );
@@ -390,7 +387,7 @@ function Field({
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 px-3 py-3">
+    <div className="border border-zinc-800 bg-zinc-900/60 px-3 py-3">
       <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-zinc-600">{label}</div>
       <div className="mono-data mt-1.5 text-sm font-medium text-zinc-100">{value}</div>
     </div>

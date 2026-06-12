@@ -104,6 +104,9 @@ export function DiscoveryPanel({ packId = "manufacturing-printer-gpo" }: { packI
           <div className="mt-4 text-sm leading-6 text-[var(--praxis-muted)]">
             Mapping confidence {snapshot.mapping_confidence.toFixed(2)} across {snapshot.object_candidates.length} discovered objects.
           </div>
+          <p className="mt-3 text-sm leading-6 text-[var(--praxis-muted)]">
+            Candidate objects, inferred links, and next questions are generated from the active proof artifact.
+          </p>
         </article>
         <article className="lg:col-span-4 border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6">
           <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
@@ -130,6 +133,31 @@ export function DiscoveryPanel({ packId = "manufacturing-printer-gpo" }: { packI
             {snapshot.next_best_questions.map((entry, index) => (
               <div key={`${questionText(entry)}-${index}`} className="border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] p-4 text-sm leading-6">
                 {questionText(entry)}
+              </div>
+            ))}
+          </div>
+        </article>
+        <article className="border border-[var(--praxis-line)] bg-[var(--praxis-panel)] p-6 lg:col-span-12">
+          <div className="flex items-center justify-between gap-4">
+            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
+              Object candidates
+            </div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-argon)]">
+              {snapshot.object_candidates.length} mapped
+            </div>
+          </div>
+          <div className="mt-5 grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] md:grid-cols-3">
+            {snapshot.object_candidates.map((candidate, index) => (
+              <div key={candidate.object_key ?? `${candidate.display_name}-${index}`} className="bg-[var(--praxis-obsidian)] p-5">
+                <div className="font-display text-2xl font-semibold tracking-[-0.03em] text-[var(--praxis-bone)]">
+                  {candidate.display_name ?? candidate.object_key ?? "Candidate object"}
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.12em]">
+                  <span className="text-[var(--praxis-mute)]">{candidate.object_type ?? "object"}</span>
+                  <span className="text-[var(--praxis-argon)]">
+                    conf {typeof candidate.confidence === "number" ? candidate.confidence.toFixed(2) : snapshot.mapping_confidence.toFixed(2)}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

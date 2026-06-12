@@ -2,6 +2,7 @@ import { TicketWorkspace } from "@/components/ticket-workspace";
 
 export const dynamic = "force-dynamic";
 
-export default function TicketPage({ params }: { params: { id: string } }) {
-  return <TicketWorkspace ticketId={params.id} />;
+export default async function TicketPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  return <TicketWorkspace ticketId={id} />;
 }

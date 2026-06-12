@@ -7,6 +7,8 @@ import { ChartLine, Hash, ShieldCheck, Waveform } from "@phosphor-icons/react/di
 
 import { getDemoIncident, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
+import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
@@ -50,6 +52,9 @@ function score(value?: number | null) {
 export default function IncidentDetailPage() {
   const params = useParams<{ id: string }>();
   const incidentId = params.id;
+  const demoTickets = useDemoSessionStore((state) => state.tickets);
+  const demoIncidents = useDemoSessionStore((state) => state.incidents);
+  const resolveDemoIncident = useDemoSessionStore((state) => state.resolveIncident);
 
   const [payload, setPayload] = useState<IncidentDetailPayload | null>(null);
   const [timeline, setTimeline] = useState<TimelinePayload | null>(null);
@@ -60,6 +65,35 @@ export default function IncidentDetailPage() {
   const loadIncident = useCallback(async () => {
     setStatus("loading");
     setNotice(null);
+    if (IS_DEMO_MODE) {
+      const incident = demoIncidents.find((entry) => entry.id === incidentId);
+      const tickets = demoTickets.filter((ticket) => ticket.incident_id === incidentId);
+      const fallback = getDemoIncident(incidentId);
+      setPayload({
+        ...fallback,
+        incident: {
+          ...fallback.incident,
+          title: incident?.title ?? fallback.incident.title,
+          status: incident?.status ?? fallback.incident.status,
+          ticket_count: tickets.length || incident?.ticket_count || fallback.incident.ticket_count,
+          confidence: incident?.confidence ?? fallback.incident.confidence,
+          business_impact_score: incident?.business_impact_score ?? fallback.incident.business_impact_score,
+          opened_at: incident?.opened_at ?? fallback.incident.opened_at,
+        },
+        tickets: tickets.length > 0 ? tickets : fallback.tickets,
+      });
+      setTimeline({
+        incident_id: incidentId,
+        timeline: [
+          { phase: "signal", detail: "Telemetry threshold crossed on upstream source", timestamp: "T+00s" },
+          { phase: "decision", detail: "Praxis priority raised with high confidence", timestamp: "T+04s" },
+          { phase: "workflow", detail: "Escalation route created for responsible team", timestamp: "T+09s" },
+          { phase: "feedback", detail: "Demo session action retained in the local audit ledger", timestamp: "T+15s" },
+        ],
+      });
+      setStatus("ready");
+      return;
+    }
     try {
       const [incidentR, timelineR] = await Promise.allSettled([
         fetchJsonWithTimeout<IncidentDetailPayload>(`/api/incidents/${incidentId}`),
@@ -100,7 +134,7 @@ export default function IncidentDetailPage() {
       setStatus("ready");
       setNotice(null);
     }
-  }, [incidentId]);
+  }, [demoIncidents, demoTickets, incidentId]);
 
   useEffect(() => {
     void loadIncident();
@@ -108,6 +142,13 @@ export default function IncidentDetailPage() {
 
   async function resolveIncident() {
     setResolving(true);
+    if (IS_DEMO_MODE) {
+      resolveDemoIncident(incidentId);
+      setNotice(`Incident ${incidentId} marked resolved.`);
+      await loadIncident();
+      setResolving(false);
+      return;
+    }
     try {
       await postJsonWithTimeout(`/api/incidents/${incidentId}/resolve`, {
         summary: "Resolved from forensic command interface with mechanical replacement workflow.",
@@ -145,7 +186,7 @@ export default function IncidentDetailPage() {
     );
   }
 
-  const linkedTicket = DEMO_TICKETS.find((t) => t.incident_id === incidentId) ?? DEMO_TICKETS[0];
+  const linkedTicket = demoTickets.find((t) => t.incident_id === incidentId) ?? DEMO_TICKETS.find((t) => t.incident_id === incidentId) ?? DEMO_TICKETS[0];
   const scenario = getScenarioByTicketId(linkedTicket.ticket_id);
 
   return (

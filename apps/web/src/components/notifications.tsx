@@ -223,7 +223,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-black/20 text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200 hover:scale-105 transition-transform duration-500"
+        className="relative flex h-9 w-9 items-center justify-center border border-zinc-800 bg-black/20 text-zinc-400 transition hover:border-zinc-700 hover:text-zinc-200 hover:scale-105 transition-transform duration-500"
         aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`}
       >
         <Bell className="h-4 w-4" />
@@ -240,7 +240,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-full z-50 mt-2 w-80 rounded-xl border border-zinc-800 bg-[#0a0a0d]/95 backdrop-blur-xl shadow-2xl">
+          <div className="absolute right-0 top-full z-50 mt-2 w-80 border border-zinc-800 bg-[#0a0a0d]/95 backdrop-blur-xl shadow-2xl">
             <div className="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
               <h3 className="text-sm font-semibold text-zinc-100">Notifications</h3>
               <div className="flex items-center gap-2">
@@ -281,7 +281,7 @@ export function NotificationBell({ className = "" }: NotificationBellProps) {
                     >
                       <div className="flex gap-3">
                         <div
-                          className={`mt-0.5 rounded-lg p-1.5 ${
+                          className={`mt-0.5 p-1.5 ${
                             typeStyles[notif.type].bg
                           }`}
                         >
@@ -358,7 +358,7 @@ function Toast({ id, type, title, message, onClose }: ToastProps) {
 
   return (
     <div
-      className={`pointer-events-auto flex w-80 items-start gap-3 rounded-xl border px-4 py-3 shadow-xl transition-all ${
+      className={`pointer-events-auto flex w-80 items-start gap-3 border px-4 py-3 shadow-xl transition-all ${
         typeStyles[type].bg
       } ${typeStyles[type].border}`}
       style={{

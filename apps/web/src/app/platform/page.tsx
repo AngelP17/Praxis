@@ -3,13 +3,14 @@
 import { useCallback, useEffect, useState } from "react";
 import { ArrowsClockwise, Network, ShieldCheck, Siren, WarningDiamond, FileText } from "@phosphor-icons/react";
 
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
+import { TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { DEMO_EVIDENCE } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
+import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 type PlatformSummary = {
   status: string;
@@ -56,6 +57,8 @@ const FALLBACK_SUMMARY: PlatformSummary = {
 };
 
 export default function PlatformOverviewPage() {
+  const chaosMode = useDemoSessionStore((state) => state.chaosMode);
+  const setDemoChaosMode = useDemoSessionStore((state) => state.setChaosMode);
   const [summary, setSummary] = useState<PlatformSummary | null>(null);
   const [topology, setTopology] = useState<Topology | null>(null);
   const [controls, setControls] = useState<Control[]>([]);
@@ -99,6 +102,11 @@ export default function PlatformOverviewPage() {
   }, [refresh]);
 
   async function triggerChaos(mode: "degraded" | "reset") {
+    if (IS_DEMO_MODE) {
+      setDemoChaosMode(mode === "degraded" ? "degraded" : "healthy");
+      setChaosMessage(mode === "degraded" ? "Demo chaos mode degraded applied." : "Demo chaos mode reset.");
+      return;
+    }
     try {
       const result = await postJsonWithTimeout<{ message?: string }>(
         mode === "degraded" ? "/api/platform/chaos/degraded" : "/api/platform/chaos/reset",
@@ -112,37 +120,34 @@ export default function PlatformOverviewPage() {
 
   if (status === "loading") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Platform" />
+      <WorkbenchShell topbar={<TopbarTitle title="Platform" subtitle="observability / SLOs / topology / chaos" />}>
         <div className="flex-1 p-4 sm:p-6 lg:p-8">
           <LoadingSkeleton />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   if (status === "error" && !summary) {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Platform" />
+      <WorkbenchShell topbar={<TopbarTitle title="Platform" subtitle="observability / SLOs / topology / chaos" />}>
         <div className="flex-1 p-4 sm:p-6 lg:p-8">
           <ErrorState title="Platform overview unavailable" message={warning || "Could not load platform APIs."} onRetry={refresh} />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Platform" />
+    <WorkbenchShell topbar={<TopbarTitle title="Platform" subtitle="observability / SLOs / topology / chaos" />}>
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
           <section className="praxis-v2-panel-enhanced p-8 sm:p-10 py-24 sm:py-32">
             <div className="max-w-5xl flex flex-wrap items-start justify-between gap-6">
               <div className="flex-1">
                 <div className="praxis-v2-eyebrow-enhanced">Platform Overview</div>
-                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>Observability and SRE Control Plane</h1>
-                <p className="mt-5 text-base text-zinc-400 leading-relaxed">Service: {summary?.service} · Namespace: {summary?.namespace} · Latest incident: {summary?.latest_incident_id}</p>
+                <h1 className="mt-4 font-display font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>Observability and SRE Control Plane</h1>
+                <p className="mt-5 text-base text-zinc-400 leading-relaxed">Service: {summary?.service} · Namespace: {summary?.namespace} · Latest incident: {summary?.latest_incident_id} · Demo posture: {chaosMode}</p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => void refresh()} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-5 py-2.5 text-sm text-zinc-200 transition-transform duration-500 hover:scale-105 hover:border-zinc-500">
@@ -159,8 +164,8 @@ export default function PlatformOverviewPage() {
                 </button>
               </div>
             </div>
-            {warning ? <div className="mt-6 rounded-xl border border-violet-500/30 bg-violet-500/10 px-5 py-3 text-sm text-violet-100">{warning}</div> : null}
-            {chaosMessage ? <div className="mt-5 rounded-xl border border-zinc-600/50 bg-zinc-800/60 px-5 py-3 text-sm text-zinc-200">{chaosMessage}</div> : null}
+            {warning ? <div className="mt-6 border border-violet-500/30 bg-violet-500/10 px-5 py-3 text-sm text-violet-100">{warning}</div> : null}
+            {chaosMessage ? <div className="mt-5 border border-zinc-600/50 bg-zinc-800/60 px-5 py-3 text-sm text-zinc-200">{chaosMessage}</div> : null}
           </section>
 
           <section className="py-24 sm:py-32">
@@ -186,7 +191,7 @@ export default function PlatformOverviewPage() {
                 ) : (
                   <div className="mt-6 space-y-3">
                     {topology.nodes.map((node) => (
-                      <div key={node.id} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
+                      <div key={node.id} className="card-hover-physics border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-base font-medium text-zinc-100">{node.label}</div>
                           <span className={`rounded-full border px-3 py-1 text-xs font-medium ${node.status === "healthy" ? "border-emerald-500/40 bg-emerald-500/15 text-emerald-100" : "border-violet-500/40 bg-violet-500/15 text-violet-100"}`}>{node.status}</span>
@@ -206,8 +211,8 @@ export default function PlatformOverviewPage() {
                 {controls.length === 0 ? (
                   <div className="mt-6 space-y-3">
                     {DEMO_EVIDENCE.map((artifact) => (
-                      <div key={artifact.id} className="card-hover-physics flex items-start gap-4 rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
-                        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-zinc-700/60 bg-zinc-900/70">
+                      <div key={artifact.id} className="card-hover-physics flex items-start gap-4 border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
+                        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center border border-zinc-700/60 bg-zinc-900/70">
                           <FileText size={15} className="text-zinc-400" />
                         </div>
                         <div className="min-w-0 flex-1">
@@ -228,7 +233,7 @@ export default function PlatformOverviewPage() {
                 ) : (
                   <div className="mt-6 space-y-3">
                     {controls.slice(0, 8).map((control) => (
-                      <div key={`${control.category}-${control.name}`} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
+                      <div key={`${control.category}-${control.name}`} className="card-hover-physics border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
                         <div className="flex items-center justify-between gap-3">
                           <div className="text-base font-medium text-zinc-100">{control.name}</div>
                           <span className="mono-data text-xs text-zinc-500 font-medium">{control.status}</span>
@@ -244,7 +249,7 @@ export default function PlatformOverviewPage() {
           </section>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
 
