@@ -20,6 +20,8 @@ import { useToast } from "@/components/notifications";
 import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { authApi, catalogApi, ticketsApi } from "@/lib/api";
 import { canWriteTickets, isAdmin, readStoredUser, type AuthUser } from "@/lib/auth";
+import { getDemoTicketDetailFromSession, useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { validateTicketForm, validateComment, type TicketFormInput } from "@/lib/validation/ticket";
 import type {
   CatalogOptions,
@@ -98,6 +100,11 @@ function attachmentLink(attachment: TicketAttachment) {
 export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
   const router = useRouter();
   const toast = useToast();
+  const createDemoTicket = useDemoSessionStore((state) => state.createTicket);
+  const updateDemoTicket = useDemoSessionStore((state) => state.updateTicket);
+  const addDemoComment = useDemoSessionStore((state) => state.addComment);
+  const updateDemoComment = useDemoSessionStore((state) => state.updateComment);
+  const deleteDemoComment = useDemoSessionStore((state) => state.deleteComment);
   const [user, setUser] = useState<AuthUser | null>(null);
   const [options, setOptions] = useState<CatalogOptions | null>(null);
   const [detail, setDetail] = useState<TicketDetailPayload | null>(null);
@@ -146,15 +153,17 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
       try {
         const [loadedOptions, detailResponse] = await Promise.all([
           loadOptions(),
-          ticketId ? ticketsApi.get(ticketId) : Promise.resolve(null),
+          ticketId && !IS_DEMO_MODE ? ticketsApi.get(ticketId) : Promise.resolve(null),
         ]);
 
         if (!active) {
           return;
         }
 
-        if (detailResponse) {
-          const loadedDetail = detailResponse.data as TicketDetailPayload;
+        if (detailResponse || (ticketId && IS_DEMO_MODE)) {
+          const loadedDetail = IS_DEMO_MODE && ticketId
+            ? getDemoTicketDetailFromSession(ticketId)
+            : detailResponse?.data as TicketDetailPayload;
           setDetail(loadedDetail);
           setForm({
             title: loadedDetail.ticket.title || "",
@@ -194,6 +203,10 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
 
   const refreshDetail = async () => {
     if (!ticketId) {
+      return;
+    }
+    if (IS_DEMO_MODE) {
+      setDetail(getDemoTicketDetailFromSession(ticketId));
       return;
     }
     const response = await ticketsApi.get(ticketId);
@@ -243,13 +256,14 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
         label_ids: validatedData.label_ids ?? [],
       };
 
-      const response = ticketId
-        ? await ticketsApi.update(ticketId, payload)
-        : await ticketsApi.create(payload);
-      const nextDetail = response.data as TicketDetailPayload;
+      const nextDetail = IS_DEMO_MODE
+        ? ticketId
+          ? updateDemoTicket(ticketId, payload)
+          : createDemoTicket(payload)
+        : (await (ticketId ? ticketsApi.update(ticketId, payload) : ticketsApi.create(payload))).data as TicketDetailPayload;
       const nextTicketId = nextDetail.ticket.ticket_id;
 
-      if (ticketFiles.length) {
+      if (!IS_DEMO_MODE && ticketFiles.length) {
         await uploadFiles(nextTicketId, ticketFiles);
         setTicketFiles([]);
       }
@@ -304,9 +318,10 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
 
     setIsSubmittingComment(true);
     try {
-      const response = await ticketsApi.addComment(ticketId, validation.data.body.trim());
-      const comment = response.data as TicketComment;
-      if (commentFiles.length) {
+      const comment = IS_DEMO_MODE
+        ? addDemoComment(ticketId, validation.data.body.trim())
+        : (await ticketsApi.addComment(ticketId, validation.data.body.trim())).data as TicketComment;
+      if (!IS_DEMO_MODE && commentFiles.length) {
         await uploadFiles(ticketId, commentFiles, comment.id);
         setCommentFiles([]);
       }
@@ -334,7 +349,11 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
     }
 
     try {
-      await ticketsApi.updateComment(ticketId, editingCommentId, validation.data.body.trim());
+      if (IS_DEMO_MODE) {
+        updateDemoComment(ticketId, editingCommentId, validation.data.body.trim());
+      } else {
+        await ticketsApi.updateComment(ticketId, editingCommentId, validation.data.body.trim());
+      }
       setEditingCommentId(null);
       setEditingCommentBody("");
       await refreshDetail();
@@ -353,7 +372,11 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
       return;
     }
     try {
-      await ticketsApi.deleteComment(ticketId, commentId);
+      if (IS_DEMO_MODE) {
+        deleteDemoComment(ticketId, commentId);
+      } else {
+        await ticketsApi.deleteComment(ticketId, commentId);
+      }
       await refreshDetail();
       toast.success("Comment deleted", "The comment was removed from the timeline.");
     } catch (deleteError) {

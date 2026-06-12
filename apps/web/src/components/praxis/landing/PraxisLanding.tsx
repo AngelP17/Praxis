@@ -5,8 +5,11 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowRight, BracketsCurly, ChartLineUp, CheckCircle, Database, GitBranch, LockKey, ShieldCheck, UsersThree } from "@phosphor-icons/react";
 import { ProofProtocolHero } from "@/components/praxis/ProofProtocolHero";
+import { DemoBanner } from "@/components/praxis/DemoBanner";
 import { formatCurrency, formatPercent } from "@/lib/praxis-client";
 import { useProof } from "@/lib/hooks/useProof";
+import { getPackIdForScenario, SCENARIOS } from "@/lib/scenarios";
+import { getDemoProof } from "@/lib/praxis-demo-data";
 import { PipelineRunnerModal } from "./PipelineRunnerModal";
 import { PortfolioAnalytics } from "./PortfolioAnalytics";
 
@@ -151,41 +154,25 @@ function ProofArtifactSpread({
   );
 }
 
-const simulationBranches = [
-  {
-    id: "vendor-delay",
-    title: "Vendor delay",
-    event: "Driver package approval slips 18 hours after GPO drift is detected.",
-    forecast: "74%",
-    confidence: "0.81",
-    impact: "$52.2K",
-    operator: "Shipping lead",
-    response: "Pre-stage local printer mapping, hold remediation until approval, notify escalation owner.",
-    proof: "timeline fork retained with deterministic replay hash",
-  },
-  {
-    id: "policy-rollback",
-    title: "Policy rollback",
-    event: "Point-and-Print policy is rolled back for the affected OU only.",
-    forecast: "63%",
-    confidence: "0.76",
-    impact: "$31.8K",
-    operator: "Endpoint owner",
-    response: "Approve scoped rollback, monitor recurrence, schedule root policy correction.",
-    proof: "human action and rollback boundary sealed into proof object",
-  },
-  {
-    id: "shift-surge",
-    title: "Shift surge",
-    event: "Second shift opens 42 more shipment labels while printer routing is degraded.",
-    forecast: "82%",
-    confidence: "0.84",
-    impact: "$68.4K",
-    operator: "Operations director",
-    response: "Split label generation to backup queue, freeze noncritical print jobs, run replay diff.",
-    proof: "forecast market, queue action, and replay diff linked to the run",
-  },
-];
+const simulationBranches = SCENARIOS.map((scenario) => {
+  const packId = getPackIdForScenario(scenario.id);
+  const proof = getDemoProof(packId);
+  return {
+    id: scenario.id,
+    packId,
+    runId: proof.run_id,
+    title: scenario.label,
+    event: scenario.title,
+    forecast: `${scenario.priorityScore}%`,
+    confidence: scenario.confidenceScore.toFixed(2),
+    impact: formatCurrency(scenario.estimatedValueUsd),
+    operator: scenario.ownerTeam,
+    response: scenario.recommendation,
+    proof: `${proof.evidence.raw_events} events · ${proof.proof_hash.slice(7, 19)} · L0 verified`,
+    workbenchHref: `/field-workbench?pack=${packId}`,
+    proofHref: `/proof/${proof.run_id}?pack=${packId}`,
+  };
+});
 
 function SimulationLab() {
   const [activeBranch, setActiveBranch] = useState(simulationBranches[0]);
@@ -203,7 +190,7 @@ function SimulationLab() {
               Fork the operation before it breaks.
             </h2>
             <p className="mt-6 max-w-xl text-[17px] leading-8 text-[var(--praxis-mute)]">
-              Inspired by swarm simulation workflows, Praxis turns a verified incident into competing operational futures: inject an event, watch the roles react, and preserve the forecast inside the proof trail.
+              Praxis uses the generated scenario registry to show four different operational failures, each tied to its matching FieldLab proof artifact.
             </p>
           </div>
           <div className="grid grid-flow-dense gap-3">
@@ -253,11 +240,25 @@ function SimulationLab() {
               <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Recommended response</div>
               <p className="mt-3 max-w-xl text-sm leading-7 text-[var(--praxis-bone)]">{activeBranch.response}</p>
             </div>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href={activeBranch.workbenchHref}
+                className="inline-flex min-h-11 items-center justify-center border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-5 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Open scenario
+              </Link>
+              <Link
+                href={activeBranch.proofHref}
+                className="inline-flex min-h-11 items-center justify-center border border-[var(--praxis-line)] px-5 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                Inspect proof
+              </Link>
+            </div>
           </div>
           <div className="grid grid-flow-dense gap-px bg-[var(--praxis-line)]">
             {[
               ["Affected role", activeBranch.operator],
-              ["Forecast artifact", "published to verified predictions"],
+              ["Scenario source", `${activeBranch.id} · generated registry`],
               ["Proof status", activeBranch.proof],
             ].map(([label, value_]) => (
               <div key={label} className="bg-[var(--praxis-obsidian)] p-6">
@@ -351,6 +352,7 @@ export function PraxisLanding() {
 
   return (
     <main className="w-full max-w-full overflow-x-hidden bg-[var(--praxis-bg)] text-[var(--praxis-bone)]">
+      <DemoBanner />
       <ProofProtocolHero packId={packId} proof={proof} onRunPipeline={() => setModalOpen(true)} />
       <ProofPathRail packId={packId} runId={runId} />
       <ProofArtifactSpread packId={packId} runId={runId} proofHash={proofHash} />

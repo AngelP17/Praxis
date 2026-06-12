@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import { ArrowSquareOut, CheckCircle, DownloadSimple, X } from "@phosphor-icons/react";
 import { praxisClient, type FieldLabExecuteResponse, type FieldLabRun } from "@/lib/praxis-client";
+import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 interface PipelineRunnerModalProps {
   open: boolean;
@@ -35,6 +37,7 @@ const MODAL_EVENTS = [
 ];
 
 export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-printer-gpo" }: PipelineRunnerModalProps) {
+  const runDemoPipeline = useDemoSessionStore((state) => state.runPipeline);
   const [activeStage, setActiveStage] = useState(-1);
   const [events, setEvents] = useState<{ stage: string; msg: string }[]>([]);
   const [done, setDone] = useState(false);
@@ -56,7 +59,7 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
 
     void (async () => {
       try {
-        const createdRun = await praxisClient.createRun(packId);
+        const createdRun = IS_DEMO_MODE ? runDemoPipeline(packId) : await praxisClient.createRun(packId);
         setRun(createdRun);
         const executed = await praxisClient.executeRun(createdRun.run_id);
         await praxisClient.captureAction(createdRun.run_id, {
@@ -80,7 +83,7 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
       }, (i + 1) * 520);
       timersRef.current.push(t);
     });
-  }, [packId]);
+  }, [packId, runDemoPipeline]);
 
   useEffect(() => {
     if (open) runPipeline();

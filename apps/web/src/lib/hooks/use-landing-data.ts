@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { DEMO_INCIDENTS, DEMO_METRICS, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
+import { deriveDemoMetrics, useDemoSessionStore } from "@/lib/demo/demo-session-store";
 
 export type SystemMetrics = {
   total_open: number;
@@ -105,10 +106,40 @@ async function fetchJsonWithTimeout<T>(path: string, timeoutMs = 5000): Promise<
 }
 
 export function useLandingData() {
+  const demoTickets = useDemoSessionStore((state) => state.tickets);
+  const demoIncidentsState = useDemoSessionStore((state) => state.incidents);
+  const demoMetricsState = useMemo(() => deriveDemoMetrics(demoTickets, demoIncidentsState), [demoIncidentsState, demoTickets]);
   const [state, setState] = useState<LandingDataState>(initialState);
 
   const refresh = useCallback(async () => {
     setState((s) => ({ ...s, status: "loading", errorMessage: null }));
+    if (IS_DEMO_MODE) {
+      setState({
+        metrics: demoMetricsState,
+        recentIncidents: demoIncidentsState.slice(0, 6).map((incident) => ({
+          id: incident.id,
+          title: incident.title,
+          status: incident.status,
+          root_cause_hypothesis: incident.root_cause_hypothesis,
+          ticket_count: incident.ticket_count,
+          confidence: incident.confidence,
+          business_impact_score: incident.business_impact_score,
+          opened_at: incident.opened_at,
+        })),
+        liveSignals: demoTickets.slice(0, 8).map((ticket) => ({
+          ticket_id: ticket.ticket_id,
+          title: ticket.title,
+          status: ticket.status,
+          priority_score: ticket.priority_score ?? 0,
+          category: ticket.category ?? "Operations",
+          created_at: ticket.created_at,
+        })),
+        status: "ready",
+        errorMessage: null,
+        lastUpdated: Date.now(),
+      });
+      return;
+    }
     try {
       const [metrics, incidents, tickets] = await Promise.allSettled([
         fetchJsonWithTimeout<SystemMetrics>("/api/metrics", 5000),
@@ -158,7 +189,7 @@ export function useLandingData() {
             },
       );
     }
-  }, []);
+  }, [demoIncidentsState, demoMetricsState, demoTickets]);
 
   useEffect(() => {
     void refresh();

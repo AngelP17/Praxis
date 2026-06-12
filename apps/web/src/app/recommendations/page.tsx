@@ -8,6 +8,8 @@ import { CommandShell } from "@/components/command-shell";
 import { SystemStatusRail } from "@/components/system-status-rail";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
+import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { SEVERITY_COLORS, type Scenario } from "@/lib/scenarios";
 
@@ -61,6 +63,17 @@ function buildRows(scenario: Scenario, scenarioIndex: number): RecommendationRow
   ];
 }
 
+function applyDemoRecommendationStatuses(
+  rows: RecommendationRow[],
+  statuses: Record<number, RecommendationRow["status"] | "overridden">,
+): RecommendationRow[] {
+  return rows.map((row) => {
+    const storedStatus = statuses[row.id];
+    const status: RecommendationRow["status"] = storedStatus === "overridden" ? "accepted" : storedStatus ?? row.status;
+    return { ...row, status };
+  });
+}
+
 const STATUS_LABEL: Record<string, string> = {
   ready_for_operator: "pending",
   accepted: "accepted",
@@ -75,9 +88,13 @@ const STATUS_BADGE: Record<string, string> = {
 
 export default function RecommendationsPage() {
   const toast = useToast();
+  const demoRecommendationStatuses = useDemoSessionStore((state) => state.recommendationStatusById);
+  const setDemoRecommendationStatus = useDemoSessionStore((state) => state.setRecommendationStatus);
   const { scenarios } = useScenarios();
   const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
-  const [rows, setRows] = useState<RecommendationRow[]>(() => buildRows(scenarios[0], 0));
+  const [rows, setRows] = useState<RecommendationRow[]>(() =>
+    applyDemoRecommendationStatuses(buildRows(scenarios[0], 0), demoRecommendationStatuses)
+  );
   const [actioning, setActioning] = useState<Set<number>>(new Set());
 
   useEffect(() => {
@@ -85,14 +102,14 @@ export default function RecommendationsPage() {
     if (updated) {
       setActiveScenario(updated);
       const idx = scenarios.findIndex((scenario) => scenario.id === updated.id);
-      setRows(buildRows(updated, Math.max(0, idx)));
+      setRows(applyDemoRecommendationStatuses(buildRows(updated, Math.max(0, idx)), demoRecommendationStatuses));
     }
-  }, [activeScenario.id, scenarios]);
+  }, [activeScenario.id, demoRecommendationStatuses, scenarios]);
 
   function handleScenarioChange(scenario: Scenario) {
     setActiveScenario(scenario);
     const idx = scenarios.findIndex((s) => s.id === scenario.id);
-    setRows(buildRows(scenario, Math.max(0, idx)));
+    setRows(applyDemoRecommendationStatuses(buildRows(scenario, Math.max(0, idx)), demoRecommendationStatuses));
     setActioning(new Set());
   }
 
@@ -107,15 +124,23 @@ export default function RecommendationsPage() {
     const optimisticStatus = mode === "accept" ? "accepted" : "rejected";
     setRows((prev) => prev.map((r) => (r.id === row.id ? { ...r, status: optimisticStatus } : r)));
 
-    try {
-      await postJsonWithTimeout(
-        mode === "accept" ? `/api/recommendations/${row.id}/accept` : `/api/recommendations/${row.id}/reject`,
-        mode === "accept"
-          ? { note: `Accepted via Recommendations · ${row.ticket_id}` }
-          : { reason: `Rejected via Recommendations · ${row.ticket_id}` }
+    if (IS_DEMO_MODE) {
+      setDemoRecommendationStatus(
+        row.id,
+        optimisticStatus,
+        mode === "accept" ? `Accepted via Recommendations · ${row.ticket_id}` : `Rejected via Recommendations · ${row.ticket_id}`,
       );
-    } catch {
-      // keep optimistic update, API unavailable in demo
+    } else {
+      try {
+        await postJsonWithTimeout(
+          mode === "accept" ? `/api/recommendations/${row.id}/accept` : `/api/recommendations/${row.id}/reject`,
+          mode === "accept"
+            ? { note: `Accepted via Recommendations · ${row.ticket_id}` }
+            : { reason: `Rejected via Recommendations · ${row.ticket_id}` }
+        );
+      } catch {
+        // keep optimistic update; route fallback records the action when available
+      }
     }
 
     if (mode === "accept") {

@@ -10,6 +10,8 @@ import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
 import { DEMO_AUDIT, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout } from "@/lib/api";
+import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 type AuditEvent = {
   event_id: string;
@@ -29,6 +31,7 @@ const FALLBACK_AUDIT: AuditEvent[] = [
 ];
 
 export default function AuditTrailPage() {
+  const demoAuditLog = useDemoSessionStore((state) => state.auditLog);
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
@@ -38,6 +41,20 @@ export default function AuditTrailPage() {
   const loadEvents = useCallback(async () => {
     setStatus("loading");
     setNotice(null);
+    if (IS_DEMO_MODE) {
+      setEvents(
+        demoAuditLog.map((entry) => ({
+          event_id: entry.id,
+          source: entry.actor,
+          event_type: entry.action,
+          severity: entry.action.includes("reject") ? "medium" : "high",
+          occurred_at: entry.ts,
+          created_at: entry.ts,
+        })),
+      );
+      setStatus("ready");
+      return;
+    }
     try {
       const rows = await fetchJsonWithTimeout<AuditEvent[]>("/api/audit/events");
       setEvents(rows.length > 0 ? rows : FALLBACK_AUDIT);
@@ -48,7 +65,7 @@ export default function AuditTrailPage() {
       setStatus("ready");
       setNotice(null);
     }
-  }, []);
+  }, [demoAuditLog]);
 
   useEffect(() => {
     void loadEvents();
@@ -63,6 +80,11 @@ export default function AuditTrailPage() {
   }, [events, search]);
 
   async function exportIncident(incidentId: string) {
+    if (IS_DEMO_MODE) {
+      setExportPayload(JSON.stringify({ incident_id: incidentId, exported_at: new Date().toISOString(), audit: demoAuditLog }, null, 2));
+      setNotice(`Demo audit bundle loaded for ${incidentId}.`);
+      return;
+    }
     try {
       const payload = await fetchJsonWithTimeout<Record<string, unknown>>(`/api/audit/export/${incidentId}`);
       setExportPayload(JSON.stringify(payload, null, 2));
@@ -155,8 +177,11 @@ export default function AuditTrailPage() {
                 <div className="praxis-v2-eyebrow">Immutable Audit Chain</div>
               </div>
               <div className="mt-3 space-y-2">
-                {DEMO_AUDIT.map((entry, index) => (
-                  <div key={index} className="flex items-center gap-3 rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-3.5 py-2.5">
+                {(IS_DEMO_MODE
+                  ? demoAuditLog.map((entry) => ({ ts: entry.ts, actor: entry.actor, action: entry.action, hash: entry.target }))
+                  : DEMO_AUDIT
+                ).map((entry, index) => (
+                  <div key={`${entry.action}-${index}`} className="flex items-center gap-3 rounded-lg border border-zinc-700/50 bg-zinc-800/40 px-3.5 py-2.5">
                     <span className="mono-data w-20 text-[11px] text-zinc-500">{entry.ts}</span>
                     <span className="mono-data w-32 text-[11px] text-zinc-400">{entry.actor}</span>
                     <span className="text-xs text-zinc-300">{entry.action}</span>

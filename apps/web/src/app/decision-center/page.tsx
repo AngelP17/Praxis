@@ -14,6 +14,8 @@ import {
 
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
 import { DEMO_EVENT_STREAM, DEMO_TICKETS } from "@/lib/demo-scenario";
+import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { deterministicHash } from "@/lib/deterministic-hash";
 import { getScenarioByTicketId } from "@/lib/scenarios";
 import { CommandShell } from "@/components/command-shell";
@@ -159,6 +161,8 @@ function fmtLabel(value?: string | null) {
 }
 
 export default function DecisionCenterPage() {
+  const decisionStatuses = useDemoSessionStore((state) => state.decisionStatusById);
+  const setDemoDecisionStatus = useDemoSessionStore((state) => state.setDecisionStatus);
   const [events, setEvents] = useState<EventRow[]>([]);
   const [selectedEventId, setSelectedEventId] = useState<string>("");
   const [eventDetail, setEventDetail] = useState<EventDetail | null>(null);
@@ -235,6 +239,15 @@ export default function DecisionCenterPage() {
 
   async function actionDecision(type: "approve" | "reject") {
     if (!decision || !eventDetail) return;
+    if (IS_DEMO_MODE) {
+      setDemoDecisionStatus(
+        decision.id,
+        type === "approve" ? "approved" : "rejected",
+        type === "approve" ? "Operator approval from Decision Center." : "Operator rejection from Decision Center.",
+      );
+      setNotice(type === "approve" ? "Decision approved." : "Decision rejected.");
+      return;
+    }
     try {
       await postJsonWithTimeout(
         type === "approve" ? `/api/decisions/${decision.id}/approve` : `/api/decisions/${decision.id}/reject`,
@@ -272,6 +285,7 @@ export default function DecisionCenterPage() {
   }
 
   const impactedAssets = replay?.replayed_decision?.rationale?.impacted_assets ?? [];
+  const selectedDecisionStatus = decision ? decisionStatuses[decision.id] ?? "pending" : "pending";
 
   return (
     <CommandShell>
@@ -369,7 +383,7 @@ export default function DecisionCenterPage() {
                         <Stat label="Priority" value={decision.priority_score.toFixed(4)} />
                         <Stat label="Risk" value={decision.risk_level} />
                         <Stat label="Confidence" value={decision.confidence_score.toFixed(2)} />
-                        <Stat label="Decision ID" value={String(decision.id)} />
+                        <Stat label="Decision Status" value={selectedDecisionStatus} />
                       </div>
 
                       <div className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-4 grid-flow-dense">

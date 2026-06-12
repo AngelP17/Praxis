@@ -58,6 +58,9 @@ export function ExpansionMap({ packId: propPackId }: { packId?: string }) {
           <p className="mt-5 text-sm leading-6 text-[var(--praxis-mute)]">
             Initial proof path for {(pack?.buyer_persona ?? "operator").toLowerCase()} operations and executive value narrative.
           </p>
+          <p className="mt-3 text-sm leading-6 text-[var(--praxis-mute)]">
+            Adjacent use cases and expansion potential are calculated from the current proof graph.
+          </p>
           <div className="mt-8 space-y-3">
             <div className="flex items-center justify-between border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] p-4">
               <span className="font-mono text-[10px] uppercase text-[var(--praxis-mute)]">Current value</span>
@@ -88,6 +91,24 @@ export function ExpansionMap({ packId: propPackId }: { packId?: string }) {
                   <span className="font-display text-3xl" style={{ color: "var(--praxis-argon)" }}>{item.score.toFixed(2)}</span>
                   <ArrowRight className="h-4 w-4 text-[var(--praxis-mute)] opacity-0 transition-opacity group-hover:opacity-100" />
                 </div>
+              </div>
+            ))}
+          </div>
+        </article>
+        <article className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 lg:col-span-12">
+          <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
+            Expansion readiness
+          </div>
+          <div className="mt-5 grid grid-flow-dense gap-px border border-[var(--praxis-line)] bg-[var(--praxis-line)] md:grid-cols-4">
+            {[
+              ["Evidence graph", `${proof.evidence.sources.length} sources`],
+              ["Reusable ontology", `${proof.ontology.objects_created} objects`],
+              ["Replay base", proof.proof_hash.slice(7, 19)],
+              ["Buyer path", pack?.buyer_persona ?? "operator"],
+            ].map(([label, value]) => (
+              <div key={label} className="bg-[var(--praxis-obsidian)] p-5">
+                <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">{label}</div>
+                <div className="mt-3 font-display text-2xl font-semibold tracking-[-0.03em] text-[var(--praxis-bone)]">{value}</div>
               </div>
             ))}
           </div>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Ticket, Incident } from "@/types";
 import { DEMO_TICKETS, DEMO_INCIDENTS, DEMO_METRICS } from "@/lib/demo-scenario";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
+import { deriveDemoMetrics, useDemoSessionStore } from "@/lib/demo/demo-session-store";
 
 export type SystemStatus = "healthy" | "degraded" | "critical" | "unknown";
 
@@ -72,10 +73,42 @@ function calculateSystemStatus(metrics: DashboardMetrics): SystemStatus {
 }
 
 export function useDashboardData() {
+  const demoTickets = useDemoSessionStore((store) => store.tickets);
+  const demoIncidents = useDemoSessionStore((store) => store.incidents);
+  const demoMetrics = useMemo(() => deriveDemoMetrics(demoTickets, demoIncidents), [demoIncidents, demoTickets]);
   const [state, setState] = useState<DashboardState>(initialState);
 
   const refresh = useCallback(async () => {
     setState((s) => ({ ...s, status: "loading", errorMessage: null }));
+    if (IS_DEMO_MODE) {
+      const openTickets = demoTickets.filter((t) => !["Resolved", "Closed"].includes(t.status));
+      const resolvedToday = demoTickets.filter((t) => {
+        if (!t.resolved_at) return false;
+        const resolved = new Date(t.resolved_at);
+        const now = new Date();
+        return resolved.toDateString() === now.toDateString();
+      });
+      const dashboardMetrics: DashboardMetrics = {
+        totalTickets: demoTickets.length,
+        openTickets: openTickets.length,
+        criticalTickets: openTickets.filter((t) => t.priority_raw === "Critical").length,
+        resolvedToday: resolvedToday.length,
+        avgDecisionLatency: demoMetrics.avg_decision_latency_ms,
+        incidentCount: demoIncidents.length,
+        slaRiskCount: demoMetrics.sla_breach_risk,
+        systemStatus: "unknown",
+      };
+      dashboardMetrics.systemStatus = calculateSystemStatus(dashboardMetrics);
+      setState({
+        metrics: dashboardMetrics,
+        recentTickets: openTickets.slice(0, 10),
+        activeIncidents: demoIncidents.filter((i) => i.status !== "Closed" && i.status !== "Resolved").slice(0, 6),
+        status: "ready",
+        errorMessage: null,
+        lastUpdated: Date.now(),
+      });
+      return;
+    }
     try {
       const [metrics, incidents, tickets] = await Promise.allSettled([
         fetchJsonWithTimeout<{
@@ -161,7 +194,7 @@ export function useDashboardData() {
         lastUpdated: Date.now(),
       });
     }
-  }, []);
+  }, [demoIncidents, demoMetrics, demoTickets]);
 
   useEffect(() => {
     void refresh();

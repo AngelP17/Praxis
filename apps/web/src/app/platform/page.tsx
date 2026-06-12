@@ -10,6 +10,8 @@ import { ErrorState } from "@/components/error-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { DEMO_EVIDENCE } from "@/lib/demo-scenario";
 import { fetchJsonWithTimeout, postJsonWithTimeout } from "@/lib/api";
+import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { IS_DEMO_MODE } from "@/lib/demo-mode";
 
 type PlatformSummary = {
   status: string;
@@ -56,6 +58,8 @@ const FALLBACK_SUMMARY: PlatformSummary = {
 };
 
 export default function PlatformOverviewPage() {
+  const chaosMode = useDemoSessionStore((state) => state.chaosMode);
+  const setDemoChaosMode = useDemoSessionStore((state) => state.setChaosMode);
   const [summary, setSummary] = useState<PlatformSummary | null>(null);
   const [topology, setTopology] = useState<Topology | null>(null);
   const [controls, setControls] = useState<Control[]>([]);
@@ -99,6 +103,11 @@ export default function PlatformOverviewPage() {
   }, [refresh]);
 
   async function triggerChaos(mode: "degraded" | "reset") {
+    if (IS_DEMO_MODE) {
+      setDemoChaosMode(mode === "degraded" ? "degraded" : "healthy");
+      setChaosMessage(mode === "degraded" ? "Demo chaos mode degraded applied." : "Demo chaos mode reset.");
+      return;
+    }
     try {
       const result = await postJsonWithTimeout<{ message?: string }>(
         mode === "degraded" ? "/api/platform/chaos/degraded" : "/api/platform/chaos/reset",
@@ -142,7 +151,7 @@ export default function PlatformOverviewPage() {
               <div className="flex-1">
                 <div className="praxis-v2-eyebrow-enhanced">Platform Overview</div>
                 <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>Observability and SRE Control Plane</h1>
-                <p className="mt-5 text-base text-zinc-400 leading-relaxed">Service: {summary?.service} · Namespace: {summary?.namespace} · Latest incident: {summary?.latest_incident_id}</p>
+                <p className="mt-5 text-base text-zinc-400 leading-relaxed">Service: {summary?.service} · Namespace: {summary?.namespace} · Latest incident: {summary?.latest_incident_id} · Demo posture: {chaosMode}</p>
               </div>
               <div className="flex flex-wrap gap-3">
                 <button onClick={() => void refresh()} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-zinc-700/70 bg-zinc-900/70 px-5 py-2.5 text-sm text-zinc-200 transition-transform duration-500 hover:scale-105 hover:border-zinc-500">

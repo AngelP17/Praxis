@@ -34,6 +34,19 @@ export type Scenario = {
   ownerTeam: string;
 };
 
+export const SCENARIO_TO_PACK_ID = {
+  "printer-offline": "manufacturing-printer-gpo",
+  "network-edge-failover": "network-edge-failover",
+  "identity-onboarding-drift": "identity-onboarding-drift",
+  "database-failover-lag": "database-failover-lag",
+} as const;
+
+export type ScenarioId = keyof typeof SCENARIO_TO_PACK_ID;
+
+export function getPackIdForScenario(scenarioId: string): string {
+  return SCENARIO_TO_PACK_ID[scenarioId as ScenarioId] ?? "manufacturing-printer-gpo";
+}
+
 export type ScenarioResponse = {
   id: string;
   label: string;
