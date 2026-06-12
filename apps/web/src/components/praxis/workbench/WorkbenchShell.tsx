@@ -70,37 +70,37 @@ export function WorkbenchShell({
   const packParam = searchParams.get("pack");
   const packSuffix = packParam ? `?pack=${packParam}` : "";
   return (
-    <div className="relative grid min-h-[100dvh] grid-cols-1 grid-flow-dense overflow-hidden bg-[var(--praxis-obsidian)] text-[var(--praxis-bone)] md:grid-cols-[264px_1fr]">
+    <div className="relative grid min-h-[100dvh] grid-cols-1 grid-flow-dense overflow-hidden bg-[var(--praxis-obsidian)] text-[var(--praxis-bone)] md:grid-cols-[252px_1fr]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(139,92,255,0.14),transparent_24%),radial-gradient(circle_at_86%_18%,rgba(62,255,168,0.08),transparent_20%),linear-gradient(180deg,rgba(19,18,31,0.18),transparent_42%)]" />
       <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(241,237,223,0.04)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.04)_1px,transparent_1px)] [background-size:64px_64px] [mask-image:radial-gradient(circle_at_top,black,transparent_78%)]" />
 
-      <aside className="relative hidden flex-col border-r border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.98))] md:flex">
+      <aside className="relative hidden h-[100dvh] min-h-0 flex-col border-r border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.98))] md:flex">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top,rgba(139,92,255,0.18),transparent_70%)]" />
-        <Link href="/" className="relative flex items-center gap-[10px] px-5 py-5 transition-transform duration-700 hover:scale-[1.02]" style={{ color: "var(--praxis-bone)" }}>
+        <Link href="/" className="relative flex items-center gap-[10px] px-5 py-4 transition-transform duration-300 hover:scale-[1.02]" style={{ color: "var(--praxis-bone)" }}>
           <PraxisMark size={22} />
           <span className="font-display text-[18px] font-semibold tracking-[-0.02em]">Praxis</span>
         </Link>
-        <div className="px-5">
-          <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] p-4">
+        <div className="px-4">
+          <div className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.66)] p-3">
             <div className="flex items-center justify-between gap-3">
               <div className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">
                 Workbench
               </div>
               <span className="inline-flex h-2 w-2 rounded-full bg-[var(--praxis-argon)] shadow-[0_0_14px_rgba(62,255,168,0.55)]" />
             </div>
-            <div className="mt-4 font-display text-[22px] font-medium leading-[1.05] tracking-[-0.02em]">
-              Field operations, proofs, and runtime posture in one rail.
+            <div className="mt-3 font-display text-[17px] font-medium leading-[1.08] tracking-[-0.02em]">
+              Field operations and proof posture.
             </div>
-            <div className="mt-4 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
+            <div className="mt-3 flex items-center gap-2 font-mono text-[9.5px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
               <BracketsCurly className="h-3.5 w-3.5 text-[var(--praxis-violet)]" />
               Verified system surfaces
             </div>
           </div>
         </div>
-        <nav className="mt-4 flex flex-col overflow-y-auto px-3 pb-4">
+        <nav className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3">
           {NAV_GROUPS.map(([group, links]) => (
-            <div key={group}>
-              <div className="px-1 pb-2 pt-4 font-mono text-[9px] uppercase tracking-[0.2em] text-[var(--praxis-faint)]">
+            <div key={group} className="flex flex-col gap-1">
+              <div className="px-1 pb-1 pt-3 font-mono text-[8.5px] uppercase tracking-[0.18em] text-[var(--praxis-faint)]">
                 {group}
               </div>
               {links.map(([label, href, match, packAware]) => {
@@ -109,7 +109,7 @@ export function WorkbenchShell({
                   <Link
                     key={href}
                     href={`${href}${packAware ? packSuffix : ""}`}
-                    className="group relative mb-1 overflow-hidden border px-4 py-[8px] text-[12px] transition-transform duration-700 hover:translate-x-1"
+                    className="group relative flex min-h-[32px] w-full items-center overflow-hidden border px-3 py-[6px] text-[11.5px] leading-none transition-transform duration-300 hover:translate-x-1"
                     style={{
                       borderColor: active ? "var(--praxis-plasma)" : "var(--praxis-line)",
                       color: active ? "var(--praxis-bone)" : "var(--praxis-mute)",
@@ -130,15 +130,15 @@ export function WorkbenchShell({
             </div>
           ))}
         </nav>
-        <div className="mt-auto p-4 font-mono text-[10px] text-[var(--praxis-mute)]">
-          <div className="border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.7)] p-4">
+        <div className="shrink-0 p-3 font-mono text-[9.5px] text-[var(--praxis-mute)]">
+          <div className="border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.7)] p-3">
             <div className="flex items-center gap-[10px]">
               <span
-                className="inline-block h-[26px] w-[26px] rounded-full"
+                className="inline-block h-[22px] w-[22px] rounded-full"
                 style={{ background: "linear-gradient(135deg, var(--praxis-plasma), var(--praxis-argon))" }}
               />
               <div>
-                <div className="font-sans text-[12px] text-[var(--praxis-bone)]">Field Agent</div>
+                <div className="font-sans text-[11.5px] text-[var(--praxis-bone)]">Field Agent</div>
                 <div className="tracking-[0.06em]">Forward-deployed</div>
               </div>
             </div>

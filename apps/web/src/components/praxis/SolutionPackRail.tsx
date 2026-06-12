@@ -31,7 +31,7 @@ export function SolutionPackRail() {
             {pack.sources.length} sources
           </div>
           <Link
-            href={`/fieldlab?pack=${pack.id}`}
+            href={`/field-workbench?pack=${pack.id}`}
             className="mt-5 inline-flex items-center gap-2 bg-[var(--praxis-violet)] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-bg)] transition hover:scale-105"
           >
             Run FieldLab <ArrowRight className="h-3 w-3" />

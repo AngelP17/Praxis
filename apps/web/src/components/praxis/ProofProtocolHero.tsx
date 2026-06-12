@@ -23,7 +23,7 @@ export function ProofProtocolHero({
   const trust = proof ? formatPercent(proof.evidence.evidence_trust) : "83%";
 
   return (
-    <section className="relative isolate min-h-[100dvh] overflow-hidden bg-[var(--praxis-bg)] py-20 text-[var(--praxis-bone)]">
+    <header className="relative isolate min-h-[100dvh] overflow-hidden bg-[var(--praxis-bg)] pb-8 pt-12 text-[var(--praxis-bone)]">
       <video
         src="/praxis-assets/field-operator-loop.mp4"
         poster="/praxis-assets/operator-poster.png"
@@ -37,7 +37,7 @@ export function ProofProtocolHero({
       <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-1/2 bg-[linear-gradient(0deg,var(--praxis-bg),transparent)]" />
       <div className="pointer-events-none absolute inset-0 -z-10 opacity-[0.08] [background-image:linear-gradient(rgba(241,237,223,0.42)_1px,transparent_1px),linear-gradient(90deg,rgba(241,237,223,0.42)_1px,transparent_1px)] [background-size:84px_84px]" />
 
-      <nav className="mx-auto flex h-[72px] max-w-[1500px] items-center justify-between px-5 md:px-8">
+      <nav className="mx-auto flex h-16 max-w-[1500px] items-center justify-between px-5 md:px-8">
         <Link href="/" className="group inline-flex items-center gap-3 text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]">
           <span className="grid h-10 w-10 place-items-center border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.74)] backdrop-blur-xl transition-transform duration-300 group-hover:scale-[1.04]">
             <PraxisLogo className="h-6 w-6" />
@@ -52,12 +52,12 @@ export function ProofProtocolHero({
         </div>
       </nav>
 
-      <div className="mx-auto grid min-h-[calc(100dvh-72px)] max-w-[1500px] grid-flow-dense grid-cols-1 gap-8 px-5 pb-8 pt-6 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:items-end">
-        <div className="max-w-5xl pb-8 lg:pb-16">
+      <div className="mx-auto grid min-h-[calc(100dvh-144px)] max-w-[1500px] grid-flow-dense grid-cols-1 gap-8 px-5 pb-4 pt-6 md:px-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(420px,0.58fr)] lg:items-center">
+        <div className="max-w-5xl">
           <div className="mb-7 max-w-[760px] border-l border-[var(--praxis-plasma)] pl-5">
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">Forward-deployed operational intelligence</p>
           </div>
-          <h1 className="max-w-[960px] font-display text-[clamp(5rem,9vw,9.6rem)] font-semibold leading-[0.84] tracking-[-0.05em] text-[var(--praxis-bone)]">
+          <h1 className="max-w-[920px] font-display text-[clamp(4.2rem,8vw,8.4rem)] font-semibold leading-[0.86] tracking-[-0.05em] text-[var(--praxis-bone)]">
             Proof the full stack.
           </h1>
           <p className="mt-7 max-w-[620px] text-[17px] leading-8 text-[var(--praxis-mute)]">
@@ -80,7 +80,7 @@ export function ProofProtocolHero({
           </div>
         </div>
 
-        <aside className="mb-8 overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.74)] backdrop-blur-xl lg:mb-16">
+        <aside className="overflow-hidden border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.74)] backdrop-blur-xl">
           <div className="border-b border-[var(--praxis-line)] p-5">
             <div className="flex items-center justify-between gap-4">
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Active proof</span>
@@ -124,6 +124,6 @@ export function ProofProtocolHero({
           </div>
         </aside>
       </div>
-    </section>
+    </header>
   );
 }

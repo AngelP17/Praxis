@@ -17,23 +17,23 @@ const MODAL_STAGES = [
   { id: "signal",   label: "Signal ingestion",     color: "var(--praxis-argon)" },
   { id: "ontology", label: "Ontology compilation",  color: "var(--praxis-plasma)" },
   { id: "decision", label: "Decision scoring",      color: "var(--praxis-bone)" },
-  { id: "action",   label: "Action & approval",     color: "var(--praxis-amber)" },
-  { id: "proof",    label: "Proof sealing",         color: "var(--praxis-amber)" },
+  { id: "action",   label: "Action approval",       color: "var(--praxis-argon)" },
+  { id: "proof",    label: "Proof sealing",         color: "var(--praxis-plasma)" },
 ];
 
 const MODAL_EVENTS = [
-  { stage: "signal",   msg: "SQS queue drained · 12 events received" },
-  { stage: "signal",   msg: "ticket_cluster_P2 · trust score 0.88" },
-  { stage: "signal",   msg: "calibration_drift detected · corroborated" },
-  { stage: "ontology", msg: "PLC_Unit → Printer_Fleet_SKU link resolved" },
-  { stage: "ontology", msg: "vendor_contract → GPO_Clause_4.2 mapped" },
+  { stage: "signal",   msg: "SQS queue drained / 12 events received" },
+  { stage: "signal",   msg: "ticket_cluster_P2 / trust score 0.88" },
+  { stage: "signal",   msg: "calibration_drift detected / corroborated" },
+  { stage: "ontology", msg: "PLC_Unit to Printer_Fleet_SKU link resolved" },
+  { stage: "ontology", msg: "vendor_contract to GPO_Clause_4.2 mapped" },
   { stage: "ontology", msg: "ontology graph: 9 objects, 14 links" },
-  { stage: "decision", msg: "priority_score 0.74 · confidence 0.81" },
+  { stage: "decision", msg: "priority_score 0.74 / confidence 0.81" },
   { stage: "decision", msg: "next-best questions: 3 VOI items queued" },
-  { stage: "action",   msg: "human_approval mode · notifying ops-director" },
-  { stage: "action",   msg: "approval received · action_id written" },
-  { stage: "proof",    msg: "canonical hash computed · sha256:b4f9…c1a2" },
-  { stage: "proof",    msg: "Draft 2020-12 schema validated · L0 verified" },
+  { stage: "action",   msg: "human_approval mode / notifying ops-director" },
+  { stage: "action",   msg: "approval received / action_id written" },
+  { stage: "proof",    msg: "canonical hash computed / sha256:b4f9...c1a2" },
+  { stage: "proof",    msg: "Draft 2020-12 schema validated / L0 verified" },
 ];
 
 export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-printer-gpo" }: PipelineRunnerModalProps) {
@@ -45,9 +45,15 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
   const [result, setResult] = useState<FieldLabExecuteResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const runStartedRef = useRef(false);
+  const runTokenRef = useRef(0);
   const logRef = useRef<HTMLDivElement>(null);
 
   const runPipeline = useCallback(() => {
+    if (runStartedRef.current) return;
+    runStartedRef.current = true;
+    const token = runTokenRef.current + 1;
+    runTokenRef.current = token;
     setActiveStage(0);
     setEvents([]);
     setDone(false);
@@ -60,26 +66,34 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
     void (async () => {
       try {
         const createdRun = IS_DEMO_MODE ? runDemoPipeline(packId) : await praxisClient.createRun(packId);
+        if (runTokenRef.current !== token) return;
         setRun(createdRun);
         const executed = await praxisClient.executeRun(createdRun.run_id);
+        if (runTokenRef.current !== token) return;
         await praxisClient.captureAction(createdRun.run_id, {
           action: executed.proof.action.recommended_action,
           status: "approved",
           actor: "operator",
           note: "Approved inside the public full-stack proof path.",
         });
-        setResult(executed);
+        if (runTokenRef.current === token) setResult(executed);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Pipeline request failed");
+        if (runTokenRef.current === token) setError(err instanceof Error ? err.message : "Pipeline request failed");
       }
     })();
 
     MODAL_EVENTS.forEach((ev, i) => {
       const t = setTimeout(() => {
         const stageIdx = MODAL_STAGES.findIndex((s) => s.id === ev.stage);
+        if (runTokenRef.current !== token) return;
         setActiveStage(stageIdx);
         setEvents((prev) => [...prev, ev]);
-        if (i === MODAL_EVENTS.length - 1) setTimeout(() => setDone(true), 400);
+        if (i === MODAL_EVENTS.length - 1) {
+          const doneTimer = setTimeout(() => {
+            if (runTokenRef.current === token) setDone(true);
+          }, 400);
+          timersRef.current.push(doneTimer);
+        }
       }, (i + 1) * 520);
       timersRef.current.push(t);
     });
@@ -87,7 +101,16 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
 
   useEffect(() => {
     if (open) runPipeline();
-    return () => timersRef.current.forEach(clearTimeout);
+    if (!open) {
+      runStartedRef.current = false;
+      runTokenRef.current += 1;
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
+    }
+    return () => {
+      timersRef.current.forEach(clearTimeout);
+      timersRef.current = [];
+    };
   }, [open, runPipeline]);
 
   useEffect(() => {
@@ -144,7 +167,7 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
                   {stage.label}
                 </div>
                 {i < MODAL_STAGES.length - 1 && (
-                  <span style={{ color: "var(--praxis-faint)" }}>&rarr;</span>
+                  <span className="h-px w-5 bg-[var(--praxis-line)]" aria-hidden="true" />
                 )}
               </div>
             ))}
@@ -215,7 +238,7 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
                 <div className="mt-2 font-mono text-[10px]" style={{ color: "var(--praxis-muted)" }}>
                   {(result?.proof.proof_hash ?? "sha256:b4f9...c1a2").slice(0, 22)}... / L0 verified
                 </div>
-                <div className="mt-2 font-mono text-[10px]" style={{ color: "var(--praxis-amber)" }}>
+                <div className="mt-2 font-mono text-[10px]" style={{ color: "var(--praxis-argon)" }}>
                   {run?.run_id ?? `fieldlab_run_${packId}`}
                 </div>
                 <code className="mt-4 block overflow-x-auto rounded border px-3 py-2 font-mono text-[10px]" style={{ borderColor: "var(--praxis-line)", color: "var(--praxis-muted)", background: "var(--praxis-obsidian)" }}>

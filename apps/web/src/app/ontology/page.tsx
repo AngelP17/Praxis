@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowsOut, MagnifyingGlass } from "@phosphor-icons/react";
 
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
@@ -90,11 +90,20 @@ export default function OntologyPage() {
     setSelected(selected === nodeId ? null : nodeId);
     const node = nodes.find((n) => n.id === nodeId);
     if (node) {
-      toast.info(`${node.label}`, `type: ${node.type} · criticality: ${node.criticality} · owner: ${node.owner}`);
+      toast.info(`${node.label}`, `type: ${node.type} / criticality: ${node.criticality} / owner: ${node.owner}`);
     }
   }
 
   const selectedNode = nodes.find((n) => n.id === selected);
+  const connectedIds = useMemo(() => {
+    if (!selected) return new Set<string>();
+    const ids = new Set<string>([selected]);
+    edges.forEach((edge) => {
+      if (edge.from === selected) ids.add(edge.to);
+      if (edge.to === selected) ids.add(edge.from);
+    });
+    return ids;
+  }, [edges, selected]);
 
   const topbarRight = (
     <>
@@ -110,28 +119,28 @@ export default function OntologyPage() {
       topbar={
         <TopbarTitle
           title="Ontology"
-          subtitle={`${activeScenario.site} · ${activeScenario.category}`}
+          subtitle={`${activeScenario.site} / ${activeScenario.category}`}
           right={topbarRight}
         />
       }
     >
-      <div className="px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1480px] space-y-6">
+      <div className="px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1480px] space-y-5">
 
-          <section className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] px-6 py-20 sm:px-8">
+          <div className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] px-6 py-8 sm:px-8">
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex-1">
                 <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Operational Ontology</div>
-                <h1 className="mt-4 font-display font-semibold tracking-[-0.03em] text-[var(--praxis-bone)]" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
+                <h1 className="mt-3 font-display font-semibold tracking-[-0.03em] text-[var(--praxis-bone)]" style={{ fontSize: "clamp(2rem, 3.2vw, 3rem)", lineHeight: "1.05" }}>
                   Dependency Graph
                 </h1>
-                <p className="mt-4 max-w-xl text-sm leading-relaxed text-[var(--praxis-mute)]">
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-[var(--praxis-mute)]">
                   Operational objects, inferred links, and blast-radius relationships compiled from signals and asset data. Click a node to inspect.
                 </p>
               </div>
               <ScenarioPicker activeId={activeScenario.id} onChange={handleScenarioChange} />
             </div>
-          </section>
+          </div>
 
           <div className="grid grid-cols-12 gap-5 grid-flow-dense">
             {/* Graph */}
@@ -139,7 +148,7 @@ export default function OntologyPage() {
               <div className="h-full min-h-[480px] border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6">
                 <div className="flex items-center justify-between gap-3 mb-4">
                   <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">
-                    {activeScenario.label} · {nodes.length} nodes · {edges.length} edges
+                    {activeScenario.label} / {nodes.length} nodes / {edges.length} edges
                   </div>
                   <button
                     onClick={() => setSelected(null)}
@@ -151,10 +160,10 @@ export default function OntologyPage() {
                 </div>
 
                 {/* SVG graph */}
-                <div className="relative h-[400px] overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)]">
+                <div className="relative h-[520px] overflow-hidden border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)]">
                   {ontologyStatus === "loading" ? (
                     <div className="flex h-full items-center justify-center text-sm text-[var(--praxis-mute)]">
-                      Loading ontology from backend…
+                      Loading ontology from backend...
                     </div>
                   ) : ontologyStatus === "error" ? (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-[var(--praxis-mute)]">
@@ -167,7 +176,28 @@ export default function OntologyPage() {
                       </button>
                     </div>
                   ) : (
-                  <svg viewBox="0 0 100 100" className="h-full w-full" style={{ fontFamily: "monospace" }}>
+                  <svg data-testid="ontology-graph-canvas" viewBox="0 0 100 100" className="h-full w-full" style={{ fontFamily: "monospace" }}>
+                    <defs>
+                      <pattern id="ontology-dot-grid" width="5" height="5" patternUnits="userSpaceOnUse">
+                        <circle cx="2.5" cy="2.5" r="0.16" fill="rgba(241,237,223,0.08)" />
+                      </pattern>
+                      <radialGradient id="ontology-vignette" cx="50%" cy="42%" r="68%">
+                        <stop offset="0%" stopColor="rgba(139,92,255,0.13)" />
+                        <stop offset="48%" stopColor="rgba(62,255,168,0.035)" />
+                        <stop offset="100%" stopColor="rgba(10,10,20,0)" />
+                      </radialGradient>
+                      <linearGradient id="ontology-edge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="var(--praxis-plasma)" />
+                        <stop offset="100%" stopColor="var(--praxis-argon)" />
+                      </linearGradient>
+                      <filter id="ontology-node-glow" x="-80%" y="-80%" width="260%" height="260%">
+                        <feGaussianBlur stdDeviation="1.1" />
+                      </filter>
+                    </defs>
+                    <rect x="0" y="0" width="100" height="100" fill="url(#ontology-dot-grid)" />
+                    <rect x="0" y="0" width="100" height="100" fill="url(#ontology-vignette)" />
+                    <rect x="4" y="4" width="92" height="92" fill="none" stroke="var(--praxis-line)" strokeWidth="0.18" opacity="0.65" />
+
                     {/* Edges */}
                     {edges.map((edge, idx) => {
                       const fromNode = nodes.find((n) => n.id === edge.from);
@@ -175,19 +205,55 @@ export default function OntologyPage() {
                       if (!fromNode || !toNode) return null;
                       const mx = (fromNode.x + toNode.x) / 2;
                       const my = (fromNode.y + toNode.y) / 2;
+                      // Bow each edge slightly perpendicular to its direction for an organic read.
+                      const dx = toNode.x - fromNode.x;
+                      const dy = toNode.y - fromNode.y;
+                      const len = Math.max(Math.hypot(dx, dy), 0.001);
+                      const bow = Math.min(len * 0.12, 4);
+                      const cx = mx - (dy / len) * bow;
+                      const cy = my + (dx / len) * bow;
                       const isHighlighted = selected === edge.from || selected === edge.to;
+                      const dimmedBySearch = Boolean(search.trim()) && (!filteredNodes.some((n) => n.id === edge.from) || !filteredNodes.some((n) => n.id === edge.to));
+                      const labelWidth = Math.min(17, Math.max(7, edge.label.length * 0.9));
                       return (
-                        <g key={`edge-${idx}`} opacity={isHighlighted ? 1 : EDGE_OPACITY[edge.strength]}>
-                          <line
-                            x1={fromNode.x}
-                            y1={fromNode.y}
-                            x2={toNode.x}
-                            y2={toNode.y}
-                            stroke="var(--praxis-plasma)"
-                            strokeWidth={isHighlighted ? "0.6" : "0.3"}
-                            strokeDasharray={edge.strength === "weak" ? "1 1" : undefined}
+                        <g key={`edge-${idx}`} opacity={dimmedBySearch ? 0.14 : isHighlighted ? 1 : EDGE_OPACITY[edge.strength]}>
+                          <path
+                            d={`M ${fromNode.x} ${fromNode.y} Q ${cx} ${cy} ${toNode.x} ${toNode.y}`}
+                            fill="none"
+                            stroke="var(--praxis-argon)"
+                            strokeWidth={isHighlighted ? "1.35" : "0.85"}
+                            strokeLinecap="round"
+                            opacity={isHighlighted ? 0.2 : 0.08}
                           />
-                          <text x={mx} y={my - 1} textAnchor="middle" fill="var(--praxis-mute)" fontSize="2.5">
+                          <path
+                            d={`M ${fromNode.x} ${fromNode.y} Q ${cx} ${cy} ${toNode.x} ${toNode.y}`}
+                            fill="none"
+                            stroke={isHighlighted ? "url(#ontology-edge-gradient)" : "var(--praxis-plasma)"}
+                            strokeWidth={isHighlighted ? "0.55" : "0.3"}
+                            strokeLinecap="round"
+                            strokeDasharray={edge.strength === "weak" ? "1 1.2" : undefined}
+                          />
+                          <rect
+                            x={(mx + cx) / 2 - labelWidth / 2}
+                            y={(my + cy) / 2 - 3.35}
+                            width={labelWidth}
+                            height="3.6"
+                            fill="var(--praxis-obsidian)"
+                            stroke="var(--praxis-line)"
+                            strokeWidth="0.15"
+                            opacity={isHighlighted ? 0.92 : 0.76}
+                          />
+                          <text
+                            x={(mx + cx) / 2}
+                            y={(my + cy) / 2 - 0.8}
+                            textAnchor="middle"
+                            fill="var(--praxis-mute)"
+                            fontSize="2.15"
+                            stroke="var(--praxis-obsidian)"
+                            strokeWidth="0.35"
+                            paintOrder="stroke"
+                            letterSpacing="0.12"
+                          >
                             {edge.label}
                           </text>
                         </g>
@@ -199,40 +265,55 @@ export default function OntologyPage() {
                       const c = CRIT_COLORS[node.criticality];
                       const isSelected = selected === node.id;
                       const isFiltered = filteredNodes.some((n) => n.id === node.id);
+                      const isConnected = connectedIds.has(node.id);
+                      const isDimmed = Boolean(selected) && !isConnected;
                       return (
                         <g
                           key={node.id}
                           transform={`translate(${node.x},${node.y})`}
                           onClick={() => handleNodeClick(node.id)}
                           style={{ cursor: "pointer" }}
-                          opacity={search && !isFiltered ? 0.2 : 1}
+                          opacity={(search && !isFiltered) || isDimmed ? 0.22 : 1}
                         >
+                          {/* soft halo */}
+                          <circle
+                            r={node.id === "asset" ? 7.5 : 5.8}
+                            fill={c.stroke}
+                            opacity={isSelected ? 0.28 : 0.14}
+                            filter="url(#ontology-node-glow)"
+                          />
+                          {/* outer ring */}
                           <circle
                             r={node.id === "asset" ? 6 : 4.5}
-                            fill={c.fill}
+                            fill="var(--praxis-obsidian)"
                             stroke={c.stroke}
-                            strokeWidth={isSelected ? "1.2" : "0.6"}
+                            strokeWidth={isSelected ? "0.9" : "0.5"}
                           />
-                          {isSelected && (
-                            <circle r={node.id === "asset" ? 8 : 6.5} fill="none" stroke={c.stroke} strokeWidth="0.4" opacity="0.4">
-                              <animate attributeName="r" values={`${node.id === "asset" ? 7 : 5.5};${node.id === "asset" ? 9 : 7.5};${node.id === "asset" ? 7 : 5.5}`} dur="2s" repeatCount="indefinite" />
-                              <animate attributeName="opacity" values="0.4;0;0.4" dur="2s" repeatCount="indefinite" />
-                            </circle>
-                          )}
+                          {/* inner disc */}
+                          <circle r={node.id === "asset" ? 3.6 : 2.6} fill={c.fill} stroke={c.stroke} strokeWidth="0.25" />
+                          <circle r="0.8" fill={c.stroke} />
+                          {isSelected && <circle r={node.id === "asset" ? 8 : 6.5} fill="none" stroke="var(--praxis-argon)" strokeWidth="0.45" opacity="0.7" />}
                           <text
                             textAnchor="middle"
-                            dy={node.id === "asset" ? "9" : "7"}
+                            dy={node.id === "asset" ? "9.4" : "7.4"}
                             fill={c.text}
                             fontSize="2.8"
                             fontWeight={isSelected ? "bold" : "normal"}
+                            stroke="var(--praxis-obsidian)"
+                            strokeWidth="0.7"
+                            paintOrder="stroke"
                           >
-                            {node.label.length > 14 ? node.label.slice(0, 12) + "…" : node.label}
+                            {node.label.length > 14 ? `${node.label.slice(0, 12)}...` : node.label}
                           </text>
                           <text
                             textAnchor="middle"
-                            dy={node.id === "asset" ? "12" : "10"}
-                            fill="var(--praxis-hairline)"
+                            dy={node.id === "asset" ? "12.2" : "10.2"}
+                            fill="var(--praxis-mute)"
                             fontSize="2"
+                            letterSpacing="0.14"
+                            stroke="var(--praxis-obsidian)"
+                            strokeWidth="0.5"
+                            paintOrder="stroke"
                           >
                             {node.type}
                           </text>
@@ -301,7 +382,7 @@ export default function OntologyPage() {
                         return (
                           <div key={i} className="flex items-center gap-2 border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-2.5 py-1.5">
                             <span className="font-mono text-[10px] text-[var(--praxis-plasma)]">{e.label}</span>
-                            <span className="font-mono text-[10px] text-[var(--praxis-mute)]">→</span>
+                            <span className="font-mono text-[10px] text-[var(--praxis-mute)]">to</span>
                             <span className="font-mono text-[10px] text-[var(--praxis-bone)]">{other?.label ?? "?"}</span>
                             <span className="ml-auto font-mono text-[9px] text-[var(--praxis-mute)]">{e.strength}</span>
                           </div>
@@ -326,7 +407,7 @@ export default function OntologyPage() {
                             <div className="h-2 w-2 flex-shrink-0" style={{ background: c.stroke }} />
                             <span className="text-sm font-medium text-[var(--praxis-bone)]">{node.label}</span>
                           </div>
-                          <div className="mt-0.5 font-mono text-[10px] text-[var(--praxis-mute)]">{node.type} · {node.criticality}</div>
+                          <div className="mt-0.5 font-mono text-[10px] text-[var(--praxis-mute)]">{node.type} / {node.criticality}</div>
                         </button>
                       );
                     })}
