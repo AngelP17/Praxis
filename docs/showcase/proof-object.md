@@ -11,7 +11,7 @@ A Praxis proof object is a deterministic, verifiable artifact that connects raw 
 ```json
 {
   "proof_id": "proof_praxis_manufacturing_printer_gpo_001",
-  "run_id": "fieldlab_run_manufacturing-printer-gpo",
+  "run_id": "fieldlab_run_manufacturing_printer_gpo",
   "solution_pack": "manufacturing-printer-gpo",
   "customer_context_hash": "sha256:...",
   "evidence": {

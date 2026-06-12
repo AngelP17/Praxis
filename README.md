@@ -56,7 +56,7 @@ Praxis currently has two verified release modes and one functional-enough backen
 
 - **Frontend-only public demo**: verified. Deploy the Next.js app with `NEXT_PUBLIC_DEMO_MODE=1` and the flagship surfaces run on deterministic demo fallbacks. This is the recommended public showcase path.
 - **Local FieldLab proof**: verified. Run `make praxis-proof` after `make praxis-fieldlab-up` to produce a deterministic, auditable proof artifact. This is the recommended technical credibility path.
-- **Docker Compose self-hosted**: functional, with a green PR-run CI proof. The repo ships `docker-compose.yml` + `docker-compose.prod.yml` for running the full backend stack. The API gateway enforces production safety at boot, and `.github/workflows/ci.yml` now includes a Compose production-proof job that passed on PR `#4`. See [Deployment Guide](docs/architecture/deployment-guide.md) for setup steps, and [Public Launch Checklist](docs/release/public-launch-checklist.md) for remaining hardening items.
+- **Docker Compose self-hosted**: functional, with a green PR-run CI proof recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The repo ships `docker-compose.yml` + `docker-compose.prod.yml` for running the full backend stack. The API gateway enforces production safety at boot, and `.github/workflows/ci.yml` includes a Compose production-proof job. See [Deployment Guide](docs/architecture/deployment-guide.md) for setup steps, and [Public Launch Checklist](docs/release/public-launch-checklist.md) for remaining hardening items.
 
 Before a real public production launch:
 
@@ -113,6 +113,17 @@ Run a single scenario with `make praxis-run-scenario SCENARIO=printer-offline`, 
 ---
 
 ## Screenshots
+
+The committed screenshots below were refreshed from a local production Next.js build with `NEXT_PUBLIC_DEMO_MODE=1`. Regenerate them with:
+
+```bash
+NEXT_PUBLIC_DEMO_MODE=1 pnpm web:build
+PORT=3200 NEXT_PUBLIC_DEMO_MODE=1 pnpm --filter praxis-web start --hostname 127.0.0.1 --port 3200
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-praxis-screenshots.mjs
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-all-screenshots.mjs
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-demo-screenshots.mjs
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-readme-screenshots.mjs
+```
 
 | Landing | Field Workbench | Proof Object |
 |---------|----------------|--------------|

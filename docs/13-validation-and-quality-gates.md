@@ -129,6 +129,21 @@ make clean-demo
 
 `make demo` starts the API gateway, platform service, decision service, and web app. `make demo-seed` loads a deterministic scenario, `make demo-validate` checks the flagship path, `make demo-reset` clears demo state, and `make clean-demo` stops running demo processes. These commands assume dependencies are installed and the local ports are available.
 
+## Screenshot Refresh Gates
+
+Committed screenshots are refreshed from the frontend-only production demo build, not from dev mode:
+
+```bash
+NEXT_PUBLIC_DEMO_MODE=1 pnpm web:build
+PORT=3200 NEXT_PUBLIC_DEMO_MODE=1 pnpm --filter praxis-web start --hostname 127.0.0.1 --port 3200
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-praxis-screenshots.mjs
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-all-screenshots.mjs
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-demo-screenshots.mjs
+BASE_URL=http://127.0.0.1:3200 NEXT_PUBLIC_DEMO_MODE=1 node scripts/capture-readme-screenshots.mjs
+```
+
+`scripts/capture-praxis-screenshots.mjs` refreshes the README gallery in `screenshots/praxis/`. `scripts/capture-all-screenshots.mjs` refreshes the broader app surface set in `screenshots/`. `scripts/capture-demo-screenshots.mjs` refreshes `docs/demo/screenshots/`. `scripts/capture-readme-screenshots.mjs` refreshes the compact support set in `docs/screenshots/`.
+
 ## Scenario Gates
 
 ```bash

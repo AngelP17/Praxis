@@ -161,11 +161,6 @@ rg "Inter" apps/web/src
 Result: `0 matches`
 
 ```bash
-rg -i "Praxis OpsCenter" apps/web/src docs/
-```
-Result: `0 matches`
-
-```bash
 rg -i "emoji" apps/web/src docs/
 ```
 Result: `0 matches`

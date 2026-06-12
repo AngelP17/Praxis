@@ -152,10 +152,9 @@ async function main() {
     });
     
     // 3. Proof Object
-    await capture(page, "03-proof-object.png", "/proof/fieldlab_run_manufacturing-printer-gpo?pack=manufacturing-printer-gpo", {
+    await capture(page, "03-proof-object.png", "/proof/fieldlab_run_manufacturing_printer_gpo?pack=manufacturing-printer-gpo", {
       waitForText: "Active proof controls",
       scrollToText: "Active proof controls",
-      screenshotSelector: 'section.border-y',
       postWaitMs: 2500,
     });
     
@@ -201,7 +200,7 @@ async function main() {
 
     // 10. Dashboard
     await capture(page, "10-dashboard.png", "/dashboard", {
-      waitForText: "Operational Overview",
+      waitForText: "Portfolio Dashboard",
       postWaitMs: 2500,
       fullPage: false,
     });

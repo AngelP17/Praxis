@@ -72,7 +72,7 @@ make praxis-test        # Algorithm + FieldLab integration tests
 
 Open these routes after `make demo` + `make demo-seed`:
 - `/field-workbench?pack=manufacturing-printer-gpo` — end-to-end customer workflow
-- `/proof/proof_praxis_manufacturing_printer_gpo_001` — cinematic proof detail + verifier
+- `/proof/fieldlab_run_manufacturing_printer_gpo?pack=manufacturing-printer-gpo` — cinematic proof detail + verifier
 - `/dashboard` — live/snapshot system health bento
 - `/audit` — audit trail viewer with export
 
