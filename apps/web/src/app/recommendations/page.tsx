@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { CheckCircle, XCircle, Sparkle, ArrowClockwise } from "@phosphor-icons/react";
 
 import { postJsonWithTimeout } from "@/lib/api";
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
+import { TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
 import { useToast } from "@/components/notifications";
 import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
@@ -172,8 +171,7 @@ export default function RecommendationsPage() {
   const sevClasses = SEVERITY_COLORS[activeScenario.severity] ?? SEVERITY_COLORS.medium;
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Recommendations" />
+    <WorkbenchShell topbar={<TopbarTitle title="Recommendations" subtitle="operator approvals / overrides" />}>
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
 
@@ -182,7 +180,7 @@ export default function RecommendationsPage() {
             <div className="flex flex-wrap items-center justify-between gap-6">
               <div className="flex-1">
                 <div className="praxis-v2-eyebrow-enhanced">Intelligent Automation Queue</div>
-                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
+                <h1 className="mt-4 font-display font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
                   Recommendations
                 </h1>
                 <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
@@ -234,7 +232,7 @@ export default function RecommendationsPage() {
                 return (
                   <div
                     key={row.id}
-                    className={`rounded-xl border bg-zinc-900/60 px-4 py-4 transition-all duration-500 ${
+                    className={`border bg-zinc-900/60 px-4 py-4 transition-all duration-500 ${
                       isDone ? "border-zinc-800/40 opacity-55" : "border-zinc-800"
                     }`}
                   >
@@ -297,7 +295,7 @@ export default function RecommendationsPage() {
                   <button
                     key={s.id}
                     onClick={() => handleScenarioChange(s)}
-                    className={`rounded-xl border px-3 py-3 text-left transition-all duration-200 hover:scale-[1.02] ${
+                    className={`border px-3 py-3 text-left transition-all duration-200 hover:scale-[1.02] ${
                       s.id === activeScenario.id
                         ? "border-violet-500/50 bg-violet-500/10"
                         : "border-zinc-700/60 bg-zinc-800/40 hover:border-zinc-600"
@@ -317,6 +315,6 @@ export default function RecommendationsPage() {
 
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }

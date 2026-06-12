@@ -47,7 +47,7 @@ export function HumanFeedbackPanel({
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.04, type: "spring", stiffness: 400, damping: 30 }}
-            className={`rounded-xl border p-3.5 ${
+            className={`border p-3.5 ${
               item.verdict === "approve"
                 ? "border-emerald-500/15 bg-emerald-500/[0.04]"
                 : item.verdict === "reject"
@@ -133,7 +133,7 @@ export function HumanFeedbackPanel({
                 onChange={(e) => setComment(e.target.value)}
                 placeholder="Add context to your feedback..."
                 rows={3}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-violet-500/30 focus:outline-none resize-none"
+                className="w-full border border-zinc-800 bg-zinc-950/50 px-4 py-3 text-sm text-zinc-200 placeholder:text-zinc-600 focus:border-violet-500/30 focus:outline-none resize-none"
               />
               <button
                 type="button"

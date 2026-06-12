@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useToast } from "@/components/notifications";
-import { CommandShell } from "@/components/command-shell";
-import { SystemStatusRail } from "@/components/system-status-rail";
+import { TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import {
@@ -155,23 +154,21 @@ export default function ReportsPage() {
 
   if (status === "loading") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Reports" />
+      <WorkbenchShell topbar={<TopbarTitle title="Reports" subtitle="executive and operational reporting" />}>
         <div className="flex-1 p-4 sm:p-6 lg:p-8">
           <LoadingSkeleton />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   if (status === "error") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Reports" />
+      <WorkbenchShell topbar={<TopbarTitle title="Reports" subtitle="executive and operational reporting" />}>
         <div className="flex-1 p-4 sm:p-6 lg:p-8">
           <ErrorState title="Reports unavailable" message={errorMessage || "Could not load report data."} onRetry={loadMetrics} />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
@@ -182,8 +179,7 @@ export default function ReportsPage() {
   ];
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Reports" />
+    <WorkbenchShell topbar={<TopbarTitle title="Reports" subtitle="executive and operational reporting" />}>
       <div className="flex-1 overflow-auto relative">
         <div className="relative z-10 mx-auto max-w-[1400px] px-4 py-5 sm:px-6 lg:px-8">
           <div className="ops-glass rounded-[2rem] overflow-hidden">
@@ -191,7 +187,7 @@ export default function ReportsPage() {
               <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                 <div className="max-w-5xl">
                   <div className="mono-data text-[11px] uppercase tracking-[0.32em] text-violet-300">Reports & Export</div>
-                  <h1 className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                  <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">
                     Reporting integrated with the operational platform
                   </h1>
                   <p className="mt-3 text-sm leading-7 text-zinc-400">
@@ -204,12 +200,12 @@ export default function ReportsPage() {
                     type="button"
                     onClick={handleWorkbookDownload}
                     disabled={isDownloading}
-                    className="inline-flex items-center gap-2 rounded-2xl bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition duration-500 hover:scale-105 hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-70"
+                    className="inline-flex items-center gap-2 bg-violet-500 px-4 py-2.5 text-sm font-semibold text-black transition duration-500 hover:scale-105 hover:bg-violet-400 disabled:cursor-not-allowed disabled:opacity-70"
                   >
                     <Table size={16} />
                     {isDownloading ? "Preparing workbook..." : "Download Workbook"}
                   </button>
-                  <Link href="/command-center" className="inline-flex items-center gap-2 rounded-2xl border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition duration-500 hover:scale-105 hover:border-violet-500/30 hover:bg-violet-500/10">
+                  <Link href="/command-center" className="inline-flex items-center gap-2 border border-zinc-700 bg-zinc-900/70 px-4 py-2.5 text-sm font-medium text-zinc-100 transition duration-500 hover:scale-105 hover:border-violet-500/30 hover:bg-violet-500/10">
                     <Scan size={16} />
                     Command Center
                   </Link>
@@ -225,11 +221,11 @@ export default function ReportsPage() {
                   <div key={item.label} className="praxis-v2-panel-enhanced p-5 group transition-transform duration-500 hover:scale-[1.02]">
                     <div className="flex items-center justify-between">
                       <div className="mono-data text-[11px] uppercase tracking-[0.28em] text-zinc-500">{item.label}</div>
-                      <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/5 bg-black/20 transition-colors group-hover:bg-white/5">
+                      <div className="flex h-10 w-10 items-center justify-center border border-white/5 bg-black/20 transition-colors group-hover:bg-white/5">
                         <Icon size={16} style={{ color: item.color }} />
                       </div>
                     </div>
-                    <div className="mt-4 text-3xl font-semibold tracking-tight text-white">{item.value}</div>
+                    <div className="mt-4 text-3xl font-semibold tracking-tight text-zinc-50">{item.value}</div>
                     <div className="mt-1 text-[11px] text-zinc-500">{item.note}</div>
                   </div>
                 );
@@ -240,7 +236,7 @@ export default function ReportsPage() {
               <section className="praxis-v2-panel-enhanced p-5 py-20 sm:p-6 transition-transform duration-500 hover:scale-[1.01]">
                 <div className="flex items-center justify-between gap-4 border-b border-zinc-800/70 pb-4">
                   <div>
-                    <h2 className="text-xl font-semibold text-white">Workbook Contents</h2>
+                    <h2 className="text-xl font-semibold text-zinc-50">Workbook Contents</h2>
                     <p className="mt-2 text-sm leading-6 text-zinc-500">
                       Each tab is there to support a concrete review motion.
                     </p>
@@ -255,7 +251,7 @@ export default function ReportsPage() {
                     <div key={tab.name} className="rounded-[1.15rem] border border-zinc-800 bg-zinc-950/55 p-4 sm:p-5">
                       <div className="flex items-start gap-4">
                         <div
-                          className="mono-data flex h-10 w-10 items-center justify-center rounded-2xl border text-sm font-semibold"
+                          className="mono-data flex h-10 w-10 items-center justify-center border text-sm font-semibold"
                           style={{ color: tab.accent, borderColor: `${tab.accent}35`, backgroundColor: `${tab.accent}14` }}
                         >
                           {index + 1}
@@ -318,7 +314,7 @@ export default function ReportsPage() {
           </div>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
 

@@ -17,7 +17,7 @@ function AuthLoadingShell() {
       aria-live="polite"
       aria-busy="true"
     >
-      <div className="flex flex-col items-center gap-3 rounded-2xl border border-zinc-800 bg-black/40 px-5 py-4 shadow-2xl">
+      <div className="flex flex-col items-center gap-3 border border-zinc-800 bg-black/40 px-5 py-4 shadow-2xl">
         <div className="h-7 w-7 animate-spin rounded-full border-2 border-violet-500/25 border-t-violet-400" />
         <div>Checking session...</div>
       </div>

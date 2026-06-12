@@ -102,18 +102,18 @@ export default function AssetsPage() {
                 <h1 className="mt-2 text-2xl font-semibold text-zinc-50">Infrastructure Inventory and Criticality Map</h1>
                 <p className="mt-2 text-sm text-zinc-400">Backed by <span className="mono-data">/api/assets</span> with dependency context for operational routing.</p>
               </div>
-              <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-zinc-700/70 bg-zinc-900/70 text-violet-200">
+              <div className="inline-flex h-10 w-10 items-center justify-center border border-zinc-700/70 bg-zinc-900/70 text-violet-200">
                 <HardDrives size={16} />
               </div>
             </div>
-            {notice ? <div className="mt-3 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{notice}</div> : null}
+            {notice ? <div className="mt-3 border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{notice}</div> : null}
             <label className="relative mt-4 block max-w-lg">
               <MagnifyingGlass size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Search asset name, type, site, team, criticality..."
-                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/45"
+                className="min-h-10 w-full border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/45"
               />
             </label>
           </section>
@@ -136,7 +136,7 @@ export default function AssetsPage() {
                   </thead>
                   <tbody>
                     {filtered.map((asset) => (
-                      <tr key={asset.id} className="rounded-lg border border-zinc-800/80 bg-zinc-900/75">
+                      <tr key={asset.id} className="border border-zinc-800/80 bg-zinc-900/75">
                         <td className="rounded-l-lg px-3 py-2.5 text-sm text-zinc-100">{asset.asset_name}</td>
                         <td className="px-3 py-2.5 text-sm text-zinc-300">{asset.asset_type}</td>
                         <td className="mono-data px-3 py-2.5 text-xs text-zinc-300">{asset.site_id}</td>

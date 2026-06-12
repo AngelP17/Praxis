@@ -87,7 +87,7 @@ export function ReplayTimeline({ events }: { events: ReplayEvent[] }) {
                           transition={{ type: "spring", stiffness: 400, damping: 30 }}
                           className="overflow-hidden"
                         >
-                          <div className="mt-2 rounded-lg border border-zinc-800 bg-zinc-950/50 p-3 text-xs text-zinc-400 leading-relaxed">
+                          <div className="mt-2 border border-zinc-800 bg-zinc-950/50 p-3 text-xs text-zinc-400 leading-relaxed">
                             {event.details}
                           </div>
                         </motion.div>

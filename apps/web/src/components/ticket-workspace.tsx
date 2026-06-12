@@ -614,7 +614,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.title}
                     onChange={(event) => setForm((current) => ({ ...current, title: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Briefly describe the issue"
                   />
                 </label>
@@ -623,7 +623,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.requester}
                     onChange={(event) => setForm((current) => ({ ...current, requester: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Who raised the ticket?"
                   />
                 </label>
@@ -632,7 +632,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.status}
                     onChange={(event) => setForm((current) => ({ ...current, status: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     {statuses.map((status) => (
                       <option key={status} value={status}>
@@ -646,7 +646,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.priority}
                     onChange={(event) => setForm((current) => ({ ...current, priority: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     {priorities.map((priority) => (
                       <option key={priority} value={priority}>
@@ -660,7 +660,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.category_id}
                     onChange={(event) => setForm((current) => ({ ...current, category_id: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     <option value="">No category</option>
                     {options.categories.map((category) => (
@@ -700,7 +700,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <select
                     value={form.staff_assigned}
                     onChange={(event) => setForm((current) => ({ ...current, staff_assigned: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   >
                     <option value="">Unassigned</option>
                     {currentAssignees.map((assignee) => (
@@ -740,7 +740,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.request_type}
                     onChange={(event) => setForm((current) => ({ ...current, request_type: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Used if you intentionally leave category unset"
                   />
                 </label>
@@ -749,7 +749,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <input
                     value={form.site_id}
                     onChange={(event) => setForm((current) => ({ ...current, site_id: event.target.value }))}
-                    className="mt-2 w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Optional site, asset, or tenant reference"
                   />
                 </label>
@@ -758,7 +758,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <textarea
                     value={form.description}
                     onChange={(event) => setForm((current) => ({ ...current, description: event.target.value }))}
-                    className="mt-2 min-h-[160px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 min-h-[160px] w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Capture the actual operating context, error, and request details."
                   />
                 </label>
@@ -767,7 +767,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                   <textarea
                     value={form.resolution_notes}
                     onChange={(event) => setForm((current) => ({ ...current, resolution_notes: event.target.value }))}
-                    className="mt-2 min-h-[120px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                    className="mt-2 min-h-[120px] w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                     placeholder="Document what fixed it, what remains open, or what operators should know."
                   />
                 </label>
@@ -853,7 +853,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                           width={1200}
                           height={900}
                           unoptimized
-                          className="mt-4 max-h-56 rounded-2xl border border-zinc-800 object-cover"
+                          className="mt-4 max-h-56 border border-zinc-800 object-cover"
                         />
                       ) : null}
                     </div>
@@ -877,7 +877,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                 <textarea
                   value={commentBody}
                   onChange={(event) => setCommentBody(event.target.value)}
-                  className="min-h-[120px] w-full rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                  className="min-h-[120px] w-full border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                   placeholder="Add a meaningful update, next step, diagnostic note, or customer-facing summary."
                 />
                 <FileDropzone files={commentFiles} onChange={setCommentFiles} label="Attach files to this comment" />
@@ -928,7 +928,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                           <textarea
                             value={editingCommentBody}
                             onChange={(event) => setEditingCommentBody(event.target.value)}
-                            className="min-h-[100px] w-full rounded-2xl border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
+                            className="min-h-[100px] w-full border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white outline-none transition focus:border-violet-400/50"
                           />
                           <div className="flex gap-2">
                             <button
@@ -956,7 +956,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                       {comment.attachments.length ? (
                         <div className="mt-4 grid gap-3">
                           {comment.attachments.map((attachment) => (
-                            <div key={attachment.id} className="rounded-2xl border border-zinc-800 bg-black/20 p-3">
+                            <div key={attachment.id} className="border border-zinc-800 bg-black/20 p-3">
                               <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
                                   <a
@@ -988,7 +988,7 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
                                   width={1200}
                                   height={900}
                                   unoptimized
-                                  className="mt-3 max-h-48 rounded-xl border border-zinc-800 object-cover"
+                                  className="mt-3 max-h-48 border border-zinc-800 object-cover"
                                 />
                               ) : null}
                             </div>
@@ -1017,13 +1017,13 @@ export function TicketWorkspace({ ticketId }: TicketWorkspaceProps) {
 
                 <div className="mt-6 space-y-4">
                   {detail.events.map((event) => (
-                    <div key={`${event.event_type}-${event.event_ts}-${event.actor_id || ""}`} className="rounded-2xl border border-zinc-800 bg-zinc-950/60 p-4">
+                    <div key={`${event.event_type}-${event.event_ts}-${event.actor_id || ""}`} className="border border-zinc-800 bg-zinc-950/60 p-4">
                       <div className="text-sm font-semibold text-white">{event.event_type.replaceAll("_", " ")}</div>
                       <div className="mt-1 text-xs text-zinc-500">
                         {formatRelativeDate(event.event_ts)} · {event.actor_id || event.actor_type}
                       </div>
                       {event.payload ? (
-                        <pre className="mono-data mt-3 overflow-x-auto rounded-xl border border-zinc-800 bg-black/30 p-3 text-[11px] text-zinc-400">
+                        <pre className="mono-data mt-3 overflow-x-auto border border-zinc-800 bg-black/30 p-3 text-[11px] text-zinc-400">
                           {JSON.stringify(event.payload, null, 2)}
                         </pre>
                       ) : null}

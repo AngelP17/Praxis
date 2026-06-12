@@ -18,11 +18,10 @@ import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { deterministicHash } from "@/lib/deterministic-hash";
 import { getScenarioByTicketId } from "@/lib/scenarios";
-import { CommandShell } from "@/components/command-shell";
 import { DecisionExplanationPanel } from "@/components/decision-explanation-panel";
 import { ErrorState } from "@/components/error-state";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
-import { SystemStatusRail } from "@/components/system-status-rail";
+import { TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 
 type EventRow = {
   event_id: string;
@@ -264,23 +263,21 @@ export default function DecisionCenterPage() {
 
   if (status === "loading") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Decisions" />
+      <WorkbenchShell topbar={<TopbarTitle title="Decision Center" subtitle="operational decisions / replay proof" />}>
         <div className="flex-1 p-4 sm:p-6 lg:p-8">
           <LoadingSkeleton />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
   if (status === "error") {
     return (
-      <CommandShell>
-        <SystemStatusRail activeLabel="Decisions" />
+      <WorkbenchShell topbar={<TopbarTitle title="Decision Center" subtitle="operational decisions / replay proof" />}>
         <div className="flex-1 p-4 sm:p-6 lg:p-8">
           <ErrorState title="Decision center unavailable" message={notice || "Could not load decision workflow."} onRetry={loadEvents} />
         </div>
-      </CommandShell>
+      </WorkbenchShell>
     );
   }
 
@@ -288,15 +285,14 @@ export default function DecisionCenterPage() {
   const selectedDecisionStatus = decision ? decisionStatuses[decision.id] ?? "pending" : "pending";
 
   return (
-    <CommandShell>
-      <SystemStatusRail activeLabel="Decisions" />
+    <WorkbenchShell topbar={<TopbarTitle title="Decision Center" subtitle="operational decisions / replay proof" />}>
       <div className="flex-1 overflow-auto px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-[1480px] space-y-6">
           <section className="praxis-v2-panel-enhanced p-8 sm:p-10 py-24 sm:py-32">
             <div className="max-w-5xl flex flex-wrap items-center justify-between gap-6">
               <div className="flex-1">
                 <div className="praxis-v2-eyebrow-enhanced">Decision Center</div>
-                <h1 className="mt-4 font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>
+                <h1 className="mt-4 font-display font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2.5rem, 4vw, 4rem)", lineHeight: "1.1" }}>
                   Praxis Operational Decisions and Replay Proof
                 </h1>
                 <p className="mt-5 text-base text-zinc-400 leading-relaxed">
@@ -308,7 +304,7 @@ export default function DecisionCenterPage() {
                 Refresh
               </button>
             </div>
-            {notice ? <div className="mt-6 rounded-xl border border-violet-500/30 bg-violet-500/10 px-5 py-3 text-sm text-violet-100">{notice}</div> : null}
+            {notice ? <div className="mt-6 border border-violet-500/30 bg-violet-500/10 px-5 py-3 text-sm text-violet-100">{notice}</div> : null}
           </section>
 
           <section className="py-24 sm:py-32">
@@ -323,7 +319,7 @@ export default function DecisionCenterPage() {
                         <button
                           key={event.event_id}
                           onClick={() => setSelectedEventId(event.event_id)}
-                          className="card-hover-physics w-full rounded-xl border border-violet-500/45 bg-violet-500/14 px-4 py-4 text-left shadow-md shadow-violet-500/8 transition-transform duration-500 hover:scale-105"
+                          className="card-hover-physics w-full border border-violet-500/45 bg-violet-500/14 px-4 py-4 text-left shadow-md shadow-violet-500/8 transition-transform duration-500 hover:scale-105"
                         >
                           <div className="flex items-center justify-between gap-3">
                             <span className="mono-data text-sm font-medium text-zinc-100">{event.event_id}</span>
@@ -336,7 +332,7 @@ export default function DecisionCenterPage() {
                         <button
                           key={event.event_id}
                           onClick={() => setSelectedEventId(event.event_id)}
-                          className="card-hover-physics w-full rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 text-left transition-transform duration-500 hover:scale-105 hover:border-zinc-600/70 hover:bg-zinc-800/60"
+                          className="card-hover-physics w-full border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 text-left transition-transform duration-500 hover:scale-105 hover:border-zinc-600/70 hover:bg-zinc-800/60"
                         >
                           <div className="flex items-center justify-between gap-3">
                             <span className="mono-data text-sm font-medium text-zinc-100">{event.event_id}</span>
@@ -397,12 +393,12 @@ export default function DecisionCenterPage() {
                         />
                       </div>
 
-                      <div className="mt-7 rounded-xl border border-zinc-700/60 bg-zinc-800/50 p-5">
+                      <div className="mt-7 border border-zinc-700/60 bg-zinc-800/50 p-5">
                         <div className="praxis-v2-eyebrow-enhanced">Impacted Dependencies</div>
                         <div className="mt-4 grid grid-cols-1 gap-3 grid-flow-dense lg:grid-cols-3">
                           {impactedAssets.length > 0 ? (
                             impactedAssets.map((asset, index) => (
-                              <div key={`${asset.asset_name}-${index}`} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-900/70 px-4 py-4 transition-transform duration-500 hover:scale-105">
+                              <div key={`${asset.asset_name}-${index}`} className="card-hover-physics border border-zinc-700/60 bg-zinc-900/70 px-4 py-4 transition-transform duration-500 hover:scale-105">
                                 <div className="text-base font-medium text-zinc-100">{asset.asset_name || "Unknown asset"}</div>
                                 <div className="mt-2 text-sm text-zinc-400">
                                   {asset.relationship || "supports"} · depth {asset.depth ?? "?"}
@@ -411,14 +407,14 @@ export default function DecisionCenterPage() {
                               </div>
                             ))
                           ) : (
-                            <div className="rounded-xl border border-zinc-700/60 bg-zinc-900/70 px-4 py-4 text-sm text-zinc-400">
+                            <div className="border border-zinc-700/60 bg-zinc-900/70 px-4 py-4 text-sm text-zinc-400">
                               No downstream dependencies were resolved for this event.
                             </div>
                           )}
                         </div>
                       </div>
 
-                      <div className="mt-7 rounded-xl border border-zinc-700/60 bg-zinc-800/50 p-5">
+                      <div className="mt-7 border border-zinc-700/60 bg-zinc-800/50 p-5">
                         <div className="inline-flex items-center gap-2 text-sm font-medium text-zinc-300">
                           <ArrowsClockwise size={16} className="text-violet-200" />
                           Replay Proof
@@ -429,14 +425,14 @@ export default function DecisionCenterPage() {
                         </div>
                       </div>
 
-                      <div className="mt-7 rounded-xl border border-zinc-700/60 bg-zinc-800/50 p-5">
+                      <div className="mt-7 border border-zinc-700/60 bg-zinc-800/50 p-5">
                         <div className="inline-flex items-center gap-2 text-sm font-medium text-zinc-300">
                           <MapTrifold size={16} className="text-violet-200" />
                           Recommendations
                         </div>
                         <div className="mt-6 space-y-4">
                           {decision.recommendations.map((recommendation) => (
-                            <div key={recommendation.id} className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-900/70 px-4 py-4 transition-transform duration-500 hover:scale-105">
+                            <div key={recommendation.id} className="card-hover-physics border border-zinc-700/60 bg-zinc-900/70 px-4 py-4 transition-transform duration-500 hover:scale-105">
                               <div className="flex items-center justify-between gap-3">
                                 <div className="text-base font-medium text-zinc-100">{recommendation.action_label}</div>
                                 <span className="mono-data text-xs font-medium text-zinc-500">#{recommendation.id}</span>
@@ -468,13 +464,13 @@ export default function DecisionCenterPage() {
           </section>
         </div>
       </div>
-    </CommandShell>
+    </WorkbenchShell>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
+    <div className="card-hover-physics border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
       <div className="praxis-v2-eyebrow-enhanced text-[11px]">{label}</div>
       <div className="mono-data mt-2 text-base font-medium text-zinc-100">{value}</div>
     </div>
@@ -483,7 +479,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 
 function ContextStat({ label, value, icon }: { label: string; value: string; icon: ReactNode }) {
   return (
-    <div className="card-hover-physics rounded-xl border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
+    <div className="card-hover-physics border border-zinc-700/60 bg-zinc-800/50 px-4 py-4 transition-transform duration-500 hover:scale-105">
       <div className="inline-flex items-center gap-2 praxis-v2-eyebrow-enhanced text-[11px]">
         {icon}
         {label}
@@ -495,7 +491,7 @@ function ContextStat({ label, value, icon }: { label: string; value: string; ico
 
 function ProofHash({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-zinc-700/60 bg-zinc-900/70 px-4 py-4">
+    <div className="border border-zinc-700/60 bg-zinc-900/70 px-4 py-4">
       <div className="praxis-v2-eyebrow-enhanced text-[11px]">{label}</div>
       <div className="mono-data mt-3 break-all text-sm text-zinc-200">{value}</div>
     </div>

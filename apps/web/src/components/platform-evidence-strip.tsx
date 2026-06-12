@@ -46,7 +46,7 @@ export function PlatformEvidenceStrip({ items }: { items: EvidenceItem[] }) {
             href={item.url || "#"}
             target={item.url ? "_blank" : undefined}
             rel={item.url ? "noopener noreferrer" : undefined}
-            className={`flex min-w-[200px] flex-col gap-2 rounded-xl border p-3.5 transition hover:brightness-110 hover:scale-105 transition-transform duration-500 ${typeBorder(item.type)}`}
+            className={`flex min-w-[200px] flex-col gap-2 border p-3.5 transition hover:brightness-110 hover:scale-105 transition-transform duration-500 ${typeBorder(item.type)}`}
           >
             <div className="flex items-center gap-2">
               {typeIcon(item.type)}

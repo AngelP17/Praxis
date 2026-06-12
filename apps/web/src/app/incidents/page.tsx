@@ -99,7 +99,7 @@ export default function IncidentsPage() {
               Browse grouped incidents with deterministic root-cause context and linked operational ticket pressure.
             </p>
             {errorMessage ? (
-              <div className="mt-4 rounded-xl border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{errorMessage}</div>
+              <div className="mt-4 border border-violet-500/30 bg-violet-500/10 px-4 py-2 text-sm text-violet-100">{errorMessage}</div>
             ) : null}
           </div>
 
@@ -110,7 +110,7 @@ export default function IncidentsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search incidents..."
-                className="min-h-10 w-full rounded-xl border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/45"
+                className="min-h-10 w-full border border-zinc-700/70 bg-zinc-950/80 py-2 pl-9 pr-3 text-sm text-zinc-100 outline-none transition placeholder:text-zinc-600 focus:border-violet-400/45"
               />
             </label>
           </div>
@@ -152,7 +152,7 @@ export default function IncidentsPage() {
                 <Link
                   key={incident.id}
                   href={`/incidents/${incident.id}`}
-                  className="group flex flex-col gap-3 rounded-xl border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-[1.01] duration-500 sm:flex-row sm:items-center sm:justify-between"
+                  className="group flex flex-col gap-3 border border-zinc-800/70 bg-zinc-950/60 p-5 transition hover:border-violet-500/20 hover:bg-zinc-900/80 hover:scale-[1.01] duration-500 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-3">

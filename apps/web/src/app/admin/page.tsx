@@ -346,26 +346,26 @@ export default function AdminPage() {
               <input
                 value={newUser.username}
                 onChange={(event) => setNewUser((current) => ({ ...current, username: event.target.value }))}
-                className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                 placeholder="Username"
               />
               <input
                 value={newUser.display_name}
                 onChange={(event) => setNewUser((current) => ({ ...current, display_name: event.target.value }))}
-                className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                 placeholder="Display name"
               />
               <input
                 value={newUser.password}
                 onChange={(event) => setNewUser((current) => ({ ...current, password: event.target.value }))}
                 type="password"
-                className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                 placeholder="Temporary password"
               />
               <select
                 value={newUser.role}
                 onChange={(event) => setNewUser((current) => ({ ...current, role: event.target.value }))}
-                className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
               >
                 {roleOptions.map((role) => (
                   <option key={role} value={role}>
@@ -389,12 +389,12 @@ export default function AdminPage() {
                     <input
                       value={entry.display_name}
                       onChange={(event) => updateUserDraft(entry.username, { display_name: event.target.value })}
-                      className="rounded-2xl border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white"
+                      className="border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white"
                     />
                     <select
                       value={entry.role}
                       onChange={(event) => updateUserDraft(entry.username, { role: event.target.value })}
-                      className="rounded-2xl border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white"
+                      className="border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white"
                     >
                       {roleOptions.map((role) => (
                         <option key={role} value={role}>
@@ -406,7 +406,7 @@ export default function AdminPage() {
                       value={entry.password}
                       onChange={(event) => updateUserDraft(entry.username, { password: event.target.value })}
                       type="password"
-                      className="rounded-2xl border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white md:col-span-2"
+                      className="border border-zinc-700 bg-black/30 px-4 py-3 text-sm text-white md:col-span-2"
                       placeholder="Optional new password"
                     />
                   </div>
@@ -450,19 +450,19 @@ export default function AdminPage() {
                 <input
                   value={newCategory.name}
                   onChange={(event) => setNewCategory((current) => ({ ...current, name: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="Category name"
                 />
                 <input
                   value={newCategory.color}
                   onChange={(event) => setNewCategory((current) => ({ ...current, color: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="#6366f1"
                 />
                 <input
                   value={newCategory.icon}
                   onChange={(event) => setNewCategory((current) => ({ ...current, icon: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="fa-tag"
                 />
               </div>
@@ -523,7 +523,7 @@ export default function AdminPage() {
                 <input
                   value={newAssignee}
                   onChange={(event) => setNewAssignee(event.target.value)}
-                  className="min-w-[220px] flex-1 rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="min-w-[220px] flex-1 border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="Assignee display name"
                 />
                 <button
@@ -564,13 +564,13 @@ export default function AdminPage() {
                 <input
                   value={newLabel.name}
                   onChange={(event) => setNewLabel((current) => ({ ...current, name: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="Label name"
                 />
                 <input
                   value={newLabel.color}
                   onChange={(event) => setNewLabel((current) => ({ ...current, color: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="#3b82f6"
                 />
               </div>
@@ -613,21 +613,21 @@ export default function AdminPage() {
                   type="password"
                   value={passwordForm.current_password}
                   onChange={(event) => setPasswordForm((current) => ({ ...current, current_password: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="Current password"
                 />
                 <input
                   type="password"
                   value={passwordForm.new_password}
                   onChange={(event) => setPasswordForm((current) => ({ ...current, new_password: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="New password"
                 />
                 <input
                   type="password"
                   value={passwordForm.confirm_password}
                   onChange={(event) => setPasswordForm((current) => ({ ...current, confirm_password: event.target.value }))}
-                  className="rounded-2xl border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
+                  className="border border-zinc-700 bg-zinc-950/70 px-4 py-3 text-sm text-white"
                   placeholder="Confirm new password"
                 />
               </div>

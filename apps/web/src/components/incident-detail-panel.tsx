@@ -40,28 +40,28 @@ export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {
       </div>
 
       <div className="mt-5 grid grid-flow-dense gap-4 sm:grid-cols-2">
-        <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+        <div className="flex items-center gap-3 border border-zinc-800 bg-zinc-950/40 px-4 py-3">
           <Hash className="h-4 w-4 text-zinc-600" />
           <div>
             <div className="text-[10px] uppercase tracking-wider text-zinc-600">Ticket ID</div>
             <div className="mono-data text-sm text-zinc-200">{ticket.ticket_id}</div>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+        <div className="flex items-center gap-3 border border-zinc-800 bg-zinc-950/40 px-4 py-3">
           <User className="h-4 w-4 text-zinc-600" />
           <div>
             <div className="text-[10px] uppercase tracking-wider text-zinc-600">Assignee</div>
             <div className="text-sm text-zinc-200">{ticket.assignee || "Unassigned"}</div>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+        <div className="flex items-center gap-3 border border-zinc-800 bg-zinc-950/40 px-4 py-3">
           <Clock className="h-4 w-4 text-zinc-600" />
           <div>
             <div className="text-[10px] uppercase tracking-wider text-zinc-600">Days Open</div>
             <div className="mono-data text-sm text-zinc-200">{ticket.days_open}d</div>
           </div>
         </div>
-        <div className="flex items-center gap-3 rounded-xl border border-zinc-800 bg-zinc-950/40 px-4 py-3">
+        <div className="flex items-center gap-3 border border-zinc-800 bg-zinc-950/40 px-4 py-3">
           <Lightning className="h-4 w-4 text-zinc-600" />
           <div>
             <div className="text-[10px] uppercase tracking-wider text-zinc-600">Priority Score</div>
@@ -71,7 +71,7 @@ export function IncidentDetailPanel({ ticket }: { ticket: Ticket | null }) {
       </div>
 
       {ticket.root_cause_hypothesis && (
-        <div className="mt-5 rounded-xl border border-zinc-800 bg-zinc-950/40 p-4">
+        <div className="mt-5 border border-zinc-800 bg-zinc-950/40 p-4">
           <div className="flex items-center gap-2 text-[10px] uppercase tracking-wider text-zinc-600">
             <Warning className="h-3.5 w-3.5" />
             Root Cause Hypothesis

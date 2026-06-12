@@ -72,7 +72,7 @@ export function FileDropzone({
         }`}
       >
         <div className="flex items-start gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/6 bg-black/30 text-violet-300">
+          <div className="flex h-11 w-11 items-center justify-center border border-white/6 bg-black/30 text-violet-300">
             <CloudArrowUp className="h-5 w-5" />
           </div>
           <div className="min-w-0">
@@ -104,7 +104,7 @@ export function FileDropzone({
           {previewFiles.map(({ id, file }, index) => (
             <div
               key={id}
-              className="flex items-center justify-between gap-3 rounded-2xl border border-zinc-800 bg-zinc-950/60 px-4 py-3"
+              className="flex items-center justify-between gap-3 border border-zinc-800 bg-zinc-950/60 px-4 py-3"
             >
               <div className="min-w-0">
                 <div className="truncate text-sm font-medium text-zinc-100">{file.name}</div>
