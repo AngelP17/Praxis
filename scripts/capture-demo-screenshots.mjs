@@ -67,15 +67,15 @@ async function main() {
   const authPage = await authContext.newPage();
 
   try {
-    await capture(publicPage, "01-homepage.png", "/", "Operational decisions, replayable by design.");
+    await capture(publicPage, "01-homepage.png", "/", "Proof the full stack.");
     await capture(publicPage, "02-login.png", "/login", "Sign In");
 
     await loginAsDemoOperator(authPage);
     await capture(authPage, "03-command-center-live.png", "/command-center", "Signal Queue");
     await copyFile(path.join(OUT_DIR, "03-command-center-live.png"), path.join(OUT_DIR, "03-command-center.png"));
 
-    await authPage.getByText("Case Inspector").first().waitFor({ timeout: 20_000 });
-    await authPage.getByText("Replay Navigation").first().waitFor({ timeout: 20_000 });
+    await authPage.getByText("Selected incident").first().waitFor({ timeout: 20_000 });
+    await authPage.getByText("Replay hash chain").first().waitFor({ timeout: 20_000 });
     await wait(600);
     await authPage.screenshot({ path: path.join(OUT_DIR, "04-decision-explanation.png"), fullPage: false });
 

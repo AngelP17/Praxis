@@ -11,7 +11,7 @@ Praxis demonstrates solution pack, FieldLab run, proof object, executive value c
 ## Demo path
 
 1. Open /why-praxis.
-2. Open /fieldlab?pack=manufacturing-printer-gpo.
+2. Open /field-workbench?pack=manufacturing-printer-gpo.
 3. Click Run FieldLab.
 4. Approve the recommended action.
 5. Verify the proof hash shown in the proof viewer.
@@ -27,8 +27,8 @@ pnpm web:build
 
 ## Screens to open
 
-- /fieldlab
-- /proof/proof_praxis_manufacturing_printer_gpo_001?pack=manufacturing-printer-gpo
+- /field-workbench?pack=manufacturing-printer-gpo
+- /proof/fieldlab_run_manufacturing_printer_gpo?pack=manufacturing-printer-gpo
 - /why-praxis
 
 ## Artifacts to inspect

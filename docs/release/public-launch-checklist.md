@@ -30,9 +30,9 @@ make praxis-floci-verify
 make praxis-fieldlab-down
 ```
 
-### 3. Docker Compose self-hosted (functional, CI proof job configured)
+### 3. Docker Compose self-hosted (functional, PR-run CI proof recorded)
 
-The recommended backend production path. The API gateway enforces production safety at boot, and `.github/workflows/ci.yml` now includes a Docker Compose production-proof job. Until that job has a green GitHub run on the active branch, treat the path as configured rather than historically CI-verified.
+The recommended backend production path. The API gateway enforces production safety at boot, and `.github/workflows/ci.yml` includes a Docker Compose production-proof job. A green PR-run proof is recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`; still verify the active branch or release candidate before claiming a new production launch.
 
 ```bash
 cp .env.example .env   # fill in real values
@@ -75,7 +75,7 @@ pnpm web:build
 
 ## Known Gaps (documented, not hidden)
 
-- Docker Compose self-hosted path now has a CI proof job configured, but this checklist should stay conservative until that job is green on GitHub
+- Docker Compose self-hosted path has a recorded green PR-run proof, but this checklist should stay conservative until the active branch or release candidate is verified
 - `docker-compose.prod.yml` `ports: []` override may not fully clear base-file port bindings in all Docker Compose versions — use host firewall + reverse proxy
 - Fly.io and Railway configs exist as secondary references but have not been exercised by CI
 - The repo contains Kubernetes, Terraform, and Lambda reference assets that are not continuously validated

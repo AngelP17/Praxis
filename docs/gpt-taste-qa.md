@@ -138,32 +138,20 @@ cd apps/web
 pnpm lint:gpt-taste src/components/praxis/
 ```
 
-### CI output (JSON)
+### CI output (hard gate)
 
 ```bash
 cd apps/web
 pnpm lint:gpt-taste:ci
 ```
 
+This command runs with `--max-warnings=0`; any warning fails locally and in CI.
+
 ## CI/CD Integration
 
-The `gpt-taste-qa` job runs in parallel with other CI jobs. All rules are currently configured as `warn` severity with `continue-on-error: true` in CI to collect baseline violations before hardening.
+The `gpt-taste-qa` job in `.github/workflows/ci.yml` is a blocking gate. It invokes `pnpm lint:gpt-taste:ci`; the script fails on any warning because `apps/web/package.json` passes `--max-warnings=0`.
 
-## Phase Rollout
-
-### Phase 1: Warnings Only (Current - Active)
-
-- All rules configured as `warn` severity
-- CI job runs but does not block merges (`continue-on-error: true`)
-- Collect baseline violations across existing codebase
-- Fine-tune rule patterns to minimize false positives
-
-### Phase 2: Harden to Errors (After 2 weeks)
-
-- Promote all rules to `error` severity
-- Remove `continue-on-error` from CI job
-- Block merges on violations
-- Strict enforcement (no override mechanism)
+Use `pnpm lint:gpt-taste:json` only for non-blocking tooling that needs JSON output. Do not treat the JSON command as the merge gate.
 
 ## File Structure
 

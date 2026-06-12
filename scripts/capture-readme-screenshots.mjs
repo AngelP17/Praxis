@@ -5,8 +5,7 @@ import path from "node:path";
 const require = createRequire(import.meta.url);
 const { chromium } = require(path.resolve(process.cwd(), "apps/web/node_modules/playwright"));
 
-const BASE_URL = process.env.BASE_URL ?? "http://127.0.0.1:3001";
-const API_BASE_URL = process.env.API_BASE_URL ?? "http://127.0.0.1:8011/api";
+const BASE_URL = process.env.BASE_URL ?? "http://127.0.0.1:3000";
 const SCREENSHOT_DIR = path.resolve(process.cwd(), "docs/screenshots");
 
 const shots = [
@@ -18,7 +17,7 @@ const shots = [
   {
     name: "command-center.png",
     url: "/command-center",
-    waitFor: "text=Praxis OpsCenter",
+    waitFor: "text=Signal Queue",
     postWaitMs: 1500,
   },
   {
@@ -30,7 +29,7 @@ const shots = [
   {
     name: "reports.png",
     url: "/reports",
-    waitFor: "text=Reports & Export",
+    waitFor: "text=Reporting integrated with the operational platform",
     postWaitMs: 800,
   },
 ];
@@ -39,33 +38,20 @@ async function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function createSession() {
-  console.log("Creating screenshot session...");
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
-    },
-    body: JSON.stringify({ username: "admin", password: "admin" }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Could not create screenshot session (${response.status}).`);
-  }
-
-  return response.json();
-}
-
 async function seedSession(page) {
-  const session = await createSession();
-
   console.log("Seeding session into browser storage...");
   await page.goto(`${BASE_URL}/login`, { waitUntil: "domcontentloaded" });
-  await page.evaluate((payload) => {
-    window.localStorage.setItem("access_token", payload.access_token);
-    window.localStorage.setItem("user", JSON.stringify(payload.user));
-  }, session);
+  await page.evaluate(() => {
+    window.localStorage.setItem("access_token", "demo-local-token");
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        username: "operator",
+        role: "agent",
+        display_name: "Demo Operator",
+      }),
+    );
+  });
 }
 
 async function capture(page, shot) {
@@ -84,25 +70,11 @@ async function capture(page, shot) {
       const bodyText = await page.locator("body").innerText().catch(() => "");
       console.log(bodyText.slice(0, 400));
       const diagnostics = await page
-        .evaluate(async (apiBaseUrl) => {
-          const token = window.localStorage.getItem("access_token");
-          try {
-            const response = await fetch(`${apiBaseUrl}/auth/me`, {
-              headers: token ? { Authorization: `Bearer ${token}` } : {},
-            });
-            return {
-              tokenPresent: Boolean(token),
-              authStatus: response.status,
-              authText: await response.text(),
-            };
-          } catch (fetchError) {
-            return {
-              tokenPresent: Boolean(token),
-              fetchError:
-                fetchError instanceof Error ? fetchError.message : String(fetchError),
-            };
-          }
-        }, API_BASE_URL)
+        .evaluate(() => ({
+          tokenPresent: Boolean(window.localStorage.getItem("access_token")),
+          currentPath: window.location.pathname,
+          title: document.title,
+        }))
         .catch(() => null);
       console.log(JSON.stringify(diagnostics));
     }

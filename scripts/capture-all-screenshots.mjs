@@ -136,7 +136,7 @@ async function main() {
     
     // 3. Dashboard
     await capture(authPage, "03-dashboard.png", "/dashboard", {
-      waitForText: "Operational Overview",
+      waitForText: "Portfolio Dashboard",
       postWaitMs: 2000,
     });
     
@@ -152,8 +152,8 @@ async function main() {
       postWaitMs: 2000,
     });
     
-    // 6. Incident detail (INC-4821)
-    await capture(authPage, "06-incident-detail.png", "/incidents/INC-4821", {
+    // 6. Incident detail
+    await capture(authPage, "06-incident-detail.png", "/incidents/IR-2026-041", {
       waitForText: "Incident Detail",
       postWaitMs: 2500,
     });
@@ -225,8 +225,8 @@ async function main() {
     });
 
     // 18. FieldLab
-    await capture(authPage, "18-fieldlab.png", "/fieldlab", {
-      waitForText: "Live FieldLab proof system",
+    await capture(authPage, "18-fieldlab.png", "/field-workbench?pack=manufacturing-printer-gpo", {
+      waitForText: "Operational Overview",
       postWaitMs: 2500,
     });
 
