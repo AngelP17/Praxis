@@ -1,0 +1,9 @@
+# CI-only overlay for docker-compose-production-proof.
+# Mounts rotated credentials so ENV=production boot guard passes while login
+# probes still use the operator/operator test account.
+services:
+  api-gateway:
+    environment:
+      USERS_FILE: /etc/praxis/users.json
+    volumes:
+      - ./infrastructure/ci/users.production-proof.json:/etc/praxis/users.json:ro

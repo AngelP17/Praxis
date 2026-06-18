@@ -181,9 +181,9 @@ jobs:
           API_INTERNAL_URL=http://api-gateway:8000
           EOF
       - name: Render merged Compose config
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml config
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml config
       - name: Boot production Compose stack
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml up -d --build
       - name: Wait for healthy backend services
         run: |
           for service in postgres api-gateway decision-service platform-service; do
@@ -196,8 +196,8 @@ jobs:
               fi
               if [ "$i" -eq 60 ]; then
                 echo "$service did not become healthy"
-                docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
-                docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail 200
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml ps
+                docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml logs --tail 200
                 exit 1
               fi
               sleep 2
@@ -212,8 +212,8 @@ jobs:
             sleep 2
           done
           echo "web did not become ready"
-          docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
-          docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail 200
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml ps
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml logs --tail 200
           exit 1
       - name: Verify backend-backed web auth and replay
         run: |
@@ -242,10 +242,10 @@ jobs:
           PY
       - name: Show Compose status
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml ps
       - name: Show Compose logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml logs --tail 200
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml logs --tail 200
       - name: Stop production Compose stack
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml down -v
+        run: docker compose -f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.ci-proof.yml down -v

@@ -1,0 +1,22 @@
+{
+  "users": [
+    {
+      "username": "admin",
+      "password_hash": "$2b$12$PZWKYm4KhvngEoMC8MtNVehusnkfGRZzo3263lHvsLJfjUS/psc/6",
+      "role": "admin",
+      "display_name": "Administrator"
+    },
+    {
+      "username": "operator",
+      "password_hash": "$2b$12$Q.Xe7h1wpEA7L7OSaYrVUOAMyhln9B4hx88Xg0i5sS4o5LJLUqHw6",
+      "role": "agent",
+      "display_name": "Demo Operator"
+    },
+    {
+      "username": "viewer",
+      "password_hash": "$2b$12$Oxs/kf5SD9WvD7EyLoMdCevyu91F26tUlhPA.uMDu6InOZtR9ZR2a",
+      "role": "viewer",
+      "display_name": "Read-Only Viewer"
+    }
+  ]
+}
