@@ -32,6 +32,12 @@ These blockers are closed in the current checkout and covered by
   `services/deployment_plan_service.py`): value cases and deployment plans now
   persist to the `value_cases` and `deployment_plans` tables instead of process
   memory, with deterministic demo records seeded on first use.
+- **Frontend bearer propagation** (`apps/web/src/lib/auth.ts`,
+  `apps/web/src/lib/api.ts`): login stores the access token in `localStorage`;
+  axios interceptors, `authFetch`, `fetchJsonWithTimeout`, and
+  `postJsonWithTimeout` attach `Authorization: Bearer` on client calls. Next.js
+  route handlers forward the caller token to FastAPI via `proxyBackend`. Demo
+  mode (`NEXT_PUBLIC_DEMO_MODE=1`) is unchanged.
 
 ## You Must Supply And Verify (Environment-Bound)
 
@@ -44,8 +50,6 @@ infrastructure. They are required before claiming public production:
   and confirm the boot guard passes.
 - Point `DATABASE_URL` at a managed Postgres instance (not SQLite) and run
   migrations.
-- When the backend runs with `ENV=production`, the frontend must attach bearer
-  tokens to gateway calls.
 - Run and record a fresh Docker Compose production proof (requires Docker) after
   the above configuration is set.
 
