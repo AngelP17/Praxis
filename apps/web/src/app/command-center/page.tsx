@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { useToast } from "@/components/notifications";
 import { clearStoredSession } from "@/lib/auth";
+import { authFetch } from "@/lib/api";
 import { useCommandFeed } from "@/lib/hooks/use-command-feed";
 import { PraxisCommandWorkbench } from "@/components/praxis/workbench/command-workbench";
 
@@ -40,7 +41,7 @@ export default function CommandCenterPage() {
     if (isExporting) return;
     setIsExporting(true);
     try {
-      const response = await fetch("/api/reports/excel", { method: "GET", cache: "no-store" });
+      const response = await authFetch("/api/reports/excel", { method: "GET", cache: "no-store" });
       if (!response.ok) throw new Error("Export failed");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);
@@ -61,7 +62,7 @@ export default function CommandCenterPage() {
     if (isSigningOut) return;
     setIsSigningOut(true);
     try {
-      await fetch("/api/auth/logout", { method: "POST", cache: "no-store" }).catch(() => null);
+      await authFetch("/api/auth/logout", { method: "POST", cache: "no-store" }).catch(() => null);
     } finally {
       clearStoredSession();
       router.replace("/login");

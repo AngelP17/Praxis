@@ -23,6 +23,17 @@ export function readAccessToken() {
   }
 }
 
+export function buildAuthHeaders(
+  additionalHeaders: Record<string, string> = {},
+): Record<string, string> {
+  const headers = { ...additionalHeaders };
+  const token = readAccessToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+}
+
 export function clearStoredSession() {
   if (typeof window === "undefined") {
     return;

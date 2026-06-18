@@ -5,6 +5,7 @@ import type { Incident, Ticket } from "@/types";
 import { DEMO_INCIDENTS, DEMO_METRICS, DEMO_TICKETS } from "@/lib/demo-scenario";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { deriveDemoMetrics, useDemoSessionStore } from "@/lib/demo/demo-session-store";
+import { fetchJsonWithTimeout, resolveApiPath } from "@/lib/api";
 
 export type QueueMetrics = {
   total_open: number;
@@ -115,25 +116,6 @@ function toQueueTicket(ticket: Ticket): QueueTicket {
   };
 }
 
-function resolveApiPath(path: string) {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL;
-  if (!apiBase || apiBase === "/api") {
-    return path;
-  }
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
-  const appendPath = (base: string) => {
-    const cleanBase = base.replace(/\/$/, "");
-    if (cleanBase.endsWith("/api") && normalizedPath.startsWith("/api/")) {
-      return `${cleanBase}${normalizedPath.slice(4)}`;
-    }
-    return `${cleanBase}${normalizedPath}`;
-  };
-  if (apiBase.startsWith("http://") || apiBase.startsWith("https://")) {
-    return appendPath(apiBase);
-  }
-  return appendPath(apiBase);
-}
-
 function readCachedFeed(): Pick<FeedState, "tickets" | "incidents" | "metrics" | "syncedAt"> | null {
   if (typeof window === "undefined") return null;
   try {
@@ -163,24 +145,6 @@ function writeCachedFeed(state: Pick<FeedState, "tickets" | "incidents" | "metri
     window.localStorage.setItem(FEED_CACHE_KEY, JSON.stringify(state));
   } catch {
     // best effort cache; ignore quota/storage errors
-  }
-}
-
-async function fetchJsonWithTimeout<T>(path: string, timeoutMs = 5000): Promise<T> {
-  const controller = new AbortController();
-  const timer = window.setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const resolvedPath = resolveApiPath(path);
-    const response = await fetch(resolvedPath, { signal: controller.signal, cache: "no-store" });
-    if (!response.ok) throw new Error(`${resolvedPath}: ${response.status}`);
-    return (await response.json()) as T;
-  } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") {
-      throw new Error(`Timed out loading ${path}`);
-    }
-    throw error instanceof Error ? error : new Error(`Could not load ${path}`);
-  } finally {
-    window.clearTimeout(timer);
   }
 }
 

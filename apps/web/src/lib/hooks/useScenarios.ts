@@ -7,6 +7,7 @@ import {
   type Scenario,
   type ScenarioResponse,
 } from "@/lib/scenarios";
+import { fetchJsonWithTimeout } from "@/lib/api";
 
 export function useScenarios() {
   const [scenarios, setScenarios] = useState<Scenario[]>(FALLBACK_SCENARIOS);
@@ -14,12 +15,9 @@ export function useScenarios() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch("/api/scenarios");
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          setScenarios(adaptScenarios(data as ScenarioResponse[]));
-        }
+      const data = await fetchJsonWithTimeout<ScenarioResponse[]>("/api/scenarios", 5000);
+      if (Array.isArray(data) && data.length > 0) {
+        setScenarios(adaptScenarios(data));
       }
     } catch {
       // keep fallback

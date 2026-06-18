@@ -8,6 +8,7 @@ import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
+import { postJsonWithTimeout } from "@/lib/api";
 
 type DiscoverySnapshot = {
   object_candidates: Array<{ object_key?: string; object_type?: string; display_name?: string; confidence?: number }>;
@@ -36,17 +37,11 @@ export function DiscoveryPanel({ packId = "manufacturing-printer-gpo" }: { packI
     const pack = packs.find((entry) => entry.id === resolvedPackId);
     const load = async () => {
       try {
-        const response = await fetch("/api/discovery/discover", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            customer_signals: (proof?.evidence.sources ?? []).map((source) => ({ source })),
-            adapter_profile: pack?.technicalPersona ?? "generic",
-            customer_context: { packId: resolvedPackId, buyer: pack?.buyer, industry: pack?.industry },
-          }),
+        const data = await postJsonWithTimeout<DiscoverySnapshot>("/api/discovery/discover", {
+          customer_signals: (proof?.evidence.sources ?? []).map((source) => ({ source })),
+          adapter_profile: pack?.technicalPersona ?? "generic",
+          customer_context: { packId: resolvedPackId, buyer: pack?.buyer, industry: pack?.industry },
         });
-        if (!response.ok) throw new Error("Discovery unavailable");
-        const data = await response.json();
         if (!cancelled) setSnapshot(data);
       } catch {
         if (!cancelled && proof) {

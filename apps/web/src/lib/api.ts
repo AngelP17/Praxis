@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { ACCESS_TOKEN_KEY } from "@/lib/auth";
+import { ACCESS_TOKEN_KEY, buildAuthHeaders } from "@/lib/auth";
 import type { SolutionPack } from "@/lib/praxis-client";
 import { DEMO_PACKS } from "@/lib/praxis-demo-data";
 
@@ -129,7 +129,7 @@ export const catalogApi = {
     api.delete("/assignees", { params: { display_name } }),
 };
 
-function resolveApiPath(path: string) {
+export function resolveApiPath(path: string) {
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base || base === "/api") return path;
   const normalized = path.startsWith("/") ? path : `/${path}`;
@@ -140,11 +140,22 @@ function resolveApiPath(path: string) {
   return `${cleanBase}${normalized}`;
 }
 
+export async function authFetch(path: string, init?: RequestInit): Promise<Response> {
+  const extraHeaders =
+    init?.headers instanceof Headers
+      ? Object.fromEntries(init.headers.entries())
+      : ((init?.headers as Record<string, string> | undefined) ?? {});
+  return fetch(resolveApiPath(path), {
+    ...init,
+    headers: buildAuthHeaders(extraHeaders),
+  });
+}
+
 export async function fetchJsonWithTimeout<T>(path: string, timeoutMs = 7000): Promise<T> {
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(resolveApiPath(path), {
+    const response = await authFetch(path, {
       signal: controller.signal,
       cache: "no-store",
       headers: { "Content-Type": "application/json" },
@@ -171,7 +182,7 @@ export async function postJsonWithTimeout<T>(
   const controller = new AbortController();
   const timer = window.setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const response = await fetch(resolveApiPath(path), {
+    const response = await authFetch(path, {
       method: "POST",
       signal: controller.signal,
       cache: "no-store",

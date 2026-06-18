@@ -18,6 +18,7 @@ import { ErrorState } from "@/components/error-state";
 import { MotionPriorityStack } from "@/components/motion-priority-stack";
 import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import type { Ticket as TicketType } from "@/types";
+import { fetchJsonWithTimeout } from "@/lib/api";
 
 type BoardColumn = {
   key: string;
@@ -94,14 +95,7 @@ export default function BoardPage() {
   const loadTickets = useCallback(async () => {
     setStatus("loading");
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL || "";
-      const response = await fetch(`${base}/api/tickets?limit=200`, {
-        cache: "no-store",
-      });
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
-      }
-      const data = (await response.json()) as TicketType[];
+      const data = await fetchJsonWithTimeout<TicketType[]>("/api/tickets?limit=200", 5000);
       setTickets(data);
       setStatus("ready");
     } catch (error) {

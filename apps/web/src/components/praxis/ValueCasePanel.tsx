@@ -6,6 +6,7 @@ import { FileText, TrendUp, TrendDown, Minus } from "@phosphor-icons/react";
 import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { formatCurrency } from "@/lib/praxis-client";
+import { fetchJsonWithTimeout } from "@/lib/api";
 import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
 
 type Impact = "high" | "medium" | "low";
@@ -36,9 +37,11 @@ export function ValueCasePanel({ packId = "manufacturing-printer-gpo" }: ValueCa
     let cancelled = false;
     const load = async () => {
       try {
-        const response = await fetch(`/api/value-cases/${resolvedPackId}`, { cache: "no-store" });
-        if (!response.ok) throw new Error("Value case unavailable");
-        const data = await response.json();
+        const data = await fetchJsonWithTimeout<{
+          estimated_annual_value: number;
+          confidence: number;
+          evidence_refs_json: string[];
+        }>(`/api/value-cases/${resolvedPackId}`, 5000);
         if (!cancelled) {
           setValueCase(data);
         }

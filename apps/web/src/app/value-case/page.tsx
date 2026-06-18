@@ -10,6 +10,7 @@ import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
 import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
+import { authFetch } from "@/lib/api";
 
 function fmtUsd(n: number) {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
@@ -77,7 +78,7 @@ export default function ValueCasePage() {
     if (exporting) return;
     setExporting(true);
     try {
-      const res = await fetch("/api/reports/excel", { method: "GET", cache: "no-store" });
+      const res = await authFetch("/api/reports/excel", { method: "GET", cache: "no-store" });
       if (res.ok) {
         const blob = await res.blob();
         const url = URL.createObjectURL(blob);

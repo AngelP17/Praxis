@@ -5,6 +5,7 @@ import { BracketsCurly, Check, Copy } from "@phosphor-icons/react";
 import { PraxisMark } from "./PraxisMark";
 import { getDemoProof } from "@/lib/praxis-demo-data";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
+import { authFetch } from "@/lib/api";
 
 interface CurlWidgetProps {
   proofHash?: string;
@@ -41,7 +42,7 @@ export function CurlWidget({
     }
 
     try {
-      const res = await fetch(`/api/proofs/${packId}/replay`, { method: "POST" });
+      const res = await authFetch(`/api/proofs/${packId}/replay`, { method: "POST" });
       if (res.ok) {
         const data = await res.json();
         setDeterminismResult(data.equal === true);

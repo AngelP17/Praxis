@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { HardDrives, Envelope, Database, Lightning } from "@phosphor-icons/react";
 import { DEMO_HEALTH } from "@/lib/praxis-demo-data";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
+import { fetchJsonWithTimeout } from "@/lib/api";
 
 interface ServiceStatus {
   status: string;
@@ -49,9 +50,9 @@ export function FlociHealth() {
     let cancelled = false;
     const poll = async () => {
       try {
-        const res = await fetch("/api/health/floci");
-        if (!cancelled && res.ok) {
-          setHealth(await res.json());
+        const data = await fetchJsonWithTimeout<FlociHealthData>("/api/health/floci", 5000);
+        if (!cancelled) {
+          setHealth(data);
         }
       } catch {
         // Floci not running, silently handle

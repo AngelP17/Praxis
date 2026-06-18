@@ -9,6 +9,7 @@ import {
 import { useProof } from "@/lib/hooks/useProof";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
+import { authFetch } from "@/lib/api";
 
 const iconByType: Record<string, typeof TreeStructure> = {
   Asset: HardDrives,
@@ -283,9 +284,9 @@ export function OntologyMap({ packId = "manufacturing-printer-gpo" }: { packId?:
     const load = async () => {
       try {
         const [objectsRes, linksRes, actionsRes] = await Promise.all([
-          fetch("/api/ontology/objects", { cache: "no-store" }),
-          fetch("/api/ontology/links", { cache: "no-store" }),
-          fetch("/api/ontology/actions", { cache: "no-store" }),
+          authFetch("/api/ontology/objects", { cache: "no-store" }),
+          authFetch("/api/ontology/links", { cache: "no-store" }),
+          authFetch("/api/ontology/actions", { cache: "no-store" }),
         ]);
         if (!objectsRes.ok || !linksRes.ok || !actionsRes.ok) {
           throw new Error("Ontology endpoints unavailable");

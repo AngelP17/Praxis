@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/error-state";
 import { EmptyState } from "@/components/empty-state";
 import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
 import { DEMO_INCIDENTS } from "@/lib/demo-scenario";
+import { fetchJsonWithTimeout } from "@/lib/api";
 import {
   Shield,
   TrendUp,
@@ -26,10 +27,7 @@ export default function IncidentsPage() {
   const loadIncidents = useCallback(async () => {
     setStatus("loading");
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL || "";
-      const response = await fetch(`${base}/api/incidents`, { cache: "no-store" });
-      if (!response.ok) throw new Error(`API returned ${response.status}`);
-      const data = (await response.json()) as Incident[];
+      const data = await fetchJsonWithTimeout<Incident[]>("/api/incidents", 5000);
       const validData = Array.isArray(data) && data.length > 0 ? data : DEMO_INCIDENTS;
       setIncidents(validData);
       setFiltered(validData);

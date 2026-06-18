@@ -19,6 +19,7 @@ import {
   CheckCircle,
 } from "@phosphor-icons/react";
 import { DEMO_INCIDENTS, DEMO_TICKETS } from "@/lib/demo-scenario";
+import { authFetch, fetchJsonWithTimeout } from "@/lib/api";
 
 const workbookTabs = [
   {
@@ -66,33 +67,32 @@ export default function ReportsPage() {
 
   const loadMetrics = useCallback(async () => {
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL || "";
-      const [ticketsRes, incidentsRes] = await Promise.allSettled([
-        fetch(`${base}/api/tickets?limit=200`, { cache: "no-store" }),
-        fetch(`${base}/api/incidents`, { cache: "no-store" }),
+      const [tickets, incidents] = await Promise.allSettled([
+        fetchJsonWithTimeout<Array<{ status: string; priority_raw: string; resolved_at?: string; days_open: number }>>("/api/tickets?limit=200", 5000),
+        fetchJsonWithTimeout<Array<unknown>>("/api/incidents", 5000),
       ]);
 
-      let tickets: Array<{ status: string; priority_raw: string; resolved_at?: string; days_open: number }> = [];
-      let incidents: Array<unknown> = [];
+      let ticketRows: Array<{ status: string; priority_raw: string; resolved_at?: string; days_open: number }> = [];
+      let incidentRows: Array<unknown> = [];
 
-      if (ticketsRes.status === "fulfilled" && ticketsRes.value.ok) {
-        tickets = await ticketsRes.value.json();
+      if (tickets.status === "fulfilled") {
+        ticketRows = tickets.value;
       }
-      if (incidentsRes.status === "fulfilled" && incidentsRes.value.ok) {
-        incidents = await incidentsRes.value.json();
+      if (incidents.status === "fulfilled") {
+        incidentRows = incidents.value;
       }
 
-      const openTickets = tickets.filter((t) => !["Resolved", "Closed"].includes(t.status));
+      const openTickets = ticketRows.filter((t) => !["Resolved", "Closed"].includes(t.status));
       const criticalTickets = openTickets.filter((t) => t.priority_raw === "Critical");
-      const resolvedThisWeek = tickets.filter((t) => {
+      const resolvedThisWeek = ticketRows.filter((t) => {
         if (!t.resolved_at) return false;
         const resolved = new Date(t.resolved_at);
         const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
         return resolved >= weekAgo;
       });
 
-      const reportTickets = tickets.length > 0 ? tickets : DEMO_TICKETS;
-      const reportIncidents = incidents.length > 0 ? incidents : DEMO_INCIDENTS;
+      const reportTickets = ticketRows.length > 0 ? ticketRows : DEMO_TICKETS;
+      const reportIncidents = incidentRows.length > 0 ? incidentRows : DEMO_INCIDENTS;
       const reportOpen = reportTickets.filter((t) => !["Resolved", "Closed"].includes(t.status));
       const reportCritical = reportOpen.filter((t) => t.priority_raw === "Critical");
       const reportResolved = reportTickets.filter((t) => t.resolved_at);
@@ -129,7 +129,7 @@ export default function ReportsPage() {
     if (isDownloading) return;
     setIsDownloading(true);
     try {
-      const response = await fetch("/api/reports/excel", { method: "GET", cache: "no-store" });
+      const response = await authFetch("/api/reports/excel", { method: "GET", cache: "no-store" });
       if (!response.ok) throw new Error(await readExportError(response));
       const blob = await response.blob();
       if (blob.size === 0) throw new Error("The workbook export was empty.");

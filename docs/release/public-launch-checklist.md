@@ -4,7 +4,9 @@ This checklist separates what is already verified in this repo from what still n
 
 ## Flagship Claim
 
-Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path.
+Praxis is a public proof demo and local FieldLab verification system, with a
+self-hosted backend path that still requires explicit production hardening
+before a real public launch. See `docs/release/production-hardening-track.md`.
 
 ## Launch Modes
 
@@ -50,16 +52,36 @@ curl http://localhost:8000/health
 - Set `ALLOWED_ORIGINS` to the real public frontend origins
 - Replace or rotate the demo-backed `users.json` credentials before exposing real users or customer data
 
-The API gateway now refuses to boot in production if `SECRET_KEY`, `DEBUG`, or `ALLOWED_ORIGINS` are left in insecure defaults (enforced in `apps/api_gateway/config.py`).
+The API gateway refuses to boot in production when `SECRET_KEY`, `DEBUG`, or
+`ALLOWED_ORIGINS` are insecure, or when shipped demo credentials are still active
+(enforced in `apps/api_gateway/config.py` and `apps/api_gateway/main.py`). At
+runtime in production, mutating and customer-data routes require a valid bearer
+token; platform chaos endpoints require an admin role.
+
+### Frontend wiring (backend-backed mode)
+
+When `NEXT_PUBLIC_DEMO_MODE` is unset and `NEXT_PUBLIC_API_URL` points at a
+real gateway:
+
+- Users log in via `/login`; the access token is stored in `localStorage`
+- Client helpers in `apps/web/src/lib/auth.ts` (`buildAuthHeaders`) and
+  `apps/web/src/lib/api.ts` (`authFetch`, axios interceptor,
+  `fetchJsonWithTimeout`, `postJsonWithTimeout`) attach `Authorization: Bearer`
+- Next.js route handlers forward the caller's bearer token to FastAPI via
+  `proxyBackend` in `apps/web/src/app/api/_lib/praxis-server.ts`
+
+Demo mode (`NEXT_PUBLIC_DEMO_MODE=1`) does not require tokens; backend auth
+enforcement is also gated off outside `ENV=production`.
 
 ### Functional-enough acceptance bar
 
 Before claiming a backend-backed deployment works:
 
 - [ ] Backend boots in production mode with real `SECRET_KEY`, `ENV=production`, `DEBUG=false`, and public `ALLOWED_ORIGINS`
+- [ ] `users.json` is rotated (or `USERS_FILE` mounted); demo credential boot guard passes
 - [ ] `/health` endpoint returns `{"status":"healthy"}`
-- [ ] Frontend can reach the backend via `NEXT_PUBLIC_API_URL` without `NEXT_PUBLIC_DEMO_MODE`
-- [ ] At least one real backend-backed workflow completes: login, core route load, and one proof/decision or solution-pack flow
+- [ ] Frontend reaches the backend via `NEXT_PUBLIC_API_URL` without `NEXT_PUBLIC_DEMO_MODE`, and authenticated calls succeed (login → decision or fieldlab mutating flow)
+- [ ] At least one real backend-backed workflow completes end to end
 - [ ] Known non-turnkey gaps are documented rather than hidden
 
 ## Verified Commands

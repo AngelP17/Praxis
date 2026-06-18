@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { DownloadSimple } from "@phosphor-icons/react";
+import { authFetch } from "@/lib/api";
 
 export function ProofDownloadButton({
   packId,
@@ -18,7 +19,7 @@ export function ProofDownloadButton({
     if (downloading) return;
     setDownloading(true);
     try {
-      const response = await fetch(`/api/proofs/${packId}`, { cache: "no-store" });
+      const response = await authFetch(`/api/proofs/${packId}`, { cache: "no-store" });
       if (!response.ok) throw new Error("Proof export failed");
       const blob = await response.blob();
       const url = URL.createObjectURL(blob);

@@ -10,6 +10,7 @@ import { useToast } from "@/components/notifications";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
 import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
+import { fetchJsonWithTimeout } from "@/lib/api";
 
 type OntologyNode = {
   id: string;
@@ -100,14 +101,14 @@ export default function OntologyPage() {
   const fetchOntology = useCallback(async (scenario: Scenario) => {
     setOntologyStatus("loading");
     try {
-      const res = await fetch(`/api/scenarios/${scenario.id}/ontology`);
-      if (res.ok) {
-        const data = await res.json();
-        setNodes(data.nodes ?? []);
-        setEdges(data.edges ?? []);
-        setOntologyStatus("ready");
-        return;
-      }
+      const data = await fetchJsonWithTimeout<{ nodes?: OntologyNode[]; edges?: OntologyEdge[] }>(
+        `/api/scenarios/${scenario.id}/ontology`,
+        5000,
+      );
+      setNodes(data.nodes ?? []);
+      setEdges(data.edges ?? []);
+      setOntologyStatus("ready");
+      return;
     } catch {
       // fall through to the deterministic demo graph below
     }
