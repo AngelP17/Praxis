@@ -11,10 +11,32 @@ A dashboard displays information for consumption. A control room enables action,
 The UI is organized around the operational intelligence lifecycle:
 
 ```
-Signal -> Decision -> Workflow -> Feedback -> Replay
+Signal -> Decision -> Proof -> Approval -> Readout -> Replay
 ```
 
-Every screen reinforces this narrative. Users do not browse metrics. They inspect signals, review decisions, route work, provide feedback, and replay incidents.
+Every screen reinforces this narrative. Users do not browse metrics. They inspect signals, review decisions, verify proof, approve actions, read out value, and replay incidents.
+
+## Active Case Spine
+
+A single **active case** carries `pack`, `scenario`, and `ticket` through the
+whole journey via URL parameters. Selecting a case in the sidebar (or on the
+landing simulation lab) preserves identity across Overview, Decision, Proof,
+Readout, Portfolio, and Command surfaces, so a reviewer never loses the thread
+or silently snaps back to the printer scenario. The spine is implemented in
+`apps/web/src/lib/active-case.ts` and consumed via `hrefWithActiveCase(...)`.
+
+## Navigation
+
+The workbench shell exposes a curated, product-first navigation instead of a
+flat list of every route:
+
+- **Core Journey**: Overview, Decision, Proof, Readout — the spine a reviewer
+  follows end to end.
+- **Portfolio**: Solution Packs, Value Case, Expansion, Command — case
+  portfolio and cross-case context.
+- **Reference**: Ontology, Ingestion, Reports, Admin — supporting surfaces.
+
+Case-aware links carry the active case; reference links that are global do not.
 
 ## Layout Principles
 
@@ -34,18 +56,25 @@ Motion is used only to communicate state change:
 
 ## Color System
 
-### Primary Accent: Amber
-Amber is the only primary accent color. It represents:
-- Active decisions
-- Pending actions
+The Praxis palette is the source of truth (`apps/web/src/app/globals.css`,
+`docs/praxis/Praxis-Brand-Replication.md`). Components reference `var(--praxis-*)`
+tokens; raw hex is forbidden and enforced by `gpt-taste/no-raw-hex`.
+
+### Primary Accent: Plasma Violet
+Plasma Violet (`--praxis-plasma`, `#8B5CFF`) is the primary accent. It represents:
+- Active case and selected context
+- Primary actions and decision focus
 - System attention
 
 ### Semantic Colors
-- **Rose**: Danger, critical incidents, errors
-- **Emerald**: Verified recovery, accepted recommendations, healthy state
-- **Zinc**: Neutral context, metadata, inactive state
+- **Argon Mint** (`--praxis-argon`, `#3EFFA8`): verified recovery, accepted
+  recommendations, healthy/verifiable state
+- **Crit** (`--praxis-crit`): danger, critical incidents, errors
+- **Ash / Iron** (`--praxis-mute`, `--praxis-faint`): neutral context, metadata,
+  inactive state
 
-No purple, cyan, or pink accents exist in the operational UI. These colors are reserved for non-operational contexts only.
+The surfaces are built on the dark Obsidian/Onyx/Mineral neutrals. Avoid amber as
+a dominant accent, AI-style purple-blue gradients, and neon outer glows.
 
 ## Typography
 
@@ -135,6 +164,9 @@ stateDiagram-v2
 
     Ready --> Selecting: Select record or pack
     Selecting --> Ready: Selection changed
+
+    Ready --> SwitchingCase: Switch active case
+    SwitchingCase --> Loading: pack/scenario/ticket updated in URL
 
     Ready --> Filtering: Type search
     Filtering --> Ready: Search applied

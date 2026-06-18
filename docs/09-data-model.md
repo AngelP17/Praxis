@@ -13,6 +13,8 @@ erDiagram
     DECISION_RECORD ||--o{ OUTBOX_MESSAGE : triggers
     INCIDENT ||--o{ EVIDENCE_ARTIFACT : contains
     INCIDENT ||--o{ REPLAY_EVENT : reconstructs
+    SOLUTION_PACK ||--o{ VALUE_CASE : quantifies
+    VALUE_CASE ||--o{ DEPLOYMENT_PLAN : plans
 
     OPERATIONAL_EVENT {
         uuid id
@@ -68,6 +70,26 @@ erDiagram
         string artifact_type
         string path
         string checksum
+    }
+
+    VALUE_CASE {
+        int id
+        string value_case_id
+        string solution_pack_id
+        float estimated_annual_value
+        float confidence
+        json assumptions_json
+        datetime created_at
+    }
+
+    DEPLOYMENT_PLAN {
+        int id
+        string plan_id
+        string solution_pack_id
+        string value_case_id
+        json phases_json
+        int timeline_weeks
+        datetime created_at
     }
 ```
 
@@ -169,6 +191,40 @@ Stores platform evidence linked to incidents.
 | checksum | VARCHAR | SHA-256 |
 | metadata | JSONB | Type-specific data |
 | created_at | TIMESTAMP | Attachment time |
+
+### value_cases
+Stores durable value-case ROI records. Created and recalculated cases persist
+here instead of in process memory; deterministic demo cases are seeded on first
+use. Backed by `infrastructure/db/models/value_case.py`.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| value_case_id | VARCHAR | Unique value-case identifier |
+| solution_pack_id | VARCHAR | Source solution pack |
+| customer_context_json | JSONB | Scenario/buyer context |
+| assumptions_json | JSONB | ROI variables |
+| formulas_json | JSONB | ROI formulas |
+| estimated_annual_value | FLOAT | Computed annual value |
+| confidence | FLOAT | Use-case confidence score |
+| evidence_refs_json | JSONB | Linked proof references |
+| created_at | TIMESTAMP | Creation time |
+
+### deployment_plans
+Stores durable deployment plans. Created plans persist across restarts;
+deterministic demo plans are seeded on first use. Backed by
+`infrastructure/db/models/deployment_plan.py`.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| id | INTEGER | Primary key |
+| plan_id | VARCHAR | Unique plan identifier |
+| solution_pack_id | VARCHAR | Source solution pack |
+| value_case_id | VARCHAR | Linked value case |
+| phases_json | JSONB | Phased rollout plan |
+| timeline_weeks | INTEGER | Total timeline in weeks |
+| environment_json | JSONB | Target environment config |
+| created_at | TIMESTAMP | Creation time |
 
 ## Indexing Strategy
 

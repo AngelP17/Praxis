@@ -55,3 +55,9 @@ make verify-web
 - Initial `make verify-web` then required building the local `eslint-plugin-gpt-taste` workspace package before the hard design gate could run.
 - `make praxis-proof-hashes` initially could not run because `.venv/bin/python` did not exist; the Python virtualenv was created and package installs completed before rerunning.
 - True backend production hardening remains intentionally out of scope for this pass: real `SECRET_KEY`, public `ALLOWED_ORIGINS`, demo credential rotation, broad auth coverage, and durable Postgres-backed FieldLab/value-case/deployment-plan storage.
+
+> **Superseded in part:** a later pass closed several of these items. Value cases
+> and deployment plans now persist to their DB models, production-gated auth
+> covers mutating/customer-data routes, a demo credential boot guard exists, and
+> security headers are added. See `docs/verification/2026-06-18-production-hardening.md`
+> and `docs/release/production-hardening-track.md` for the current posture.

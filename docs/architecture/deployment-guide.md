@@ -102,8 +102,9 @@ The repo ships three concrete paths for running the full backend stack. **Docker
 Before claiming a backend-backed deployment works:
 
 - [ ] Backend boots in production mode with real `SECRET_KEY`, `ENV=production`, `DEBUG=false`, and public `ALLOWED_ORIGINS`
+- [ ] `users.json` is rotated (or `USERS_FILE` is mounted); the demo credential boot guard passes
 - [ ] `/health` endpoint returns `{"status":"healthy"}`
-- [ ] Frontend can reach the backend via `NEXT_PUBLIC_API_URL` without `NEXT_PUBLIC_DEMO_MODE`
+- [ ] Frontend can reach the backend via `NEXT_PUBLIC_API_URL` without `NEXT_PUBLIC_DEMO_MODE`, and attaches bearer tokens (production enforces auth on mutating/customer-data routes)
 - [ ] At least one real backend-backed workflow completes: login, core route load, and one proof/decision or solution-pack flow
 - [ ] Known non-turnkey gaps are documented rather than hidden
 
@@ -117,7 +118,7 @@ ENV=production
 DEBUG=false
 ```
 
-The API gateway enforces at boot: if `ENV=production` and `SECRET_KEY` is a placeholder, `DEBUG` is true, or `ALLOWED_ORIGINS` is localhost-only, the process exits immediately with a descriptive error.
+The API gateway enforces at boot when `ENV=production`: it exits immediately with a descriptive error if `SECRET_KEY` is a placeholder, `DEBUG` is true, `ALLOWED_ORIGINS` is wildcard/localhost-only, or any account still uses a shipped demo password hash. At runtime in production it also requires a valid bearer token (and role) on state-mutating and customer-data routes via `require_operator` / `require_admin_gated`, and adds HSTS plus baseline security headers. These checks are a no-op outside production so the demo and local dev stay open.
 
 ---
 
