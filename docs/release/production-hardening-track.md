@@ -1,26 +1,58 @@
 # Praxis Production Hardening Track
 
-Praxis currently supports a deterministic public demo and a local FieldLab proof path. Those modes are intentionally separate from a real public production launch.
+Praxis supports a deterministic public demo, a local FieldLab proof path, and a
+self-hosted backend. This document tracks the production-hardening posture
+honestly: what the code now enforces, and what still depends on your deployment
+environment and must be supplied and verified before a real public launch.
 
-## Verified Today
+## Enforced In Code
 
-- **Frontend demo**: `NEXT_PUBLIC_DEMO_MODE=1` renders the product journey with deterministic demo data and route-handler fallbacks.
-- **Local FieldLab proof**: `make praxis-proof` produces `artifacts/latest/praxis_proof.json` when Floci is running.
-- **Recorded Compose proof**: `docs/verification/2026-05-19-docker-compose-production-proof.md` records a prior Docker Compose production proof run.
+These blockers are closed in the current checkout and covered by
+`tests/integration/test_production_hardening.py`:
 
-## Not Yet A Production Claim
+- **Production safety validator** (`apps/api_gateway/config.py`): when
+  `ENV=production`, the app refuses to start with `DEBUG=true`, an insecure or
+  empty `SECRET_KEY`, a wildcard/localhost-only `ALLOWED_ORIGINS`, or no public
+  origin.
+- **Demo credential boot guard** (`apps/api_gateway/main.py` +
+  `services/auth_service.py`): when `ENV=production`, startup is blocked if any
+  account still uses a shipped demo password hash. Rotate `users.json` or set
+  `USERS_FILE` first.
+- **Production-gated auth** (`apps/api_gateway/security.py`,
+  `require_operator` / `require_admin_gated`): state-mutating and customer-data
+  routers (incidents, decisions, recommendations, reports, replay, metrics,
+  assets, events, platform, audit, fieldlab, solution-packs, ontology,
+  value-cases, deployment-plans, discovery) require a valid bearer token and
+  role when `ENV=production`. Platform chaos endpoints require an admin. In
+  non-production the checks are a no-op so the deterministic demo stays open.
+- **Security headers** (`apps/api_gateway/main.py`): `X-Content-Type-Options`,
+  `X-Frame-Options`, `Referrer-Policy`, `Cross-Origin-Opener-Policy`, and
+  `Permissions-Policy` on every response; HSTS added when `ENV=production`.
+- **Durable state** (`services/value_case_service.py`,
+  `services/deployment_plan_service.py`): value cases and deployment plans now
+  persist to the `value_cases` and `deployment_plans` tables instead of process
+  memory, with deterministic demo records seeded on first use.
 
-Do not claim Praxis is fully public-production-ready until these items are completed and re-verified in the current checkout:
+## You Must Supply And Verify (Environment-Bound)
 
-- Replace placeholder `SECRET_KEY` values with a runtime secret from the deployment environment.
-- Set `ALLOWED_ORIGINS` to the exact public frontend domains.
-- Rotate or replace demo credentials in `users.json`.
-- Add auth coverage for all flagship backend routes that mutate state or expose customer records.
-- Persist FieldLab, value-case, deployment-plan, and approval state durably instead of relying on in-process memory for demo paths.
-- Run and record a fresh Docker Compose production proof after environment-specific configuration is set.
+These cannot be proven from this checkout because they depend on your
+infrastructure. They are required before claiming public production:
+
+- Provision a real `SECRET_KEY` from your secret manager (not committed).
+- Set `ALLOWED_ORIGINS` to your exact public frontend domains.
+- Replace `users.json` with real, rotated credentials (or mount `USERS_FILE`),
+  and confirm the boot guard passes.
+- Point `DATABASE_URL` at a managed Postgres instance (not SQLite) and run
+  migrations.
+- When the backend runs with `ENV=production`, the frontend must attach bearer
+  tokens to gateway calls.
+- Run and record a fresh Docker Compose production proof (requires Docker) after
+  the above configuration is set.
 
 ## Claim Standard
 
 - Use **public demo** for the Vercel/Next.js deterministic experience.
-- Use **FieldLab-verified** only for the local proof path backed by a current verifier run.
-- Use **production-ready** only after the hardening checklist above is implemented and linked to current verification evidence.
+- Use **FieldLab-verified** only for the local proof path backed by a current
+  verifier run.
+- Use **production-ready** only after the environment-bound checklist above is
+  completed and linked to current verification evidence for your deployment.

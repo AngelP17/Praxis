@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Response
+from fastapi import Depends, FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from apps.api_gateway.config import settings
 from apps.api_gateway.deps import init_db
 from apps.api_gateway.logging_config import configure_logging, get_logger
+from apps.api_gateway.security import require_operator
 from apps.api_gateway.middleware.rate_limit import RateLimitMiddleware
 from apps.api_gateway.middleware.proof_rate_limit import ProofRateLimitMiddleware
 from apps.api_gateway.middleware.metrics import MetricsMiddleware
@@ -42,11 +43,26 @@ from apps.api_gateway.routes.floci_health import router as floci_health_router
 from apps.api_gateway.routes.scenarios import router as scenarios_router
 
 
+def _enforce_production_credentials() -> None:
+    """Block startup if production still ships publicly known demo credentials."""
+    if not settings.is_production:
+        return
+    from apps.api_gateway.services.auth_service import AuthService
+
+    if AuthService().uses_shipped_demo_credentials():
+        raise RuntimeError(
+            "Refusing to start: shipped demo credentials are still active. "
+            "Rotate users.json (or set USERS_FILE) before ENV=production."
+        )
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     configure_logging()
     logger = get_logger("main")
     logger.info("praxis_api_starting", version="2.0.0", env=settings.ENV)
+
+    _enforce_production_credentials()
 
     app.state.cw_client = None
 
@@ -102,6 +118,27 @@ All protected endpoints require a Bearer token obtained from `/api/auth/login`.
     ],
 )
 
+_SECURITY_HEADERS = {
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Cross-Origin-Opener-Policy": "same-origin",
+    "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+}
+
+
+@app.middleware("http")
+async def security_headers_middleware(request, call_next):
+    response = await call_next(request)
+    for header, value in _SECURITY_HEADERS.items():
+        response.headers.setdefault(header, value)
+    if settings.is_production:
+        response.headers.setdefault(
+            "Strict-Transport-Security", "max-age=63072000; includeSubDomains; preload"
+        )
+    return response
+
+
 app.add_middleware(PrometheusMiddleware)
 app.add_middleware(RequestIDMiddleware)
 app.add_middleware(RateLimitMiddleware)
@@ -116,29 +153,74 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Production-gated auth: enforced when ENV=production, no-op in the demo/dev path.
+operator_guard = [Depends(require_operator)]
+
 app.include_router(tickets_router, prefix="/api/tickets", tags=["tickets"])
-app.include_router(incidents_router, prefix="/api/incidents", tags=["incidents"])
-app.include_router(decisions_router, prefix="/api/decisions", tags=["decisions"])
-app.include_router(recommendations_router, prefix="/api/recommendations", tags=["recommendations"])
-app.include_router(reports_router, prefix="/api/reports", tags=["reports"])
-app.include_router(replay_router, prefix="/api/replay", tags=["replay"])
-app.include_router(metrics_router, prefix="/api/metrics", tags=["metrics"])
-app.include_router(assets_router, prefix="/api/assets", tags=["assets"])
-app.include_router(events_router, prefix="/api/events", tags=["events"])
+app.include_router(
+    incidents_router, prefix="/api/incidents", tags=["incidents"], dependencies=operator_guard
+)
+app.include_router(
+    decisions_router, prefix="/api/decisions", tags=["decisions"], dependencies=operator_guard
+)
+app.include_router(
+    recommendations_router,
+    prefix="/api/recommendations",
+    tags=["recommendations"],
+    dependencies=operator_guard,
+)
+app.include_router(
+    reports_router, prefix="/api/reports", tags=["reports"], dependencies=operator_guard
+)
+app.include_router(
+    replay_router, prefix="/api/replay", tags=["replay"], dependencies=operator_guard
+)
+app.include_router(
+    metrics_router, prefix="/api/metrics", tags=["metrics"], dependencies=operator_guard
+)
+app.include_router(
+    assets_router, prefix="/api/assets", tags=["assets"], dependencies=operator_guard
+)
+app.include_router(
+    events_router, prefix="/api/events", tags=["events"], dependencies=operator_guard
+)
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(catalog_router, prefix="/api", tags=["catalog"])
 app.include_router(comments_router, prefix="/api", tags=["comments"])
 app.include_router(attachments_router, prefix="/api", tags=["attachments"])
-app.include_router(platform_router, prefix="/api/platform", tags=["platform"])
-app.include_router(audit_router, prefix="/api/audit", tags=["audit"])
-app.include_router(fieldlab_router, prefix="/api/fieldlab", tags=["fieldlab"])
-app.include_router(solution_packs_router, prefix="/api/solution-packs", tags=["solution-packs"])
-app.include_router(ontology_router, prefix="/api/ontology", tags=["ontology"])
-app.include_router(value_cases_router, prefix="/api/value-cases", tags=["value-cases"])
 app.include_router(
-    deployment_plans_router, prefix="/api/deployment-plans", tags=["deployment-plans"]
+    platform_router, prefix="/api/platform", tags=["platform"], dependencies=operator_guard
 )
-app.include_router(discovery_router, prefix="/api/discovery", tags=["discovery"])
+app.include_router(
+    audit_router, prefix="/api/audit", tags=["audit"], dependencies=operator_guard
+)
+app.include_router(
+    fieldlab_router, prefix="/api/fieldlab", tags=["fieldlab"], dependencies=operator_guard
+)
+app.include_router(
+    solution_packs_router,
+    prefix="/api/solution-packs",
+    tags=["solution-packs"],
+    dependencies=operator_guard,
+)
+app.include_router(
+    ontology_router, prefix="/api/ontology", tags=["ontology"], dependencies=operator_guard
+)
+app.include_router(
+    value_cases_router,
+    prefix="/api/value-cases",
+    tags=["value-cases"],
+    dependencies=operator_guard,
+)
+app.include_router(
+    deployment_plans_router,
+    prefix="/api/deployment-plans",
+    tags=["deployment-plans"],
+    dependencies=operator_guard,
+)
+app.include_router(
+    discovery_router, prefix="/api/discovery", tags=["discovery"], dependencies=operator_guard
+)
 app.include_router(proofs_router, prefix="/api/proofs", tags=["proofs"])
 app.include_router(proofs_sse_router, tags=["proofs-sse"])
 app.include_router(proofs_replay_router, tags=["proofs-replay"])

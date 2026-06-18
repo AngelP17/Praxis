@@ -19,6 +19,17 @@ ACCESS_TOKEN_MINUTES = 30
 REFRESH_TOKEN_DAYS = 7
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 VALID_ROLES = {"admin", "agent", "viewer"}
+
+# bcrypt hashes of the demo accounts shipped in the repo `users.json`. If any of
+# these are still active when ENV=production, the deployment is using publicly
+# known credentials and must be blocked at startup.
+SHIPPED_DEMO_PASSWORD_HASHES = frozenset(
+    {
+        "$2b$12$BCqFRodNrM9ZPASZA6T1sOLWT2a7.suO.hdEIY1SbfBdttJtzcQvy",
+        "$2b$12$MpSg5QRJKuTB17NOQVz/LOseKqPNVJiivMSJdMxPuzZrFRZV.wnPW",
+        "$2b$12$d56uQlEV68N7A8MLrlvCju.wK8gRJsbORkgRR7p.vHyKAdFjbi0XC",
+    }
+)
 USERS_FILE_LOCATIONS = [
     Path(settings.USERS_FILE).expanduser() if settings.USERS_FILE else None,
     PROJECT_ROOT / ".env" / "users.json",
@@ -136,6 +147,13 @@ class AuthService:
 
     def list_users(self) -> list[dict[str, str]]:
         return [self._public_user(user) for user in self._load_users()]
+
+    def uses_shipped_demo_credentials(self) -> bool:
+        """True when any active account still uses a shipped demo password hash."""
+        return any(
+            user.get("password_hash") in SHIPPED_DEMO_PASSWORD_HASHES
+            for user in self._load_users()
+        )
 
     def create_user(
         self,

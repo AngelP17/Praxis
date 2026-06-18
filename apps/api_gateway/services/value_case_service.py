@@ -14,6 +14,8 @@ from astraea.praxis.roi_calculator import RoiCalculator  # noqa: E402
 from astraea.praxis.use_case_score import UseCaseScorer  # noqa: E402
 from astraea.praxis.expansion_graph import ExpansionGraph  # noqa: E402
 
+from infrastructure.db.models.value_case import ValueCase  # noqa: E402
+
 PACKS_DIR = ROOT / "solution-packs"
 DEMO_PACK_IDS = [
     "manufacturing-printer-gpo",
@@ -22,9 +24,6 @@ DEMO_PACK_IDS = [
     "database-failover-lag",
 ]
 DEFAULT_PACK = DEMO_PACK_IDS[0]
-
-# In-process store for created value cases (keyed by value_case_id)
-_STORE: dict[str, dict] = {}
 
 
 def _load_pack_context(solution_pack: str) -> tuple[dict, dict]:
@@ -71,8 +70,17 @@ def _compute(solution_pack: str) -> dict:
     }
 
 
-def _public_record(record: dict) -> dict:
-    return {k: v for k, v in record.items() if not k.startswith("_")}
+def _row_to_record(row: ValueCase) -> dict:
+    return {
+        "value_case_id": row.value_case_id,
+        "solution_pack_id": row.solution_pack_id,
+        "customer_context_json": row.customer_context_json or {},
+        "assumptions_json": row.assumptions_json or {},
+        "formulas_json": row.formulas_json or {},
+        "estimated_annual_value": row.estimated_annual_value,
+        "confidence": row.confidence,
+        "evidence_refs_json": row.evidence_refs_json or [],
+    }
 
 
 def _record_from_compute(value_case_id: str, solution_pack: str, computed: dict) -> dict:
@@ -91,24 +99,53 @@ def _record_from_compute(value_case_id: str, solution_pack: str, computed: dict)
             f"proof://{solution_pack}/roi-model",
             f"proof://{solution_pack}/sample-events",
         ],
-        "_computed": computed,
     }
 
 
-def _seed_value_cases() -> None:
-    if _STORE:
-        return
+def _pack_for_value_case_id(value_case_id: str) -> str:
     for pack_id in DEMO_PACK_IDS:
-        computed = _compute(pack_id)
-        _STORE[f"vc_demo_{pack_id}"] = _record_from_compute(
-            f"vc_demo_{pack_id}", pack_id, computed
-        )
+        if pack_id in value_case_id:
+            return pack_id
+    return DEFAULT_PACK
 
 
 class ValueCaseService:
+    """Durable value-case store backed by the `value_cases` table.
+
+    Deterministic demo cases are seeded into the database on first use so the
+    demo journey stays populated, while created/recalculated cases persist
+    across process restarts instead of living in process memory.
+    """
+
     def __init__(self, db: Session):
         self.db = db
-        _seed_value_cases()
+        self._seed_value_cases()
+
+    def _seed_value_cases(self) -> None:
+        seeded = False
+        for pack_id in DEMO_PACK_IDS:
+            vc_id = f"vc_demo_{pack_id}"
+            if self.db.query(ValueCase).filter_by(value_case_id=vc_id).first():
+                continue
+            computed = _compute(pack_id)
+            self._persist(_record_from_compute(vc_id, pack_id, computed))
+            seeded = True
+        if seeded:
+            self.db.commit()
+
+    def _persist(self, record: dict) -> ValueCase:
+        row = self.db.query(ValueCase).filter_by(value_case_id=record["value_case_id"]).first()
+        if row is None:
+            row = ValueCase(value_case_id=record["value_case_id"])
+            self.db.add(row)
+        row.solution_pack_id = record["solution_pack_id"]
+        row.customer_context_json = record["customer_context_json"]
+        row.assumptions_json = record["assumptions_json"]
+        row.formulas_json = record["formulas_json"]
+        row.estimated_annual_value = record["estimated_annual_value"]
+        row.confidence = record["confidence"]
+        row.evidence_refs_json = record["evidence_refs_json"]
+        return row
 
     def create_value_case(self, payload: dict) -> dict:
         solution_pack = payload.get("solution_pack_id", DEFAULT_PACK)
@@ -137,38 +174,36 @@ class ValueCaseService:
             "estimated_annual_value": computed["estimated_annual_value"],
             "confidence": computed["confidence"],
             "evidence_refs_json": [],
-            "_computed": computed,
         }
-        _STORE[value_case_id] = record
-        return _public_record(record)
+        self._persist(record)
+        self.db.commit()
+        return record
 
     def get_value_case(self, value_case_id: str) -> dict:
-        if value_case_id in _STORE:
-            return _public_record(_STORE[value_case_id])
+        row = self.db.query(ValueCase).filter_by(value_case_id=value_case_id).first()
+        if row is not None:
+            return _row_to_record(row)
 
-        pack_id = DEFAULT_PACK
-        for p in DEMO_PACK_IDS:
-            if p in value_case_id:
-                pack_id = p
-                break
+        pack_id = _pack_for_value_case_id(value_case_id)
         computed = _compute(pack_id)
         record = _record_from_compute(value_case_id, pack_id, computed)
-        _STORE[value_case_id] = record
-        return _public_record(record)
+        self._persist(record)
+        self.db.commit()
+        return record
 
     def recalculate(self, value_case_id: str) -> dict:
-        record = _STORE.get(value_case_id)
-        if record is None:
-            self.get_value_case(value_case_id)
-            record = _STORE.get(value_case_id)
-        solution_pack = record["solution_pack_id"] if record else DEFAULT_PACK
+        row = self.db.query(ValueCase).filter_by(value_case_id=value_case_id).first()
+        solution_pack = row.solution_pack_id if row else _pack_for_value_case_id(value_case_id)
         computed = _compute(solution_pack)
 
-        if record:
-            record["estimated_annual_value"] = computed["estimated_annual_value"]
-            record["confidence"] = computed["confidence"]
-            record["assumptions_json"] = computed["variables"]
-            record["_computed"] = computed
+        if row is None:
+            record = _record_from_compute(value_case_id, solution_pack, computed)
+            row = self._persist(record)
+        else:
+            row.estimated_annual_value = computed["estimated_annual_value"]
+            row.confidence = computed["confidence"]
+            row.assumptions_json = computed["variables"]
+        self.db.commit()
 
         return {
             "value_case_id": value_case_id,
@@ -178,8 +213,8 @@ class ValueCaseService:
         }
 
     def get_executive_summary(self, value_case_id: str) -> dict:
-        record = _STORE.get(value_case_id)
-        solution_pack = record["solution_pack_id"] if record else DEFAULT_PACK
+        row = self.db.query(ValueCase).filter_by(value_case_id=value_case_id).first()
+        solution_pack = row.solution_pack_id if row else _pack_for_value_case_id(value_case_id)
         computed = _compute(solution_pack)
         scenario = computed["scenario"]
         calcs = computed["calculations"]

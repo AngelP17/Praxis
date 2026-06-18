@@ -2,6 +2,8 @@ import uuid
 from datetime import datetime
 from sqlalchemy.orm import Session
 
+from infrastructure.db.models.deployment_plan import DeploymentPlan
+
 
 DEMO_PACK_IDS = [
     "manufacturing-printer-gpo",
@@ -10,64 +12,87 @@ DEMO_PACK_IDS = [
     "database-failover-lag",
 ]
 
-_STORE: dict[str, dict] = {}
 
-
-def _seed_deployment_plans(service: "DeploymentPlanService") -> None:
-    if _STORE:
-        return
-    for index, pack_id in enumerate(DEMO_PACK_IDS):
-        timeline_weeks = 7 + index
-        plan_id = f"dp_demo_{pack_id}"
-        _STORE[plan_id] = {
-            "plan_id": plan_id,
-            "solution_pack_id": pack_id,
-            "value_case_id": f"vc_demo_{pack_id}",
-            "phases": service._generate_phases(timeline_weeks),
-            "timeline_weeks": timeline_weeks,
-            "created_at": datetime(2026, 5, 14, 15, 10 + index * 7),
-        }
+def _row_to_dict(row: DeploymentPlan) -> dict:
+    return {
+        "plan_id": row.plan_id,
+        "solution_pack_id": row.solution_pack_id,
+        "value_case_id": row.value_case_id,
+        "phases": row.phases_json or [],
+        "timeline_weeks": row.timeline_weeks,
+        "created_at": row.created_at,
+    }
 
 
 class DeploymentPlanService:
+    """Durable deployment-plan store backed by the `deployment_plans` table.
+
+    Deterministic demo plans are seeded into the database on first use; created
+    plans persist across restarts instead of living in process memory.
+    """
+
     def __init__(self, db: Session):
         self.db = db
-        _seed_deployment_plans(self)
+        self._seed_deployment_plans()
+
+    def _seed_deployment_plans(self) -> None:
+        seeded = False
+        for index, pack_id in enumerate(DEMO_PACK_IDS):
+            plan_id = f"dp_demo_{pack_id}"
+            if self.db.query(DeploymentPlan).filter_by(plan_id=plan_id).first():
+                continue
+            timeline_weeks = 7 + index
+            self.db.add(
+                DeploymentPlan(
+                    plan_id=plan_id,
+                    solution_pack_id=pack_id,
+                    value_case_id=f"vc_demo_{pack_id}",
+                    phases_json=self._generate_phases(timeline_weeks),
+                    timeline_weeks=timeline_weeks,
+                    created_at=datetime(2026, 5, 14, 15, 10 + index * 7),
+                )
+            )
+            seeded = True
+        if seeded:
+            self.db.commit()
 
     def create_plan(self, payload: dict) -> dict:
         plan_id = f"dp_{uuid.uuid4().hex[:12]}"
         timeline_weeks = payload.get("timeline_weeks", 8)
         pack_id = payload.get("solution_pack_id", "unknown")
-        plan = {
-            "plan_id": plan_id,
-            "solution_pack_id": pack_id,
-            "value_case_id": payload.get("value_case_id"),
-            "phases": self._generate_phases(timeline_weeks),
-            "timeline_weeks": timeline_weeks,
-            "created_at": datetime.utcnow(),
-        }
-        _STORE[plan_id] = plan
-        return plan
+        row = DeploymentPlan(
+            plan_id=plan_id,
+            solution_pack_id=pack_id,
+            value_case_id=payload.get("value_case_id"),
+            phases_json=self._generate_phases(timeline_weeks),
+            timeline_weeks=timeline_weeks,
+            created_at=datetime.utcnow(),
+        )
+        self.db.add(row)
+        self.db.commit()
+        return _row_to_dict(row)
 
     def get_plan(self, plan_id: str) -> dict:
-        if plan_id in _STORE:
-            return _STORE[plan_id]
-        
+        row = self.db.query(DeploymentPlan).filter_by(plan_id=plan_id).first()
+        if row is not None:
+            return _row_to_dict(row)
+
         pack_id = "unknown"
         for p in DEMO_PACK_IDS:
             if p in plan_id:
                 pack_id = p
                 break
-        plan = {
-            "plan_id": plan_id,
-            "solution_pack_id": pack_id,
-            "value_case_id": None if pack_id == "unknown" else f"vc_demo_{pack_id}",
-            "phases": self._generate_phases(8),
-            "timeline_weeks": 8,
-            "created_at": datetime.utcnow(),
-        }
-        _STORE[plan_id] = plan
-        return plan
+        row = DeploymentPlan(
+            plan_id=plan_id,
+            solution_pack_id=pack_id,
+            value_case_id=None if pack_id == "unknown" else f"vc_demo_{pack_id}",
+            phases_json=self._generate_phases(8),
+            timeline_weeks=8,
+            created_at=datetime.utcnow(),
+        )
+        self.db.add(row)
+        self.db.commit()
+        return _row_to_dict(row)
 
     def get_risks(self, plan_id: str) -> dict:
         return {

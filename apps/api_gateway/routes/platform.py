@@ -1,5 +1,7 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 import httpx
+
+from apps.api_gateway.security import require_admin_gated
 
 
 router = APIRouter()
@@ -53,7 +55,7 @@ async def platform_controls():
 
 
 @router.post("/chaos/degraded")
-async def platform_chaos_degraded():
+async def platform_chaos_degraded(_: dict = Depends(require_admin_gated)):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
@@ -66,7 +68,7 @@ async def platform_chaos_degraded():
 
 
 @router.post("/chaos/reset")
-async def platform_chaos_reset():
+async def platform_chaos_reset(_: dict = Depends(require_admin_gated)):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
