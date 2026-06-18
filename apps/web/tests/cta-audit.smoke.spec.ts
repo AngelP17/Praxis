@@ -24,10 +24,10 @@ test("all shipped routes render without dead error walls", async ({ page }) => {
     { path: "/replay/INC-4821", expected: "Replay forensics" },
     { path: "/reports", expected: "Reports" },
     { path: "/recommendations", expected: "Intelligent Automation Queue" },
-    { path: "/event-ingestion", expected: "Real-time Signal Intake" },
+    { path: "/event-ingestion", expected: "Scenario Signal Intake" },
     { path: "/assets", expected: "Infrastructure Inventory" },
     { path: "/audit", expected: "Compliance and Forensic Event Ledger" },
-    { path: "/board", expected: "Board" },
+    { path: "/board", expected: "Workflow Board" },
     { path: "/admin", expected: "Admin" },
     { path: "/decision-center", expected: "Praxis Operational Decisions and Replay Proof" },
   ];
@@ -85,6 +85,14 @@ test("decision center primary CTAs navigate or mutate state", async ({ page }) =
   const refreshBtn = page.getByText("Refresh").first();
   await expect(refreshBtn).toBeVisible();
   await refreshBtn.click();
+});
+
+test("proof JSON download endpoint returns selected case artifact", async ({ request }) => {
+  const response = await request.get("/api/proofs/database-failover-lag");
+  expect(response.ok()).toBeTruthy();
+  const proof = await response.json();
+  expect(proof.solution_pack).toBe("database-failover-lag");
+  expect(proof.proof_hash).toContain("sha256:");
 });
 
 test("no fake href=# or placeholder actions exist", async ({ page }) => {

@@ -3,6 +3,7 @@
 import { Stack } from "@phosphor-icons/react";
 import { usePathname, useRouter } from "next/navigation";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 interface PackSwitcherProps {
   activePackId: string;
@@ -15,9 +16,7 @@ export function PackSwitcher({ activePackId, variant = "inline" }: PackSwitcherP
   const { packs } = useSolutionPacks();
 
   const handleChange = (packId: string) => {
-    const params = new URLSearchParams();
-    params.set("pack", packId);
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(hrefWithActiveCase(pathname ?? "/", getActiveCase(packId)));
   };
 
   if (variant === "nav") {

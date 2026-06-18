@@ -10,7 +10,11 @@ export async function GET(
   const packId = runId.replace(/^demo_/, "");
 
   if (!IS_VERCEL_RUNTIME) {
-    return proxyBackend(`/api/fieldlab/runs/${runId}/events`);
+    return proxyBackend(
+      `/api/fieldlab/runs/${runId}/events`,
+      undefined,
+      () => NextResponse.json(getDemoTimeline(packId, runId)),
+    );
   }
 
   return NextResponse.json(getDemoTimeline(packId, runId));

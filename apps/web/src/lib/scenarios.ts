@@ -154,6 +154,14 @@ export function getScenarioByTicketId(ticketId: string): Scenario {
   return SCENARIOS.find((s) => s.ticketId === ticketId) ?? SCENARIOS[0];
 }
 
+export function getScenarioForPack(packId: string): Scenario {
+  return SCENARIOS.find((scenario) => getPackIdForScenario(scenario.id) === packId) ?? SCENARIOS[0];
+}
+
+export function getScenarioByIncidentId(incidentId: string): Scenario {
+  return SCENARIOS.find((s) => s.incidentId === incidentId) ?? SCENARIOS[0];
+}
+
 export const SEVERITY_COLORS: Record<string, string> = {
   critical: "text-rose-200 border-rose-500/40 bg-rose-500/10",
   high: "text-amber-200 border-amber-500/40 bg-amber-500/10",

@@ -1,46 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ReactNode } from "react";
-import { ArrowSquareOut, BracketsCurly, CirclesThreePlus } from "@phosphor-icons/react";
+import { ArrowSquareOut, BracketsCurly, Stack } from "@phosphor-icons/react";
 import { PraxisMark } from "@/components/praxis/PraxisMark";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
+import { getPackIdForScenario, SCENARIOS } from "@/lib/scenarios";
 
 type NavLink = [label: string, href: string, match: RegExp, packAware?: boolean];
 
 const NAV_GROUPS: Array<[group: string, links: NavLink[]]> = [
   [
-    "Workflow",
+    "Core Journey",
     [
       ["Overview", "/field-workbench", /^\/field-workbench/, true],
-      ["Solution Packs", "/solution-packs", /^\/solution-packs/, true],
-      ["Ontology", "/ontology", /^\/ontology/, true],
-      ["Decisions", "/decision", /^\/decision(?!-center)/, true],
-      ["Discovery", "/discovery", /^\/discovery/, true],
-      ["Value Case", "/value-case", /^\/value-case/, true],
-      ["Expansion", "/expansion-map", /^\/expansion-map/, true],
+      ["Decision", "/decision-center", /^\/decision-center/, true],
+      ["Proof", "/decision", /^\/decision(?!-center)/, true],
       ["Readout", "/executive-readout", /^\/executive-readout/, true],
     ],
   ],
   [
-    "Operations",
+    "Portfolio",
     [
-      ["Dashboard", "/dashboard", /^\/dashboard/],
-      ["Command Center", "/command-center", /^\/command-center/],
-      ["Console", "/console", /^\/console/],
-      ["Platform", "/platform", /^\/platform/],
-      ["Incidents", "/incidents", /^\/incidents/],
-      ["Recommendations", "/recommendations", /^\/recommendations/],
-      ["Ingestion", "/event-ingestion", /^\/event-ingestion/],
-      ["Board", "/board", /^\/board/],
-      ["Tickets", "/tickets/new", /^\/tickets/],
+      ["Solution Packs", "/solution-packs", /^\/solution-packs/, true],
+      ["Value Case", "/value-case", /^\/value-case/, true],
+      ["Expansion", "/expansion-map", /^\/expansion-map/, true],
+      ["Command", "/command-center", /^\/command-center/, true],
     ],
   ],
   [
-    "Governance",
+    "Reference",
     [
-      ["Assets", "/assets", /^\/assets/],
-      ["Audit", "/audit", /^\/audit/],
+      ["Ontology", "/ontology", /^\/ontology/, true],
+      ["Ingestion", "/event-ingestion", /^\/event-ingestion/, true],
       ["Reports", "/reports", /^\/reports/],
       ["Admin", "/admin", /^\/admin/],
     ],
@@ -50,7 +43,7 @@ const NAV_GROUPS: Array<[group: string, links: NavLink[]]> = [
 const MOBILE_DOCK: NavLink[] = [
   ["Overview", "/field-workbench", /^\/field-workbench/, true],
   ["Packs", "/solution-packs", /^\/solution-packs/, true],
-  ["Decisions", "/decision", /^\/decision(?!-center)/, true],
+  ["Decision", "/decision-center", /^\/decision-center/, true],
   ["Readout", "/executive-readout", /^\/executive-readout/, true],
 ];
 
@@ -66,9 +59,14 @@ export function WorkbenchShell({
   packName?: string;
 }) {
   const pathname = usePathname() ?? "";
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const packParam = searchParams.get("pack");
-  const packSuffix = packParam ? `?pack=${packParam}` : "";
+  const activeCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+  const switchCase = (scenarioId: string) => {
+    const scenario = SCENARIOS.find((item) => item.id === scenarioId) ?? activeCase.scenario;
+    const packId = getPackIdForScenario(scenario.id);
+    router.push(`${pathname}?pack=${packId}&scenario=${scenario.id}&ticket=${scenario.ticketId}`);
+  };
   return (
     <div className="relative grid min-h-[100dvh] grid-cols-1 grid-flow-dense overflow-hidden bg-[var(--praxis-obsidian)] text-[var(--praxis-bone)] md:grid-cols-[252px_1fr]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_15%,rgba(139,92,255,0.14),transparent_24%),radial-gradient(circle_at_86%_18%,rgba(62,255,168,0.08),transparent_20%),linear-gradient(180deg,rgba(19,18,31,0.18),transparent_42%)]" />
@@ -89,12 +87,26 @@ export function WorkbenchShell({
               <span className="inline-flex h-2 w-2 rounded-full bg-[var(--praxis-argon)] shadow-[0_0_14px_rgba(62,255,168,0.55)]" />
             </div>
             <div className="mt-3 font-display text-[17px] font-medium leading-[1.08] tracking-[-0.02em]">
-              Field operations and proof posture.
+              {activeCase.scenario.label}
             </div>
             <div className="mt-3 flex items-center gap-2 font-mono text-[9.5px] uppercase tracking-[0.12em] text-[var(--praxis-muted)]">
               <BracketsCurly className="h-3.5 w-3.5 text-[var(--praxis-violet)]" />
-              Verified system surfaces
+              {activeCase.ticketId} / {activeCase.scenario.site}
             </div>
+            <label className="mt-3 flex items-center gap-2 border border-[var(--praxis-line)] bg-[var(--praxis-obsidian)] px-2 py-2">
+              <Stack className="h-3.5 w-3.5 text-[var(--praxis-plasma)]" />
+              <select
+                value={activeCase.scenarioId}
+                onChange={(event) => switchCase(event.target.value)}
+                className="min-w-0 flex-1 bg-transparent font-mono text-[9.5px] uppercase tracking-[0.08em] text-[var(--praxis-bone)] outline-none"
+              >
+                {SCENARIOS.map((scenario) => (
+                  <option key={scenario.id} value={scenario.id}>
+                    {scenario.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         </div>
         <nav className="mt-3 flex min-h-0 flex-1 flex-col overflow-y-auto px-3 pb-3">
@@ -108,7 +120,7 @@ export function WorkbenchShell({
                 return (
                   <Link
                     key={href}
-                    href={`${href}${packAware ? packSuffix : ""}`}
+                    href={packAware ? hrefWithActiveCase(href, activeCase) : href}
                     className="group relative flex min-h-[32px] w-full items-center overflow-hidden border px-3 py-[6px] text-[11.5px] leading-none transition-transform duration-300 hover:translate-x-1"
                     style={{
                       borderColor: active ? "var(--praxis-plasma)" : "var(--praxis-line)",
@@ -138,8 +150,8 @@ export function WorkbenchShell({
                 style={{ background: "linear-gradient(135deg, var(--praxis-plasma), var(--praxis-argon))" }}
               />
               <div>
-                <div className="font-sans text-[11.5px] text-[var(--praxis-bone)]">Field Agent</div>
-                <div className="tracking-[0.06em]">Forward-deployed</div>
+                <div className="font-sans text-[11.5px] text-[var(--praxis-bone)]">Demo Operator</div>
+                <div className="tracking-[0.06em]">Case-linked mode</div>
               </div>
             </div>
             {(runId || packName) && (
@@ -154,8 +166,8 @@ export function WorkbenchShell({
               </div>
             )}
             <div className="mt-4 flex items-center gap-2 font-mono text-[9.5px] uppercase tracking-[0.14em] text-[var(--praxis-muted)]">
-              <CirclesThreePlus className="h-3.5 w-3.5 text-[var(--praxis-argon)]" />
-              Unified Praxis shell
+              <Stack className="h-3.5 w-3.5 text-[var(--praxis-argon)]" />
+              Active case spine
             </div>
           </div>
         </div>
@@ -183,7 +195,7 @@ export function WorkbenchShell({
             return (
               <Link
                 key={href}
-                href={`${href}${packSuffix}`}
+                href={hrefWithActiveCase(href, activeCase)}
                 className="flex flex-col items-center justify-center rounded-full px-3.5 py-1.5 transition-all duration-500"
                 style={{
                   color: active ? "var(--praxis-argon)" : "var(--praxis-mute)",

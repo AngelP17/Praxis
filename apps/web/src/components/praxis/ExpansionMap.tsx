@@ -6,12 +6,14 @@ import { useProof } from "@/lib/hooks/useProof";
 import { useSolutionPacks } from "@/lib/hooks/useSolutionPacks";
 import { formatCurrency } from "@/lib/praxis-client";
 import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { ErrorState } from "@/components/error-state";
 import { WorkbenchShell, TopbarTitle, Pill } from "./workbench/WorkbenchShell";
 
 export function ExpansionMap({ packId: propPackId }: { packId?: string }) {
   const searchParams = useSearchParams();
   const packId = searchParams.get("pack") ?? propPackId ?? "manufacturing-printer-gpo";
-  const { proof, loading } = useProof(packId);
+  const focus = searchParams.get("focus");
+  const { proof, loading, error, reload } = useProof(packId);
   const { packs } = useSolutionPacks();
   const pack = packs.find((p) => p.id === packId);
 
@@ -23,11 +25,15 @@ export function ExpansionMap({ packId: propPackId }: { packId?: string }) {
     );
   }
 
-  if (!proof) {
+  if (error || !proof) {
     return (
-      <WorkbenchShell topbar={<TopbarTitle title="Expansion" subtitle="No proof data" />}>
-        <div className="p-8 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-mute)]">
-          No proof available for {packId}. Run FieldLab first.
+      <WorkbenchShell topbar={<TopbarTitle title="Expansion" subtitle="Proof unavailable" />}>
+        <div className="p-8">
+          <ErrorState
+            title="Expansion map unavailable"
+            message={error?.message ?? `No proof is available for ${packId}. Run the FieldLab proof path and retry.`}
+            onRetry={reload}
+          />
         </div>
       </WorkbenchShell>
     );
@@ -78,8 +84,18 @@ export function ExpansionMap({ packId: propPackId }: { packId?: string }) {
             Adjacent use cases
           </div>
           <div className="mt-6 space-y-3">
-            {adjacentCases.map((item, index) => (
-              <div key={item.name} className="group grid grid-flow-dense grid-cols-[1fr_auto] gap-4 border border-[var(--praxis-line)] bg-[rgba(10,10,20,0.54)] p-4 transition-colors hover:border-[var(--praxis-plasma)]">
+            {adjacentCases.map((item, index) => {
+              const focused = focus === item.name;
+              return (
+              <div
+                key={item.name}
+                id={`expansion-${index + 1}`}
+                className="group grid grid-flow-dense grid-cols-[1fr_auto] gap-4 border p-4 transition-colors hover:border-[var(--praxis-plasma)]"
+                style={{
+                  borderColor: focused ? "var(--praxis-plasma)" : "var(--praxis-line)",
+                  background: focused ? "color-mix(in srgb, var(--praxis-plasma) 12%, var(--praxis-obsidian))" : "rgba(10,10,20,0.54)",
+                }}
+              >
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-[10px] uppercase" style={{ color: "var(--praxis-plasma)" }}>#{String(index + 1).padStart(2, "0")}</span>
@@ -92,7 +108,8 @@ export function ExpansionMap({ packId: propPackId }: { packId?: string }) {
                   <ArrowRight className="h-4 w-4 text-[var(--praxis-mute)] opacity-0 transition-opacity group-hover:opacity-100" />
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         </article>
         <article className="border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] p-6 lg:col-span-12">

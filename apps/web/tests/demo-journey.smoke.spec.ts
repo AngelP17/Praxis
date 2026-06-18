@@ -75,3 +75,35 @@ test("demo visitor can create, approve, audit, run, export, and reset", async ({
   await page.goto("/command-center", { waitUntil: "domcontentloaded" });
   await expect(page.getByText(demoTitle)).toHaveCount(0);
 });
+
+test("active case follows all core product surfaces", async ({ page }) => {
+  const cases = [
+    { pack: "manufacturing-printer-gpo", scenario: "printer-offline", ticket: "INC-4821", label: "Manufacturing Printer Deployment Failure" },
+    { pack: "network-edge-failover", scenario: "network-edge-failover", ticket: "INC-4814", label: "Network Edge Failover" },
+    { pack: "identity-onboarding-drift", scenario: "identity-onboarding-drift", ticket: "INC-4799", label: "Identity Onboarding Drift" },
+    { pack: "database-failover-lag", scenario: "database-failover-lag", ticket: "INC-4785", label: "Database Replication Lag" },
+  ];
+
+  for (const activeCase of cases) {
+    const query = `pack=${activeCase.pack}&scenario=${activeCase.scenario}&ticket=${activeCase.ticket}`;
+
+    await page.goto(`/field-workbench?${query}`, { waitUntil: "domcontentloaded" });
+    await expect(page.getByText(activeCase.label).first()).toBeVisible({ timeout: 30_000 });
+
+    await page.getByRole("link", { name: "Decision" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/decision-center\\?.*pack=${activeCase.pack}`));
+    await expect(page.getByText(activeCase.ticket).first()).toBeVisible({ timeout: 30_000 });
+
+    await page.getByRole("link", { name: "Proof" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/decision\\?.*pack=${activeCase.pack}`));
+    await expect(page.getByText(activeCase.label).first()).toBeVisible({ timeout: 30_000 });
+
+    await page.getByRole("link", { name: "Readout" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/executive-readout\\?.*pack=${activeCase.pack}`));
+    await expect(page.getByText(activeCase.label).first()).toBeVisible({ timeout: 30_000 });
+
+    await page.getByRole("link", { name: "Command" }).first().click();
+    await expect(page).toHaveURL(new RegExp(`/command-center\\?.*ticket=${activeCase.ticket}`));
+    await expect(page.getByText(activeCase.ticket).first()).toBeVisible({ timeout: 30_000 });
+  }
+});

@@ -15,7 +15,13 @@ from astraea.praxis.use_case_score import UseCaseScorer  # noqa: E402
 from astraea.praxis.expansion_graph import ExpansionGraph  # noqa: E402
 
 PACKS_DIR = ROOT / "solution-packs"
-DEFAULT_PACK = "unknown"
+DEMO_PACK_IDS = [
+    "manufacturing-printer-gpo",
+    "network-edge-failover",
+    "identity-onboarding-drift",
+    "database-failover-lag",
+]
+DEFAULT_PACK = DEMO_PACK_IDS[0]
 
 # In-process store for created value cases (keyed by value_case_id)
 _STORE: dict[str, dict] = {}
@@ -65,9 +71,44 @@ def _compute(solution_pack: str) -> dict:
     }
 
 
+def _public_record(record: dict) -> dict:
+    return {k: v for k, v in record.items() if not k.startswith("_")}
+
+
+def _record_from_compute(value_case_id: str, solution_pack: str, computed: dict) -> dict:
+    return {
+        "value_case_id": value_case_id,
+        "solution_pack_id": solution_pack,
+        "customer_context_json": {
+            "scenario": computed["scenario"].get("name", solution_pack.replace("-", " ")),
+            "economic_buyer": computed["scenario"].get("economic_buyer", "Operations leadership"),
+        },
+        "assumptions_json": computed["variables"],
+        "formulas_json": computed["roi_model"].get("formulas", {}),
+        "estimated_annual_value": computed["estimated_annual_value"],
+        "confidence": computed["confidence"],
+        "evidence_refs_json": [
+            f"proof://{solution_pack}/roi-model",
+            f"proof://{solution_pack}/sample-events",
+        ],
+        "_computed": computed,
+    }
+
+
+def _seed_value_cases() -> None:
+    if _STORE:
+        return
+    for pack_id in DEMO_PACK_IDS:
+        computed = _compute(pack_id)
+        _STORE[f"vc_demo_{pack_id}"] = _record_from_compute(
+            f"vc_demo_{pack_id}", pack_id, computed
+        )
+
+
 class ValueCaseService:
     def __init__(self, db: Session):
         self.db = db
+        _seed_value_cases()
 
     def create_value_case(self, payload: dict) -> dict:
         solution_pack = payload.get("solution_pack_id", DEFAULT_PACK)
@@ -99,39 +140,34 @@ class ValueCaseService:
             "_computed": computed,
         }
         _STORE[value_case_id] = record
-        return {k: v for k, v in record.items() if not k.startswith("_")}
+        return _public_record(record)
 
     def get_value_case(self, value_case_id: str) -> dict:
         if value_case_id in _STORE:
-            record = _STORE[value_case_id]
-            return {k: v for k, v in record.items() if not k.startswith("_")}
+            return _public_record(_STORE[value_case_id])
 
-        # Reconstruct from default pack (no persistent DB)
         pack_id = DEFAULT_PACK
-        for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+        for p in DEMO_PACK_IDS:
             if p in value_case_id:
                 pack_id = p
                 break
         computed = _compute(pack_id)
-        return {
-            "value_case_id": value_case_id,
-            "solution_pack_id": pack_id,
-            "customer_context_json": {},
-            "assumptions_json": computed["variables"],
-            "formulas_json": {},
-            "estimated_annual_value": computed["estimated_annual_value"],
-            "confidence": computed["confidence"],
-            "evidence_refs_json": [],
-        }
+        record = _record_from_compute(value_case_id, pack_id, computed)
+        _STORE[value_case_id] = record
+        return _public_record(record)
 
     def recalculate(self, value_case_id: str) -> dict:
         record = _STORE.get(value_case_id)
+        if record is None:
+            self.get_value_case(value_case_id)
+            record = _STORE.get(value_case_id)
         solution_pack = record["solution_pack_id"] if record else DEFAULT_PACK
         computed = _compute(solution_pack)
 
         if record:
             record["estimated_annual_value"] = computed["estimated_annual_value"]
             record["confidence"] = computed["confidence"]
+            record["assumptions_json"] = computed["variables"]
             record["_computed"] = computed
 
         return {

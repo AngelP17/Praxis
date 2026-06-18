@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useCallback, useRef } from "react";
 import Link from "next/link";
-import { ArrowSquareOut, CheckCircle, DownloadSimple, X } from "@phosphor-icons/react";
+import { ArrowSquareOut, CheckCircle, X } from "@phosphor-icons/react";
 import { praxisClient, type FieldLabExecuteResponse, type FieldLabRun } from "@/lib/praxis-client";
 import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
+import { getDemoProof } from "@/lib/praxis-demo-data";
+import { ProofDownloadButton } from "@/components/praxis/ProofDownloadButton";
 
 interface PipelineRunnerModalProps {
   open: boolean;
@@ -21,20 +23,22 @@ const MODAL_STAGES = [
   { id: "proof",    label: "Proof sealing",         color: "var(--praxis-plasma)" },
 ];
 
-const MODAL_EVENTS = [
-  { stage: "signal",   msg: "SQS queue drained / 12 events received" },
-  { stage: "signal",   msg: "ticket_cluster_P2 / trust score 0.88" },
-  { stage: "signal",   msg: "calibration_drift detected / corroborated" },
-  { stage: "ontology", msg: "PLC_Unit to Printer_Fleet_SKU link resolved" },
-  { stage: "ontology", msg: "vendor_contract to GPO_Clause_4.2 mapped" },
-  { stage: "ontology", msg: "ontology graph: 9 objects, 14 links" },
-  { stage: "decision", msg: "priority_score 0.74 / confidence 0.81" },
-  { stage: "decision", msg: "next-best questions: 3 VOI items queued" },
-  { stage: "action",   msg: "human_approval mode / notifying ops-director" },
-  { stage: "action",   msg: "approval received / action_id written" },
-  { stage: "proof",    msg: "canonical hash computed / sha256:b4f9...c1a2" },
-  { stage: "proof",    msg: "Draft 2020-12 schema validated / L0 verified" },
-];
+function modalEventsFor(packId: string) {
+  const proof = getDemoProof(packId);
+  const sources = proof.evidence.sources;
+  return [
+    { stage: "signal", msg: `${proof.evidence.raw_events} events received from ${sources.slice(0, 2).join(" + ")}` },
+    { stage: "signal", msg: `evidence trust ${proof.evidence.evidence_trust.toFixed(2)} / case ${packId}` },
+    { stage: "ontology", msg: `${proof.ontology.objects_created} objects, ${proof.ontology.links_created} links compiled` },
+    { stage: "ontology", msg: `mapping confidence ${proof.ontology.mapping_confidence.toFixed(2)} / owner graph resolved` },
+    { stage: "decision", msg: `priority_score ${proof.decision.priority_score.toFixed(2)} / confidence ${proof.decision.confidence.toFixed(2)}` },
+    { stage: "decision", msg: `root cause ${proof.decision.root_cause_hypothesis}` },
+    { stage: "action", msg: `${proof.action.mode} / action ${proof.action.recommended_action}` },
+    { stage: "action", msg: "operator review captured in demo session state" },
+    { stage: "proof", msg: `canonical hash computed / ${proof.proof_hash.slice(0, 22)}...` },
+    { stage: "proof", msg: "Draft 2020-12 schema valid / L0 verifiable" },
+  ];
+}
 
 export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-printer-gpo" }: PipelineRunnerModalProps) {
   const runDemoPipeline = useDemoSessionStore((state) => state.runPipeline);
@@ -82,13 +86,14 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
       }
     })();
 
-    MODAL_EVENTS.forEach((ev, i) => {
+    const modalEvents = modalEventsFor(packId);
+    modalEvents.forEach((ev, i) => {
       const t = setTimeout(() => {
         const stageIdx = MODAL_STAGES.findIndex((s) => s.id === ev.stage);
         if (runTokenRef.current !== token) return;
         setActiveStage(stageIdx);
         setEvents((prev) => [...prev, ev]);
-        if (i === MODAL_EVENTS.length - 1) {
+        if (i === modalEvents.length - 1) {
           const doneTimer = setTimeout(() => {
             if (runTokenRef.current === token) setDone(true);
           }, 400);
@@ -258,13 +263,11 @@ export function PipelineRunnerModal({ open, onClose, packId = "manufacturing-pri
                     Open run
                     <ArrowSquareOut className="h-4 w-4" />
                   </Link>
-                  <Link
-                    href={`/api/proofs/${packId}`}
+                  <ProofDownloadButton
+                    packId={packId}
+                    label="Download JSON"
                     className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--praxis-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    Export JSON
-                    <DownloadSimple className="h-4 w-4" />
-                  </Link>
+                  />
                   <Link
                     href="/dashboard"
                     onClick={onClose}

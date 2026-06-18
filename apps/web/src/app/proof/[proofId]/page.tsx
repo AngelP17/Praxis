@@ -7,9 +7,11 @@ import { PackSwitcher } from "@/components/praxis/PackSwitcher";
 import { ProofDiff } from "@/components/praxis/ProofDiff";
 import { ProofJourneyTimeline } from "@/components/praxis/ProofJourneyTimeline";
 import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
+import { ProofDownloadButton } from "@/components/praxis/ProofDownloadButton";
 import { TopbarTitle, WorkbenchShell, GhostAction, PrimaryAction } from "@/components/praxis/workbench/WorkbenchShell";
 import { useProof } from "@/lib/hooks/useProof";
 import { formatCurrency, formatPercent } from "@/lib/praxis-client";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 import { useParams, useSearchParams } from "next/navigation";
 
 function resolvePackId(runId: string, queryPack: string | null): string {
@@ -25,6 +27,7 @@ export default function ProofDetailPage() {
   const searchParams = useSearchParams();
   const proofId = (params.proofId as string) ?? "";
   const packId = resolvePackId(proofId, searchParams.get("pack"));
+  const activeCase = getActiveCase(packId, searchParams.get("scenario"), searchParams.get("ticket"));
   const { proof } = useProof(packId);
   const runId = proof?.run_id ?? proofId;
 
@@ -38,9 +41,9 @@ export default function ProofDetailPage() {
           subtitle={`${packId} / ${runId}`}
           right={
             <>
-              <GhostAction href="/console">Console</GhostAction>
-              <GhostAction href="/dashboard">Dashboard</GhostAction>
-              <PrimaryAction href={`/executive-readout/${runId}`}>Export readout</PrimaryAction>
+              <GhostAction href={hrefWithActiveCase("/command-center", activeCase)}>Command</GhostAction>
+              <GhostAction href={hrefWithActiveCase("/field-workbench", activeCase)}>Overview</GhostAction>
+              <PrimaryAction href={hrefWithActiveCase(`/executive-readout/${runId}`, activeCase)}>Open readout</PrimaryAction>
             </>
           }
         />
@@ -60,18 +63,17 @@ export default function ProofDetailPage() {
           </div>
           <div className="mt-6 grid grid-flow-dense gap-3 sm:grid-cols-2">
             <Link
-              href="/proof/diff"
+              href={hrefWithActiveCase("/proof/diff", activeCase)}
               className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--praxis-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)] transition-transform duration-300 hover:scale-[1.02] hover:text-[var(--praxis-bone)] active:scale-[0.98]"
             >
               Diff page
               <ArrowSquareOut className="h-4 w-4" />
             </Link>
-            <Link
-              href={`/api/proofs/${packId}`}
+            <ProofDownloadButton
+              packId={packId}
+              label="Download JSON"
               className="inline-flex items-center justify-center rounded-full border border-[var(--praxis-line)] px-4 py-3 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-muted)] transition-transform duration-300 hover:scale-[1.02] hover:text-[var(--praxis-bone)] active:scale-[0.98]"
-            >
-              JSON export
-            </Link>
+            />
           </div>
         </article>
 

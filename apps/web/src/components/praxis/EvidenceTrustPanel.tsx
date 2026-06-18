@@ -27,7 +27,7 @@ function getDimensions(packId: string): Dimension[] {
     ],
     "network-edge-failover": [
       { label: "source reliability", score: 0.88, trend: "up", description: "4 corroborating sources" },
-      { label: "freshness", score: 0.91, trend: "stable", description: "Real-time edge alert" },
+      { label: "freshness", score: 0.91, trend: "stable", description: "Recent edge alert" },
       { label: "corroboration", score: 0.85, trend: "up", description: "MSP ticket and operator note" },
       { label: "completeness", score: 0.88, trend: "up", description: "Downtime impact verified" },
       { label: "consistency", score: 0.88, trend: "stable", description: "Consistent route loss" },

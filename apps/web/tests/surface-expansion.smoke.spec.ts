@@ -31,7 +31,7 @@ test("expanded platform surfaces render core content", async ({ page }) => {
   await expect(page.getByText("Intelligent Automation Queue")).toBeVisible({ timeout: 30_000 });
 
   await page.goto("/event-ingestion", { waitUntil: "domcontentloaded" });
-  await expect(page.getByText("Real-time Signal Intake")).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Scenario Signal Intake")).toBeVisible({ timeout: 30_000 });
 
   await page.goto("/incidents/IR-2026-041", { waitUntil: "domcontentloaded" });
   await expect(page.getByText("Timeline Reconstruction", { exact: true })).toBeVisible({ timeout: 30_000 });

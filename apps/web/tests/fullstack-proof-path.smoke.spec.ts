@@ -54,7 +54,7 @@ test("runs printer GPO drift from event intake to proof export", async ({ page }
 
   // 7. Human approval gate is captured in the journey and the proof is exportable
   await expect(page.getByText("human_approval").first()).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByText("JSON export").first()).toBeVisible();
+  await expect(page.getByText("Download JSON").first()).toBeVisible();
 
   // 8. Dashboard reflects live, snapshot, or stale-but-known state
   await page.goto("/dashboard", { waitUntil: "domcontentloaded" });

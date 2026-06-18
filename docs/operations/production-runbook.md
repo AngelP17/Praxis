@@ -1,6 +1,6 @@
 # Production Operations Runbook
 
-This document serves as the master production manual for deploying, scaling, and maintaining the **Praxis** operational decision platform.
+This document is the production-track manual for deploying, scaling, and maintaining a self-hosted **Praxis** backend. It is not evidence that the public demo is already running this hardened configuration.
 
 ---
 
@@ -16,7 +16,7 @@ A production Praxis stack consists of four Docker containers:
 
 ## 2. Production Deployment Guide
 
-Production environments must utilize **Docker Compose Production Mode** (`docker-compose.prod.yml`) to ensure proper container hardening, TLS configurations, and PostgreSQL scaling.
+Production environments should start from **Docker Compose Production Mode** (`docker-compose.prod.yml`) and then complete environment-specific hardening for secrets, origins, TLS termination, persistence, and monitoring.
 
 ### Step 2.1: Configure Environment Variables (`.env`)
 Ensure that production `.env` files are fully hardened. **Never** leave default secret values in production!

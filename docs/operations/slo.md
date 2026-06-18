@@ -1,6 +1,6 @@
 # Service Level Objectives (SLOs) and Error Budgets
 
-This document specifies the Service Level Indicators (SLIs), Service Level Objectives (SLOs), and Error Budgets for the **Praxis** operational platform in production environments.
+This document specifies proposed Service Level Indicators (SLIs), Service Level Objectives (SLOs), and error budgets for a hardened **Praxis** production environment. These targets require a deployed backend, durable metrics, and an on-call process before they can be claimed as live commitments.
 
 ---
 
@@ -20,7 +20,7 @@ We define five critical indicators that directly impact the operational trust an
 
 ## 2. Service Level Objectives (SLOs)
 
-Praxis commits to the following technical and operational performance targets:
+Praxis should use the following technical and operational targets once the production track is deployed and instrumented:
 
 ### SLO-1: API Availability
 *   **Target**: $\ge 99.9\%$

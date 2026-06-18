@@ -54,11 +54,11 @@ export function TweaksProvider({ children }: { children: ReactNode }) {
 
     // Accent palette
     if (tweaks.accentPalette === "quiet") {
-      root.style.setProperty("--praxis-plasma", "#6B57CC");
-      root.style.setProperty("--praxis-argon",  "#2ECC8A");
+      root.style.setProperty("--praxis-plasma", "var(--praxis-mute)");
+      root.style.removeProperty("--praxis-argon");
     } else if (tweaks.accentPalette === "amber") {
-      root.style.setProperty("--praxis-plasma", "#E8B86F");
-      root.style.setProperty("--praxis-argon",  "#3EFFA8");
+      root.style.setProperty("--praxis-plasma", "var(--praxis-amber)");
+      root.style.removeProperty("--praxis-argon");
     } else {
       root.style.removeProperty("--praxis-plasma");
       root.style.removeProperty("--praxis-argon");
@@ -167,9 +167,9 @@ export function TweaksPanel() {
       const root = document.documentElement;
       if (key === "accentPalette") {
         if (value === "quiet") {
-          root.style.setProperty("--praxis-plasma", "#6B57CC");
+          root.style.setProperty("--praxis-plasma", "var(--praxis-mute)");
         } else if (value === "amber") {
-          root.style.setProperty("--praxis-plasma", "#E8B86F");
+          root.style.setProperty("--praxis-plasma", "var(--praxis-amber)");
         } else {
           root.style.removeProperty("--praxis-plasma");
         }

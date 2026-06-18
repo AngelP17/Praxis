@@ -215,7 +215,7 @@ export function HiFiDecisionPanel() {
             <span>priority 0.74 &middot; conf 0.81</span>
           </div>
           <div className="mt-3 font-display text-[22px] font-medium leading-[1.1]" style={{ letterSpacing: "-0.015em" }}>
-            Replace plant-3 printer fleet under GPO contract &mdash; 14-day delivery, 6-week stabilisation.
+            Replace plant-3 printer fleet under GPO contract: 14-day delivery, 6-week stabilisation.
           </div>
           <div className="mt-4 font-mono text-[10px]" style={{ color: MUTE }}>
             root_cause_hypothesis
@@ -271,8 +271,8 @@ export function HiFiDecisionPanel() {
             Next-best questions &middot; value of information
           </div>
           <ol className="mt-3 list-decimal space-y-2 pl-5 font-mono text-[11px]" style={{ color: BONE }}>
-            <li>What is the average toner cost per page across plants 1&ndash;4?</li>
-            <li>Are tickets P1&ndash;P3 correlated with calibration logs from vendor-A?</li>
+            <li>What is the average toner cost per page across plants 1-4?</li>
+            <li>Are tickets P1-P3 correlated with calibration logs from vendor-A?</li>
             <li>Confirm GPO contract clause 4.2 covers fleet swap-out within 14 days.</li>
           </ol>
           <div className="mt-3 font-mono text-[10px]" style={{ color: MUTE }}>
@@ -348,7 +348,7 @@ export function HiFiReadoutPanel() {
                 className="px-3 py-1 font-mono text-[9px] uppercase tracking-[0.14em] transition-all duration-300"
                 style={{
                   color: mode === m ? bone : mute,
-                  background: mode === m ? (paper ? "#1C1A2E" : BONE) : "transparent",
+                  background: mode === m ? (paper ? SURFACE_2 : BONE) : "transparent",
                   borderRadius: "9999px",
                   ...(mode === m && !paper ? { color: OBSIDIAN } : {}),
                 }}
@@ -375,7 +375,7 @@ export function HiFiReadoutPanel() {
               Executive readout &middot; manufacturing-printer-gpo &middot; 2026-Q2
             </div>
             <div className="mt-3 font-display font-medium leading-[1]" style={{ fontSize: 38, letterSpacing: "-0.025em", textWrap: "balance" as const, color: bone }}>
-              Plant-3 printer fleet renewal under GPO &mdash; $38.4K annual recovery, 10-week recurrence cut.
+              Plant-3 printer fleet renewal under GPO: $38.4K annual recovery, 10-week recurrence cut.
             </div>
             <div className="mt-5 grid grid-cols-3 grid-flow-dense gap-4 font-mono text-[10px]" style={{ color: mute }}>
               <div>
@@ -392,7 +392,7 @@ export function HiFiReadoutPanel() {
               </div>
             </div>
             <div className="mt-5 border-t pt-4 font-mono text-[10.5px] leading-[1.7]" style={{ borderColor: line, color: mute }}>
-              <span style={{ color: bone }}>What happened.</span> Twelve ticket clusters across plants 1&ndash;4 traced to a single printer-fleet SKU drift under the current vendor contract. Evidence-trust 0.82, mapping_confidence 0.86. Recommended action: initiate GPO swap-out for plant-3, 14-day SLA, human-approved by the Director of Operations.
+              <span style={{ color: bone }}>What happened.</span> Twelve ticket clusters across plants 1-4 traced to a single printer-fleet SKU drift under the current vendor contract. Evidence-trust 0.82, mapping_confidence 0.86. Recommended action: initiate GPO swap-out for plant-3, 14-day SLA, human-approved by the Director of Operations.
               <br /><br />
               <span style={{ color: bone }}>Why now.</span> Recurrence is climbing 38% quarter over quarter; the GPO contract window closes in 21 days. Acting now captures the favorable line item; delaying loses it.
             </div>
@@ -404,7 +404,7 @@ export function HiFiReadoutPanel() {
               <div className="mt-3 space-y-2 font-mono text-[10px]" style={{ color: mute }}>
                 <div>proof_hash <span style={{ color: bone }}>b4f9&hellip;c1a2</span></div>
                 <div>replay <span style={{ color: argon }}>deterministic</span></div>
-                <div>schema <span style={{ color: argon }}>L0 verified</span></div>
+                <div>schema <span style={{ color: argon }}>L0 verifiable</span></div>
                 <div>sources <span style={{ color: bone }}>tickets &middot; ddb &middot; sqs &middot; events</span></div>
               </div>
             </div>
@@ -505,7 +505,7 @@ export function HiFiProofObjectPanel() {
             </div>
             {verified && (
               <div className="mt-4 border px-3 py-2 font-mono text-[11px]" style={{ borderColor: "var(--praxis-argon)", background: "rgba(62,255,168,0.06)", color: "var(--praxis-argon)" }}>
-                proof verified &middot; all checks passed
+                verifier complete &middot; displayed checks passed
               </div>
             )}
           </div>

@@ -3,12 +3,36 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 
 
+DEMO_PACK_IDS = [
+    "manufacturing-printer-gpo",
+    "network-edge-failover",
+    "identity-onboarding-drift",
+    "database-failover-lag",
+]
+
 _STORE: dict[str, dict] = {}
+
+
+def _seed_deployment_plans(service: "DeploymentPlanService") -> None:
+    if _STORE:
+        return
+    for index, pack_id in enumerate(DEMO_PACK_IDS):
+        timeline_weeks = 7 + index
+        plan_id = f"dp_demo_{pack_id}"
+        _STORE[plan_id] = {
+            "plan_id": plan_id,
+            "solution_pack_id": pack_id,
+            "value_case_id": f"vc_demo_{pack_id}",
+            "phases": service._generate_phases(timeline_weeks),
+            "timeline_weeks": timeline_weeks,
+            "created_at": datetime(2026, 5, 14, 15, 10 + index * 7),
+        }
 
 
 class DeploymentPlanService:
     def __init__(self, db: Session):
         self.db = db
+        _seed_deployment_plans(self)
 
     def create_plan(self, payload: dict) -> dict:
         plan_id = f"dp_{uuid.uuid4().hex[:12]}"
@@ -30,18 +54,20 @@ class DeploymentPlanService:
             return _STORE[plan_id]
         
         pack_id = "unknown"
-        for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+        for p in DEMO_PACK_IDS:
             if p in plan_id:
                 pack_id = p
                 break
-        return {
+        plan = {
             "plan_id": plan_id,
             "solution_pack_id": pack_id,
-            "value_case_id": None,
+            "value_case_id": None if pack_id == "unknown" else f"vc_demo_{pack_id}",
             "phases": self._generate_phases(8),
             "timeline_weeks": 8,
             "created_at": datetime.utcnow(),
         }
+        _STORE[plan_id] = plan
+        return plan
 
     def get_risks(self, plan_id: str) -> dict:
         return {
@@ -93,10 +119,11 @@ class DeploymentPlanService:
         }
 
     def _generate_phases(self, timeline_weeks: int) -> list[dict]:
+        rollout_weeks = max(1, timeline_weeks - 6)
         return [
             {
                 "phase": 1,
-                "name": "Discovery & Data Mapping",
+                "name": "Discovery and Data Mapping",
                 "weeks": 1,
                 "deliverable": "Operational ontology",
             },
@@ -114,14 +141,14 @@ class DeploymentPlanService:
             },
             {
                 "phase": 4,
-                "name": "Value Case & Readout",
+                "name": "Value Case and Readout",
                 "weeks": 1,
                 "deliverable": "Executive summary",
             },
             {
                 "phase": 5,
                 "name": "Staged Production Rollout",
-                "weeks": timeline_weeks - 6,
+                "weeks": rollout_weeks,
                 "deliverable": "Production deployment",
             },
         ]

@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { ReadoutBoard } from "@/components/praxis/workbench/ReadoutBoard";
 
 function resolvePackId(runId: string): string {
@@ -12,7 +12,8 @@ function resolvePackId(runId: string): string {
 
 export default function ExecutiveReadoutRunPage() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const runId = (params.runId as string) ?? "unknown";
-  const packId = resolvePackId(runId);
+  const packId = searchParams.get("pack") ?? resolvePackId(runId);
   return <ReadoutBoard packId={packId} runId={runId} />;
 }

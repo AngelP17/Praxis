@@ -41,16 +41,16 @@ const SOURCE_TYPE_MAP: Record<string, string> = {
 };
 
 const TYPE_COLOR: Record<string, string> = {
-  Asset: "#3EFFA8",
-  Service: "#8B5CF6",
-  Action: "#C084FC",
-  ERP: "#F59E0B",
-  Identity: "#06B6D4",
-  Ticketing: "#F87171",
-  SLO: "#10B981",
-  Stakeholder: "#60A5FA",
-  Network: "#E879F9",
-  default: "#6B6B8A",
+  Asset: "var(--praxis-argon)",
+  Service: "var(--praxis-plasma)",
+  Action: "color-mix(in srgb, var(--praxis-plasma) 72%, var(--praxis-bone))",
+  ERP: "var(--praxis-amber)",
+  Identity: "color-mix(in srgb, var(--praxis-argon) 72%, var(--praxis-bone))",
+  Ticketing: "var(--praxis-crit)",
+  SLO: "var(--praxis-argon)",
+  Stakeholder: "var(--praxis-bone)",
+  Network: "color-mix(in srgb, var(--praxis-plasma) 62%, var(--praxis-argon))",
+  default: "var(--praxis-mute)",
 };
 
 function typeColor(type: string) {

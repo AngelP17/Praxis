@@ -43,7 +43,7 @@ This document contains a structured, timed technical script to guide you through
 
 ## 3:00 to 4:00 | 4. Compiling the Proof (The Live Demo)
 
-> "Let's run the compilation suite to build a pristine, schema-validated proof object from our flagship solution pack (`manufacturing-printer-gpo`):
+> "Let's run the compilation suite to build a schema-validated proof object from the currently verified local FieldLab pack (`manufacturing-printer-gpo`):
 >
 > ```bash
 > make praxis-proof
@@ -55,13 +55,13 @@ This document contains a structured, timed technical script to guide you through
 > .venv/bin/python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json --level L0
 > ```
 >
-> The L0 verification passes successfully, confirming that the canonical hash matches and the JSON Schema is fully conformed to."
+> The L0 verification should pass when the local FieldLab prerequisites are running, confirming that the canonical hash matches and the JSON Schema conforms to the verifier."
 
 ---
 
 ## 4:00 to 5:00 | 5. The Tamper Test (Adversarial Defense)
 
-> "A system is only as strong as its ability to handle failure and malicious interventions. Let's run our adversarial test suite:
+> "A proof system is only as strong as its ability to handle failure and malicious interventions. Let's run the adversarial test suite:
 >
 > ```bash
 > .venv/bin/pytest tests/praxis/test_protocol_adversarial.py
@@ -72,16 +72,16 @@ This document contains a structured, timed technical script to guide you through
 > - **Signature Forgery**: Forging or copying operator signatures to unauthorized proofs causes L1 verification to fail closed.
 > - **Attestation Tampering**: Any L2 request fails closed with `unsupported_attestation_verification` until real transparency-log inclusion verification exists.
 >
-> As we can see, all 13 adversarial attacks fail closed perfectly, proving the cryptographic defense of our system."
+> These tests are the durable claim: tampering cases fail closed under the current verifier implementation."
 
 ---
 
 ## 5:00 to 6:00 | 6. CI/CD and Production Posture
 
-> "To make this platform production-ready, we have implemented standard SRE and repository hygiene:
+> "For production readiness, the repo separates implemented SRE hygiene from environment-specific hardening that must still be completed:
 > - **Multi-Container Composition**: Hardened configurations are isolated between `docker-compose.yml` and `docker-compose.prod.yml`.
 > - **GitHub Security Gates**: OpenSSF Scorecards, Dependabot tracking, and secret scanning are fully integrated into our GitHub Actions workflows.
-> - **SRE Playbooks**: Under `docs/operations/`, we have detailed complete SLO targets, incident response runbooks, backup/restore procedures, and key rotation workflows to guarantee continuous availability."
+> - **SRE Playbooks**: Under `docs/operations/`, the repo documents SLO targets, incident response runbooks, backup/restore procedures, and key rotation workflows. They are operating guides, not proof that a public production environment is already running."
 
 ---
 

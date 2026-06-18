@@ -10,6 +10,7 @@ import { ErrorState } from "@/components/error-state";
 import { WorkbenchShell, TopbarTitle, GhostAction, PrimaryAction } from "./WorkbenchShell";
 import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
 import { ProofJourneyTimeline } from "@/components/praxis/ProofJourneyTimeline";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 function Spark({ data, color, w = 310, h = 70 }: { data: number[]; color: string; w?: number; h?: number }) {
   const max = Math.max(...data);
@@ -27,6 +28,7 @@ function Spark({ data, color, w = 310, h = 70 }: { data: number[]; color: string
 export function ReadoutBoard({ packId: propPackId, runId }: { packId?: string; runId?: string }) {
   const searchParams = useSearchParams();
   const packId = propPackId ?? searchParams.get("pack") ?? "manufacturing-printer-gpo";
+  const activeCase = getActiveCase(packId, searchParams.get("scenario"), searchParams.get("ticket"));
   const { proof, loading, error, reload } = useProof(packId);
   const { packs } = useSolutionPacks();
   const activePack = packs.find((p) => p.id === packId);
@@ -55,9 +57,9 @@ export function ReadoutBoard({ packId: propPackId, runId }: { packId?: string; r
 
   const topbarRight = (
     <>
-      <GhostAction href={`/readout/${runId_}/print`}>PDF</GhostAction>
-      <GhostAction href={`/readout/${runId_}/print?format=deck`}>Deck</GhostAction>
-      <PrimaryAction href={`/proof/${runId_}`}>Send to CFO</PrimaryAction>
+      <GhostAction href={`/readout/${runId_}/print`}>Print view</GhostAction>
+      <GhostAction href={hrefWithActiveCase("/value-case", activeCase)}>Value model</GhostAction>
+      <PrimaryAction href={hrefWithActiveCase(`/proof/${runId_}`, activeCase)}>Open proof</PrimaryAction>
     </>
   );
 
@@ -128,7 +130,7 @@ export function ReadoutBoard({ packId: propPackId, runId }: { packId?: string; r
                   <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Expansion path</div>
                   <div className="mt-2 flex flex-col gap-[6px]">
                     {expansion.map((e) => (
-                      <Link key={e.name} href={`/expansion-map?focus=${encodeURIComponent(e.name)}`} className="flex justify-between font-mono text-[11px] transition-transform hover:translate-x-1">
+                      <Link key={e.name} href={hrefWithActiveCase("/expansion-map", activeCase, { focus: e.name })} className="flex justify-between font-mono text-[11px] transition-transform hover:translate-x-1">
                         <span className="text-[var(--praxis-bone)]">{e.name}</span>
                         <span style={{ color: "var(--praxis-plasma)" }}>{e.expansion_score.toFixed(2)}</span>
                       </Link>

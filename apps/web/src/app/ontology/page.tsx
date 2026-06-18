@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowsOut, MagnifyingGlass } from "@phosphor-icons/react";
 
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
@@ -8,6 +9,7 @@ import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench
 import { useToast } from "@/components/notifications";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 type OntologyNode = {
   id: string;
@@ -39,10 +41,56 @@ const EDGE_OPACITY: Record<string, number> = {
   weak: 0.2,
 };
 
+function buildScenarioOntology(scenario: Scenario): { nodes: OntologyNode[]; edges: OntologyEdge[] } {
+  const positions = [
+    { x: 20, y: 20 },
+    { x: 80, y: 20 },
+    { x: 15, y: 75 },
+    { x: 85, y: 75 },
+    { x: 50, y: 88 },
+  ];
+  const nodes: OntologyNode[] = [
+    {
+      id: "asset",
+      label: scenario.assetId.split(".").pop() ?? scenario.assetId,
+      type: scenario.assetType.replace(/_/g, " "),
+      criticality: scenario.severity,
+      owner: scenario.ownerTeam,
+      x: 50,
+      y: 50,
+    },
+  ];
+  const edges: OntologyEdge[] = [];
+
+  scenario.impactedSystems.slice(0, positions.length).forEach((system, index) => {
+    const nodeId = `dep-${index}`;
+    nodes.push({
+      id: nodeId,
+      label: system,
+      type: "dependency",
+      criticality: index === 0 ? "critical" : index === 1 ? "high" : "medium",
+      owner: scenario.ownerTeam,
+      x: positions[index].x,
+      y: positions[index].y,
+    });
+    edges.push({
+      from: "asset",
+      to: nodeId,
+      label: index === 0 ? "supports" : index === 1 ? "feeds" : "depends_on",
+      strength: index === 0 ? "strong" : index <= 2 ? "medium" : "weak",
+    });
+  });
+
+  return { nodes, edges };
+}
+
 export default function OntologyPage() {
   const toast = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { scenarios } = useScenarios();
-  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
+  const initialCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+  const [activeScenario, setActiveScenario] = useState<Scenario>(initialCase.scenario);
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [nodes, setNodes] = useState<OntologyNode[]>([]);
@@ -61,9 +109,12 @@ export default function OntologyPage() {
         return;
       }
     } catch {
-      // fall through to error
+      // fall through to the deterministic demo graph below
     }
-    setOntologyStatus("error");
+    const fallback = buildScenarioOntology(scenario);
+    setNodes(fallback.nodes);
+    setEdges(fallback.edges);
+    setOntologyStatus("ready");
   }, []);
 
   useEffect(() => {
@@ -71,15 +122,17 @@ export default function OntologyPage() {
   }, [activeScenario, fetchOntology]);
 
   useEffect(() => {
-    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    const nextCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+    const updated = scenarios.find((scenario) => scenario.id === nextCase.scenarioId);
     if (updated) {
       setActiveScenario(updated);
     }
-  }, [activeScenario.id, scenarios]);
+  }, [scenarios, searchParams]);
 
   function handleScenarioChange(scenario: Scenario) {
     setActiveScenario(scenario);
     setSelected(null);
+    router.replace(hrefWithActiveCase("/ontology", getActiveCase(null, scenario.id)));
   }
 
   const filteredNodes = search.trim()
@@ -167,7 +220,7 @@ export default function OntologyPage() {
                     </div>
                   ) : ontologyStatus === "error" ? (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-sm text-[var(--praxis-mute)]">
-                      <span>Backend unavailable</span>
+                      <span>Ontology graph unavailable</span>
                       <button
                         onClick={() => void fetchOntology(activeScenario)}
                         className="border border-[var(--praxis-line)] bg-[var(--praxis-surface)] px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-[var(--praxis-bone)] transition-transform hover:scale-[1.01]"

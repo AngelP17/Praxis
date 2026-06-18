@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CurrencyDollar, TrendDown, ChartBar, Export } from "@phosphor-icons/react";
 
 import { ScenarioPicker } from "@/components/praxis/ScenarioPicker";
@@ -8,6 +9,7 @@ import { useToast } from "@/components/notifications";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
 import { Pill, TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 function fmtUsd(n: number) {
   if (n >= 1_000_000) return `$${(n / 1_000_000).toFixed(1)}M`;
@@ -53,16 +55,20 @@ const ASSUMPTIONS = (s: Scenario) => [
 
 export default function ValueCasePage() {
   const toast = useToast();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { scenarios } = useScenarios();
-  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
+  const initialCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+  const [activeScenario, setActiveScenario] = useState<Scenario>(initialCase.scenario);
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    const nextCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+    const updated = scenarios.find((scenario) => scenario.id === nextCase.scenarioId);
     if (updated) {
       setActiveScenario(updated);
     }
-  }, [activeScenario.id, scenarios]);
+  }, [scenarios, searchParams]);
 
   const breakdown = CATEGORY_BREAKDOWN(activeScenario);
   const assumptions = ASSUMPTIONS(activeScenario);
@@ -85,7 +91,7 @@ export default function ValueCasePage() {
         throw new Error("Export endpoint unavailable");
       }
     } catch {
-      toast.success("Export queued", `value_case_${activeScenario.id}.xlsx · ${fmtUsd(activeScenario.estimatedValueUsd)}/yr`);
+      toast.error("Export failed", "The report endpoint did not return a downloadable file.");
     } finally {
       setExporting(false);
     }
@@ -140,16 +146,22 @@ export default function ValueCasePage() {
             <section className="col-span-12 border border-[var(--praxis-line)] bg-[linear-gradient(180deg,rgba(19,18,31,0.96),rgba(10,10,20,0.94))] px-6 py-20 sm:px-8 xl:col-span-8">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Scenario focus</div>
+                <div className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)]">Selected case</div>
                   <h2 className="mt-3 font-display text-[28px] font-semibold tracking-[-0.02em] text-[var(--praxis-bone)]">
                     Estimated Operational Value
                   </h2>
                   <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--praxis-mute)]">
-                    Evidence-based ROI from real decision data, MTTR reduction, recurrence suppression, and impacted system context.
+                    Scenario-backed ROI from deterministic demo data, MTTR reduction, recurrence suppression, and impacted system context.
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <ScenarioPicker activeId={activeScenario.id} onChange={setActiveScenario} />
+                  <ScenarioPicker
+                    activeId={activeScenario.id}
+                    onChange={(scenario) => {
+                      setActiveScenario(scenario);
+                      router.replace(hrefWithActiveCase("/value-case", getActiveCase(null, scenario.id)));
+                    }}
+                  />
                   <button
                     onClick={handleExport}
                     disabled={exporting}
@@ -244,7 +256,10 @@ export default function ValueCasePage() {
                   {scenarios.map((s) => (
                     <tr
                       key={s.id}
-                      onClick={() => setActiveScenario(s)}
+                      onClick={() => {
+                        setActiveScenario(s);
+                        router.replace(hrefWithActiveCase("/value-case", getActiveCase(null, s.id)));
+                      }}
                       className="cursor-pointer border-b border-[var(--praxis-line)] transition-transform duration-200 hover:scale-[1.005] hover:bg-[var(--praxis-surface)]"
                       style={{ background: s.id === activeScenario.id ? "var(--praxis-surface)" : undefined }}
                     >

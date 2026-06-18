@@ -20,12 +20,15 @@ export async function POST(request: Request) {
 }
 
 export async function GET(request: Request) {
-  if (!IS_VERCEL_RUNTIME) {
-    return proxyBackend("/api/fieldlab/runs");
-  }
-
   const { searchParams } = new URL(request.url);
   const packId = searchParams.get("pack");
-  if (packId) return NextResponse.json([getDemoRun(packId)]);
-  return NextResponse.json(DEMO_PACK_IDS.map((id) => getDemoRun(id)));
+  const demoRuns = packId
+    ? [getDemoRun(packId)]
+    : DEMO_PACK_IDS.map((id) => getDemoRun(id));
+
+  if (!IS_VERCEL_RUNTIME) {
+    return proxyBackend("/api/fieldlab/runs", undefined, () => NextResponse.json({ runs: demoRuns }));
+  }
+
+  return NextResponse.json({ runs: demoRuns });
 }

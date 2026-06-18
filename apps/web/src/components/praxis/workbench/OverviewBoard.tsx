@@ -148,12 +148,12 @@ export function OverviewBoard({
         </>
       ) : (
         <>
-          <GhostAction href="/console">Time · 24H</GhostAction>
-          <GhostAction href={`/proof/${runId_}`}>{alerts.length} alerts</GhostAction>
+          <GhostAction href="/console">Console</GhostAction>
+          <GhostAction href={`/proof/${runId_}`}>{alerts.length} signals</GhostAction>
         </>
       )}
       <PrimaryAction href={isDashboard ? "/field-workbench" : `/executive-readout/${runId_}`}>
-        {isDashboard ? "Open flagship run" : "Export readout"}
+        {isDashboard ? "Open proof run" : "Open readout"}
       </PrimaryAction>
     </>
   );
@@ -161,7 +161,7 @@ export function OverviewBoard({
   const title = isDashboard ? "Portfolio Dashboard" : "Operational Overview";
   const subtitle = isDashboard
     ? `Multi-pack posture · ${packs.length} packs · ${sites} sites in active evidence graph`
-    : `Real-time posture · ${sites} sites · ${activeRuns} active runs`;
+    : `Demo posture · ${sites} sites · ${activeRuns} active runs`;
 
   return (
     <WorkbenchShell

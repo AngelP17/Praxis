@@ -17,18 +17,18 @@ Every solution pack is evaluated against the following pipeline checkpoints:
 - **UI**: Renders dashboard and bento-grid visuals.
 - **Benchmark**: Benchmarked for execution speed.
 
-| Solution Pack | Ingest | Ontology | Decision | Human Action | Proof | Replay | Value Case | UI | Benchmark | Status |
+| Solution Pack | Ingest | Ontology | Decision | Human Action | Proof | Replay | Value Case | UI | Benchmark | Maturity |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
-| **Printer GPO Drift** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Flagship (Fully Verified)** |
-| **Network Edge Failover** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Partial | ✅ | **Hardened (Beta)** |
-| **Identity Onboarding Drift**| ✅ | ✅ | ✅ | Partial | ✅ | ✅ | ✅ | Partial | ✅ | **Hardened (Beta)** |
-| **Database Replication Lag** | ✅ | ✅ | ✅ | Partial | ✅ | ✅ | ✅ | Partial | ✅ | **Hardened (Beta)** |
+| **Printer GPO Drift** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **FieldLab-verified** |
+| **Network Edge Failover** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Partial | ✅ | **Beta proof** |
+| **Identity Onboarding Drift**| ✅ | ✅ | ✅ | Partial | ✅ | ✅ | ✅ | Partial | ✅ | **Beta proof** |
+| **Database Replication Lag** | ✅ | ✅ | ✅ | Partial | ✅ | ✅ | ✅ | Partial | ✅ | **Beta proof** |
 
 ---
 
 ## 2. Complete Readiness Definition
 
-A Solution Pack is considered **complete and certified** only when the following files exist and pass validation:
+A Solution Pack is considered **FieldLab-verified** only when the following files exist, pass validation, and are exercised by the current proof command:
 1.  `scenario.yaml`: core scenario metadata.
 2.  `customer-context.md`: enterprise/operational background snapshot.
 3.  `sample-events.jsonl`: representative operational events.

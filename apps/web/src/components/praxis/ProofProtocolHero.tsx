@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle, GitBranch, ShieldCheck } from "@phosphor-icons/react";
 import { formatCurrency, formatPercent, type PraxisProof } from "@/lib/praxis-client";
 import { PraxisLogo } from "./PraxisLogo";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 const FALLBACK_HASH = "sha" + "256:loading";
 
@@ -21,6 +22,7 @@ export function ProofProtocolHero({
   const value = proof ? formatCurrency(proof.value_case.estimated_annual_value) : "$38.5K";
   const priority = proof ? formatPercent(proof.decision.priority_score) : "77%";
   const trust = proof ? formatPercent(proof.evidence.evidence_trust) : "83%";
+  const activeCase = getActiveCase(packId);
 
   return (
     <header className="relative isolate min-h-[100dvh] overflow-hidden bg-[var(--praxis-bg)] pb-8 pt-12 text-[var(--praxis-bone)]">
@@ -45,7 +47,8 @@ export function ProofProtocolHero({
           <span className="font-display text-[18px] font-semibold tracking-[-0.02em]">praxis</span>
         </Link>
         <div className="hidden items-center gap-7 md:flex">
-          <Link href="/field-workbench" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Workbench</Link>
+          <Link href={hrefWithActiveCase("/field-workbench", activeCase)} className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Workbench</Link>
+          <Link href="/why-praxis" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Why Praxis</Link>
           <Link href="/dashboard" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Dashboard</Link>
           <Link href="/proof/diff" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Diff</Link>
           <Link href="https://github.com/AngelP17/Praxis" target="_blank" rel="noopener noreferrer" className="font-mono text-[10px] uppercase tracking-[0.14em] text-[var(--praxis-mute)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-bone)]">Repository</Link>
@@ -58,10 +61,10 @@ export function ProofProtocolHero({
             <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--praxis-mute)]">Forward-deployed operational intelligence</p>
           </div>
           <h1 className="max-w-[920px] font-display text-[clamp(4.2rem,8vw,8.4rem)] font-semibold leading-[0.86] tracking-[-0.05em] text-[var(--praxis-bone)]">
-            Proof the full stack.
+            Carry proof through the decision.
           </h1>
           <p className="mt-7 max-w-[620px] text-[17px] leading-8 text-[var(--praxis-mute)]">
-            Praxis turns messy plant signals into validated API records, human-approved actions, and replayable proof objects.
+            Choose a case, inspect the evidence, approve the action, then verify the same proof object.
           </p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row">
             <button
@@ -72,7 +75,7 @@ export function ProofProtocolHero({
               <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
             </button>
             <Link
-              href="/field-workbench"
+              href={hrefWithActiveCase("/field-workbench", activeCase)}
               className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--praxis-line)] bg-[rgba(19,18,31,0.54)] px-7 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] backdrop-blur-xl transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
             >
               Field workbench
@@ -84,7 +87,7 @@ export function ProofProtocolHero({
           <div className="border-b border-[var(--praxis-line)] p-5">
             <div className="flex items-center justify-between gap-4">
               <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--praxis-mute)]">Active proof</span>
-              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-argon)]">L0 verified</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--praxis-argon)]">L0 verifiable</span>
             </div>
             <div className="mt-5 break-all font-mono text-[13px] leading-6 text-[var(--praxis-bone)]">{hash}</div>
           </div>
@@ -102,7 +105,7 @@ export function ProofProtocolHero({
           </div>
           <div className="grid grid-flow-dense gap-px bg-[var(--praxis-line)]">
             {[
-              { label: "Event validated", detail: "Next route and FastAPI schema", icon: CheckCircle },
+              { label: "Event normalized", detail: "Scenario contract and API payload", icon: CheckCircle },
               { label: "Decision scored", detail: "Astraea deterministic run", icon: GitBranch },
               { label: "Action gated", detail: "Human approval retained", icon: ShieldCheck },
             ].map((item) => {
@@ -120,7 +123,7 @@ export function ProofProtocolHero({
           </div>
           <div className="flex items-center justify-between gap-4 p-5 font-mono text-[10px] text-[var(--praxis-mute)]">
             <span className="truncate">{runId}</span>
-            <Link href={`/proof/${runId}`} className="shrink-0 uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-argon)]">Open proof</Link>
+            <Link href={`/proof/${runId}?pack=${packId}&scenario=${activeCase.scenarioId}&ticket=${activeCase.ticketId}`} className="shrink-0 uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-105 hover:text-[var(--praxis-argon)]">Open proof</Link>
           </div>
         </aside>
       </div>

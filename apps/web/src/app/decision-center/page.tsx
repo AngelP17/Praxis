@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { type ReactNode, useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowClockwise,
   ArrowsClockwise,
@@ -160,6 +161,7 @@ function fmtLabel(value?: string | null) {
 }
 
 export default function DecisionCenterPage() {
+  const searchParams = useSearchParams();
   const decisionStatuses = useDemoSessionStore((state) => state.decisionStatusById);
   const setDemoDecisionStatus = useDemoSessionStore((state) => state.setDecisionStatus);
   const [events, setEvents] = useState<EventRow[]>([]);
@@ -173,18 +175,25 @@ export default function DecisionCenterPage() {
   const loadEvents = useCallback(async () => {
     setStatus("loading");
     setNotice(null);
+    const requestedTicket = searchParams.get("ticket");
+    const eventForTicket = (items: EventRow[]) =>
+      requestedTicket
+        ? items.find((event) => DEMO_TICKETS.find((ticket) => ticket.ticket_id === requestedTicket)?.requester === event.source)
+        : null;
     try {
       const list = await fetchJsonWithTimeout<EventRow[]>("/api/events");
-      const normalized = list.length > 0 ? list : DEMO_EVENT_STREAM;
+      const normalized = requestedTicket && !eventForTicket(list) ? DEMO_EVENT_STREAM : list.length > 0 ? list : DEMO_EVENT_STREAM;
       setEvents(normalized);
-      setSelectedEventId(normalized[0]?.event_id ?? "");
+      const matched = eventForTicket(normalized);
+      setSelectedEventId(matched?.event_id ?? normalized[0]?.event_id ?? "");
       setStatus("ready");
     } catch {
       setEvents(DEMO_EVENT_STREAM);
-      setSelectedEventId(DEMO_EVENT_STREAM[0]?.event_id ?? "");
+      const matched = eventForTicket(DEMO_EVENT_STREAM);
+      setSelectedEventId(matched?.event_id ?? DEMO_EVENT_STREAM[0]?.event_id ?? "");
       setStatus("ready");
     }
-  }, []);
+  }, [searchParams]);
 
   const loadReplay = useCallback(async (decisionId: number, detail: EventDetail, decisionData: DecisionPayload) => {
     try {
@@ -257,7 +266,7 @@ export default function DecisionCenterPage() {
       setNotice(type === "approve" ? "Decision approved." : "Decision rejected.");
       await loadDecisionSurface(eventDetail.event_id);
     } catch {
-      setNotice(type === "approve" ? "Decision approved." : "Decision rejected.");
+      setNotice(type === "approve" ? "Approval failed. Backend did not capture the action." : "Rejection failed. Backend did not capture the action.");
     }
   }
 
@@ -362,13 +371,13 @@ export default function DecisionCenterPage() {
                           Replay
                         </Link>
                       ) : null}
-                      <button onClick={() => void actionDecision("approve")} disabled={!decision} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-emerald-500/45 bg-emerald-500/14 px-5 py-2.5 text-sm font-medium text-emerald-100 transition-transform duration-500 hover:scale-105 hover:bg-emerald-500/20 disabled:opacity-50 disabled:hover:scale-100">
+                      <button onClick={() => void actionDecision("approve")} disabled={!decision || selectedDecisionStatus !== "pending"} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-emerald-500/45 bg-emerald-500/14 px-5 py-2.5 text-sm font-medium text-emerald-100 transition-transform duration-500 hover:scale-105 hover:bg-emerald-500/20 disabled:opacity-50 disabled:hover:scale-100">
                         <CheckCircle size={15} />
-                        Approve
+                        {selectedDecisionStatus === "approved" ? "Approved" : "Approve"}
                       </button>
-                      <button onClick={() => void actionDecision("reject")} disabled={!decision} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-rose-500/45 bg-rose-500/14 px-5 py-2.5 text-sm font-medium text-rose-100 transition-transform duration-500 hover:scale-105 hover:bg-rose-500/20 disabled:opacity-50 disabled:hover:scale-100">
+                      <button onClick={() => void actionDecision("reject")} disabled={!decision || selectedDecisionStatus !== "pending"} className="btn-enhanced inline-flex min-h-11 items-center gap-2 rounded-full border border-rose-500/45 bg-rose-500/14 px-5 py-2.5 text-sm font-medium text-rose-100 transition-transform duration-500 hover:scale-105 hover:bg-rose-500/20 disabled:opacity-50 disabled:hover:scale-100">
                         <XCircle size={15} />
-                        Reject
+                        {selectedDecisionStatus === "rejected" ? "Rejected" : "Reject"}
                       </button>
                     </div>
                   </div>

@@ -8,10 +8,12 @@ import { LoadingSkeleton } from "@/components/loading-skeleton";
 import { ErrorState } from "@/components/error-state";
 import { WorkbenchShell, TopbarTitle, Pill, PrimaryAction, GhostAction } from "./WorkbenchShell";
 import { ProofNarrativeStrip } from "@/components/praxis/ProofNarrativeStrip";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; runId?: string }) {
   const searchParams = useSearchParams();
   const packId = propPackId ?? searchParams.get("pack") ?? "manufacturing-printer-gpo";
+  const activeCase = getActiveCase(packId, searchParams.get("scenario"), searchParams.get("ticket"));
   const { proof, loading, error, reload } = useProof(packId);
   const { packs } = useSolutionPacks();
   const activePack = packs.find((p) => p.id === packId);
@@ -49,8 +51,8 @@ export function DecisionBoard({ packId: propPackId, runId }: { packId?: string; 
     <>
       <Pill>{proof.decision.requires_human_review ? "Review required" : "Auto-approved"}</Pill>
       <GhostAction href={`/replay/${runId_}`}>Replay</GhostAction>
-      <GhostAction href={`/proof/${runId_}?source=approve`}>Approve</GhostAction>
-      <PrimaryAction href={`/executive-readout/${runId_}`}>Route action</PrimaryAction>
+      <GhostAction href={hrefWithActiveCase("/decision-center", activeCase)}>Review approval</GhostAction>
+      <PrimaryAction href={hrefWithActiveCase(`/executive-readout/${runId_}`, activeCase)}>Open readout</PrimaryAction>
     </>
   );
 

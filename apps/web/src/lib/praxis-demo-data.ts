@@ -28,7 +28,7 @@ export const DEMO_PACKS: SolutionPack[] = [
     eventCount: 8,
     score: "0.87",
     annualValue: "$38,400",
-    status: "production",
+    status: "fieldlab-verified",
     rootCause: "gpo_permission_drift",
     recommendedAction: "approve_remediation",
     priorityScore: 0.87,
@@ -53,7 +53,7 @@ export const DEMO_PACKS: SolutionPack[] = [
     eventCount: 8,
     score: "0.88",
     annualValue: "$47,100",
-    status: "production",
+    status: "beta-proof",
     rootCause: "failover_route_degraded",
     recommendedAction: "approve_remediation",
     priorityScore: 0.88,
@@ -78,7 +78,7 @@ export const DEMO_PACKS: SolutionPack[] = [
     eventCount: 8,
     score: "0.85",
     annualValue: "$64,800",
-    status: "production",
+    status: "beta-proof",
     rootCause: "ad_onboarding_drift",
     recommendedAction: "approve_remediation",
     priorityScore: 0.85,
@@ -103,7 +103,7 @@ export const DEMO_PACKS: SolutionPack[] = [
     eventCount: 12,
     score: "0.92",
     annualValue: "$110,000",
-    status: "production",
+    status: "beta-proof",
     rootCause: "postgresql_replication_lag",
     recommendedAction: "tune_connection_pools",
     priorityScore: 0.92,
@@ -142,6 +142,11 @@ function packFor(packId: string) {
   return DEMO_PACKS.find((pack) => pack.id === packId) ?? DEMO_PACKS[0];
 }
 
+function packIndexFor(packId: string) {
+  const index = DEMO_PACK_IDS.findIndex((id) => id === packId);
+  return index >= 0 ? index : 0;
+}
+
 const GENERATED_PROOFS = generatedProofs as Record<string, PraxisProof>;
 
 export function getDemoProof(packId = "manufacturing-printer-gpo", _runId?: string): PraxisProof {
@@ -152,19 +157,31 @@ export function getDemoProof(packId = "manufacturing-printer-gpo", _runId?: stri
 export const DEMO_PROOF = getDemoProof();
 
 export function getDemoRun(packId = "manufacturing-printer-gpo"): FieldLabRun {
+  const pack = packFor(packId);
+  const index = packIndexFor(packId);
+  const startedAt = new Date(Date.UTC(2026, 4, 14, 14, 8 + index * 17, 0));
+  const completedAt = new Date(startedAt.getTime() + (8 + index * 3) * 60_000);
+  const proof = getDemoProof(packId);
   return {
     run_id: `demo_${packId}`,
     solution_pack_id: packId,
     customer_profile: {
-      buyer: packFor(packId).buyer,
-      industry: packFor(packId).industry,
+      buyer: pack.buyer,
+      industry: pack.industry,
+      site: ["Plant-TX", "Laredo DC", "Dallas Core", "Remote Ops"][index] ?? "FieldLab",
+      operating_window: ["labeling shift", "outbound sort", "new-hire wave", "checkout peak"][index] ?? "proof window",
     },
-    status: "created",
+    status: index === 0 ? "action_captured" : "executed",
     floci_endpoint: DEMO_HEALTH.endpoint,
-    started_at: "2026-05-14T00:00:00Z",
-    completed_at: null,
-    summary_json: null,
-    created_at: "2026-05-14T00:00:00Z",
+    started_at: startedAt.toISOString(),
+    completed_at: completedAt.toISOString(),
+    summary_json: {
+      proof_hash: proof.proof_hash,
+      priority_score: proof.decision.priority_score,
+      evidence_trust: proof.evidence.evidence_trust,
+      events_processed: proof.evidence.raw_events,
+    },
+    created_at: startedAt.toISOString(),
   };
 }
 

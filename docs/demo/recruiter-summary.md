@@ -1,6 +1,6 @@
 # Technical Elevator Pitch (Recruiter & Hiring Manager Summary)
 
-This document provides a concise, high-impact summary of **Praxis** to share with recruiters, hiring managers, or as an introductory pitch at the start of your interviews.
+This document provides a concise technical summary of **Praxis** for hiring managers or reviewers.
 
 ---
 
@@ -18,5 +18,5 @@ When asked to describe the key achievements of the project, highlight these four
 
 1.  **Proof-Carrying Protocol**: Designed a schema-validated proof protocol using JSON Schema Draft 2020-12 and a canonical SHA-256 hashing layer that isolates signature/attestation envelopes from the core decision payload. L1 Ed25519 signature verification is supported when a proof includes a valid signature envelope.
 2.  **Adversarial Verification Suite**: Built a strict tiered verifier (L0–L2) and a 13-attack adversarial test suite proving that any tampering with evidence, ontology, decision scores, action states, or signatures causes the verifier to fail closed.
-3.  **Local FieldLab Emulation (Floci)**: Implemented an offline LocalStack SRE substrate to simulate AWS resources locally, enabling 100% offline integration testing and deterministic replay verification.
-4.  **Production Hardening & SRE Runbooks**: Authored comprehensive production runbooks, Key Rotation manuals, Backup/Restore procedures, and Service Level Objectives (SLOs) defining error budgets and incident recovery workflows.
+3.  **Local FieldLab Emulation (Floci)**: Implemented an offline LocalStack SRE substrate to simulate AWS resources locally, enabling local integration testing and deterministic replay verification.
+4.  **Production Track Separation**: Authored production runbooks, key rotation manuals, backup/restore procedures, and SLO targets while keeping public-production hardening requirements separate from demo claims.

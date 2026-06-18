@@ -18,7 +18,7 @@
 | **Determinism Gate** | Bit-identical replay hashes across runs; any tampering changes the SHA-256 proof hash |
 | **PPP v0.1** | Conformance to the Praxis Proof Protocol spec for cryptographically verifiable AI decision provenance |
 
-Praxis is a flagship public demo and technical proof system, with a functional but not fully productized backend production path. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a green PR-run Docker Compose production proof recorded in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Docker Compose self-hosted backend path remains the recommended deployment target for real production use; post-merge `main` verification should still be observed separately.
+Praxis is a public proof demo and local FieldLab verification system, with a backend path that still requires explicit production hardening. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a recorded Docker Compose production proof in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Compose backend is the recommended self-hosted target, but current `main` verification and environment-specific secrets/origins must be checked before public production use.
 
 Praxis is the reference implementation of the **Praxis Proof Protocol** — the first open spec for cryptographically verifiable AI decision provenance. It turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
 
@@ -48,7 +48,7 @@ Floci start -> health check -> demo run -> proof emit -> L0 verify -> determinis
 
 [View latest CI run](https://github.com/AngelP17/praxis/actions/workflows/fieldlab-proof.yml)
 
-The web app also ships a Next.js `app/api` bridge for frontend stability. In local development it proxies the web UI to the FastAPI gateway; on Vercel it serves deterministic demo payloads for proofs, solution packs, Floci health, replay checks, and pipeline streaming so the flagship surfaces do not 404 when the backend is not deployed beside the frontend.
+The web app also ships a Next.js `app/api` bridge for frontend stability. In local development it proxies the web UI to the FastAPI gateway; on Vercel it serves deterministic demo payloads for proofs, solution packs, Floci health, replay checks, and pipeline streaming so the public demo remains navigable when the backend is not deployed beside the frontend.
 
 ## Release Modes
 
@@ -69,7 +69,7 @@ See [docs/release/public-launch-checklist.md](docs/release/public-launch-checkli
 
 ## Prove Praxis Works
 
-Praxis is verified through a local FieldLab run, not a pre-recorded video. The flagship proof path loads the manufacturing solution pack, streams messy events through the Floci-backed FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.
+Praxis is verified through a local FieldLab run, not a pre-recorded video. The proof path loads the manufacturing solution pack, streams messy events through the Floci-backed FieldLab, compiles an operational ontology, generates a proof-carrying decision, captures a human-approved action, and produces an executive value case.
 
 ```bash
 make install
@@ -78,7 +78,7 @@ make praxis-flagship-proof
 make praxis-fieldlab-down
 ```
 
-The flagship proof path emits the `artifacts/latest/praxis_proof.json` proof object and the `artifacts/latest/proof-summary.md` executive summary.
+The proof path emits the `artifacts/latest/praxis_proof.json` proof object and the `artifacts/latest/proof-summary.md` executive summary.
 
 > **Tag:** `praxis-v1` — Field-Deployed Decision Platform
 

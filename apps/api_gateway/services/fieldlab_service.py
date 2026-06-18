@@ -24,6 +24,68 @@ ROOT = Path(__file__).resolve().parents[3]
 _MEMORY_STORE: dict[str, dict] = {}
 _MEMORY_ACTIONS: dict[str, dict] = {}
 
+DEMO_PACK_IDS = [
+    "manufacturing-printer-gpo",
+    "network-edge-failover",
+    "identity-onboarding-drift",
+    "database-failover-lag",
+]
+
+DEMO_RUN_CONTEXT = {
+    "manufacturing-printer-gpo": {
+        "buyer": "VP of Manufacturing Operations",
+        "industry": "Manufacturing",
+        "site": "Plant-TX",
+        "operating_window": "labeling shift",
+        "updated_at": "2026-05-14T14:08:00+00:00",
+        "status": "action_captured",
+    },
+    "network-edge-failover": {
+        "buyer": "Director of Supply Chain",
+        "industry": "Logistics",
+        "site": "Laredo-DC",
+        "operating_window": "outbound sort",
+        "updated_at": "2026-05-14T14:25:00+00:00",
+        "status": "executed",
+    },
+    "identity-onboarding-drift": {
+        "buyer": "VP of Human Resources",
+        "industry": "Logistics",
+        "site": "Dallas Core",
+        "operating_window": "new-hire wave",
+        "updated_at": "2026-05-14T14:42:00+00:00",
+        "status": "executed",
+    },
+    "database-failover-lag": {
+        "buyer": "Director of Infrastructure",
+        "industry": "Technology Services",
+        "site": "Remote Ops",
+        "operating_window": "checkout peak",
+        "updated_at": "2026-05-14T14:59:00+00:00",
+        "status": "executed",
+    },
+}
+
+
+def _seed_memory_runs() -> None:
+    for pack_id in DEMO_PACK_IDS:
+        run_id = f"demo_{pack_id}"
+        if run_id in _MEMORY_STORE:
+            continue
+        context = DEMO_RUN_CONTEXT[pack_id]
+        _MEMORY_STORE[run_id] = {
+            "run_id": run_id,
+            "pack_id": pack_id,
+            "status": context["status"],
+            "metadata": {
+                "buyer": context["buyer"],
+                "industry": context["industry"],
+                "site": context["site"],
+                "operating_window": context["operating_window"],
+            },
+            "updated_at": context["updated_at"],
+        }
+
 # Cached Floci availability check (refreshed every 30s)
 _FLOCI_CACHE: dict = {"available": None, "checked_at": 0}
 
@@ -99,6 +161,7 @@ class FieldLabService:
         }
 
     def list_runs(self) -> list[dict]:
+        _seed_memory_runs()
         items = list(_MEMORY_STORE.values())
         if self._floci_available:
             try:
@@ -131,6 +194,7 @@ class FieldLabService:
         ]
 
     def get_run(self, run_id: str) -> dict:
+        _seed_memory_runs()
         item = _MEMORY_STORE.get(run_id)
         if self._floci_available:
             try:
@@ -152,7 +216,7 @@ class FieldLabService:
                 "created_at": item.get("updated_at", ""),
             }
         pack_id = "unknown"
-        for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+        for p in DEMO_PACK_IDS:
             if p in run_id:
                 pack_id = p
                 break
@@ -456,7 +520,7 @@ class FieldLabService:
         pack_id = item.get("pack_id")
         if not pack_id:
             pack_id = "unknown"
-            for p in ["manufacturing-printer-gpo", "network-edge-failover", "identity-onboarding-drift", "database-failover-lag"]:
+            for p in DEMO_PACK_IDS:
                 if p in run_id:
                     pack_id = p
                     break

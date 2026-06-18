@@ -22,6 +22,10 @@ export const DEMO_ASSETS = [
   { id: 101, asset_name: "Press Line 3 PLC", asset_type: "controller", site_id: "Plant-A", criticality: "critical", owner_team: "Mechanical Ops", dependency_json: "{\"upstream\": [\"edge-gateway-03\"]}" },
   { id: 102, asset_name: "Telemetry Ingest API", asset_type: "service", site_id: "Core-Cluster", criticality: "high", owner_team: "Platform Reliability", dependency_json: "{\"upstream\": [\"ingress-controller\", \"kafka\"]}" },
   { id: 103, asset_name: "Historian Database", asset_type: "database", site_id: "Plant-A", criticality: "high", owner_team: "Data Engineering", dependency_json: "{\"upstream\": [\"storage-array-01\"]}" },
+  { id: 104, asset_name: "Labeling Zebra Fleet", asset_type: "peripheral", site_id: "Plant-TX", criticality: "critical", owner_team: "Shipping Ops", dependency_json: "{\"upstream\": [\"print-server-02\", \"ad-gpo-prod\"]}" },
+  { id: 105, asset_name: "Outbound Router Pair", asset_type: "network", site_id: "Laredo-DC", criticality: "high", owner_team: "Network Operations", dependency_json: "{\"upstream\": [\"isp-primary\", \"lte-backup\"]}" },
+  { id: 106, asset_name: "ERP Access Groups", asset_type: "identity", site_id: "Dallas-Core", criticality: "high", owner_team: "Identity Operations", dependency_json: "{\"upstream\": [\"okta-lifecycle\", \"ad-gpo-prod\"]}" },
+  { id: 107, asset_name: "Postgres Replica Cluster", asset_type: "database", site_id: "Remote-Ops", criticality: "critical", owner_team: "Database Reliability", dependency_json: "{\"upstream\": [\"pgpool-primary\", \"checkout-api\"]}" },
 ] as const;
 
 export const DEMO_PLATFORM_SUMMARY = {
@@ -30,10 +34,10 @@ export const DEMO_PLATFORM_SUMMARY = {
   namespace: "default",
   replicas: { desired: 3, available: 3, ready: 3 },
   slo: {
-    availability: { target: 99.5, current: 99.982, status: "met" },
-    mttr: { target_seconds: 30, current_seconds: 12, status: "met" },
-    error_rate: { target_percent: 0.5, current_percent: 0.14, status: "met" },
-    p95_latency_ms: { target_ms: 500, current_ms: 184, status: "met" },
+    availability: { target: 99.5, current: 99.971, status: "met" },
+    mttr: { target_seconds: 45, current_seconds: 18, status: "met" },
+    error_rate: { target_percent: 0.5, current_percent: 0.23, status: "met" },
+    p95_latency_ms: { target_ms: 500, current_ms: 187, status: "met" },
   },
   latest_incident_id: "INC-20260422153045",
   updated_at: new Date("2026-04-27T16:42:00.000Z").toISOString(),

@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, Pulse, UploadSimple, Lightning, Check } from "@phosphor-icons/react";
 
 import { TopbarTitle, WorkbenchShell } from "@/components/praxis/workbench/WorkbenchShell";
@@ -14,6 +14,7 @@ import { deterministicHash } from "@/lib/deterministic-hash";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { type Scenario } from "@/lib/scenarios";
 import { DEMO_EVENT_STREAM } from "@/lib/demo-scenario";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 type EventRow = {
   event_id: string;
@@ -44,16 +45,18 @@ const SEVERITY_BADGE: Record<string, string> = {
 
 export default function EventIngestionPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const toast = useToast();
   const { scenarios } = useScenarios();
+  const initialCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
   const [events, setEvents] = useState<EventRow[]>([]);
   const [pageStatus, setPageStatus] = useState<"loading" | "ready">("loading");
-  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
-  const [source, setSource] = useState(scenarios[0].source);
-  const [eventType, setEventType] = useState(scenarios[0].eventType);
-  const [severity, setSeverity] = useState<string>(scenarios[0].severity);
-  const [site, setSite] = useState(scenarios[0].site);
-  const [assetId, setAssetId] = useState(scenarios[0].assetId);
+  const [activeScenario, setActiveScenario] = useState<Scenario>(initialCase.scenario);
+  const [source, setSource] = useState(initialCase.scenario.source);
+  const [eventType, setEventType] = useState(initialCase.scenario.eventType);
+  const [severity, setSeverity] = useState<string>(initialCase.scenario.severity);
+  const [site, setSite] = useState(initialCase.scenario.site);
+  const [assetId, setAssetId] = useState(initialCase.scenario.assetId);
   const [ingesting, setIngesting] = useState(false);
   const [evaluating, setEvaluating] = useState(false);
   const [lastResult, setLastResult] = useState<EvaluateResult | null>(null);
@@ -75,7 +78,8 @@ export default function EventIngestionPage() {
   }, [loadEvents]);
 
   useEffect(() => {
-    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    const nextCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+    const updated = scenarios.find((scenario) => scenario.id === nextCase.scenarioId);
     if (updated) {
       setActiveScenario(updated);
       setSource(updated.source);
@@ -84,7 +88,7 @@ export default function EventIngestionPage() {
       setSite(updated.site);
       setAssetId(updated.assetId);
     }
-  }, [activeScenario.id, scenarios]);
+  }, [scenarios, searchParams]);
 
   function applyScenario(scenario: Scenario) {
     setActiveScenario(scenario);
@@ -93,6 +97,7 @@ export default function EventIngestionPage() {
     setSeverity(scenario.severity);
     setSite(scenario.site);
     setAssetId(scenario.assetId);
+    router.replace(hrefWithActiveCase("/event-ingestion", getActiveCase(null, scenario.id)));
   }
 
   async function handleIngest(e: FormEvent<HTMLFormElement>) {
@@ -194,10 +199,10 @@ export default function EventIngestionPage() {
               <div className="flex-1">
                 <div className="praxis-v2-eyebrow-enhanced">Event Ingestion</div>
                 <h1 className="mt-4 font-display font-semibold tracking-tight text-zinc-50" style={{ fontSize: "clamp(2rem, 3.5vw, 3.2rem)", lineHeight: "1.1" }}>
-                  Real-time Signal Intake
+                  Scenario Signal Intake
                 </h1>
                 <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
-                  Submit operational events into the Praxis spine. Switch scenarios with the picker or press{" "}
+                  Submit a selected scenario event into the Praxis spine. Switch cases with the picker or press{" "}
                   <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">1</kbd>-
                   <kbd className="rounded border border-zinc-700 px-1 font-mono text-[10px]">{scenarios.length}</kbd>.
                 </p>
@@ -214,7 +219,6 @@ export default function EventIngestionPage() {
                   <div>
                     <div className="praxis-v2-eyebrow-enhanced">Signal Parameters</div>
                     <div className="mt-2 flex items-center gap-2">
-                      <span className="text-lg">{activeScenario.icon}</span>
                       <span className="text-base font-semibold text-zinc-100">{activeScenario.label}</span>
                     </div>
                   </div>

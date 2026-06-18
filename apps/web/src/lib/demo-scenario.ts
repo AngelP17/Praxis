@@ -13,30 +13,31 @@ type AuditEntry = { ts: string; actor: string; action: string; hash: string };
 
 export const DEMO_RATIONALE: RationaleToken[] = [
   { token: "gpo_permission_drift", value: "drifted", weight: 0.41 },
-  { token: "ping_failure", value: "failed", weight: 0.27 },
-  { token: "last_seen_drift", value: "14m ago", weight: 0.18 },
-  { token: "historical_match", value: "INC-2026-041", weight: 0.14 },
+  { token: "wan_failover_degraded", value: "packet loss", weight: 0.24 },
+  { token: "identity_group_mismatch", value: "mapping drift", weight: 0.19 },
+  { token: "replica_lag_window", value: "p95 breach", weight: 0.16 },
 ];
 
 export const DEMO_EVIDENCE: EvidenceArtifact[] = [
   { id: "gpo", label: "GPO permission status", path: "gpo_drift_status.json", size: "1.2 KB", hash: "9f1e-c2", severity: "crit" },
-  { id: "ping", label: "Printer ping check", path: "printer_ping_test.json", size: "0.8 KB", hash: "a4d2-77", severity: "warn" },
-  { id: "logs", label: "Active Directory audit logs", path: "ad_audit_records.log", size: "45.1 KB", hash: "5b07-91", severity: "info" },
-  { id: "runbook", label: "GPO drift remediation runbook", path: "runbook.printer.md", size: "3.4 KB", hash: "0c9a-2f", severity: "info" },
+  { id: "wan", label: "WAN failover packet-loss trace", path: "network_edge_failover.json", size: "2.6 KB", hash: "a4d2-77", severity: "warn" },
+  { id: "identity", label: "Identity group reconciliation log", path: "identity_onboarding_drift.log", size: "18.4 KB", hash: "5b07-91", severity: "info" },
+  { id: "db", label: "Replica lag and pool saturation sample", path: "database_failover_lag.json", size: "4.7 KB", hash: "0c9a-2f", severity: "warn" },
 ];
 
 export const DEMO_FEEDBACK: FeedbackEntry[] = [
   { actor: "Ops Lead / M. Santos", kind: "APPROVE", ts: isoMinutesAgo(22), note: "Correct routing. GPO drift confirms access degradation." },
-  { actor: "Reliability / A. Rahman", kind: "REVIEW", ts: isoMinutesAgo(12), note: "Request verify Active Directory replication status before final closure." },
-  { actor: "IT Operations / L. Okafor", kind: "ACK", ts: isoMinutesAgo(6), note: "Spooler restarted and printers mapped successfully." },
+  { actor: "Network Ops / A. Rahman", kind: "REVIEW", ts: isoMinutesAgo(12), note: "Verify backup route policy before closing edge-failover case." },
+  { actor: "Identity / S. Patel", kind: "ACK", ts: isoMinutesAgo(8), note: "ERP and email groups reconciled for onboarding cohort." },
+  { actor: "Database / J. Kim", kind: "REVIEW", ts: isoMinutesAgo(6), note: "Connection pool change staged pending replica catch-up check." },
 ];
 
 export const DEMO_AUDIT: AuditEntry[] = [
   { ts: "10:20:14Z", actor: "ops.lead.santos", action: "feedback.approve", hash: "0c9a-2f" },
-  { ts: "10:05:41Z", actor: "orchestrator.v3", action: "workflow.route", hash: "5b07-91" },
-  { ts: "09:18:22Z", actor: "astraea.core", action: "decision.commit", hash: "a4d2-77" },
-  { ts: "08:31:15Z", actor: "operator_joe", action: "ticket.open", hash: "9f1e-c2" },
-  { ts: "08:30:00Z", actor: "sensor_gateway", action: "signal.ingest", hash: "3a11-04" },
+  { ts: "10:05:41Z", actor: "network.ops.rahman", action: "route.review", hash: "5b07-91" },
+  { ts: "09:18:22Z", actor: "identity.ops.patel", action: "access.reconcile", hash: "a4d2-77" },
+  { ts: "08:31:15Z", actor: "db.ops.kim", action: "pool.tune", hash: "9f1e-c2" },
+  { ts: "08:30:00Z", actor: "sensor.gateway", action: "signal.ingest", hash: "3a11-04" },
 ];
 
 export const DEMO_TICKETS: Ticket[] = [
@@ -163,13 +164,13 @@ export const DEMO_METRICS = {
   sla_breach_risk: 3,
   incident_clusters: 4,
   signals_processed_24h: 2418736,
-  avg_decision_latency_ms: 184,
-  replay_coverage_percent: 100,
+  avg_decision_latency_ms: 187,
+  replay_coverage_percent: 96.8,
   active_evidence_lanes: 4,
-  p95_latency_ms: 438,
-  error_rate_percent: 0.18,
-  availability_percent: 99.982,
-  mttr_seconds: 742,
+  p95_latency_ms: 431,
+  error_rate_percent: 0.23,
+  availability_percent: 99.971,
+  mttr_seconds: 758,
 };
 
 export const DEMO_SIGNAL_SERIES = [

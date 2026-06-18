@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CheckCircle, XCircle, Sparkle, ArrowClockwise } from "@phosphor-icons/react";
 
 import { postJsonWithTimeout } from "@/lib/api";
@@ -11,6 +12,7 @@ import { useDemoSessionStore } from "@/lib/demo/demo-session-store";
 import { IS_DEMO_MODE } from "@/lib/demo-mode";
 import { useScenarios } from "@/lib/hooks/useScenarios";
 import { SEVERITY_COLORS, type Scenario } from "@/lib/scenarios";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
 
 type RecommendationRow = {
   id: number;
@@ -86,30 +88,35 @@ const STATUS_BADGE: Record<string, string> = {
 };
 
 export default function RecommendationsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const toast = useToast();
   const demoRecommendationStatuses = useDemoSessionStore((state) => state.recommendationStatusById);
   const setDemoRecommendationStatus = useDemoSessionStore((state) => state.setRecommendationStatus);
   const { scenarios } = useScenarios();
-  const [activeScenario, setActiveScenario] = useState<Scenario>(scenarios[0]);
+  const initialCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+  const [activeScenario, setActiveScenario] = useState<Scenario>(initialCase.scenario);
   const [rows, setRows] = useState<RecommendationRow[]>(() =>
-    applyDemoRecommendationStatuses(buildRows(scenarios[0], 0), demoRecommendationStatuses)
+    applyDemoRecommendationStatuses(buildRows(initialCase.scenario, Math.max(0, scenarios.findIndex((s) => s.id === initialCase.scenarioId))), demoRecommendationStatuses)
   );
   const [actioning, setActioning] = useState<Set<number>>(new Set());
 
   useEffect(() => {
-    const updated = scenarios.find((scenario) => scenario.id === activeScenario.id);
+    const nextCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+    const updated = scenarios.find((scenario) => scenario.id === nextCase.scenarioId);
     if (updated) {
       setActiveScenario(updated);
       const idx = scenarios.findIndex((scenario) => scenario.id === updated.id);
       setRows(applyDemoRecommendationStatuses(buildRows(updated, Math.max(0, idx)), demoRecommendationStatuses));
     }
-  }, [activeScenario.id, demoRecommendationStatuses, scenarios]);
+  }, [demoRecommendationStatuses, scenarios, searchParams]);
 
   function handleScenarioChange(scenario: Scenario) {
     setActiveScenario(scenario);
     const idx = scenarios.findIndex((s) => s.id === scenario.id);
     setRows(applyDemoRecommendationStatuses(buildRows(scenario, Math.max(0, idx)), demoRecommendationStatuses));
     setActioning(new Set());
+    router.replace(hrefWithActiveCase("/recommendations", getActiveCase(null, scenario.id)));
   }
 
   const pending = rows.filter((r) => r.status === "ready_for_operator").length;
@@ -184,7 +191,7 @@ export default function RecommendationsPage() {
                   Recommendations
                 </h1>
                 <p className="mt-4 text-sm text-zinc-400 leading-relaxed max-w-xl">
-                  Astraea-scored action items derived from live signals. Accept to queue for execution, reject to log and suppress.
+                  Astraea-scored action items derived from the selected case. Accept to queue for review, reject to log and suppress.
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-3">
@@ -218,7 +225,7 @@ export default function RecommendationsPage() {
           <div className="praxis-v2-panel-enhanced p-6 sm:p-8">
             <div className="flex items-center justify-between mb-5">
               <div className="praxis-v2-eyebrow-enhanced">
-                {activeScenario.icon} {activeScenario.label} · {activeScenario.ticketId}
+                {activeScenario.label} · {activeScenario.ticketId}
               </div>
               <span className={`rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.1em] ${sevClasses}`}>
                 {activeScenario.severity}

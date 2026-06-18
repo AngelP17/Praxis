@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowRight, BracketsCurly, ChartLineUp, CheckCircle, Database, GitBranch, LockKey, ShieldCheck, UsersThree } from "@phosphor-icons/react";
 import { ProofProtocolHero } from "@/components/praxis/ProofProtocolHero";
 import { DemoBanner } from "@/components/praxis/DemoBanner";
@@ -10,32 +10,35 @@ import { formatCurrency, formatPercent } from "@/lib/praxis-client";
 import { useProof } from "@/lib/hooks/useProof";
 import { getPackIdForScenario, SCENARIOS } from "@/lib/scenarios";
 import { getDemoProof } from "@/lib/praxis-demo-data";
+import { getActiveCase, hrefWithActiveCase } from "@/lib/active-case";
+import { ProofDownloadButton } from "@/components/praxis/ProofDownloadButton";
 import { PipelineRunnerModal } from "./PipelineRunnerModal";
 import { PortfolioAnalytics } from "./PortfolioAnalytics";
 
 function ProofPathRail({ packId, runId }: { packId: string; runId: string }) {
+  const activeCase = getActiveCase(packId);
   const steps = [
     {
       title: "Intake",
-      body: "A plant-floor signal is validated at the web boundary and routed to the backend contract.",
+      body: "A plant-floor signal is shaped into the same contract used by the local FieldLab path.",
       icon: Database,
-      href: "/event-ingestion",
+      href: hrefWithActiveCase("/event-ingestion", activeCase),
     },
     {
       title: "Score",
       body: "A deterministic decision run turns evidence trust, root cause, and value into one record.",
       icon: GitBranch,
-      href: "/decision",
+      href: hrefWithActiveCase("/decision", activeCase),
     },
     {
       title: "Approve",
       body: "The action stays gated by a human operator before any proof object is accepted.",
       icon: ShieldCheck,
-      href: `/field-workbench/${runId}`,
+      href: hrefWithActiveCase("/decision-center", activeCase),
     },
     {
       title: "Replay",
-      body: "The proof can be exported, diffed, and independently verified from the same run.",
+      body: "The proof can be downloaded, diffed, and checked with the verifier command.",
       icon: BracketsCurly,
       href: `/proof/${runId}?pack=${packId}`,
     },
@@ -49,7 +52,7 @@ function ProofPathRail({ packId, runId }: { packId: string; runId: string }) {
             One workflow, every layer visible.
           </h2>
           <p className="mt-6 max-w-2xl text-[17px] leading-8 text-[var(--praxis-mute)]">
-            The flagship run is not a static demo. It shows UI state, API orchestration, backend validation, decision logic, approval, proof export, and dashboard posture.
+            One selected case carries through intake, score, approval, proof, and readout without changing identities.
           </p>
         </div>
 
@@ -101,7 +104,7 @@ function ProofArtifactSpread({
               The proof is a product surface.
             </h2>
             <p className="mt-6 max-w-xl text-[17px] leading-8 text-[var(--praxis-mute)]">
-              Recruiters see the polished interface. Engineers can inspect the same proof object, route, and replay command underneath it.
+              Reviewers inspect the same proof object, route, and verifier command underneath the interface.
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -112,12 +115,7 @@ function ProofArtifactSpread({
               Inspect proof
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              href={`/api/proofs/${packId}`}
-              className="inline-flex min-h-12 items-center justify-center rounded-full border border-[var(--praxis-line)] px-7 font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--praxis-bone)] transition-transform duration-300 hover:scale-[1.02] active:scale-[0.98]"
-            >
-              Export JSON
-            </Link>
+            <ProofDownloadButton packId={packId} />
           </div>
         </div>
 
@@ -138,9 +136,9 @@ function ProofArtifactSpread({
           </div>
           <div className="grid grid-flow-dense gap-px bg-[var(--praxis-line)]">
             {[
-              ["Route handlers", "Next API boundaries preserve the web app contract."],
-              ["Backend scoring", "FastAPI and Python services produce the decision record."],
-              ["Audit trail", "Approval and proof export remain tied to the same run."],
+              ["Demo contract", "Next API fallbacks preserve the web app contract."],
+              ["FieldLab path", "Local FastAPI and Python services can produce the proof record."],
+              ["Audit trail", "Approval and proof export stay tied to the same selected case."],
             ].map(([title, body]) => (
               <div key={title} className="bg-[var(--praxis-obsidian)] p-6">
                 <div className="font-display text-2xl font-semibold tracking-[-0.03em] text-[var(--praxis-bone)]">{title}</div>
@@ -168,14 +166,19 @@ const simulationBranches = SCENARIOS.map((scenario) => {
     impact: formatCurrency(scenario.estimatedValueUsd),
     operator: scenario.ownerTeam,
     response: scenario.recommendation,
-    proof: `${proof.evidence.raw_events} events · ${proof.proof_hash.slice(7, 19)} · L0 verified`,
+    proof: `${proof.evidence.raw_events} events · ${proof.proof_hash.slice(7, 19)} · L0 verifiable`,
     workbenchHref: `/field-workbench?pack=${packId}`,
     proofHref: `/proof/${proof.run_id}?pack=${packId}`,
   };
 });
 
 function SimulationLab() {
+  const router = useRouter();
   const [activeBranch, setActiveBranch] = useState(simulationBranches[0]);
+  function selectBranch(branch: typeof simulationBranches[number]) {
+    setActiveBranch(branch);
+    router.replace(`/?pack=${branch.packId}&scenario=${branch.id}`);
+  }
 
   return (
     <section className="border-b border-[var(--praxis-line)] bg-[var(--praxis-bg)] py-24">
@@ -200,7 +203,7 @@ function SimulationLab() {
                 <button
                   key={branch.id}
                   type="button"
-                  onClick={() => setActiveBranch(branch)}
+                  onClick={() => selectBranch(branch)}
                   className="grid min-h-16 grid-flow-dense grid-cols-[1fr_auto] items-center gap-4 border border-[var(--praxis-line)] px-5 text-left transition-transform duration-300 hover:scale-[1.01] active:scale-[0.99]"
                   style={{
                     background: selected ? "var(--praxis-surface-2)" : "var(--praxis-surface)",
@@ -322,7 +325,7 @@ function ClosingSection() {
             Built to be inspected, not just admired.
           </h2>
           <p className="mt-6 max-w-2xl text-[17px] leading-8 text-[var(--praxis-mute)]">
-            The public demo now leads to the same workbench, proof detail, dashboard, and export paths a technical reviewer can follow.
+            The public demo is honest about its mode: deterministic web demo, local FieldLab proof, and a separate production-hardening track.
           </p>
         </div>
         <Link
@@ -340,7 +343,8 @@ function ClosingSection() {
 
 export function PraxisLanding() {
   const searchParams = useSearchParams();
-  const packId = searchParams.get("pack") ?? "manufacturing-printer-gpo";
+  const activeCase = getActiveCase(searchParams.get("pack"), searchParams.get("scenario"), searchParams.get("ticket"));
+  const packId = activeCase.packId;
   const { proof } = useProof(packId);
   const [modalOpen, setModalOpen] = useState(false);
   const runId = proof?.run_id ?? `fieldlab_run_${packId}`;

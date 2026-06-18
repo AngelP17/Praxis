@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { useToast } from "@/components/notifications";
 import { clearStoredSession } from "@/lib/auth";
@@ -10,6 +10,7 @@ import { PraxisCommandWorkbench } from "@/components/praxis/workbench/command-wo
 
 export default function CommandCenterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const toast = useToast();
   const [isExporting, setIsExporting] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -27,6 +28,13 @@ export default function CommandCenterPage() {
     linkedIncident,
   } = useCommandFeed();
   const visibleCountForStatus = feed.tickets.filter((ticket) => ticket.status !== "Closed" && ticket.status !== "Resolved").length;
+
+  useEffect(() => {
+    const ticketId = searchParams.get("ticket");
+    if (ticketId && filteredQueue.some((ticket) => ticket.ticketId === ticketId)) {
+      setSelectedTicketId(ticketId);
+    }
+  }, [filteredQueue, searchParams, setSelectedTicketId]);
 
   const handleExport = useCallback(async () => {
     if (isExporting) return;

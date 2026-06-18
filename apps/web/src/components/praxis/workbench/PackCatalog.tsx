@@ -9,13 +9,13 @@ export function PackCatalog() {
   const topbarRight = (
     <>
       <Pill>{packs.length} packs</Pill>
-      <PrimaryAction href="/field-workbench?pack=manufacturing-printer-gpo">Run flagship pack</PrimaryAction>
+      <PrimaryAction href="/field-workbench?pack=manufacturing-printer-gpo">Open verified pack</PrimaryAction>
     </>
   );
 
   return (
     <WorkbenchShell
-      topbar={<TopbarTitle title="Solution Packs" subtitle="Live catalog from /api/solution-packs" right={topbarRight} />}
+      topbar={<TopbarTitle title="Solution Packs" subtitle="Case catalog from /api/solution-packs" right={topbarRight} />}
     >
       <div className="p-6 md:p-8">
         <div className="flex flex-col">

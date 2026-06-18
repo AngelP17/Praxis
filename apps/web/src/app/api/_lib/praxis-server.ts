@@ -24,6 +24,9 @@ export async function proxyBackend(
   demoFallback?: () => Response,
 ) {
   const isDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === "1";
+  const shouldFailFastToDemo = Boolean(demoFallback && (isDemoMode || !process.env.API_INTERNAL_URL));
+  const controller = shouldFailFastToDemo ? new AbortController() : null;
+  const timeout = controller ? setTimeout(() => controller.abort(), 1200) : null;
   try {
     // Forward the caller's bearer token so authenticated backend routes work
     // through the proxy; explicit init headers still take precedence.
@@ -36,6 +39,7 @@ export async function proxyBackend(
     const response = await fetch(buildBackendUrl(pathname), {
       ...init,
       cache: "no-store",
+      signal: init?.signal ?? controller?.signal,
       headers: {
         ...(authorization ? { authorization } : {}),
         ...(init?.headers ?? {}),
@@ -59,6 +63,8 @@ export async function proxyBackend(
       status: 502,
       headers: { "Content-Type": "application/json" },
     });
+  } finally {
+    if (timeout) clearTimeout(timeout);
   }
 }
 
