@@ -245,7 +245,10 @@ class AuthService:
         return hashlib.sha256(token.encode()).hexdigest()
 
     def _token_expiry(self, token: str) -> datetime:
-        payload = jwt.get_unverified_claims(token)
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[ALGORITHM],
+            options={"require": ["exp"], "verify_exp": False},
+        )
         exp = payload.get("exp")
         if isinstance(exp, (int, float)):
             return datetime.fromtimestamp(exp, tz=timezone.utc)
