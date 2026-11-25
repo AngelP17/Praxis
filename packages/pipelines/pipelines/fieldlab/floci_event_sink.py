@@ -16,7 +16,9 @@ class FlociEventSink:
     def send(self, event: dict) -> dict:
         body = json.dumps(event)
         response = self.client.sqs.send_message(QueueUrl=self.queue_url, MessageBody=body)
-        return {"message_id": response.get("MessageId"), "status": "sent"}
+        if not response.get("MessageId"):
+            raise RuntimeError(f"SQS send did not acknowledge message: {response}")
+        return {"message_id": response["MessageId"], "status": "sent"}
 
     def send_batch(self, events: list[dict]) -> list[dict]:
         return [self.send(ev) for ev in events]
@@ -48,6 +50,8 @@ class FlociEventSink:
                 }
             ]
         )
+        if response.get("FailedEntryCount") or len(response.get("Entries", [])) != 1 or not response["Entries"][0].get("EventId"):
+            raise RuntimeError(f"EventBridge rejected event: {response}")
         return {"entries": len(response.get("Entries", [])), "status": "published"}
 
     def ingest_solution_pack_events(self, run_id: str, pack_id: str, events: list[dict]) -> dict:

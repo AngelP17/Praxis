@@ -14,7 +14,7 @@
 | Badge | What it verifies |
 |-------|------------------|
 | **CI** | TypeScript typecheck, Ruff lint, pytest unit/integration, Next.js build, GPT-taste design gate (0 warnings), Playwright smoke tests, CodeQL, Scorecard, secret scan |
-| **FieldLab Proof** | Strict Floci-backed fixture publishing and archival (SQS/S3/DynamoDB/EventBridge), L0 proof verification, and cross-process deterministic fixture replay |
+| **FieldLab Proof** | Strict Floci-backed fixture consumption (SQS), archival/state readback (S3/DynamoDB), EventBridge publish acknowledgements, L0 proof verification, and cross-process deterministic fixture replay |
 | **Determinism Gate** | Bit-identical replay hashes across runs; any tampering changes the SHA-256 proof hash |
 | **PPP v0.1** | Conformance to the Praxis Proof Protocol spec for cryptographically verifiable AI decision provenance |
 
