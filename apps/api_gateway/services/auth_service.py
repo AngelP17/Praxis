@@ -8,7 +8,8 @@ from pathlib import Path
 from typing import Any
 
 import bcrypt
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 
 from apps.api_gateway.config import settings
 from infrastructure.db.models.auth_token import AuthToken
@@ -71,7 +72,7 @@ class AuthService:
     def refresh_token(self, refresh_token: str) -> dict[str, Any] | None:
         try:
             payload = jwt.decode(refresh_token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-        except JWTError:
+        except InvalidTokenError:
             return None
         
         if payload.get("type") != "refresh":
@@ -127,7 +128,7 @@ class AuthService:
             return None
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-        except JWTError:
+        except InvalidTokenError:
             return None
         if payload.get("type") != "access":
             return None
