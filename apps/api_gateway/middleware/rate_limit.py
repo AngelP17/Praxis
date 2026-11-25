@@ -1,7 +1,8 @@
 import time
 from collections import defaultdict
 from fastapi import Request, Response
-from jose import JWTError, jwt
+import jwt
+from jwt.exceptions import InvalidTokenError
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from apps.api_gateway.config import settings
@@ -61,7 +62,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             return None
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
-        except JWTError:
+        except InvalidTokenError:
             return None
         username = payload.get("sub")
         if not username:
