@@ -14,13 +14,13 @@
 | Badge | What it verifies |
 |-------|------------------|
 | **CI** | TypeScript typecheck, Ruff lint, pytest unit/integration, Next.js build, GPT-taste design gate (0 warnings), Playwright smoke tests, CodeQL, Scorecard, secret scan |
-| **FieldLab Proof** | Full Floci-backed AWS emulation: SQS/S3/DynamoDB/EventBridge → ontology compile → decision engine → human approval → L0 proof verification → determinism re-run |
+| **FieldLab Proof** | Strict Floci-backed fixture publishing and archival (SQS/S3/DynamoDB/EventBridge), L0 proof verification, and cross-process deterministic fixture replay |
 | **Determinism Gate** | Bit-identical replay hashes across runs; any tampering changes the SHA-256 proof hash |
 | **PPP v0.1** | Conformance to the Praxis Proof Protocol spec for cryptographically verifiable AI decision provenance |
 
 Praxis is a public proof demo and local FieldLab verification system, with a backend path that still requires explicit production hardening. The verified paths today are the frontend-only public demo (`NEXT_PUBLIC_DEMO_MODE=1`), the local FieldLab proof (`make praxis-proof`), and a recorded Docker Compose production proof in `docs/verification/2026-05-19-docker-compose-production-proof.md`. The Compose backend is the recommended self-hosted target, but current `main` verification and environment-specific secrets/origins must be checked before public production use.
 
-Praxis is the reference implementation of the **Praxis Proof Protocol** — the first open spec for cryptographically verifiable AI decision provenance. It turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
+Praxis is the reference implementation of the **Praxis Proof Protocol** — an open spec for cryptographically verifiable AI decision provenance. It turns customer-specific operational signals into executable decision graphs, local proof-of-value environments, audit-ready workflows, and measurable implementation plans.
 
 > **Verify any Praxis proof in one command:**
 > ```bash
@@ -645,3 +645,7 @@ make praxis-fieldlab-down
 ## License
 
 MIT
+
+## Engineering evidence
+
+See [claim-to-proof matrix](docs/CLAIMS.md) for verification scope, commands, and limitations. CI uses `--strict-runtime` to reject fallback; public demo mode is separate.

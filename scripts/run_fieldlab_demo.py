@@ -29,6 +29,7 @@ def main():
     parser.add_argument(
         "--floci-endpoint", default="http://localhost:4566", help="Floci endpoint URL"
     )
+    parser.add_argument("--strict-runtime", action="store_true", help="Fail rather than simulate when Floci is unavailable or fails")
     parser.add_argument(
         "--emit-proof",
         action="store_true",
@@ -73,6 +74,8 @@ def main():
     # Health check
     health = floci.healthcheck()
     if health["status"] != "ok":
+        if args.strict_runtime:
+            raise RuntimeError(f"Floci health check failed: {health}")
         print(f"WARNING: Floci health check failed: {health}")
         print("Falling back to simulated path (Floci not running).")
         print()
@@ -128,6 +131,8 @@ def main():
             )
             bus.run_started(run_id, args.solution_pack)
         except Exception as exc:
+            if args.strict_runtime:
+                raise RuntimeError("Strict FieldLab provisioning failed") from exc
             print(f"   WARNING: Floci provisioning failed: {exc}")
             print("   Falling back to deterministic local narration.")
             use_floci = False
@@ -137,10 +142,14 @@ def main():
     if use_floci:
         try:
             result = sink.ingest_solution_pack_events(run_id, args.solution_pack, events)
+            if args.strict_runtime and len(result["sqs"]) != len(events):
+                raise RuntimeError("Not all source events were queued")
             print(f"   SQS: {len(result['sqs'])} events queued")
             print(f"   S3:  {result['s3']['key']} archived")
             print(f"   EventBridge: {result['workflow']['status']}")
         except Exception as exc:
+            if args.strict_runtime:
+                raise RuntimeError("Strict FieldLab ingest failed") from exc
             print(f"   WARNING: Floci ingest failed: {exc}")
             print("   Falling back to deterministic local event narration.")
             use_floci = False
@@ -203,6 +212,9 @@ def main():
         output_dir = Path(args.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         proof_path = output_dir / "praxis_proof.json"
+        runtime_path = output_dir / "runtime-evidence.json"
+        # Remove prior evidence before writing so a failed run cannot inherit it.
+        runtime_path.unlink(missing_ok=True)
         proof_path.write_text(json.dumps(proof, indent=2, sort_keys=True) + "\n")
         print()
         print(f"Proof object written: {proof_path}")
@@ -213,6 +225,10 @@ def main():
             bus.run_completed(run_id, args.solution_pack, proof["proof_hash"])
             store.update_run_status(run_id, "proof_emitted", {"proof_hash": proof["proof_hash"]})
             print(f"Proof archived to S3: praxis-audit-artifacts/runs/{run_id}/praxis_proof.json")
+        runtime_path.write_text(json.dumps({"mode": "floci" if use_floci else "local",
+            "strict_runtime": args.strict_runtime, "solution_pack": args.solution_pack,
+            "event_count": len(events), "proof_hash": proof["proof_hash"],
+            "integration_scope": "publish and archive fixture events; decision computation uses local fixtures"}, indent=2) + "\n")
 
 
 if __name__ == "__main__":
