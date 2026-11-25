@@ -43,13 +43,14 @@ jobs:
           exit 1
       - name: Run FieldLab demo with proof
         run: |
-          python scripts/run_fieldlab_demo.py --solution-pack manufacturing-printer-gpo --emit-proof
+          python scripts/run_fieldlab_demo.py --solution-pack manufacturing-printer-gpo --emit-proof --strict-runtime
       - name: Verify proof
         run: |
           python scripts/verify_praxis_proof.py artifacts/latest/praxis_proof.json
+          python -c 'import json; e=json.load(open("artifacts/latest/runtime-evidence.json")); assert e["strict_runtime"] and e["mode"] == "floci"'
       - name: Determinism gate (re-run + compare hashes)
         run: |
-          python scripts/check_replay_determinism.py --solution-pack manufacturing-printer-gpo
+          python scripts/verify_cross_process.py
       - name: Run benchmarks
         run: |
           python scripts/run_benchmarks.py
@@ -61,6 +62,15 @@ jobs:
           python -m sigstore sign artifacts/latest/praxis_proof.json \
             --output-artifact artifacts/latest/praxis_proof.json.sigstore
         continue-on-error: true
+      - name: Upload proof evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: praxis-proof-${{ github.sha }}
+          path: |
+            artifacts/latest/
+            artifacts/cross-process/
+          retention-days: 30
       - name: Stop Floci
         if: always()
         run: |

@@ -24,6 +24,8 @@ class FlociWorkflowBus:
                 }
             ]
         )
+        if response.get("FailedEntryCount") or len(response.get("Entries", [])) != 1 or not response["Entries"][0].get("EventId"):
+            raise RuntimeError(f"EventBridge rejected event: {response}")
         return {
             "detail_type": detail_type,
             "entries": len(response.get("Entries", [])),

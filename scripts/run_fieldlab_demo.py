@@ -4,6 +4,9 @@
 import argparse
 import json
 import sys
+import time
+import uuid
+from collections import Counter
 from pathlib import Path
 
 ROOT = Path(__file__).parent.parent
@@ -21,6 +24,33 @@ from pipelines.fieldlab import (
 from astraea.praxis import PraxisProofBuilder, ProofInputs
 
 
+def receive_fixture_events(sqs, queue_url, expected, timeout=45):
+    """Read the isolated queue, check exact payload multiplicity, preserve fixture order."""
+    def canonical(event):
+        return json.dumps(event, sort_keys=True, separators=(",", ":"))
+
+    remaining = Counter(map(canonical, expected))
+    received = {}
+    receipts = []
+    deadline = time.monotonic() + timeout
+    while remaining.total():
+        if time.monotonic() >= deadline:
+            raise RuntimeError("Timed out waiting for all SQS fixture events")
+        response = sqs.receive_message(QueueUrl=queue_url, MaxNumberOfMessages=10,
+                                       WaitTimeSeconds=2, VisibilityTimeout=90)
+        for message in response.get("Messages", []):
+            event = json.loads(message["Body"])
+            key = canonical(event)
+            if remaining[key] <= 0:
+                raise RuntimeError("Unexpected or duplicate SQS fixture event")
+            remaining[key] -= 1
+            received[key] = event
+            receipts.append(message["ReceiptHandle"])
+    for receipt in receipts:
+        sqs.delete_message(QueueUrl=queue_url, ReceiptHandle=receipt)
+    return [received[canonical(event)] for event in expected]
+
+
 def main():
     parser = argparse.ArgumentParser(description="Run Praxis FieldLab demo")
     parser.add_argument(
@@ -29,6 +59,7 @@ def main():
     parser.add_argument(
         "--floci-endpoint", default="http://localhost:4566", help="Floci endpoint URL"
     )
+    parser.add_argument("--strict-runtime", action="store_true", help="Fail rather than simulate when Floci is unavailable or fails")
     parser.add_argument(
         "--emit-proof",
         action="store_true",
@@ -73,6 +104,8 @@ def main():
     # Health check
     health = floci.healthcheck()
     if health["status"] != "ok":
+        if args.strict_runtime:
+            raise RuntimeError(f"Floci health check failed: {health}")
         print(f"WARNING: Floci health check failed: {health}")
         print("Falling back to simulated path (Floci not running).")
         print()
@@ -94,6 +127,67 @@ def main():
         print(f"   Context loaded from {context_path}")
     print()
 
+    print("3. Compile Operational Ontology")
+    ontology_path = pack_dir / "ontology.yaml"
+    if ontology_path.is_file():
+        print(f"   Ontology loaded from {ontology_path}")
+    print()
+
+    print("4. Start FieldLab")
+    print(f"   Endpoint: {args.floci_endpoint}")
+    run_id = f"fieldlab_run_{args.solution_pack}"
+    if use_floci:
+        try:
+            provisioned = resources.provision_all()
+            if args.strict_runtime and any(r["status"] not in {"created", "exists"} for r in provisioned):
+                raise RuntimeError(f"Resource provisioning returned errors: {provisioned}")
+            if args.strict_runtime:
+                sink.queue_url = floci.sqs.create_queue(QueueName=f"praxis-proof-{uuid.uuid4().hex}")["QueueUrl"]
+            created = sum(1 for r in provisioned if r["status"] == "created")
+            exists = sum(1 for r in provisioned if r["status"] == "exists")
+            print(f"   Resources: {created} created, {exists} already exist")
+            store.write_run_state(
+                run_id, args.solution_pack, "started", {"event_count": len(events)}
+            )
+            bus.run_started(run_id, args.solution_pack)
+        except Exception as exc:
+            if args.strict_runtime:
+                raise RuntimeError("Strict FieldLab provisioning failed") from exc
+            print(f"   WARNING: Floci provisioning failed: {exc}")
+            print("   Falling back to deterministic local narration.")
+            use_floci = False
+    print()
+
+    print("5. Stream Events through Floci")
+    if use_floci:
+        try:
+            result = sink.ingest_solution_pack_events(run_id, args.solution_pack, events)
+            if args.strict_runtime and len(result["sqs"]) != len(events):
+                raise RuntimeError("Not all source events were queued")
+            print(f"   SQS: {len(result['sqs'])} events queued")
+            print(f"   S3:  {result['s3']['key']} archived")
+            print(f"   EventBridge: {result['workflow']['status']}")
+            if args.strict_runtime:
+                try:
+                    events = receive_fixture_events(floci.sqs, sink.queue_url, events)
+                    raw = floci.s3.get_object(Bucket=result["s3"]["bucket"], Key=result["s3"]["key"])["Body"].read()
+                    if [json.loads(line) for line in raw.splitlines()] != events:
+                        raise RuntimeError("S3 source-event readback differs from SQS events")
+                finally:
+                    floci.sqs.delete_queue(QueueUrl=sink.queue_url)
+        except Exception as exc:
+            if args.strict_runtime:
+                raise RuntimeError("Strict FieldLab ingest failed") from exc
+            print(f"   WARNING: Floci ingest failed: {exc}")
+            print("   Falling back to deterministic local event narration.")
+            use_floci = False
+    if not use_floci:
+        for i, event in enumerate(events, 1):
+            print(
+                f"   [{i}/{len(events)}] {event.get('event_type', 'unknown')}: {event.get('description', '')[:80]}"
+            )
+    print()
+
     proof = PraxisProofBuilder().build(
         ProofInputs(
             solution_pack=args.solution_pack,
@@ -107,49 +201,6 @@ def main():
     value_case = proof["value_case"]
     replay = proof["replay"]
     expansions = proof.get("expansion", [])
-
-    print("3. Compile Operational Ontology")
-    ontology_path = pack_dir / "ontology.yaml"
-    if ontology_path.is_file():
-        print(f"   Ontology loaded from {ontology_path}")
-    print()
-
-    print("4. Start FieldLab")
-    print(f"   Endpoint: {args.floci_endpoint}")
-    run_id = f"fieldlab_run_{args.solution_pack}"
-    if use_floci:
-        try:
-            provisioned = resources.provision_all()
-            created = sum(1 for r in provisioned if r["status"] == "created")
-            exists = sum(1 for r in provisioned if r["status"] == "exists")
-            print(f"   Resources: {created} created, {exists} already exist")
-            store.write_run_state(
-                run_id, args.solution_pack, "started", {"event_count": len(events)}
-            )
-            bus.run_started(run_id, args.solution_pack)
-        except Exception as exc:
-            print(f"   WARNING: Floci provisioning failed: {exc}")
-            print("   Falling back to deterministic local narration.")
-            use_floci = False
-    print()
-
-    print("5. Stream Events through Floci")
-    if use_floci:
-        try:
-            result = sink.ingest_solution_pack_events(run_id, args.solution_pack, events)
-            print(f"   SQS: {len(result['sqs'])} events queued")
-            print(f"   S3:  {result['s3']['key']} archived")
-            print(f"   EventBridge: {result['workflow']['status']}")
-        except Exception as exc:
-            print(f"   WARNING: Floci ingest failed: {exc}")
-            print("   Falling back to deterministic local event narration.")
-            use_floci = False
-    if not use_floci:
-        for i, event in enumerate(events, 1):
-            print(
-                f"   [{i}/{len(events)}] {event.get('event_type', 'unknown')}: {event.get('description', '')[:80]}"
-            )
-    print()
 
     print("6. Generate Decisions")
     print(f"   Priority score: {decision['priority_score']:.4f}")
@@ -203,6 +254,9 @@ def main():
         output_dir = Path(args.output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         proof_path = output_dir / "praxis_proof.json"
+        runtime_path = output_dir / "runtime-evidence.json"
+        # Remove prior evidence before writing so a failed run cannot inherit it.
+        runtime_path.unlink(missing_ok=True)
         proof_path.write_text(json.dumps(proof, indent=2, sort_keys=True) + "\n")
         print()
         print(f"Proof object written: {proof_path}")
@@ -212,7 +266,17 @@ def main():
             archive.store_proof(run_id, proof)
             bus.run_completed(run_id, args.solution_pack, proof["proof_hash"])
             store.update_run_status(run_id, "proof_emitted", {"proof_hash": proof["proof_hash"]})
+            if args.strict_runtime:
+                if archive.get_proof(run_id) != proof:
+                    raise RuntimeError("Archived S3 proof readback mismatch")
+                state = store.get_run_state(run_id)
+                if not state or state["status"] != "proof_emitted" or state["metadata"].get("proof_hash") != proof["proof_hash"]:
+                    raise RuntimeError("DynamoDB proof state readback mismatch")
             print(f"Proof archived to S3: praxis-audit-artifacts/runs/{run_id}/praxis_proof.json")
+        runtime_path.write_text(json.dumps({"mode": "floci" if use_floci else "local",
+            "strict_runtime": args.strict_runtime, "solution_pack": args.solution_pack,
+            "event_count": len(events), "proof_hash": proof["proof_hash"],
+            "integration_scope": "SQS-consumed fixtures with S3 and DynamoDB readback" if args.strict_runtime else "demo or fixture publishing"}, indent=2) + "\n")
 
 
 if __name__ == "__main__":
